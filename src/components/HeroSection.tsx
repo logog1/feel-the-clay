@@ -1,11 +1,15 @@
 import { Button } from "@/components/ui/button";
+import heroBg from "@/assets/hero-bg.jpg";
 
 const HeroSection = () => {
   return (
     <section className="min-h-screen flex flex-col justify-center section-padding relative overflow-hidden">
-      {/* Decorative organic shape */}
-      <div className="absolute top-20 right-0 w-64 h-64 md:w-96 md:h-96 bg-sand-dark/30 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 animate-gentle-float" />
-      <div className="absolute bottom-20 left-0 w-48 h-48 md:w-72 md:h-72 bg-terracotta/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
+      {/* Background image with overlay */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: `url(${heroBg})` }}
+      />
+      <div className="absolute inset-0 bg-gradient-to-b from-background/70 via-background/60 to-background/80" />
       
       <div className="container-narrow relative z-10">
         <div className="space-y-8 animate-fade-up">
