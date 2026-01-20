@@ -13,14 +13,14 @@ const LocationSection = () => {
             {/* Map embed */}
             <div className="aspect-video md:aspect-[2/1] rounded-2xl overflow-hidden">
               <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3623.9754!2d46.6753!3d24.7136!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjTCsDQyJzQ5LjAiTiA0NsKwNDAnMzEuMSJF!5e0!3m2!1sen!2s!4v1234567890"
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3245.8!2d-5.3626!3d35.5889!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xd0b4251d7eb4c45%3A0x8c2e4f8e2c9e8d0a!2sTetouan%2C%20Morocco!5e0!3m2!1sen!2sma!4v1705000000000!5m2!1sen!2sma"
                 width="100%"
                 height="100%"
                 style={{ border: 0 }}
                 allowFullScreen
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
-                title="Workshop location"
+                title="Workshop location in Tetouan, Morocco"
               />
             </div>
             
