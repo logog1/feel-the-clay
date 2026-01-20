@@ -24,8 +24,10 @@ const HeroSection = () => {
           </p>
           
           <div className="pt-4">
-            <Button variant="cta" size="xl">
-              Reserve your spot
+            <Button variant="cta" size="xl" asChild>
+              <a href="https://forms.gle/NfrnW6E2yr65WAVbA" target="_blank" rel="noopener noreferrer">
+                Reserve your spot
+              </a>
             </Button>
           </div>
         </div>

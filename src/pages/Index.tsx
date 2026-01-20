@@ -3,6 +3,9 @@ import AboutSection from "@/components/AboutSection";
 import ExperienceSection from "@/components/ExperienceSection";
 import DetailsSection from "@/components/DetailsSection";
 import ProcessSection from "@/components/ProcessSection";
+import GallerySection from "@/components/GallerySection";
+import TestimonialsSection from "@/components/TestimonialsSection";
+import FAQSection from "@/components/FAQSection";
 import LocationSection from "@/components/LocationSection";
 import LanguagesSection from "@/components/LanguagesSection";
 import FinalCTASection from "@/components/FinalCTASection";
@@ -15,6 +18,9 @@ const Index = () => {
       <ExperienceSection />
       <DetailsSection />
       <ProcessSection />
+      <GallerySection />
+      <TestimonialsSection />
+      <FAQSection />
       <LocationSection />
       <LanguagesSection />
       <FinalCTASection />
