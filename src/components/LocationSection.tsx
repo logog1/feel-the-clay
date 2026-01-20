@@ -25,8 +25,8 @@ const LocationSection = () => {
             </div>
             
             <a 
-              href="https://maps.app.goo.gl/E4ggjhZGUmqoPyuk7?g_st=ic" 
-              target="_blank" 
+              href="https://maps.app.goo.gl/h4c9BhEj1WZrESG59?g_st=ic" 
+              target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 text-foreground/70 hover:text-foreground transition-colors"
             >
