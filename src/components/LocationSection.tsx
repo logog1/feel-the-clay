@@ -13,14 +13,14 @@ const LocationSection = () => {
             {/* Map embed */}
             <div className="aspect-video md:aspect-[2/1] rounded-2xl overflow-hidden">
               <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3245.8!2d-5.3626!3d35.5889!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xd0b4251d7eb4c45%3A0x8c2e4f8e2c9e8d0a!2sTetouan%2C%20Morocco!5e0!3m2!1sen!2sma!4v1705000000000!5m2!1sen!2sma"
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d800!2d-5.35338!3d35.58475!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xd0b42526f4c8c0f%3A0x7a5e5e8c8c8c8c8c!2sTERRARIA%20Workshops!5e0!3m2!1sen!2sma!4v1705000000000!5m2!1sen!2sma"
                 width="100%"
                 height="100%"
                 style={{ border: 0 }}
                 allowFullScreen
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
-                title="Workshop location in Tetouan, Morocco"
+                title="TERRARIA Workshops location in Tetouan, Morocco"
               />
             </div>
             
