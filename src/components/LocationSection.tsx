@@ -10,18 +10,29 @@ const LocationSection = () => {
           </h2>
           
           <div className="space-y-6">
-            {/* Map placeholder */}
-            <div className="aspect-video md:aspect-[2/1] bg-sand-dark/30 rounded-2xl flex items-center justify-center overflow-hidden">
-              <a 
-                href="https://maps.google.com" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="flex flex-col items-center gap-3 text-foreground/60 hover:text-foreground transition-colors"
-              >
-                <MapPin className="w-10 h-10" />
-                <span className="font-medium">View on Google Maps</span>
-              </a>
+            {/* Map embed */}
+            <div className="aspect-video md:aspect-[2/1] rounded-2xl overflow-hidden">
+              <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3623.9754!2d46.6753!3d24.7136!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjTCsDQyJzQ5LjAiTiA0NsKwNDAnMzEuMSJF!5e0!3m2!1sen!2s!4v1234567890"
+                width="100%"
+                height="100%"
+                style={{ border: 0 }}
+                allowFullScreen
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                title="Workshop location"
+              />
             </div>
+            
+            <a 
+              href="https://maps.app.goo.gl/E4ggjhZGUmqoPyuk7?g_st=ic" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 text-foreground/70 hover:text-foreground transition-colors"
+            >
+              <MapPin className="w-5 h-5" />
+              <span className="font-medium">Open in Google Maps</span>
+            </a>
             
             <p className="text-muted-foreground text-center">
               Detailed directions will be sent with your booking confirmation.
