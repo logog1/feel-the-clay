@@ -10,12 +10,16 @@ import workshop10 from "@/assets/workshop-10.jpg";
 import workshop11 from "@/assets/workshop-11.jpg";
 import workshop12 from "@/assets/workshop-12.jpg";
 import workshop13 from "@/assets/workshop-13.jpg";
+import workshop14 from "@/assets/workshop-14.jpg";
+import workshop15 from "@/assets/workshop-15.jpg";
+import workshop16 from "@/assets/workshop-16.jpg";
 
 const row1 = [
   { src: workshop1, alt: "Workshop participant shaping clay" },
   { src: workshop4, alt: "Creating pottery together" },
   { src: workshop9, alt: "Hands shaping clay pieces" },
   { src: workshop13, alt: "Clay sculpture on pottery wheel" },
+  { src: workshop14, alt: "Group workshop in the studio" },
 ];
 
 const row2 = [
@@ -23,12 +27,14 @@ const row2 = [
   { src: workshop5, alt: "Handbuilding clay pieces" },
   { src: workshop10, alt: "Artist rolling clay" },
   { src: workshop12, alt: "Friends enjoying the workshop" },
+  { src: workshop15, alt: "Friends showing off their creations" },
 ];
 
 const row3 = [
   { src: workshop6, alt: "Coil building technique" },
   { src: workshop8, alt: "Happy workshop participants" },
   { src: workshop11, alt: "Pottery tools on canvas" },
+  { src: workshop16, alt: "Group photo at the workshop" },
 ];
 
 const GallerySection = () => {

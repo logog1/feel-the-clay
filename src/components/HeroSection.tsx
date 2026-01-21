@@ -2,14 +2,17 @@ import heroBg from "@/assets/hero-bg.jpg";
 
 const HeroSection = () => {
   return (
-    <section className="min-h-screen flex flex-col justify-center section-padding relative overflow-hidden">
-      {/* Background image - full cover */}
+    <section className="min-h-screen flex flex-col justify-end md:justify-center section-padding pb-24 md:pb-0 relative overflow-hidden">
+      {/* Background image - full contain on mobile, cover on desktop */}
       <div 
-        className="absolute inset-0 bg-cover md:bg-center bg-[center_top]"
+        className="absolute inset-0 md:bg-cover bg-contain bg-no-repeat md:bg-center bg-top"
         style={{ 
           backgroundImage: `url(${heroBg})`,
         }}
       />
+      
+      {/* Fill the remaining space below the image on mobile */}
+      <div className="absolute inset-0 md:hidden bg-gradient-to-b from-transparent via-transparent to-background" style={{ top: '60%' }} />
       
       {/* Gradient overlay with warmer tones */}
       <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/30 to-background/80" />

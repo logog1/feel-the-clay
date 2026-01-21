@@ -25,12 +25,16 @@ const TrustSection = () => {
             {partners.map((partner, index) => (
               <div 
                 key={index}
-                className="h-24 md:h-40 grayscale opacity-70 hover:grayscale-0 hover:opacity-100 transition-all duration-300"
+                className="h-24 md:h-40 transition-all duration-500 hover:scale-110 hover:-translate-y-1"
+                style={{ 
+                  animation: `gentle-float 3s ease-in-out infinite`,
+                  animationDelay: `${index * 0.3}s`
+                }}
               >
                 <img 
                   src={partner.src}
                   alt={partner.alt}
-                  className="h-full w-auto object-contain"
+                  className="h-full w-auto object-contain drop-shadow-md hover:drop-shadow-xl transition-all duration-300"
                 />
               </div>
             ))}
