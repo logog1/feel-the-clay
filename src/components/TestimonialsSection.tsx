@@ -29,12 +29,12 @@ const testimonials = [
 ];
 
 const TestimonialCard = ({ quote, name }: { quote: string; name: string }) => (
-  <div className="bg-background/60 p-6 rounded-2xl space-y-4 h-full">
-    <Quote className="w-8 h-8 text-terracotta/40" />
-    <p className="text-foreground/80 italic leading-relaxed">
+  <div className="bg-background/60 p-5 rounded-xl space-y-3 h-full">
+    <Quote className="w-6 h-6 text-terracotta/30" />
+    <p className="text-foreground/70 italic text-sm leading-relaxed">
       "{quote}"
     </p>
-    <p className="font-medium text-foreground">
+    <p className="text-sm text-foreground/80">
       — {name}
     </p>
   </div>
@@ -42,11 +42,11 @@ const TestimonialCard = ({ quote, name }: { quote: string; name: string }) => (
 
 const TestimonialsSection = () => {
   return (
-    <section className="section-padding bg-sand-light">
+    <section className="py-12 md:py-16 bg-sand-light">
       <div className="container-narrow">
-        <div className="space-y-10">
-          <h2 className="text-2xl md:text-3xl font-medium text-center">
-            What people are saying
+        <div className="space-y-6">
+          <h2 className="text-xl md:text-2xl font-medium text-center">
+            Voices
           </h2>
           
           {/* Mobile: Swipeable Carousel */}

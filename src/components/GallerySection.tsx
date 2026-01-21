@@ -16,11 +16,11 @@ const images = [
 
 const GallerySection = () => {
   return (
-    <section className="section-padding bg-background">
+    <section className="py-12 md:py-16 bg-background">
       <div className="container-narrow">
-        <div className="space-y-8">
-          <h2 className="text-2xl md:text-3xl font-medium text-center">
-            Moments from our workshops
+        <div className="space-y-6">
+          <h2 className="text-xl md:text-2xl font-medium text-center">
+            Moments
           </h2>
           
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">

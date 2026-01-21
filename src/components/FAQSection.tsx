@@ -34,11 +34,11 @@ const faqs = [
 
 const FAQSection = () => {
   return (
-    <section className="section-padding bg-background">
+    <section className="py-12 md:py-16 bg-background">
       <div className="container-narrow">
-        <div className="space-y-8">
-          <h2 className="text-2xl md:text-3xl font-medium text-center">
-            Common questions
+        <div className="space-y-6">
+          <h2 className="text-xl md:text-2xl font-medium text-center">
+            Questions
           </h2>
           
           <Accordion type="single" collapsible className="w-full">
