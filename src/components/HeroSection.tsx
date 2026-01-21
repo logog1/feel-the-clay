@@ -5,11 +5,9 @@ const HeroSection = () => {
     <section className="min-h-screen flex flex-col justify-center section-padding relative overflow-hidden">
       {/* Background image - full cover */}
       <div 
-        className="absolute inset-0"
+        className="absolute inset-0 bg-cover md:bg-center bg-[center_top]"
         style={{ 
           backgroundImage: `url(${heroBg})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center center',
         }}
       />
       
