@@ -1,25 +1,25 @@
+import { Clock, Infinity, Package, Coffee } from "lucide-react";
+
 const DetailsSection = () => {
   const details = [
-    "3 hours",
-    "Unlimited pieces",
-    "Materials included",
-    "Drink included",
+    { icon: Clock, text: "3 hours" },
+    { icon: Infinity, text: "Unlimited pieces" },
+    { icon: Package, text: "Materials included" },
+    { icon: Coffee, text: "Drink included" },
   ];
 
   return (
     <section className="py-12 md:py-16 bg-sand-light">
       <div className="container-narrow">
-        <div className="flex flex-wrap justify-center gap-4 md:gap-8">
+        <div className="flex flex-wrap justify-center gap-6 md:gap-10">
           {details.map((detail, index) => (
-            <span 
+            <div 
               key={index}
-              className="text-sm md:text-base text-foreground/70 font-light"
+              className="flex items-center gap-2 text-foreground/70"
             >
-              {detail}
-              {index < details.length - 1 && (
-                <span className="hidden md:inline ml-4 md:ml-8 text-foreground/30">•</span>
-              )}
-            </span>
+              <detail.icon className="w-4 h-4 text-cta" />
+              <span className="text-sm">{detail.text}</span>
+            </div>
           ))}
         </div>
       </div>
