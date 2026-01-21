@@ -13,27 +13,37 @@ import workshop13 from "@/assets/workshop-13.jpg";
 import workshop14 from "@/assets/workshop-14.jpg";
 import workshop15 from "@/assets/workshop-15.jpg";
 import workshop16 from "@/assets/workshop-16.jpg";
+import workshop17 from "@/assets/workshop-17.jpg";
+import workshop18 from "@/assets/workshop-18.jpg";
+import workshop19 from "@/assets/workshop-19.jpg";
+import workshop20 from "@/assets/workshop-20.jpg";
+import workshop21 from "@/assets/workshop-21.jpg";
 
 const row1 = [
   { src: workshop1, alt: "Workshop participant shaping clay" },
   { src: workshop4, alt: "Creating pottery together" },
   { src: workshop9, alt: "Hands shaping clay pieces" },
+  { src: workshop17, alt: "Participant showing off clay sculpture" },
   { src: workshop13, alt: "Clay sculpture on pottery wheel" },
   { src: workshop14, alt: "Group workshop in the studio" },
 ];
 
 const row2 = [
   { src: workshop3, alt: "Group pottery session" },
+  { src: workshop18, alt: "Artist presenting handmade mug" },
   { src: workshop5, alt: "Handbuilding clay pieces" },
   { src: workshop10, alt: "Artist rolling clay" },
+  { src: workshop19, alt: "Community workshop gathering" },
   { src: workshop12, alt: "Friends enjoying the workshop" },
   { src: workshop15, alt: "Friends showing off their creations" },
 ];
 
 const row3 = [
   { src: workshop6, alt: "Coil building technique" },
+  { src: workshop20, alt: "Friends with their clay creations" },
   { src: workshop8, alt: "Happy workshop participants" },
   { src: workshop11, alt: "Pottery tools on canvas" },
+  { src: workshop21, alt: "Handmade clay pieces closeup" },
   { src: workshop16, alt: "Group photo at the workshop" },
 ];
 
