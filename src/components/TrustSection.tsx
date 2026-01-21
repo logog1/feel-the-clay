@@ -21,14 +21,14 @@ const TrustSection = () => {
             They trust us
           </p>
           
-          <div className="flex flex-wrap justify-center items-center gap-8 md:gap-12">
+          <div className="flex flex-wrap justify-center items-center gap-10 md:gap-16">
             {partners.map((partner, index) => (
               <div 
                 key={index}
-                className="h-12 md:h-16 opacity-70 hover:opacity-100 transition-opacity duration-300"
+                className="h-16 md:h-24 opacity-70 hover:opacity-100 transition-opacity duration-300"
               >
                 <img 
-                  src={partner.src} 
+                  src={partner.src}
                   alt={partner.alt}
                   className="h-full w-auto object-contain"
                 />
