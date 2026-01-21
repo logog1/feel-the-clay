@@ -1,4 +1,4 @@
 const AboutSection = () => {
-  return;
+  return null;
 };
 export default AboutSection;
