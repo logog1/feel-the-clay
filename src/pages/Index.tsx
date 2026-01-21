@@ -2,7 +2,6 @@ import HeroSection from "@/components/HeroSection";
 import BeliefSection from "@/components/BeliefSection";
 import AboutSection from "@/components/AboutSection";
 import ExperienceSection from "@/components/ExperienceSection";
-import DetailsSection from "@/components/DetailsSection";
 import ProcessSection from "@/components/ProcessSection";
 import GallerySection from "@/components/GallerySection";
 import TestimonialsSection from "@/components/TestimonialsSection";
@@ -23,7 +22,6 @@ const Index = () => {
       
       {/* Feel */}
       <ExperienceSection />
-      <DetailsSection />
       <ProcessSection />
       <GallerySection />
       
