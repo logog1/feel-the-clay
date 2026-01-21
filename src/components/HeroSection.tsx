@@ -32,7 +32,7 @@ const HeroSection = () => {
             Rethinking pottery as{" "}
             <span className="relative inline-block">
               community
-              <span className="absolute -bottom-1 left-0 w-full h-1 bg-cta rounded-full" />
+              <span className="absolute -bottom-1 left-0 w-full h-2 bg-cta rounded-full" />
             </span>
           </h1>
           
