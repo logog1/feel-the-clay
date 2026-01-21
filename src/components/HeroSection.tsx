@@ -1,39 +1,27 @@
-import { Button } from "@/components/ui/button";
 import heroBg from "@/assets/hero-bg.jpg";
 
 const HeroSection = () => {
   return (
-    <section className="min-h-screen flex flex-col justify-center section-padding relative overflow-hidden">
-      {/* Background image with overlay */}
+    <section className="min-h-[85vh] flex flex-col justify-center section-padding relative overflow-hidden">
+      {/* Background image with overlay - fixed for mobile */}
       <div 
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: `url(${heroBg})` }}
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat bg-fixed md:bg-scroll"
+        style={{ 
+          backgroundImage: `url(${heroBg})`,
+          backgroundAttachment: 'scroll'
+        }}
       />
-      <div className="absolute inset-0 bg-gradient-to-b from-background/70 via-background/60 to-background/80" />
+      <div className="absolute inset-0 bg-gradient-to-b from-background/60 via-background/50 to-background/70" />
       
       <div className="container-narrow relative z-10">
-        <div className="space-y-8 animate-fade-up">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-light leading-tight text-balance">
-            Slow down.
-            <br />
-            <span className="font-medium">Shape something beautiful.</span>
+        <div className="space-y-6 animate-fade-up">
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-light leading-tight text-balance">
+            Rethinking pottery as community
           </h1>
           
-          <p className="text-lg md:text-xl text-foreground/80 font-light">
-            A 3-hour pottery handbuilding workshop
+          <p className="text-base md:text-lg text-foreground/70 font-light max-w-sm">
+            A creative, grounding experience in Tetouan.
           </p>
-          
-          <p className="text-base text-muted-foreground max-w-md">
-            No experience needed. All materials included. Just bring your curiosity.
-          </p>
-          
-          <div className="pt-4">
-            <Button variant="cta" size="xl" asChild>
-              <a href="https://forms.gle/NfrnW6E2yr65WAVbA" target="_blank" rel="noopener noreferrer">
-                Reserve your spot
-              </a>
-            </Button>
-          </div>
         </div>
       </div>
       

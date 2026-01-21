@@ -1,61 +1,26 @@
-import { Clock, Infinity, Package, Coffee, Heart, Users } from "lucide-react";
+import { Clock, Infinity, Package, Coffee } from "lucide-react";
 
 const DetailsSection = () => {
   const details = [
-    {
-      icon: Clock,
-      title: "3 hours",
-      description: "Plenty of time to explore"
-    },
-    {
-      icon: Infinity,
-      title: "Unlimited pieces",
-      description: "Create as many as you like"
-    },
-    {
-      icon: Package,
-      title: "Materials included",
-      description: "Clay, tools, and glazes"
-    },
-    {
-      icon: Coffee,
-      title: "One drink included",
-      description: "Tea, coffee, or juice"
-    },
-    {
-      icon: Heart,
-      title: "Beginner-friendly",
-      description: "No experience needed"
-    },
-    {
-      icon: Users,
-      title: "Small group",
-      description: "Personal attention for everyone"
-    }
+    { icon: Clock, text: "3 hours" },
+    { icon: Infinity, text: "Unlimited pieces" },
+    { icon: Package, text: "Materials included" },
+    { icon: Coffee, text: "Drink included" },
   ];
 
   return (
-    <section className="section-padding bg-sand-light">
-      <div className="container-wide">
-        <div className="space-y-10">
-          <h2 className="text-2xl md:text-3xl font-medium text-center">
-            Workshop details
-          </h2>
-          
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-6 md:gap-8">
-            {details.map((detail, index) => (
-              <div 
-                key={index}
-                className="flex flex-col items-center text-center space-y-3 p-6 rounded-2xl bg-background/50 hover:bg-background/80 transition-colors duration-300"
-              >
-                <div className="w-12 h-12 rounded-full bg-cta/15 flex items-center justify-center">
-                  <detail.icon className="w-6 h-6 text-cta" />
-                </div>
-                <h3 className="font-medium text-lg">{detail.title}</h3>
-                <p className="text-sm text-muted-foreground">{detail.description}</p>
-              </div>
-            ))}
-          </div>
+    <section className="py-12 md:py-16 bg-sand-light">
+      <div className="container-narrow">
+        <div className="flex flex-wrap justify-center gap-6 md:gap-10">
+          {details.map((detail, index) => (
+            <div 
+              key={index}
+              className="flex items-center gap-2 text-foreground/70"
+            >
+              <detail.icon className="w-4 h-4 text-cta" />
+              <span className="text-sm">{detail.text}</span>
+            </div>
+          ))}
         </div>
       </div>
     </section>
