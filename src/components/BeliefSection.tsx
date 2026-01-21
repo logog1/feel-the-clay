@@ -1,33 +1,41 @@
 const BeliefSection = () => {
   return (
-    <section className="py-16 md:py-24 relative overflow-hidden">
-      {/* Decorative floating elements */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-8 left-[10%] w-16 h-16 rounded-full border-2 border-terracotta/20 animate-gentle-float" />
-        <div className="absolute bottom-12 right-[15%] w-10 h-10 rounded-full bg-cta/10 animate-gentle-float" style={{ animationDelay: '1s' }} />
-        <div className="absolute top-1/2 left-[5%] w-3 h-3 rounded-full bg-terracotta/30 animate-gentle-float" style={{ animationDelay: '0.5s' }} />
-        <div className="absolute top-1/3 right-[8%] w-2 h-2 rounded-full bg-cta/40 animate-gentle-float" style={{ animationDelay: '1.5s' }} />
-        
-        {/* Decorative lines */}
-        <div className="absolute top-1/4 left-0 w-24 h-px bg-gradient-to-r from-transparent via-terracotta/20 to-transparent" />
-        <div className="absolute bottom-1/4 right-0 w-32 h-px bg-gradient-to-l from-transparent via-cta/20 to-transparent" />
+    <section className="py-20 md:py-32 relative">
+      {/* Large decorative background text */}
+      <div className="absolute inset-0 flex items-center justify-center overflow-hidden pointer-events-none select-none">
+        <span className="text-[8rem] md:text-[16rem] font-bold text-terracotta/[0.03] leading-none tracking-tighter">
+          CRAFT
+        </span>
       </div>
       
       <div className="container-narrow relative">
-        {/* Quote marks decoration */}
-        <div className="absolute -top-4 left-1/2 -translate-x-1/2 text-6xl md:text-8xl text-terracotta/10 font-serif leading-none select-none">
-          "
-        </div>
-        
-        <p className="text-lg md:text-xl text-foreground/80 font-light text-center max-w-lg mx-auto leading-relaxed italic">
-          Craft lives through the people who practice it together.
-        </p>
-        
-        {/* Decorative underline */}
-        <div className="mt-6 flex justify-center gap-1">
-          <div className="w-8 h-0.5 bg-cta/60 rounded-full" />
-          <div className="w-2 h-0.5 bg-terracotta/40 rounded-full" />
-          <div className="w-2 h-0.5 bg-cta/40 rounded-full" />
+        <div className="flex flex-col items-center gap-6">
+          {/* Decorative top element */}
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-px bg-cta" />
+            <div className="w-2 h-2 rotate-45 border border-cta" />
+            <div className="w-12 h-px bg-cta" />
+          </div>
+          
+          {/* Main quote with stylized layout */}
+          <div className="text-center space-y-2">
+            <p className="text-2xl md:text-3xl lg:text-4xl font-light text-foreground/90 tracking-wide">
+              Craft lives through
+            </p>
+            <p className="text-3xl md:text-4xl lg:text-5xl font-semibold text-terracotta">
+              the people
+            </p>
+            <p className="text-2xl md:text-3xl lg:text-4xl font-light text-foreground/90 tracking-wide">
+              who practice it together.
+            </p>
+          </div>
+          
+          {/* Decorative bottom element */}
+          <div className="flex items-center gap-2 mt-4">
+            <div className="w-3 h-3 rounded-full bg-cta/30" />
+            <div className="w-2 h-2 rounded-full bg-terracotta/50" />
+            <div className="w-1.5 h-1.5 rounded-full bg-cta/40" />
+          </div>
         </div>
       </div>
     </section>
