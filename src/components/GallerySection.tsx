@@ -46,29 +46,70 @@ const GallerySection = () => {
   const [swipeOffset, setSwipeOffset] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const touchStartX = useRef(0);
+  const touchStartY = useRef(0);
   const currentOffset = useRef(0);
+  const isHorizontalSwipe = useRef(false);
 
   // Handle touch/swipe
-  const handleTouchStart = (e: React.TouchEvent | React.MouseEvent) => {
+  const handleTouchStart = (e: React.TouchEvent) => {
+    const touch = e.touches[0];
+    touchStartX.current = touch.clientX;
+    touchStartY.current = touch.clientY;
+    currentOffset.current = swipeOffset;
+    isHorizontalSwipe.current = false;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    const touch = e.touches[0];
+    const diffX = touch.clientX - touchStartX.current;
+    const diffY = touch.clientY - touchStartY.current;
+    
+    // Determine swipe direction on first significant movement
+    if (!isDragging && !isHorizontalSwipe.current) {
+      if (Math.abs(diffX) > 10 && Math.abs(diffX) > Math.abs(diffY)) {
+        // Horizontal swipe detected
+        isHorizontalSwipe.current = true;
+        setIsDragging(true);
+      } else if (Math.abs(diffY) > 10) {
+        // Vertical scroll - don't interfere
+        return;
+      }
+    }
+    
+    if (isHorizontalSwipe.current) {
+      e.preventDefault(); // Prevent vertical scroll during horizontal swipe
+      const newOffset = currentOffset.current + diffX;
+      
+      // Limit the swipe range
+      const maxOffset = 200;
+      const minOffset = -600;
+      setSwipeOffset(Math.max(minOffset, Math.min(maxOffset, newOffset)));
+    }
+  };
+
+  const handleTouchEnd = () => {
+    setIsDragging(false);
+    isHorizontalSwipe.current = false;
+  };
+
+  // Mouse handlers for desktop
+  const handleMouseDown = (e: React.MouseEvent) => {
     setIsDragging(true);
-    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
-    touchStartX.current = clientX;
+    touchStartX.current = e.clientX;
     currentOffset.current = swipeOffset;
   };
 
-  const handleTouchMove = (e: React.TouchEvent | React.MouseEvent) => {
+  const handleMouseMove = (e: React.MouseEvent) => {
     if (!isDragging) return;
-    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
-    const diff = clientX - touchStartX.current;
+    const diff = e.clientX - touchStartX.current;
     const newOffset = currentOffset.current + diff;
     
-    // Limit the swipe range
     const maxOffset = 200;
     const minOffset = -600;
     setSwipeOffset(Math.max(minOffset, Math.min(maxOffset, newOffset)));
   };
 
-  const handleTouchEnd = () => {
+  const handleMouseUp = () => {
     setIsDragging(false);
   };
 
@@ -106,14 +147,14 @@ const GallerySection = () => {
     <section 
       id="gallery-section" 
       ref={containerRef}
-      className="py-12 md:py-16 bg-background overflow-hidden cursor-grab active:cursor-grabbing select-none"
+      className="py-12 md:py-16 bg-background overflow-hidden cursor-grab active:cursor-grabbing select-none touch-pan-y"
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
-      onMouseDown={handleTouchStart}
-      onMouseMove={handleTouchMove}
-      onMouseUp={handleTouchEnd}
-      onMouseLeave={handleTouchEnd}
+      onMouseDown={handleMouseDown}
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
+      onMouseLeave={handleMouseUp}
     >
       <div className="container-narrow mb-6">
         <h2 className="text-xl md:text-2xl font-medium text-center">
