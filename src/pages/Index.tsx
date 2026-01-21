@@ -7,11 +7,11 @@ import ProcessSection from "@/components/ProcessSection";
 import GallerySection from "@/components/GallerySection";
 import TestimonialsSection from "@/components/TestimonialsSection";
 import CraftsExpansionSection from "@/components/CraftsExpansionSection";
-import TrustSection from "@/components/TrustSection";
 import FAQSection from "@/components/FAQSection";
 import LocationSection from "@/components/LocationSection";
 import LanguagesSection from "@/components/LanguagesSection";
 import FinalCTASection from "@/components/FinalCTASection";
+import TrustSection from "@/components/TrustSection";
 
 const Index = () => {
   return (
@@ -30,13 +30,15 @@ const Index = () => {
       {/* Connect */}
       <TestimonialsSection />
       <CraftsExpansionSection />
-      <TrustSection />
       <FAQSection />
       <LocationSection />
       <LanguagesSection />
       
       {/* Join */}
       <FinalCTASection />
+      
+      {/* Trust - last before footer */}
+      <TrustSection />
       
       {/* Footer */}
       <footer className="py-6 px-6 text-center text-xs text-muted-foreground">
