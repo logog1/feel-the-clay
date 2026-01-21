@@ -29,7 +29,11 @@ const HeroSection = () => {
       <div className="container-narrow relative z-10">
         <div className="space-y-6 animate-fade-up">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-semibold leading-tight text-balance text-foreground drop-shadow-sm">
-            Rethinking pottery as community
+            Rethinking pottery as{" "}
+            <span className="relative inline-block">
+              community
+              <span className="absolute -bottom-1 left-0 w-full h-1 bg-cta rounded-full" />
+            </span>
           </h1>
           
           <p className="text-lg md:text-xl text-foreground/80 font-light max-w-sm drop-shadow-sm">
