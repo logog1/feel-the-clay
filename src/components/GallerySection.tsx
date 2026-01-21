@@ -1,4 +1,4 @@
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import workshop1 from "@/assets/workshop-1.jpg";
 import workshop3 from "@/assets/workshop-3.jpg";
 import workshop4 from "@/assets/workshop-4.jpg";
@@ -41,6 +41,36 @@ const GallerySection = () => {
   const row1Ref = useRef<HTMLDivElement>(null);
   const row2Ref = useRef<HTMLDivElement>(null);
   const row3Ref = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  
+  const [swipeOffset, setSwipeOffset] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const touchStartX = useRef(0);
+  const currentOffset = useRef(0);
+
+  // Handle touch/swipe
+  const handleTouchStart = (e: React.TouchEvent | React.MouseEvent) => {
+    setIsDragging(true);
+    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+    touchStartX.current = clientX;
+    currentOffset.current = swipeOffset;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent | React.MouseEvent) => {
+    if (!isDragging) return;
+    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+    const diff = clientX - touchStartX.current;
+    const newOffset = currentOffset.current + diff;
+    
+    // Limit the swipe range
+    const maxOffset = 200;
+    const minOffset = -600;
+    setSwipeOffset(Math.max(minOffset, Math.min(maxOffset, newOffset)));
+  };
+
+  const handleTouchEnd = () => {
+    setIsDragging(false);
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -57,23 +87,34 @@ const GallerySection = () => {
         const progress = (scrollY + windowHeight - sectionTop) / (sectionHeight + windowHeight);
         
         if (row1Ref.current) {
-          row1Ref.current.style.transform = `translateX(${-progress * 50}px)`;
+          row1Ref.current.style.transform = `translateX(${-progress * 50 + swipeOffset}px)`;
         }
         if (row2Ref.current) {
-          row2Ref.current.style.transform = `translateX(${progress * 80}px)`;
+          row2Ref.current.style.transform = `translateX(${progress * 80 + swipeOffset * 0.8}px)`;
         }
         if (row3Ref.current) {
-          row3Ref.current.style.transform = `translateX(${-progress * 30}px)`;
+          row3Ref.current.style.transform = `translateX(${-progress * 30 + swipeOffset * 1.2}px)`;
         }
       }
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll(); // Initial call to set positions
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
+  }, [swipeOffset]);
   return (
-    <section id="gallery-section" className="py-12 md:py-16 bg-background overflow-hidden">
+    <section 
+      id="gallery-section" 
+      ref={containerRef}
+      className="py-12 md:py-16 bg-background overflow-hidden cursor-grab active:cursor-grabbing select-none"
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+      onMouseDown={handleTouchStart}
+      onMouseMove={handleTouchMove}
+      onMouseUp={handleTouchEnd}
+      onMouseLeave={handleTouchEnd}
+    >
       <div className="container-narrow mb-6">
         <h2 className="text-xl md:text-2xl font-medium text-center">
           Moments
@@ -86,7 +127,7 @@ const GallerySection = () => {
         <div className="overflow-hidden">
           <div 
             ref={row1Ref}
-            className="flex gap-3 md:gap-4 pl-4 md:pl-8 transition-transform duration-100"
+            className={`flex gap-3 md:gap-4 pl-4 md:pl-8 ${isDragging ? '' : 'transition-transform duration-300'}`}
           >
             {row1.map((image, index) => (
               <div 
@@ -96,8 +137,9 @@ const GallerySection = () => {
                 <img 
                   src={image.src} 
                   alt={image.alt}
-                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-500 pointer-events-none"
                   loading="lazy"
+                  draggable={false}
                 />
               </div>
             ))}
@@ -108,7 +150,7 @@ const GallerySection = () => {
         <div className="overflow-hidden">
           <div 
             ref={row2Ref}
-            className="flex gap-3 md:gap-4 pl-12 md:pl-24 transition-transform duration-100"
+            className={`flex gap-3 md:gap-4 pl-12 md:pl-24 ${isDragging ? '' : 'transition-transform duration-300'}`}
           >
             {row2.map((image, index) => (
               <div 
@@ -118,8 +160,9 @@ const GallerySection = () => {
                 <img 
                   src={image.src} 
                   alt={image.alt}
-                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-500 pointer-events-none"
                   loading="lazy"
+                  draggable={false}
                 />
               </div>
             ))}
@@ -130,7 +173,7 @@ const GallerySection = () => {
         <div className="overflow-hidden">
           <div 
             ref={row3Ref}
-            className="flex gap-3 md:gap-4 pl-8 md:pl-16 transition-transform duration-100"
+            className={`flex gap-3 md:gap-4 pl-8 md:pl-16 ${isDragging ? '' : 'transition-transform duration-300'}`}
           >
             {row3.map((image, index) => (
               <div 
@@ -140,8 +183,9 @@ const GallerySection = () => {
                 <img 
                   src={image.src} 
                   alt={image.alt}
-                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-500 pointer-events-none"
                   loading="lazy"
+                  draggable={false}
                 />
               </div>
             ))}
@@ -151,7 +195,7 @@ const GallerySection = () => {
       
       {/* Mobile swipe hint */}
       <div className="md:hidden mt-4 text-center">
-        <p className="text-xs text-muted-foreground">Scroll to explore</p>
+        <p className="text-xs text-muted-foreground">Swipe to explore</p>
       </div>
     </section>
   );
