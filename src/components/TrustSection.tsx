@@ -25,7 +25,7 @@ const TrustSection = () => {
             {partners.map((partner, index) => (
               <div 
                 key={index}
-                className="h-20 md:h-32 grayscale opacity-70 hover:grayscale-0 hover:opacity-100 transition-all duration-300"
+                className="h-24 md:h-40 grayscale opacity-70 hover:grayscale-0 hover:opacity-100 transition-all duration-300"
               >
                 <img 
                   src={partner.src}
