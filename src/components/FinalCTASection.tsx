@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 
 const FinalCTASection = () => {
   return (
-    <section className="py-20 md:py-28 bg-sand-dark/30">
+    <section id="cta" className="py-20 md:py-28 bg-sand-dark/30">
       <div className="container-narrow text-center">
         <div className="space-y-8">
           <h2 className="text-xl md:text-2xl font-light">
