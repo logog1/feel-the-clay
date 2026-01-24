@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
+import logo from "@/assets/logo.png";
 
 const navLinks = [
   { label: "Accueil", href: "#hero" },
@@ -47,9 +48,7 @@ const Header = () => {
             }}
             className="flex items-center"
           >
-            <div className="w-10 h-10 bg-cta/20 border border-cta rounded-md flex items-center justify-center">
-              <span className="text-cta font-bold text-sm">T</span>
-            </div>
+            <img src={logo} alt="Terraria Logo" className="h-10 w-auto" />
           </a>
 
           {/* Desktop Navigation */}
