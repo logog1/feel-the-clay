@@ -48,7 +48,7 @@ const Header = () => {
             }}
             className="flex items-center"
           >
-            <img src={logo} alt="Terraria Logo" className="h-10 w-auto" />
+            <img src={logo} alt="Terraria Logo" className="h-10 w-10 rounded-full object-cover" />
           </a>
 
           {/* Desktop Navigation */}
