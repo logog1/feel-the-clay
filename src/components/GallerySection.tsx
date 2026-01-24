@@ -155,7 +155,7 @@ const GallerySection = () => {
   }, [swipeOffset]);
   return (
     <section 
-      id="gallery-section" 
+      id="gallery"
       ref={containerRef}
       className="py-12 md:py-16 bg-background overflow-hidden cursor-grab active:cursor-grabbing select-none touch-pan-y"
       onTouchStart={handleTouchStart}

@@ -6,7 +6,7 @@ const ExperienceSection = () => {
   ];
 
   return (
-    <section className="py-16 md:py-24 bg-gradient-to-b from-transparent via-sand/30 to-transparent">
+    <section id="experience" className="py-16 md:py-24 bg-gradient-to-b from-transparent via-sand/30 to-transparent">
       <div className="container-narrow">
         {/* Header with artistic styling */}
         <div className="mb-12 md:mb-16">

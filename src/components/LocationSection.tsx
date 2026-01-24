@@ -2,7 +2,7 @@ import { MapPin } from "lucide-react";
 
 const LocationSection = () => {
   return (
-    <section className="py-12 md:py-16 bg-sand-light">
+    <section id="location" className="py-12 md:py-16 bg-sand-light">
       <div className="container-narrow">
         <div className="space-y-6">
           <h2 className="text-xl md:text-2xl font-medium">
