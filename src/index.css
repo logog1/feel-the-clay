@@ -144,4 +144,34 @@
       transform: translateY(-10px);
     }
   }
+
+  @keyframes scrollLeft {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+
+  @keyframes scrollRight {
+    0% {
+      transform: translateX(-50%);
+    }
+    100% {
+      transform: translateX(0);
+    }
+  }
+
+  .animate-scroll-left {
+    animation: scrollLeft 30s linear infinite;
+  }
+
+  .animate-scroll-right {
+    animation: scrollRight 25s linear infinite;
+  }
+
+  .animate-scroll-left-slow {
+    animation: scrollLeft 40s linear infinite;
+  }
 }
