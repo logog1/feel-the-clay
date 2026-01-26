@@ -13,7 +13,6 @@ import workshop13 from "@/assets/workshop-13.jpg";
 import workshop14 from "@/assets/workshop-14.jpg";
 import workshop15 from "@/assets/workshop-15.jpg";
 import workshop16 from "@/assets/workshop-16.jpg";
-import workshop17 from "@/assets/workshop-17.jpg";
 import workshop18 from "@/assets/workshop-18.jpg";
 import workshop19 from "@/assets/workshop-19.jpg";
 import workshop20 from "@/assets/workshop-20.jpg";
@@ -23,7 +22,6 @@ const row1 = [
   { src: workshop1, alt: "Workshop participant shaping clay" },
   { src: workshop4, alt: "Creating pottery together" },
   { src: workshop9, alt: "Hands shaping clay pieces" },
-  { src: workshop17, alt: "Participant showing off clay sculpture" },
   { src: workshop13, alt: "Clay sculpture on pottery wheel" },
   { src: workshop14, alt: "Group workshop in the studio" },
 ];
