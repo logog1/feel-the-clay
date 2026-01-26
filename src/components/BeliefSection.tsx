@@ -1,6 +1,6 @@
 const BeliefSection = () => {
   return (
-    <section className="py-20 md:py-32 relative">
+    <section className="py-12 md:py-32 relative">
       {/* Large decorative background text */}
       <div className="absolute inset-0 flex items-center justify-center overflow-hidden pointer-events-none select-none">
         <span className="text-[8rem] md:text-[16rem] font-bold text-terracotta/[0.03] leading-none tracking-tighter">

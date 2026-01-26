@@ -2,7 +2,7 @@ import heroBg from "@/assets/hero-bg.jpg";
 
 const HeroSection = () => {
   return (
-    <section id="hero" className="min-h-screen flex flex-col justify-end md:justify-center section-padding pb-24 md:pb-0 pt-16 relative overflow-hidden">
+    <section id="hero" className="min-h-[85vh] md:min-h-screen flex flex-col justify-end md:justify-center section-padding pb-16 md:pb-0 pt-16 relative overflow-hidden">
       {/* Background image - full contain on mobile, cover on desktop */}
       <div 
         className="absolute inset-0 md:bg-cover bg-contain bg-no-repeat md:bg-center bg-top"
