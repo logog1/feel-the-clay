@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from "react";
+import { useRef } from "react";
 import workshop1 from "@/assets/workshop-1.jpg";
 import workshop3 from "@/assets/workshop-3.jpg";
 import workshop4 from "@/assets/workshop-4.jpg";
@@ -48,123 +48,18 @@ const row3 = [
 ];
 
 const GallerySection = () => {
-  const row1Ref = useRef<HTMLDivElement>(null);
-  const row2Ref = useRef<HTMLDivElement>(null);
-  const row3Ref = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   
-  const [swipeOffset, setSwipeOffset] = useState(0);
-  const [isDragging, setIsDragging] = useState(false);
-  const touchStartX = useRef(0);
-  const touchStartY = useRef(0);
-  const currentOffset = useRef(0);
-  const isHorizontalSwipe = useRef(false);
+  // Duplicate images for seamless infinite loop
+  const row1Doubled = [...row1, ...row1];
+  const row2Doubled = [...row2, ...row2];
+  const row3Doubled = [...row3, ...row3];
 
-  // Handle touch/swipe
-  const handleTouchStart = (e: React.TouchEvent) => {
-    const touch = e.touches[0];
-    touchStartX.current = touch.clientX;
-    touchStartY.current = touch.clientY;
-    currentOffset.current = swipeOffset;
-    isHorizontalSwipe.current = false;
-  };
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    const touch = e.touches[0];
-    const diffX = touch.clientX - touchStartX.current;
-    const diffY = touch.clientY - touchStartY.current;
-    
-    // Determine swipe direction on first significant movement
-    if (!isDragging && !isHorizontalSwipe.current) {
-      if (Math.abs(diffX) > 10 && Math.abs(diffX) > Math.abs(diffY)) {
-        // Horizontal swipe detected
-        isHorizontalSwipe.current = true;
-        setIsDragging(true);
-      } else if (Math.abs(diffY) > 10) {
-        // Vertical scroll - don't interfere
-        return;
-      }
-    }
-    
-    if (isHorizontalSwipe.current) {
-      e.preventDefault(); // Prevent vertical scroll during horizontal swipe
-      const newOffset = currentOffset.current + diffX;
-      
-      // Limit the swipe range
-      const maxOffset = 200;
-      const minOffset = -600;
-      setSwipeOffset(Math.max(minOffset, Math.min(maxOffset, newOffset)));
-    }
-  };
-
-  const handleTouchEnd = () => {
-    setIsDragging(false);
-    isHorizontalSwipe.current = false;
-  };
-
-  // Mouse handlers for desktop
-  const handleMouseDown = (e: React.MouseEvent) => {
-    setIsDragging(true);
-    touchStartX.current = e.clientX;
-    currentOffset.current = swipeOffset;
-  };
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isDragging) return;
-    const diff = e.clientX - touchStartX.current;
-    const newOffset = currentOffset.current + diff;
-    
-    const maxOffset = 200;
-    const minOffset = -600;
-    setSwipeOffset(Math.max(minOffset, Math.min(maxOffset, newOffset)));
-  };
-
-  const handleMouseUp = () => {
-    setIsDragging(false);
-  };
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrollY = window.scrollY;
-      const section = document.getElementById('gallery-section');
-      if (!section) return;
-      
-      const sectionTop = section.offsetTop;
-      const sectionHeight = section.offsetHeight;
-      const windowHeight = window.innerHeight;
-      
-      // Check if section is in view
-      if (scrollY + windowHeight > sectionTop && scrollY < sectionTop + sectionHeight) {
-        const progress = (scrollY + windowHeight - sectionTop) / (sectionHeight + windowHeight);
-        
-        if (row1Ref.current) {
-          row1Ref.current.style.transform = `translateX(${-progress * 50 + swipeOffset}px)`;
-        }
-        if (row2Ref.current) {
-          row2Ref.current.style.transform = `translateX(${progress * 80 + swipeOffset * 0.8}px)`;
-        }
-        if (row3Ref.current) {
-          row3Ref.current.style.transform = `translateX(${-progress * 30 + swipeOffset * 1.2}px)`;
-        }
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll(); // Initial call to set positions
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [swipeOffset]);
   return (
     <section 
       id="gallery"
       ref={containerRef}
-      className="py-12 md:py-16 bg-background overflow-hidden cursor-grab active:cursor-grabbing select-none touch-pan-y"
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleTouchEnd}
-      onMouseDown={handleMouseDown}
-      onMouseMove={handleMouseMove}
-      onMouseUp={handleMouseUp}
-      onMouseLeave={handleMouseUp}
+      className="py-12 md:py-16 bg-background overflow-hidden select-none"
     >
       <div className="container-narrow mb-6">
         <h2 className="text-xl md:text-2xl font-medium text-center">
@@ -172,18 +67,15 @@ const GallerySection = () => {
         </h2>
       </div>
       
-      {/* Brick-style horizontal scrolling rows */}
+      {/* Brick-style infinite scrolling rows */}
       <div className="space-y-3 md:space-y-4">
-        {/* Row 1 - offset left */}
+        {/* Row 1 - scrolls left */}
         <div className="overflow-hidden">
-          <div 
-            ref={row1Ref}
-            className={`flex gap-3 md:gap-4 pl-4 md:pl-8 ${isDragging ? '' : 'transition-transform duration-300'}`}
-          >
-            {row1.map((image, index) => (
+          <div className="flex gap-3 md:gap-4 animate-scroll-left">
+            {row1Doubled.map((image, index) => (
               <div 
                 key={index}
-                className="flex-shrink-0 w-48 md:w-72 aspect-[4/3] overflow-hidden rounded-xl bg-sand-dark/20"
+                className="flex-shrink-0 w-48 md:w-72 aspect-[4/3] overflow-hidden rounded-xl bg-secondary/20"
               >
                 <img 
                   src={image.src} 
@@ -197,16 +89,13 @@ const GallerySection = () => {
           </div>
         </div>
 
-        {/* Row 2 - offset right, different speed */}
+        {/* Row 2 - scrolls right (opposite direction) */}
         <div className="overflow-hidden">
-          <div 
-            ref={row2Ref}
-            className={`flex gap-3 md:gap-4 pl-12 md:pl-24 ${isDragging ? '' : 'transition-transform duration-300'}`}
-          >
-            {row2.map((image, index) => (
+          <div className="flex gap-3 md:gap-4 animate-scroll-right">
+            {row2Doubled.map((image, index) => (
               <div 
                 key={index}
-                className="flex-shrink-0 w-56 md:w-80 aspect-[4/3] overflow-hidden rounded-xl bg-sand-dark/20"
+                className="flex-shrink-0 w-56 md:w-80 aspect-[4/3] overflow-hidden rounded-xl bg-secondary/20"
               >
                 <img 
                   src={image.src} 
@@ -220,16 +109,13 @@ const GallerySection = () => {
           </div>
         </div>
 
-        {/* Row 3 - offset less, slowest */}
+        {/* Row 3 - scrolls left (slower) */}
         <div className="overflow-hidden">
-          <div 
-            ref={row3Ref}
-            className={`flex gap-3 md:gap-4 pl-8 md:pl-16 ${isDragging ? '' : 'transition-transform duration-300'}`}
-          >
-            {row3.map((image, index) => (
+          <div className="flex gap-3 md:gap-4 animate-scroll-left-slow">
+            {row3Doubled.map((image, index) => (
               <div 
                 key={index}
-                className="flex-shrink-0 w-44 md:w-64 aspect-[4/3] overflow-hidden rounded-xl bg-sand-dark/20"
+                className="flex-shrink-0 w-44 md:w-64 aspect-[4/3] overflow-hidden rounded-xl bg-secondary/20"
               >
                 <img 
                   src={image.src} 
@@ -242,11 +128,6 @@ const GallerySection = () => {
             ))}
           </div>
         </div>
-      </div>
-      
-      {/* Mobile swipe hint */}
-      <div className="md:hidden mt-4 text-center">
-        <p className="text-xs text-muted-foreground">Swipe to explore</p>
       </div>
     </section>
   );
