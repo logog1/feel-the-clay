@@ -13,6 +13,7 @@ import LocationSection from "@/components/LocationSection";
 import LanguagesSection from "@/components/LanguagesSection";
 import FinalCTASection from "@/components/FinalCTASection";
 import TrustSection from "@/components/TrustSection";
+import AnimatedSection from "@/components/AnimatedSection";
 
 const Index = () => {
   return (
@@ -21,27 +22,53 @@ const Index = () => {
       
       {/* Learn */}
       <HeroSection />
-      <BeliefSection />
-      <AboutSection />
+      <AnimatedSection>
+        <BeliefSection />
+      </AnimatedSection>
+      <AnimatedSection>
+        <AboutSection />
+      </AnimatedSection>
       
       {/* Feel */}
-      <ExperienceSection />
-      <DetailsSection />
-      <ProcessSection />
-      <GallerySection />
+      <AnimatedSection>
+        <ExperienceSection />
+      </AnimatedSection>
+      <AnimatedSection>
+        <DetailsSection />
+      </AnimatedSection>
+      <AnimatedSection>
+        <ProcessSection />
+      </AnimatedSection>
+      <AnimatedSection>
+        <GallerySection />
+      </AnimatedSection>
       
       {/* Connect */}
-      <TestimonialsSection />
-      <CraftsExpansionSection />
-      <FAQSection />
-      <LocationSection />
-      <LanguagesSection />
+      <AnimatedSection>
+        <TestimonialsSection />
+      </AnimatedSection>
+      <AnimatedSection>
+        <CraftsExpansionSection />
+      </AnimatedSection>
+      <AnimatedSection>
+        <FAQSection />
+      </AnimatedSection>
+      <AnimatedSection>
+        <LocationSection />
+      </AnimatedSection>
+      <AnimatedSection>
+        <LanguagesSection />
+      </AnimatedSection>
       
       {/* Join */}
-      <FinalCTASection />
+      <AnimatedSection>
+        <FinalCTASection />
+      </AnimatedSection>
       
       {/* Trust - last before footer */}
-      <TrustSection />
+      <AnimatedSection>
+        <TrustSection />
+      </AnimatedSection>
       
       {/* Footer */}
       <footer className="py-6 px-6 text-center text-xs text-muted-foreground">
