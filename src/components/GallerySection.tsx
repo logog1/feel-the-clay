@@ -18,101 +18,75 @@ import workshop18 from "@/assets/workshop-18.jpg";
 import workshop19 from "@/assets/workshop-19.jpg";
 import workshop20 from "@/assets/workshop-20.jpg";
 import workshop21 from "@/assets/workshop-21.jpg";
-const row1 = [{
-  src: workshop1,
-  alt: "Workshop participant shaping clay"
-}, {
-  src: workshop4,
-  alt: "Creating pottery together"
-}, {
-  src: workshop9,
-  alt: "Hands shaping clay pieces"
-}, {
-  src: workshop17,
-  alt: "Participant showing off clay sculpture"
-}, {
-  src: workshop13,
-  alt: "Clay sculpture on pottery wheel"
-}, {
-  src: workshop14,
-  alt: "Group workshop in the studio"
-}];
-const row2 = [{
-  src: workshop3,
-  alt: "Group pottery session"
-}, {
-  src: workshop18,
-  alt: "Artist presenting handmade mug"
-}, {
-  src: workshop5,
-  alt: "Handbuilding clay pieces"
-}, {
-  src: workshop10,
-  alt: "Artist rolling clay"
-}, {
-  src: workshop19,
-  alt: "Community workshop gathering"
-}, {
-  src: workshop12,
-  alt: "Friends enjoying the workshop"
-}, {
-  src: workshop15,
-  alt: "Friends showing off their creations"
-}];
-const row3 = [{
-  src: workshop6,
-  alt: "Coil building technique"
-}, {
-  src: workshop20,
-  alt: "Friends with their clay creations"
-}, {
-  src: workshop8,
-  alt: "Happy workshop participants"
-}, {
-  src: workshop11,
-  alt: "Pottery tools on canvas"
-}, {
-  src: workshop21,
-  alt: "Handmade clay pieces closeup"
-}, {
-  src: workshop16,
-  alt: "Group photo at the workshop"
-}];
-const GalleryRow = ({
-  images,
-  animationClass,
-  imageWidth
-}: {
-  images: typeof row1;
-  animationClass: string;
+
+const row1 = [
+  { src: workshop1, alt: "Workshop participant shaping clay" },
+  { src: workshop4, alt: "Creating pottery together" },
+  { src: workshop9, alt: "Hands shaping clay pieces" },
+  { src: workshop17, alt: "Participant showing off clay sculpture" },
+  { src: workshop13, alt: "Clay sculpture on pottery wheel" },
+  { src: workshop14, alt: "Group workshop in the studio" },
+];
+
+const row2 = [
+  { src: workshop3, alt: "Group pottery session" },
+  { src: workshop18, alt: "Artist presenting handmade mug" },
+  { src: workshop5, alt: "Handbuilding clay pieces" },
+  { src: workshop10, alt: "Artist rolling clay" },
+  { src: workshop19, alt: "Community workshop gathering" },
+  { src: workshop12, alt: "Friends enjoying the workshop" },
+  { src: workshop15, alt: "Friends showing off their creations" },
+];
+
+const row3 = [
+  { src: workshop6, alt: "Coil building technique" },
+  { src: workshop20, alt: "Friends with their clay creations" },
+  { src: workshop8, alt: "Happy workshop participants" },
+  { src: workshop11, alt: "Pottery tools on canvas" },
+  { src: workshop21, alt: "Handmade clay pieces closeup" },
+  { src: workshop16, alt: "Group photo at the workshop" },
+];
+
+const GalleryRow = ({ 
+  images, 
+  animationClass, 
+  imageWidth 
+}: { 
+  images: typeof row1; 
+  animationClass: string; 
   imageWidth: string;
 }) => {
   const rowRef = useRef<HTMLDivElement>(null);
   const isDragging = useRef(false);
   const startX = useRef(0);
   const scrollLeft = useRef(0);
+
   const handleTouchStart = (e: React.TouchEvent) => {
     isDragging.current = true;
     startX.current = e.touches[0].pageX;
     scrollLeft.current = rowRef.current?.scrollLeft || 0;
     rowRef.current?.style.setProperty('animation-play-state', 'paused');
   };
+
   const handleTouchMove = (e: React.TouchEvent) => {
     if (!isDragging.current || !rowRef.current) return;
     const x = e.touches[0].pageX;
     const walk = (startX.current - x) * 1.5;
     rowRef.current.scrollLeft = scrollLeft.current + walk;
   };
+
   const handleTouchEnd = () => {
     isDragging.current = false;
     rowRef.current?.style.setProperty('animation-play-state', 'running');
   };
+
   const handleMouseDown = (e: React.MouseEvent) => {
     isDragging.current = true;
     startX.current = e.pageX;
     scrollLeft.current = rowRef.current?.scrollLeft || 0;
     rowRef.current?.style.setProperty('animation-play-state', 'paused');
   };
+
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!isDragging.current || !rowRef.current) return;
     e.preventDefault();
@@ -120,19 +94,51 @@ const GalleryRow = ({
     const walk = (startX.current - x) * 1.5;
     rowRef.current.scrollLeft = scrollLeft.current + walk;
   };
+
   const handleMouseUp = () => {
     isDragging.current = false;
     rowRef.current?.style.setProperty('animation-play-state', 'running');
   };
+
   const doubled = [...images, ...images];
-  return <div className="overflow-hidden cursor-grab active:cursor-grabbing" onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd} onMouseDown={handleMouseDown} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp}>
+
+  return (
+    <div 
+      className="overflow-hidden cursor-grab active:cursor-grabbing"
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+      onMouseDown={handleMouseDown}
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
+      onMouseLeave={handleMouseUp}
+    >
       <div ref={rowRef} className={`flex gap-3 md:gap-4 ${animationClass}`}>
-        {doubled.map((image, index) => {})}
+        {doubled.map((image, index) => (
+          <div 
+            key={index}
+            className={`flex-shrink-0 ${imageWidth} aspect-[4/3] overflow-hidden rounded-xl bg-secondary/20`}
+          >
+            <img 
+              src={image.src} 
+              alt={image.alt}
+              className="w-full h-full object-cover hover:scale-105 transition-transform duration-500 pointer-events-none"
+              loading="lazy"
+              draggable={false}
+            />
+          </div>
+        ))}
       </div>
-    </div>;
+    </div>
+  );
 };
+
 const GallerySection = () => {
-  return <section id="gallery" className="py-12 md:py-16 bg-background overflow-hidden select-none">
+  return (
+    <section 
+      id="gallery"
+      className="py-12 md:py-16 bg-background overflow-hidden select-none"
+    >
       <div className="container-narrow mb-6">
         <h2 className="text-xl md:text-2xl font-medium text-center">
           Moments
@@ -144,6 +150,8 @@ const GallerySection = () => {
         <GalleryRow images={row2} animationClass="animate-scroll-right" imageWidth="w-56 md:w-80" />
         <GalleryRow images={row3} animationClass="animate-scroll-left-slow" imageWidth="w-44 md:w-64" />
       </div>
-    </section>;
+    </section>
+  );
 };
+
 export default GallerySection;
