@@ -47,18 +47,96 @@ const row3 = [
   { src: workshop16, alt: "Group photo at the workshop" },
 ];
 
-const GallerySection = () => {
-  const containerRef = useRef<HTMLDivElement>(null);
-  
-  // Duplicate images for seamless infinite loop
-  const row1Doubled = [...row1, ...row1];
-  const row2Doubled = [...row2, ...row2];
-  const row3Doubled = [...row3, ...row3];
+const GalleryRow = ({ 
+  images, 
+  animationClass, 
+  imageWidth 
+}: { 
+  images: typeof row1; 
+  animationClass: string; 
+  imageWidth: string;
+}) => {
+  const rowRef = useRef<HTMLDivElement>(null);
+  const isDragging = useRef(false);
+  const startX = useRef(0);
+  const scrollLeft = useRef(0);
 
+  const handleTouchStart = (e: React.TouchEvent) => {
+    isDragging.current = true;
+    startX.current = e.touches[0].pageX;
+    scrollLeft.current = rowRef.current?.scrollLeft || 0;
+    rowRef.current?.style.setProperty('animation-play-state', 'paused');
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!isDragging.current || !rowRef.current) return;
+    const x = e.touches[0].pageX;
+    const walk = (startX.current - x) * 1.5;
+    rowRef.current.scrollLeft = scrollLeft.current + walk;
+  };
+
+  const handleTouchEnd = () => {
+    isDragging.current = false;
+    rowRef.current?.style.setProperty('animation-play-state', 'running');
+  };
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    isDragging.current = true;
+    startX.current = e.pageX;
+    scrollLeft.current = rowRef.current?.scrollLeft || 0;
+    rowRef.current?.style.setProperty('animation-play-state', 'paused');
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging.current || !rowRef.current) return;
+    e.preventDefault();
+    const x = e.pageX;
+    const walk = (startX.current - x) * 1.5;
+    rowRef.current.scrollLeft = scrollLeft.current + walk;
+  };
+
+  const handleMouseUp = () => {
+    isDragging.current = false;
+    rowRef.current?.style.setProperty('animation-play-state', 'running');
+  };
+
+  const doubled = [...images, ...images];
+
+  return (
+    <div 
+      className="overflow-hidden cursor-grab active:cursor-grabbing"
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+      onMouseDown={handleMouseDown}
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
+      onMouseLeave={handleMouseUp}
+    >
+      <div ref={rowRef} className={`flex gap-3 md:gap-4 ${animationClass}`}>
+        {doubled.map((image, index) => (
+          <div 
+            key={index}
+            className={`flex-shrink-0 ${imageWidth} aspect-[4/3] overflow-hidden rounded-xl bg-secondary/20`}
+          >
+            <img 
+              src={image.src} 
+              alt={image.alt}
+              className="w-full h-full object-cover hover:scale-105 transition-transform duration-500 pointer-events-none"
+              loading="lazy"
+              draggable={false}
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+const GallerySection = () => {
   return (
     <section 
       id="gallery"
-      ref={containerRef}
       className="py-12 md:py-16 bg-background overflow-hidden select-none"
     >
       <div className="container-narrow mb-6">
@@ -67,67 +145,10 @@ const GallerySection = () => {
         </h2>
       </div>
       
-      {/* Brick-style infinite scrolling rows */}
       <div className="space-y-3 md:space-y-4">
-        {/* Row 1 - scrolls left */}
-        <div className="overflow-hidden">
-          <div className="flex gap-3 md:gap-4 animate-scroll-left">
-            {row1Doubled.map((image, index) => (
-              <div 
-                key={index}
-                className="flex-shrink-0 w-48 md:w-72 aspect-[4/3] overflow-hidden rounded-xl bg-secondary/20"
-              >
-                <img 
-                  src={image.src} 
-                  alt={image.alt}
-                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-500 pointer-events-none"
-                  loading="lazy"
-                  draggable={false}
-                />
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Row 2 - scrolls right (opposite direction) */}
-        <div className="overflow-hidden">
-          <div className="flex gap-3 md:gap-4 animate-scroll-right">
-            {row2Doubled.map((image, index) => (
-              <div 
-                key={index}
-                className="flex-shrink-0 w-56 md:w-80 aspect-[4/3] overflow-hidden rounded-xl bg-secondary/20"
-              >
-                <img 
-                  src={image.src} 
-                  alt={image.alt}
-                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-500 pointer-events-none"
-                  loading="lazy"
-                  draggable={false}
-                />
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Row 3 - scrolls left (slower) */}
-        <div className="overflow-hidden">
-          <div className="flex gap-3 md:gap-4 animate-scroll-left-slow">
-            {row3Doubled.map((image, index) => (
-              <div 
-                key={index}
-                className="flex-shrink-0 w-44 md:w-64 aspect-[4/3] overflow-hidden rounded-xl bg-secondary/20"
-              >
-                <img 
-                  src={image.src} 
-                  alt={image.alt}
-                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-500 pointer-events-none"
-                  loading="lazy"
-                  draggable={false}
-                />
-              </div>
-            ))}
-          </div>
-        </div>
+        <GalleryRow images={row1} animationClass="animate-scroll-left" imageWidth="w-48 md:w-72" />
+        <GalleryRow images={row2} animationClass="animate-scroll-right" imageWidth="w-56 md:w-80" />
+        <GalleryRow images={row3} animationClass="animate-scroll-left-slow" imageWidth="w-44 md:w-64" />
       </div>
     </section>
   );
