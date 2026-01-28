@@ -33,8 +33,8 @@ const Header = () => {
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
         isScrolled
-          ? "bg-terracotta/80 backdrop-blur-md shadow-lg"
-          : "bg-transparent"
+          ? "bg-white/95 backdrop-blur-md shadow-md"
+          : "bg-white/80 backdrop-blur-sm"
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -61,7 +61,7 @@ const Header = () => {
                   e.preventDefault();
                   scrollToSection(link.href);
                 }}
-                className="text-white/80 hover:text-white transition-colors text-sm font-medium"
+                className="text-foreground/70 hover:text-foreground transition-colors text-sm font-medium"
               >
                 {link.label}
               </a>
@@ -81,7 +81,7 @@ const Header = () => {
           {/* Mobile Menu Button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden text-white p-2"
+            className="md:hidden text-foreground p-2"
             aria-label="Toggle menu"
           >
             {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -90,7 +90,7 @@ const Header = () => {
 
         {/* Mobile Navigation */}
         {mobileMenuOpen && (
-          <nav className="md:hidden py-4 border-t border-white/10">
+          <nav className="md:hidden py-4 border-t border-foreground/10">
             <div className="flex flex-col gap-4">
               {navLinks.map((link) => (
                 <a
@@ -100,7 +100,7 @@ const Header = () => {
                     e.preventDefault();
                     scrollToSection(link.href);
                   }}
-                  className="text-white/80 hover:text-white transition-colors text-sm font-medium py-2"
+                  className="text-foreground/70 hover:text-foreground transition-colors text-sm font-medium py-2"
                 >
                   {link.label}
                 </a>
