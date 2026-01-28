@@ -12,10 +12,10 @@ const HeroSection = () => {
       />
       
       {/* Fill the remaining space below the image on mobile */}
-      <div className="absolute inset-0 md:hidden bg-gradient-to-b from-transparent via-transparent to-white" style={{ top: '60%' }} />
+      <div className="absolute inset-0 md:hidden bg-gradient-to-b from-transparent via-transparent to-background" style={{ top: '60%' }} />
       
       {/* Gradient overlay with warmer tones */}
-      <div className="absolute inset-0 bg-gradient-to-b from-white/30 via-white/20 to-white/90" />
+      <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/30 to-background/80" />
       
       {/* Decorative floating elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">

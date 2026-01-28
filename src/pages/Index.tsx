@@ -14,19 +14,14 @@ import LanguagesSection from "@/components/LanguagesSection";
 import FinalCTASection from "@/components/FinalCTASection";
 import TrustSection from "@/components/TrustSection";
 import AnimatedSection from "@/components/AnimatedSection";
-import ImageShowcase from "@/components/ImageShowcase";
-import FeaturedImageSection from "@/components/FeaturedImageSection";
 
 const Index = () => {
   return (
-    <main className="min-h-screen bg-white">
+    <main className="min-h-screen">
       <Header />
       
       {/* Learn */}
       <HeroSection />
-      <AnimatedSection>
-        <ImageShowcase />
-      </AnimatedSection>
       <AnimatedSection>
         <BeliefSection />
       </AnimatedSection>
@@ -37,9 +32,6 @@ const Index = () => {
       {/* Feel */}
       <AnimatedSection>
         <ExperienceSection />
-      </AnimatedSection>
-      <AnimatedSection>
-        <FeaturedImageSection />
       </AnimatedSection>
       <AnimatedSection>
         <DetailsSection />
@@ -79,7 +71,7 @@ const Index = () => {
       </AnimatedSection>
       
       {/* Footer */}
-      <footer className="py-6 px-6 text-center text-xs text-muted-foreground bg-white">
+      <footer className="py-6 px-6 text-center text-xs text-muted-foreground">
         <p>Made with care and clay</p>
       </footer>
     </main>
