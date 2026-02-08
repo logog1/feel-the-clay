@@ -55,13 +55,7 @@ const Index = () => {
         <CraftsExpansionSection />
       </AnimatedSection>
       <AnimatedSection>
-        <TrustSection />
-      </AnimatedSection>
-      <AnimatedSection>
         <FAQSection />
-      </AnimatedSection>
-      <AnimatedSection>
-        <LocationSection />
       </AnimatedSection>
       <AnimatedSection>
         <LanguagesSection />
@@ -70,6 +64,14 @@ const Index = () => {
       {/* JOIN - Clear action */}
       <AnimatedSection>
         <FinalCTASection />
+      </AnimatedSection>
+      
+      {/* CLOSING - Location + Trust (credibility last) */}
+      <AnimatedSection>
+        <LocationSection />
+      </AnimatedSection>
+      <AnimatedSection>
+        <TrustSection />
       </AnimatedSection>
       
       {/* Footer */}
