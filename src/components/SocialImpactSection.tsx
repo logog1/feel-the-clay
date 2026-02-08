@@ -19,11 +19,12 @@ interface MetricCardProps {
   value: number;
   suffix?: string;
   label: string;
+  subtitle?: string;
   delay: number;
   isVisible: boolean;
 }
 
-const MetricCard = ({ icon, value, suffix = "", label, delay, isVisible }: MetricCardProps) => {
+const MetricCard = ({ icon, value, suffix = "", label, subtitle, delay, isVisible }: MetricCardProps) => {
   const count = useCountAnimation(value, 2000, isVisible);
   
   return (
@@ -41,6 +42,9 @@ const MetricCard = ({ icon, value, suffix = "", label, delay, isVisible }: Metri
         {count}{suffix}
       </span>
       <span className="text-sm text-muted-foreground mt-2 text-center">{label}</span>
+      {subtitle && (
+        <span className="text-xs text-muted-foreground/70 mt-1 text-center">{subtitle}</span>
+      )}
     </div>
   );
 };
@@ -54,7 +58,7 @@ const SocialImpactSection = () => {
   const metrics = [
     { icon: <Users className="w-7 h-7 text-primary" />, value: 700, suffix: "+", label: "People hosted", delay: 0 },
     { icon: <Heart className="w-7 h-7 text-primary" />, value: 6, suffix: "", label: "Potters supported", delay: 100 },
-    { icon: <Briefcase className="w-7 h-7 text-primary" />, value: 9, suffix: "", label: "Jobs created", delay: 200 },
+    { icon: <Briefcase className="w-7 h-7 text-primary" />, value: 9, suffix: "", label: "Jobs created", subtitle: "Direct & indirect", delay: 200 },
     { icon: <ShoppingBag className="w-7 h-7 text-primary" />, value: 1200, suffix: "+", label: "Products sold", delay: 300 },
     { icon: <Calendar className="w-7 h-7 text-primary" />, value: 2, suffix: " yrs", label: "Of impact", delay: 400 },
   ];
@@ -126,6 +130,7 @@ const SocialImpactSection = () => {
               value={metric.value}
               suffix={metric.suffix}
               label={metric.label}
+              subtitle={metric.subtitle}
               delay={metric.delay}
               isVisible={metricsVisible}
             />
