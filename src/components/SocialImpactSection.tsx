@@ -13,6 +13,7 @@ const impact6 = "/images/impact-6.jpg";
 const impact7 = "/images/impact-7.jpg";
 const impact8 = "/images/impact-8.jpg";
 const impact9 = "/images/impact-9.jpg";
+const impact10 = "/images/impact-10.jpg";
 
 interface MetricCardProps {
   icon: React.ReactNode;
@@ -64,7 +65,8 @@ const SocialImpactSection = () => {
   ];
 
   const images = [
-    { src: impact7, alt: "Group workshop session" },
+    { src: impact7, alt: "Group workshop session", featured: true },
+    { src: impact10, alt: "Friends at the workshop", featured: true },
     { src: impact1, alt: "Potter at work" },
     { src: impact2, alt: "Workshop moment" },
     { src: impact3, alt: "Community gathering" },
@@ -146,9 +148,9 @@ const SocialImpactSection = () => {
             <div
               key={index}
               className={cn(
-                "relative aspect-square overflow-hidden rounded-2xl group transition-all duration-700",
+                "relative overflow-hidden rounded-2xl group transition-all duration-700",
                 galleryVisible ? "opacity-100 scale-100" : "opacity-0 scale-95",
-                index === 0 && "md:col-span-2 md:row-span-2 md:aspect-square"
+                image.featured ? "md:col-span-2 md:row-span-2 aspect-[4/3] md:aspect-square" : "aspect-square"
               )}
               style={{ transitionDelay: `${index * 100}ms` }}
             >
