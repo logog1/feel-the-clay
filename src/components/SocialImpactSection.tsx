@@ -66,7 +66,6 @@ const SocialImpactSection = () => {
     { src: impact7, alt: "Group workshop session" },
     { src: impact4, alt: "Pottery creation" },
     { src: impact8, alt: "Team selfie" },
-    { src: impact5, alt: "Artisan and visitor" },
     { src: impact9, alt: "Woman at pottery wheel" },
     { src: impact6, alt: "Finished pieces" },
   ];
