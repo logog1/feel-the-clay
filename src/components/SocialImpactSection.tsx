@@ -142,16 +142,16 @@ const SocialImpactSection = () => {
         {/* Photo Grid */}
         <div 
           ref={galleryRef}
-          className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 auto-rows-[120px] md:auto-rows-[140px]"
+          className="grid grid-cols-3 md:grid-cols-6 gap-3 md:gap-4"
         >
           {images.map((image, index) => (
             <div
               key={index}
               className={cn(
-                "relative overflow-hidden rounded-2xl group transition-all duration-700",
+                "relative overflow-hidden rounded-2xl group transition-all duration-700 aspect-square",
                 galleryVisible ? "opacity-100 scale-100" : "opacity-0 scale-95",
                 image.size === "large" && "col-span-2 row-span-2",
-                image.size === "medium" && "col-span-2 row-span-1 md:col-span-1 md:row-span-2"
+                image.size === "medium" && "col-span-2 row-span-2 md:col-span-2 md:row-span-2"
               )}
               style={{ transitionDelay: `${index * 100}ms` }}
             >
