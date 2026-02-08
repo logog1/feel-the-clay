@@ -64,9 +64,9 @@ const SocialImpactSection = () => {
     { icon: <Calendar className="w-7 h-7 text-primary" />, value: 2, suffix: " yrs", label: "Of impact", delay: 400 },
   ];
 
-  const images = [
-    { src: impact7, alt: "Group workshop session", featured: true },
-    { src: impact10, alt: "Friends at the workshop", featured: true },
+  const images: { src: string; alt: string; size?: "large" | "medium" }[] = [
+    { src: impact7, alt: "Group workshop session", size: "large" },
+    { src: impact10, alt: "Friends at the workshop", size: "medium" },
     { src: impact1, alt: "Potter at work" },
     { src: impact2, alt: "Workshop moment" },
     { src: impact3, alt: "Community gathering" },
@@ -142,15 +142,16 @@ const SocialImpactSection = () => {
         {/* Photo Grid */}
         <div 
           ref={galleryRef}
-          className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4"
+          className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 auto-rows-[120px] md:auto-rows-[140px]"
         >
           {images.map((image, index) => (
             <div
               key={index}
               className={cn(
-                "relative overflow-hidden rounded-2xl group transition-all duration-700 aspect-square",
+                "relative overflow-hidden rounded-2xl group transition-all duration-700",
                 galleryVisible ? "opacity-100 scale-100" : "opacity-0 scale-95",
-                image.featured && "md:aspect-[4/3]"
+                image.size === "large" && "col-span-2 row-span-2",
+                image.size === "medium" && "col-span-2 row-span-1 md:col-span-1 md:row-span-2"
               )}
               style={{ transitionDelay: `${index * 100}ms` }}
             >
