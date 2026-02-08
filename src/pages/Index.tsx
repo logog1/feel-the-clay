@@ -14,6 +14,7 @@ import LanguagesSection from "@/components/LanguagesSection";
 import FinalCTASection from "@/components/FinalCTASection";
 import TrustSection from "@/components/TrustSection";
 import AnimatedSection from "@/components/AnimatedSection";
+import SocialImpactSection from "@/components/SocialImpactSection";
 
 const Index = () => {
   return (
@@ -44,6 +45,9 @@ const Index = () => {
       </AnimatedSection>
       
       {/* Connect */}
+      <AnimatedSection>
+        <SocialImpactSection />
+      </AnimatedSection>
       <AnimatedSection>
         <TestimonialsSection />
       </AnimatedSection>
