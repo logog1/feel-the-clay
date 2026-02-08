@@ -14,6 +14,7 @@ const impact7 = "/images/impact-7.jpg";
 const impact8 = "/images/impact-8.jpg";
 const impact9 = "/images/impact-9.jpg";
 const impact10 = "/images/impact-10.jpg";
+const impact11 = "/images/impact-11.jpg";
 
 interface MetricCardProps {
   icon: React.ReactNode;
@@ -74,6 +75,7 @@ const SocialImpactSection = () => {
     { src: impact8, alt: "Team selfie" },
     { src: impact9, alt: "Woman at pottery wheel" },
     { src: impact6, alt: "Finished pieces" },
+    { src: impact11, alt: "Pottery lamp with workshop" },
   ];
 
   return (
