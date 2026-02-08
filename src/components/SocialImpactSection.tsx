@@ -148,9 +148,9 @@ const SocialImpactSection = () => {
             <div
               key={index}
               className={cn(
-                "relative overflow-hidden rounded-2xl group transition-all duration-700",
+                "relative overflow-hidden rounded-2xl group transition-all duration-700 aspect-square",
                 galleryVisible ? "opacity-100 scale-100" : "opacity-0 scale-95",
-                image.featured ? "md:col-span-2 md:row-span-2 aspect-[4/3] md:aspect-square" : "aspect-square"
+                image.featured && "md:aspect-[4/3]"
               )}
               style={{ transitionDelay: `${index * 100}ms` }}
             >
