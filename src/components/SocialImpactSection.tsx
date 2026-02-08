@@ -64,10 +64,10 @@ const SocialImpactSection = () => {
   ];
 
   const images = [
+    { src: impact7, alt: "Group workshop session" },
     { src: impact1, alt: "Potter at work" },
     { src: impact2, alt: "Workshop moment" },
     { src: impact3, alt: "Community gathering" },
-    { src: impact7, alt: "Group workshop session" },
     { src: impact4, alt: "Pottery creation" },
     { src: impact8, alt: "Team selfie" },
     { src: impact9, alt: "Woman at pottery wheel" },
