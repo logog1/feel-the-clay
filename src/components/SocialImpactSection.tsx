@@ -1,15 +1,18 @@
 import { useScrollAnimation } from "@/hooks/use-scroll-animation";
 import { useCountAnimation } from "@/hooks/use-count-animation";
-import { Users, Heart, ShoppingBag, Calendar, Sparkles } from "lucide-react";
+import { Users, Heart, ShoppingBag, Calendar, Sparkles, Briefcase } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-// Use public folder images (HEIC converted to JPG)
+// Use public folder images
 const impact1 = "/images/impact-1.jpg";
 const impact2 = "/images/impact-2.jpg";
 const impact3 = "/images/impact-3.jpg";
 const impact4 = "/images/impact-4.jpg";
 const impact5 = "/images/impact-5.jpg";
 const impact6 = "/images/impact-6.jpg";
+const impact7 = "/images/impact-7.jpg";
+const impact8 = "/images/impact-8.jpg";
+const impact9 = "/images/impact-9.jpg";
 
 interface MetricCardProps {
   icon: React.ReactNode;
@@ -51,16 +54,20 @@ const SocialImpactSection = () => {
   const metrics = [
     { icon: <Users className="w-7 h-7 text-primary" />, value: 700, suffix: "+", label: "People hosted", delay: 0 },
     { icon: <Heart className="w-7 h-7 text-primary" />, value: 6, suffix: "", label: "Potters supported", delay: 100 },
-    { icon: <ShoppingBag className="w-7 h-7 text-primary" />, value: 1200, suffix: "+", label: "Products sold", delay: 200 },
-    { icon: <Calendar className="w-7 h-7 text-primary" />, value: 2, suffix: " yrs", label: "Of impact", delay: 300 },
+    { icon: <Briefcase className="w-7 h-7 text-primary" />, value: 9, suffix: "", label: "Jobs created", delay: 200 },
+    { icon: <ShoppingBag className="w-7 h-7 text-primary" />, value: 1200, suffix: "+", label: "Products sold", delay: 300 },
+    { icon: <Calendar className="w-7 h-7 text-primary" />, value: 2, suffix: " yrs", label: "Of impact", delay: 400 },
   ];
 
   const images = [
     { src: impact1, alt: "Potter at work" },
     { src: impact2, alt: "Workshop moment" },
     { src: impact3, alt: "Community gathering" },
+    { src: impact7, alt: "Group workshop session" },
     { src: impact4, alt: "Pottery creation" },
+    { src: impact8, alt: "Team selfie" },
     { src: impact5, alt: "Artisan and visitor" },
+    { src: impact9, alt: "Woman at pottery wheel" },
     { src: impact6, alt: "Finished pieces" },
   ];
 
@@ -111,7 +118,7 @@ const SocialImpactSection = () => {
         {/* Impact Metrics */}
         <div 
           ref={metricsRef}
-          className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-16"
+          className="grid grid-cols-2 md:grid-cols-5 gap-4 md:gap-6 mb-16"
         >
           {metrics.map((metric, index) => (
             <MetricCard
