@@ -102,7 +102,7 @@ const GalleryRow = ({
 
   return (
     <div 
-      className="overflow-hidden cursor-grab active:cursor-grabbing"
+      className="overflow-x-auto cursor-grab active:cursor-grabbing scrollbar-hide"
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
@@ -111,8 +111,8 @@ const GalleryRow = ({
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
     >
-      <div ref={rowRef} className={`flex gap-3 md:gap-4 ${animationClass}`}>
-        {doubled.map((image, index) => (
+      <div ref={rowRef} className={`flex gap-3 md:gap-4 w-max`}>
+        {images.map((image, index) => (
           <div 
             key={index}
             className={`flex-shrink-0 ${imageWidth} aspect-[4/3] overflow-hidden rounded-xl bg-secondary/20`}
