@@ -54,55 +54,68 @@ const GalleryRow = ({
   animationClass: string; 
   imageWidth: string;
 }) => {
+  const containerRef = useRef<HTMLDivElement>(null);
   const rowRef = useRef<HTMLDivElement>(null);
   const isDragging = useRef(false);
   const startX = useRef(0);
   const scrollLeft = useRef(0);
 
-  const handleTouchStart = (e: React.TouchEvent) => {
-    isDragging.current = true;
-    startX.current = e.touches[0].pageX;
-    scrollLeft.current = rowRef.current?.scrollLeft || 0;
+  const pauseAnimation = () => {
     rowRef.current?.style.setProperty('animation-play-state', 'paused');
   };
 
+  const resumeAnimation = () => {
+    setTimeout(() => {
+      rowRef.current?.style.setProperty('animation-play-state', 'running');
+    }, 2000); // Resume after 2 seconds of no interaction
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    isDragging.current = true;
+    startX.current = e.touches[0].pageX;
+    scrollLeft.current = containerRef.current?.scrollLeft || 0;
+    pauseAnimation();
+  };
+
   const handleTouchMove = (e: React.TouchEvent) => {
-    if (!isDragging.current || !rowRef.current) return;
+    if (!isDragging.current || !containerRef.current) return;
     const x = e.touches[0].pageX;
     const walk = (startX.current - x) * 1.5;
-    rowRef.current.scrollLeft = scrollLeft.current + walk;
+    containerRef.current.scrollLeft = scrollLeft.current + walk;
   };
 
   const handleTouchEnd = () => {
     isDragging.current = false;
-    rowRef.current?.style.setProperty('animation-play-state', 'running');
+    resumeAnimation();
   };
 
   const handleMouseDown = (e: React.MouseEvent) => {
     isDragging.current = true;
     startX.current = e.pageX;
-    scrollLeft.current = rowRef.current?.scrollLeft || 0;
-    rowRef.current?.style.setProperty('animation-play-state', 'paused');
+    scrollLeft.current = containerRef.current?.scrollLeft || 0;
+    pauseAnimation();
   };
 
   const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isDragging.current || !rowRef.current) return;
+    if (!isDragging.current || !containerRef.current) return;
     e.preventDefault();
     const x = e.pageX;
     const walk = (startX.current - x) * 1.5;
-    rowRef.current.scrollLeft = scrollLeft.current + walk;
+    containerRef.current.scrollLeft = scrollLeft.current + walk;
   };
 
   const handleMouseUp = () => {
     isDragging.current = false;
-    rowRef.current?.style.setProperty('animation-play-state', 'running');
+    resumeAnimation();
   };
 
+  // Double the images for seamless infinite scroll
   const doubled = [...images, ...images];
 
   return (
     <div 
-      className="overflow-x-auto cursor-grab active:cursor-grabbing scrollbar-hide"
+      ref={containerRef}
+      className="overflow-hidden cursor-grab active:cursor-grabbing"
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
@@ -111,8 +124,8 @@ const GalleryRow = ({
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
     >
-      <div ref={rowRef} className={`flex gap-3 md:gap-4 w-max`}>
-        {images.map((image, index) => (
+      <div ref={rowRef} className={`flex gap-3 md:gap-4 w-max ${animationClass}`}>
+        {doubled.map((image, index) => (
           <div 
             key={index}
             className={`flex-shrink-0 ${imageWidth} aspect-[4/3] overflow-hidden rounded-xl bg-secondary/20`}
