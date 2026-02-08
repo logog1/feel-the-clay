@@ -21,16 +21,19 @@ const Index = () => {
     <main className="min-h-screen">
       <Header />
       
-      {/* Learn */}
+      {/* LEARN - Hook + Philosophy + The emotional WHY */}
       <HeroSection />
       <AnimatedSection>
         <BeliefSection />
       </AnimatedSection>
       <AnimatedSection>
-        <AboutSection />
+        <SocialImpactSection />
       </AnimatedSection>
       
-      {/* Feel */}
+      {/* FEEL - Who, what, how + visual proof */}
+      <AnimatedSection>
+        <AboutSection />
+      </AnimatedSection>
       <AnimatedSection>
         <ExperienceSection />
       </AnimatedSection>
@@ -44,15 +47,15 @@ const Index = () => {
         <GallerySection />
       </AnimatedSection>
       
-      {/* Connect */}
-      <AnimatedSection>
-        <SocialImpactSection />
-      </AnimatedSection>
+      {/* CONNECT - Validation + logistics */}
       <AnimatedSection>
         <TestimonialsSection />
       </AnimatedSection>
       <AnimatedSection>
         <CraftsExpansionSection />
+      </AnimatedSection>
+      <AnimatedSection>
+        <TrustSection />
       </AnimatedSection>
       <AnimatedSection>
         <FAQSection />
@@ -64,14 +67,9 @@ const Index = () => {
         <LanguagesSection />
       </AnimatedSection>
       
-      {/* Join */}
+      {/* JOIN - Clear action */}
       <AnimatedSection>
         <FinalCTASection />
-      </AnimatedSection>
-      
-      {/* Trust - last before footer */}
-      <AnimatedSection>
-        <TrustSection />
       </AnimatedSection>
       
       {/* Footer */}
