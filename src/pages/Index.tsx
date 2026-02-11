@@ -16,72 +16,29 @@ import FinalCTASection from "@/components/FinalCTASection";
 import TrustSection from "@/components/TrustSection";
 import AnimatedSection from "@/components/AnimatedSection";
 import SocialImpactSection from "@/components/SocialImpactSection";
+import Footer from "@/components/Footer";
 
 const Index = () => {
   return (
     <main className="min-h-screen">
       <Header />
-      
-      {/* LEARN - Hook + Philosophy + The emotional WHY */}
       <HeroSection />
-      <AnimatedSection>
-        <BeliefSection />
-      </AnimatedSection>
-      <AnimatedSection>
-        <SocialImpactSection />
-      </AnimatedSection>
-      
-      {/* FEEL - Who, what, how + visual proof */}
-      <AnimatedSection>
-        <AboutSection />
-      </AnimatedSection>
-      <AnimatedSection>
-        <ExperienceSection />
-      </AnimatedSection>
-      <AnimatedSection>
-        <DetailsSection />
-      </AnimatedSection>
-      <AnimatedSection>
-        <ProcessSection />
-      </AnimatedSection>
-      <AnimatedSection>
-        <GallerySection />
-      </AnimatedSection>
-      <AnimatedSection>
-        <OffersSection />
-      </AnimatedSection>
-      
-      {/* CONNECT - Validation + logistics */}
-      <AnimatedSection>
-        <TestimonialsSection />
-      </AnimatedSection>
-      <AnimatedSection>
-        <CraftsExpansionSection />
-      </AnimatedSection>
-      <AnimatedSection>
-        <FAQSection />
-      </AnimatedSection>
-      <AnimatedSection>
-        <LanguagesSection />
-      </AnimatedSection>
-      
-      {/* JOIN - Clear action */}
-      <AnimatedSection>
-        <FinalCTASection />
-      </AnimatedSection>
-      
-      {/* CLOSING - Location + Trust (credibility last) */}
-      <AnimatedSection>
-        <LocationSection />
-      </AnimatedSection>
-      <AnimatedSection>
-        <TrustSection />
-      </AnimatedSection>
-      
-      {/* Footer */}
-      <footer className="py-6 px-6 text-center text-xs text-muted-foreground">
-        <p>Made with care and clay</p>
-      </footer>
+      <AnimatedSection><BeliefSection /></AnimatedSection>
+      <AnimatedSection><SocialImpactSection /></AnimatedSection>
+      <AnimatedSection><AboutSection /></AnimatedSection>
+      <AnimatedSection><ExperienceSection /></AnimatedSection>
+      <AnimatedSection><DetailsSection /></AnimatedSection>
+      <AnimatedSection><ProcessSection /></AnimatedSection>
+      <AnimatedSection><GallerySection /></AnimatedSection>
+      <AnimatedSection><OffersSection /></AnimatedSection>
+      <AnimatedSection><TestimonialsSection /></AnimatedSection>
+      <AnimatedSection><CraftsExpansionSection /></AnimatedSection>
+      <AnimatedSection><FAQSection /></AnimatedSection>
+      <AnimatedSection><LanguagesSection /></AnimatedSection>
+      <AnimatedSection><FinalCTASection /></AnimatedSection>
+      <AnimatedSection><LocationSection /></AnimatedSection>
+      <AnimatedSection><TrustSection /></AnimatedSection>
+      <Footer />
     </main>
   );
 };
