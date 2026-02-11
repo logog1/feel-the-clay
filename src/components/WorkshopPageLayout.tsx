@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowLeft, Clock, Coffee, MapPin, ChevronDown, Store } from "lucide-react";
+import { ArrowLeft, Clock, Coffee, MapPin, ChevronDown, Store, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { cn } from "@/lib/utils";
@@ -39,14 +39,14 @@ const WorkshopPageLayout = ({ workshop, currentPath }: { workshop: Workshop; cur
   return (
     <main className="min-h-screen bg-background">
       {/* Back nav */}
-      <div className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/30">
+      <div className="fixed top-0 left-0 right-0 z-50 bg-card/90 backdrop-blur-xl border-b-2 border-border/30 shadow-sm">
         <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2 text-foreground/70 hover:text-foreground transition-colors text-sm">
+          <Link to="/" className="flex items-center gap-2 text-foreground/70 hover:text-foreground transition-colors text-sm font-medium">
             <ArrowLeft size={16} />
             {t("workshop.back")}
           </Link>
-          <Link to="/store" className="text-foreground/70 hover:text-foreground transition-colors text-sm">
-            <Store size={14} className="inline mr-1" />{t("workshop.store")}
+          <Link to="/store" className="flex items-center gap-2 text-foreground/70 hover:text-foreground transition-colors text-sm font-medium bg-foreground/5 hover:bg-foreground/10 px-4 py-2 rounded-2xl">
+            <Store size={14} />{t("workshop.store")}
           </Link>
         </div>
       </div>
@@ -56,67 +56,73 @@ const WorkshopPageLayout = ({ workshop, currentPath }: { workshop: Workshop; cur
         <div className="aspect-[16/9] md:aspect-[21/9] overflow-hidden">
           <img src={workshop.images[0]} alt={workshop.title} className="w-full h-full object-cover animate-fade-in" />
         </div>
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" style={{ top: '50%' }} />
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" style={{ top: '40%' }} />
       </div>
 
       {/* Content */}
       <div className="max-w-3xl mx-auto px-6 py-8 md:py-12">
         <div className="space-y-8">
-          {/* Title & badge */}
-          <div className="animate-fade-up">
+          {/* Title card - framed */}
+          <div className="animate-fade-up p-6 rounded-3xl bg-card border-2 border-border/40 shadow-sm -mt-16 relative z-10">
             {workshop.popular && (
-              <span className="inline-block bg-cta text-primary-foreground text-xs font-semibold px-3 py-1 rounded-full mb-3 animate-pulse">
-                {t("offers.popular")}
+              <span className="inline-flex items-center gap-1.5 bg-cta text-primary-foreground text-xs font-bold px-4 py-1.5 rounded-full mb-4 shadow-md shadow-cta/20">
+                <Star size={12} fill="currentColor" /> {t("offers.popular")}
               </span>
             )}
-            <h1 className="text-2xl md:text-4xl font-semibold">{workshop.title}</h1>
-            <p className="text-foreground/60 mt-2 text-lg">{workshop.tagline}</p>
+            <h1 className="text-2xl md:text-4xl font-bold text-foreground tracking-tight">{workshop.title}</h1>
+            <p className="text-muted-foreground mt-2 text-lg">{workshop.tagline}</p>
           </div>
 
-          {/* Quick info - clean pills */}
-          <div className="flex flex-wrap gap-3">
-            <span className="flex items-center gap-1.5 bg-card/60 px-4 py-2 rounded-full text-sm">
-              <Clock size={14} className="text-cta" /> {workshop.duration}
-            </span>
-            <span className="flex items-center gap-1.5 bg-card/60 px-4 py-2 rounded-full text-sm">
-              <Coffee size={14} className="text-cta" /> {workshop.drink}
-            </span>
-            {workshop.location && (
-              <span className="flex items-center gap-1.5 bg-card/60 px-4 py-2 rounded-full text-sm">
-                <MapPin size={14} className="text-cta" /> {workshop.location}
+          {/* Quick info pills - framed container */}
+          <div className="p-5 rounded-3xl bg-card border-2 border-border/40 shadow-sm">
+            <div className="flex flex-wrap gap-3">
+              <span className="flex items-center gap-2 bg-cta/10 border-2 border-cta/20 px-4 py-2.5 rounded-2xl text-sm font-medium text-foreground">
+                <Clock size={15} className="text-cta" /> {workshop.duration}
               </span>
-            )}
-            <span className="bg-terracotta text-primary-foreground px-4 py-2 rounded-full text-sm font-semibold">
-              {workshop.price}
-            </span>
+              <span className="flex items-center gap-2 bg-cta/10 border-2 border-cta/20 px-4 py-2.5 rounded-2xl text-sm font-medium text-foreground">
+                <Coffee size={15} className="text-cta" /> {workshop.drink}
+              </span>
+              {workshop.location && (
+                <span className="flex items-center gap-2 bg-cta/10 border-2 border-cta/20 px-4 py-2.5 rounded-2xl text-sm font-medium text-foreground">
+                  <MapPin size={15} className="text-cta" /> {workshop.location}
+                </span>
+              )}
+              <span className="bg-cta text-primary-foreground px-5 py-2.5 rounded-2xl text-sm font-bold shadow-md shadow-cta/20">
+                {workshop.price}
+              </span>
+            </div>
           </div>
 
-          {/* Description */}
-          <div className="space-y-4">
+          {/* Description - framed */}
+          <div className="p-6 rounded-3xl bg-card border-2 border-border/40 shadow-sm space-y-4">
             {workshop.description.map((p, i) => (
-              <p key={i} className="text-foreground/80 leading-relaxed">{p}</p>
+              <p key={i} className="text-foreground/80 leading-relaxed text-base">{p}</p>
             ))}
           </div>
 
-          {/* Highlights */}
-          <div className="bg-card/40 backdrop-blur-sm rounded-2xl p-6 border border-border/20">
-            <h3 className="font-medium mb-4 text-lg">{t("workshop.included")}</h3>
+          {/* Highlights - framed with accent */}
+          <div className="rounded-3xl border-2 border-cta/20 bg-cta/5 p-6 shadow-sm">
+            <h3 className="font-bold mb-5 text-lg text-foreground flex items-center gap-2">
+              <Star size={16} className="text-cta" /> {t("workshop.included")}
+            </h3>
             <ul className="space-y-3">
               {workshop.highlights.map((h, i) => (
                 <li key={i} className="flex items-start gap-3 text-sm text-foreground/80">
-                  <span className="text-cta mt-0.5 flex-shrink-0">✦</span>
+                  <span className="w-6 h-6 rounded-lg bg-cta/15 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <span className="text-cta text-xs font-bold">{i + 1}</span>
+                  </span>
                   {h}
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* Photos - show 2 initially, expandable */}
+          {/* Photos */}
           {workshop.images.length > 1 && (
-            <div className="space-y-3">
-              <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
                 {previewImages.slice(1).map((img, i) => (
-                  <div key={i} className="aspect-square rounded-2xl overflow-hidden group">
+                  <div key={i} className="aspect-square rounded-3xl overflow-hidden group border-2 border-border/40 shadow-sm">
                     <img src={img} alt={`${workshop.title} ${i + 2}`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
                   </div>
                 ))}
@@ -124,16 +130,16 @@ const WorkshopPageLayout = ({ workshop, currentPath }: { workshop: Workshop; cur
               
               {remainingImages.length > 0 && (
                 <>
-                  <div className={cn("grid grid-cols-2 gap-3 transition-all duration-500", showAllPhotos ? "opacity-100 max-h-[2000px]" : "opacity-0 max-h-0 overflow-hidden")}>
+                  <div className={cn("grid grid-cols-2 gap-4 transition-all duration-500", showAllPhotos ? "opacity-100 max-h-[2000px]" : "opacity-0 max-h-0 overflow-hidden")}>
                     {remainingImages.map((img, i) => (
-                      <div key={i} className="aspect-square rounded-2xl overflow-hidden group">
+                      <div key={i} className="aspect-square rounded-3xl overflow-hidden group border-2 border-border/40 shadow-sm">
                         <img src={img} alt={`${workshop.title} ${i + 3}`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
                       </div>
                     ))}
                   </div>
                   <button
                     onClick={() => setShowAllPhotos(!showAllPhotos)}
-                    className="flex items-center gap-2 mx-auto text-sm text-foreground/60 hover:text-foreground transition-colors"
+                    className="flex items-center gap-2 mx-auto text-sm text-foreground/60 hover:text-foreground transition-colors bg-card border-2 border-border/40 px-5 py-2.5 rounded-2xl hover:border-cta/30"
                   >
                     <ChevronDown size={16} className={cn("transition-transform", showAllPhotos && "rotate-180")} />
                     {showAllPhotos ? t("workshop.hide_photos") : `${t("workshop.see_photos")} (${remainingImages.length})`}
@@ -143,12 +149,12 @@ const WorkshopPageLayout = ({ workshop, currentPath }: { workshop: Workshop; cur
             </div>
           )}
 
-          {/* CTAs */}
-          <div className="flex flex-col sm:flex-row gap-3 pt-4">
-            <Button variant="cta" size="lg" asChild className="flex-1">
+          {/* CTAs - bold framed */}
+          <div className="flex flex-col sm:flex-row gap-4 pt-4">
+            <Button variant="cta" size="lg" asChild className="flex-1 text-base py-6 shadow-xl shadow-cta/20">
               <a href="https://forms.gle/NfrnW6E2yr65WAVbA" target="_blank" rel="noopener noreferrer">{t("workshop.reserve")}</a>
             </Button>
-            <Button variant="ctaOutline" size="lg" asChild className="flex-1">
+            <Button variant="ctaOutline" size="lg" asChild className="flex-1 py-6 border-2">
               <a href="https://wa.me/message/SBUBJACPVCNGM1" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
                 <WhatsAppIcon /> {t("workshop.message")}
               </a>
@@ -156,19 +162,21 @@ const WorkshopPageLayout = ({ workshop, currentPath }: { workshop: Workshop; cur
           </div>
         </div>
 
-        {/* Other workshops */}
-        <div className="mt-16 pt-8 border-t border-border/30">
-          <h3 className="text-lg font-medium mb-4">{t("workshop.explore")}</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        {/* Other workshops - framed */}
+        <div className="mt-16 pt-8 border-t-2 border-border/30">
+          <h3 className="text-lg font-bold mb-5 text-foreground tracking-tight">{t("workshop.explore")}</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {otherWorkshopsData
               .filter((w) => w.link !== currentPath)
               .map((w) => (
-                <Link key={w.link} to={w.link} className="p-4 rounded-xl bg-card/50 hover:bg-card transition-all duration-300 text-sm font-medium hover:shadow-lg hover:scale-[1.02]">
-                  {t(w.titleKey)} →
+                <Link key={w.link} to={w.link} className="p-5 rounded-2xl bg-card border-2 border-border/40 hover:border-cta/30 transition-all duration-300 text-sm font-bold hover:shadow-lg hover:scale-[1.02] text-foreground flex items-center justify-between">
+                  {t(w.titleKey)}
+                  <ArrowLeft size={14} className="rotate-180 text-cta" />
                 </Link>
               ))}
-            <Link to="/store" className="p-4 rounded-xl bg-card/50 hover:bg-card transition-all duration-300 text-sm font-medium hover:shadow-lg hover:scale-[1.02] flex items-center gap-2">
-              <Store size={14} /> {t("workshop.visit_store")}
+            <Link to="/store" className="p-5 rounded-2xl bg-card border-2 border-border/40 hover:border-cta/30 transition-all duration-300 text-sm font-bold hover:shadow-lg hover:scale-[1.02] flex items-center gap-2 text-foreground justify-between">
+              <span className="flex items-center gap-2"><Store size={14} className="text-cta" /> {t("workshop.visit_store")}</span>
+              <ArrowLeft size={14} className="rotate-180 text-cta" />
             </Link>
           </div>
         </div>
