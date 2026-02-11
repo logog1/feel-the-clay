@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { LanguageProvider } from "@/i18n/LanguageContext";
 import { CartProvider } from "@/contexts/CartContext";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import ScrollToTop from "@/components/ScrollToTop";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import PotteryExperience from "./pages/PotteryExperience";
@@ -25,6 +26,7 @@ const App = () => (
           <Sonner />
           <LanguageSwitcher />
           <BrowserRouter>
+            <ScrollToTop />
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/workshop/pottery-experience" element={<PotteryExperience />} />
