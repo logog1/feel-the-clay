@@ -199,6 +199,19 @@ export const translations = {
   "store.coming": { en: "Full e-commerce with payments coming soon.", ar: "التجارة الإلكترونية الكاملة مع الدفع قريباً.", es: "Comercio electrónico completo con pagos próximamente." },
   "store.interested": { en: "Interested?", ar: "مهتم؟", es: "¿Interesado?" },
   "store.whatsapp": { en: "Message us on WhatsApp", ar: "راسلنا على واتساب", es: "Escríbenos por WhatsApp" },
+  "store.add_to_cart": { en: "Add to Cart", ar: "أضف إلى السلة", es: "Añadir al Carrito" },
+  "store.added": { en: "Added!", ar: "تمت الإضافة!", es: "¡Añadido!" },
+  "store.view_cart": { en: "View Cart", ar: "عرض السلة", es: "Ver Carrito" },
+
+  // Cart
+  "cart.title": { en: "Your Cart", ar: "سلتك", es: "Tu Carrito" },
+  "cart.empty_title": { en: "Your cart is empty", ar: "سلتك فارغة", es: "Tu carrito está vacío" },
+  "cart.empty_desc": { en: "Browse our store and add some handmade treasures!", ar: "تصفح متجرنا وأضف بعض الكنوز اليدوية!", es: "¡Explora nuestra tienda y añade algunos tesoros hechos a mano!" },
+  "cart.browse": { en: "Browse Store", ar: "تصفح المتجر", es: "Explorar Tienda" },
+  "cart.clear": { en: "Clear all", ar: "مسح الكل", es: "Limpiar todo" },
+  "cart.total": { en: "Total", ar: "المجموع", es: "Total" },
+  "cart.checkout": { en: "Order via WhatsApp", ar: "اطلب عبر واتساب", es: "Pedir por WhatsApp" },
+  "cart.items": { en: "items", ar: "عناصر", es: "artículos" },
 } as const;
 
 export type TranslationKey = keyof typeof translations;
