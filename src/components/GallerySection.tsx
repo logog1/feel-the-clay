@@ -1,4 +1,5 @@
 import { useRef } from "react";
+import { useLanguage } from "@/i18n/LanguageContext";
 import workshop1 from "@/assets/workshop-1.jpg";
 import workshop3 from "@/assets/workshop-3.jpg";
 import workshop4 from "@/assets/workshop-4.jpg";
@@ -45,98 +46,31 @@ const row3 = [
   { src: workshop16, alt: "Group photo at the workshop" },
 ];
 
-const GalleryRow = ({ 
-  images, 
-  animationClass, 
-  imageWidth 
-}: { 
-  images: typeof row1; 
-  animationClass: string; 
-  imageWidth: string;
-}) => {
+const GalleryRow = ({ images, animationClass, imageWidth }: { images: typeof row1; animationClass: string; imageWidth: string }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const rowRef = useRef<HTMLDivElement>(null);
   const isDragging = useRef(false);
   const startX = useRef(0);
   const scrollLeft = useRef(0);
 
-  const pauseAnimation = () => {
-    rowRef.current?.style.setProperty('animation-play-state', 'paused');
-  };
+  const pauseAnimation = () => { rowRef.current?.style.setProperty('animation-play-state', 'paused'); };
+  const resumeAnimation = () => { setTimeout(() => { rowRef.current?.style.setProperty('animation-play-state', 'running'); }, 2000); };
 
-  const resumeAnimation = () => {
-    setTimeout(() => {
-      rowRef.current?.style.setProperty('animation-play-state', 'running');
-    }, 2000); // Resume after 2 seconds of no interaction
-  };
+  const handleTouchStart = (e: React.TouchEvent) => { isDragging.current = true; startX.current = e.touches[0].pageX; scrollLeft.current = containerRef.current?.scrollLeft || 0; pauseAnimation(); };
+  const handleTouchMove = (e: React.TouchEvent) => { if (!isDragging.current || !containerRef.current) return; const x = e.touches[0].pageX; containerRef.current.scrollLeft = scrollLeft.current + (startX.current - x) * 1.5; };
+  const handleTouchEnd = () => { isDragging.current = false; resumeAnimation(); };
+  const handleMouseDown = (e: React.MouseEvent) => { isDragging.current = true; startX.current = e.pageX; scrollLeft.current = containerRef.current?.scrollLeft || 0; pauseAnimation(); };
+  const handleMouseMove = (e: React.MouseEvent) => { if (!isDragging.current || !containerRef.current) return; e.preventDefault(); containerRef.current.scrollLeft = scrollLeft.current + (startX.current - e.pageX) * 1.5; };
+  const handleMouseUp = () => { isDragging.current = false; resumeAnimation(); };
 
-  const handleTouchStart = (e: React.TouchEvent) => {
-    isDragging.current = true;
-    startX.current = e.touches[0].pageX;
-    scrollLeft.current = containerRef.current?.scrollLeft || 0;
-    pauseAnimation();
-  };
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    if (!isDragging.current || !containerRef.current) return;
-    const x = e.touches[0].pageX;
-    const walk = (startX.current - x) * 1.5;
-    containerRef.current.scrollLeft = scrollLeft.current + walk;
-  };
-
-  const handleTouchEnd = () => {
-    isDragging.current = false;
-    resumeAnimation();
-  };
-
-  const handleMouseDown = (e: React.MouseEvent) => {
-    isDragging.current = true;
-    startX.current = e.pageX;
-    scrollLeft.current = containerRef.current?.scrollLeft || 0;
-    pauseAnimation();
-  };
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isDragging.current || !containerRef.current) return;
-    e.preventDefault();
-    const x = e.pageX;
-    const walk = (startX.current - x) * 1.5;
-    containerRef.current.scrollLeft = scrollLeft.current + walk;
-  };
-
-  const handleMouseUp = () => {
-    isDragging.current = false;
-    resumeAnimation();
-  };
-
-  // Double the images for seamless infinite scroll
   const doubled = [...images, ...images];
 
   return (
-    <div 
-      ref={containerRef}
-      className="overflow-hidden cursor-grab active:cursor-grabbing"
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleTouchEnd}
-      onMouseDown={handleMouseDown}
-      onMouseMove={handleMouseMove}
-      onMouseUp={handleMouseUp}
-      onMouseLeave={handleMouseUp}
-    >
+    <div ref={containerRef} className="overflow-hidden cursor-grab active:cursor-grabbing" onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd} onMouseDown={handleMouseDown} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp}>
       <div ref={rowRef} className={`flex gap-3 md:gap-4 w-max ${animationClass}`}>
         {doubled.map((image, index) => (
-          <div 
-            key={index}
-            className={`flex-shrink-0 ${imageWidth} aspect-[4/3] overflow-hidden rounded-xl bg-secondary/20`}
-          >
-            <img 
-              src={image.src} 
-              alt={image.alt}
-              className="w-full h-full object-cover hover:scale-105 transition-transform duration-500 pointer-events-none"
-              loading="lazy"
-              draggable={false}
-            />
+          <div key={index} className={`flex-shrink-0 ${imageWidth} aspect-[4/3] overflow-hidden rounded-xl bg-secondary/20`}>
+            <img src={image.src} alt={image.alt} className="w-full h-full object-cover hover:scale-105 transition-transform duration-500 pointer-events-none" loading="lazy" draggable={false} />
           </div>
         ))}
       </div>
@@ -145,17 +79,12 @@ const GalleryRow = ({
 };
 
 const GallerySection = () => {
+  const { t } = useLanguage();
   return (
-    <section 
-      id="gallery"
-      className="py-12 md:py-16 bg-background overflow-hidden select-none"
-    >
+    <section id="gallery" className="py-12 md:py-16 bg-background overflow-hidden select-none">
       <div className="container-narrow mb-6">
-        <h2 className="text-xl md:text-2xl font-medium text-center">
-          Moments
-        </h2>
+        <h2 className="text-xl md:text-2xl font-medium text-center">{t("gallery.title")}</h2>
       </div>
-      
       <div className="space-y-3 md:space-y-4">
         <GalleryRow images={row1} animationClass="animate-scroll-left" imageWidth="w-48 md:w-72" />
         <GalleryRow images={row2} animationClass="animate-scroll-right" imageWidth="w-56 md:w-80" />
