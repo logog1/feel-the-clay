@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import logo from "@/assets/logo.png";
 
@@ -6,12 +7,15 @@ const navLinks = [
   { label: "Accueil", href: "#hero" },
   { label: "Expérience", href: "#experience" },
   { label: "Galerie", href: "#gallery" },
+  { label: "Store", href: "/store", isRoute: true },
   { label: "Contact", href: "#location" },
 ];
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -21,8 +25,19 @@ const Header = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const scrollToSection = (href: string) => {
+  const scrollToSection = (href: string, isRoute?: boolean) => {
     setMobileMenuOpen(false);
+    if (isRoute) {
+      navigate(href);
+      return;
+    }
+    if (location.pathname !== "/") {
+      navigate("/");
+      setTimeout(() => {
+        document.querySelector(href)?.scrollIntoView({ behavior: "smooth" });
+      }, 300);
+      return;
+    }
     const element = document.querySelector(href);
     if (element) {
       element.scrollIntoView({ behavior: "smooth" });
@@ -59,7 +74,7 @@ const Header = () => {
                 href={link.href}
                 onClick={(e) => {
                   e.preventDefault();
-                  scrollToSection(link.href);
+                  scrollToSection(link.href, (link as any).isRoute);
                 }}
                 className="text-white/80 hover:text-white transition-colors text-sm font-medium"
               >
@@ -98,7 +113,7 @@ const Header = () => {
                   href={link.href}
                   onClick={(e) => {
                     e.preventDefault();
-                    scrollToSection(link.href);
+                    scrollToSection(link.href, (link as any).isRoute);
                   }}
                   className="text-white/80 hover:text-white transition-colors text-sm font-medium py-2"
                 >
