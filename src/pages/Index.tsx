@@ -6,6 +6,7 @@ import ExperienceSection from "@/components/ExperienceSection";
 import DetailsSection from "@/components/DetailsSection";
 import ProcessSection from "@/components/ProcessSection";
 import GallerySection from "@/components/GallerySection";
+import OffersSection from "@/components/OffersSection";
 import TestimonialsSection from "@/components/TestimonialsSection";
 import CraftsExpansionSection from "@/components/CraftsExpansionSection";
 import FAQSection from "@/components/FAQSection";
@@ -45,6 +46,9 @@ const Index = () => {
       </AnimatedSection>
       <AnimatedSection>
         <GallerySection />
+      </AnimatedSection>
+      <AnimatedSection>
+        <OffersSection />
       </AnimatedSection>
       
       {/* CONNECT - Validation + logistics */}
