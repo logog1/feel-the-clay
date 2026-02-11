@@ -9,12 +9,12 @@ const Cart = () => {
   const { t } = useLanguage();
 
   const generateWhatsAppMessage = () => {
-    let msg = "🛒 *New Order from Terraria Store*\n\n";
+    let msg = "*New Order from Terraria Store*\n\n";
     items.forEach((item) => {
       msg += `• ${item.name} × ${item.quantity} — ${item.price * item.quantity} DH\n`;
     });
-    msg += `\n💰 *Total: ${totalPrice} DH*`;
-    msg += `\n📦 *Items: ${totalItems}*`;
+    msg += `\n*Total: ${totalPrice} DH*`;
+    msg += `\n*Items: ${totalItems}*`;
     return encodeURIComponent(msg);
   };
 
@@ -35,7 +35,7 @@ const Cart = () => {
           <h1 className="text-2xl font-bold text-foreground mb-2">{t("cart.empty_title")}</h1>
           <p className="text-foreground/50 text-sm mb-8">{t("cart.empty_desc")}</p>
           <Link to="/store">
-            <Button variant="cta" size="lg">🏺 {t("cart.browse")}</Button>
+            <Button variant="cta" size="lg" className="gap-2"><ShoppingBag size={16} /> {t("cart.browse")}</Button>
           </Link>
         </div>
       </main>

@@ -53,7 +53,7 @@ const OffersSection = () => {
             className="group inline-flex items-center gap-3 bg-terracotta text-primary-foreground px-8 py-4 rounded-full text-sm font-semibold hover:bg-terracotta-light transition-all duration-300 hover:shadow-xl hover:shadow-terracotta/20 hover:scale-105"
           >
             <ShoppingBag size={18} />
-            <span>🏺 {t("offers.store")}</span>
+            <span>{t("offers.store")}</span>
             <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
           </Link>
         </div>
