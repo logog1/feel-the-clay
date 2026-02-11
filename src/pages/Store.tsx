@@ -1,9 +1,8 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowLeft, ShoppingCart, ShoppingBag, Plus, Check } from "lucide-react";
+import { ArrowLeft, ShoppingCart, ShoppingBag, Plus, Check, Sparkles, Heart, GraduationCap } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useCart } from "@/contexts/CartContext";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import workshop15 from "@/assets/workshop-15.jpg";
 import workshop16 from "@/assets/workshop-16.jpg";
@@ -30,6 +29,12 @@ const products: Product[] = [
   { id: "6", name: "Student Vase", price: 70, priceLabel: "70 DH", image: workshop21, category: "student" },
 ];
 
+const categoryIcons = {
+  artisan: Sparkles,
+  traveler: Heart,
+  student: GraduationCap,
+};
+
 const ProductCard = ({ product }: { product: Product }) => {
   const { addItem } = useCart();
   const { t } = useLanguage();
@@ -42,23 +47,26 @@ const ProductCard = ({ product }: { product: Product }) => {
   };
 
   return (
-    <div className="group rounded-2xl overflow-hidden bg-white/10 backdrop-blur-sm border border-white/10 hover:border-cta/30 transition-all duration-300 hover:shadow-xl hover:shadow-cta/5 hover:-translate-y-1">
-      <div className="aspect-square overflow-hidden relative">
+    <div className="group relative rounded-3xl overflow-hidden bg-card border-2 border-border/40 hover:border-cta/40 transition-all duration-500 hover:shadow-2xl hover:shadow-cta/10 hover:-translate-y-2">
+      {/* Image with overlay gradient */}
+      <div className="aspect-[4/5] overflow-hidden relative">
         <img src={product.image} alt={product.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" loading="lazy" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-      </div>
-      <div className="p-4 space-y-3">
-        <div>
-          <h3 className="font-semibold text-sm">{product.name}</h3>
-          <p className="text-cta font-bold text-lg mt-1">{product.priceLabel}</p>
+        <div className="absolute inset-0 bg-gradient-to-t from-foreground/60 via-transparent to-transparent" />
+        {/* Price badge floating on image */}
+        <div className="absolute bottom-3 left-3 bg-card/95 backdrop-blur-md px-3 py-1.5 rounded-xl border border-border/50 shadow-lg">
+          <span className="text-cta font-bold text-base">{product.priceLabel}</span>
         </div>
+      </div>
+      {/* Content */}
+      <div className="p-4 space-y-3 bg-card">
+        <h3 className="font-semibold text-sm text-foreground tracking-tight">{product.name}</h3>
         <button
           onClick={handleAdd}
           className={cn(
-            "w-full py-2.5 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-all duration-300",
+            "w-full py-3 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all duration-300 border-2",
             added
-              ? "bg-cta/20 text-cta border border-cta/30"
-              : "bg-cta/10 text-cta border border-cta/20 hover:bg-cta hover:text-primary-foreground hover:border-cta"
+              ? "bg-cta/15 text-cta border-cta/30 scale-95"
+              : "bg-cta text-primary-foreground border-cta hover:bg-cta-hover hover:shadow-lg hover:shadow-cta/20 active:scale-95"
           )}
         >
           {added ? <><Check size={16} /> {t("store.added")}</> : <><Plus size={16} /> {t("store.add_to_cart")}</>}
@@ -80,16 +88,16 @@ const Store = () => {
 
   return (
     <main className="min-h-screen bg-background">
-      {/* Nav with cart icon */}
-      <div className="fixed top-0 left-0 right-0 z-50 bg-background/90 backdrop-blur-xl border-b border-border/20">
-        <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2 text-foreground/70 hover:text-foreground transition-colors text-sm">
+      {/* Nav */}
+      <div className="fixed top-0 left-0 right-0 z-50 bg-card/90 backdrop-blur-xl border-b-2 border-border/30 shadow-sm">
+        <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+          <Link to="/" className="flex items-center gap-2 text-foreground/70 hover:text-foreground transition-colors text-sm font-medium">
             <ArrowLeft size={16} /> {t("store.back")}
           </Link>
-          <Link to="/cart" className="relative flex items-center gap-2 text-foreground/70 hover:text-foreground transition-colors text-sm">
-            <ShoppingCart size={18} />
+          <Link to="/cart" className="relative flex items-center gap-2 bg-foreground/5 hover:bg-foreground/10 px-4 py-2 rounded-2xl transition-all">
+            <ShoppingCart size={18} className="text-foreground/70" />
             {totalItems > 0 && (
-              <span className="absolute -top-2 -end-2 w-5 h-5 bg-cta text-white text-[10px] font-bold rounded-full flex items-center justify-center animate-scale-in">
+              <span className="absolute -top-1.5 -end-1.5 w-5 h-5 bg-cta text-primary-foreground text-[10px] font-bold rounded-full flex items-center justify-center animate-scale-in shadow-md shadow-cta/30">
                 {totalItems}
               </span>
             )}
@@ -97,39 +105,46 @@ const Store = () => {
         </div>
       </div>
 
-      <div className="max-w-5xl mx-auto px-6 pt-20 pb-12">
+      <div className="max-w-6xl mx-auto px-6 pt-24 pb-16">
         {/* Hero header */}
-        <div className="text-center mb-14 animate-fade-up">
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-cta/10 border border-cta/20 rounded-full mb-6">
+        <div className="text-center mb-16 animate-fade-up">
+          <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-cta/10 border-2 border-cta/20 rounded-full mb-6 shadow-sm">
             <ShoppingBag size={16} className="text-cta" />
-            <span className="text-sm font-semibold text-cta">{t("nav.store")}</span>
+            <span className="text-sm font-bold text-cta uppercase tracking-wider">{t("nav.store")}</span>
           </div>
-          <h1 className="text-3xl md:text-4xl font-bold mb-3">{t("store.title")}</h1>
-          <p className="text-foreground/50 max-w-lg mx-auto text-sm leading-relaxed">{t("store.subtitle")}</p>
+          <h1 className="text-4xl md:text-5xl font-bold mb-4 text-foreground tracking-tight">{t("store.title")}</h1>
+          <p className="text-muted-foreground max-w-lg mx-auto text-base leading-relaxed">{t("store.subtitle")}</p>
+          <div className="w-16 h-1 bg-cta rounded-full mx-auto mt-6" />
         </div>
 
-        {categories.map((cat, catIndex) => {
+        {categories.map((cat) => {
           const catProducts = products.filter((p) => p.category === cat.key);
           if (catProducts.length === 0) return null;
+          const Icon = categoryIcons[cat.key];
 
           return (
-            <section key={cat.key} className="mb-16">
-              <div className="mb-6 flex items-start gap-3">
-                <div className="w-1 h-8 bg-cta rounded-full flex-shrink-0 mt-1" />
-                <div>
-                  <h2 className="text-xl font-bold flex items-center gap-2">
-                    {cat.title}
-                    {cat.donation && (
-                      <span className="text-[10px] bg-cta/20 text-cta px-2.5 py-1 rounded-full font-semibold uppercase tracking-wider">
-                        {t("store.donation")}
-                      </span>
-                    )}
-                  </h2>
-                  <p className="text-foreground/50 text-sm mt-1 leading-relaxed">{cat.description}</p>
+            <section key={cat.key} className="mb-20">
+              {/* Category header with framed design */}
+              <div className="mb-8 p-6 rounded-3xl bg-card border-2 border-border/40 shadow-sm">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-2xl bg-cta/10 border-2 border-cta/20 flex items-center justify-center flex-shrink-0">
+                    <Icon size={22} className="text-cta" />
+                  </div>
+                  <div className="flex-1">
+                    <h2 className="text-xl font-bold text-foreground flex items-center gap-3 tracking-tight">
+                      {cat.title}
+                      {cat.donation && (
+                        <span className="text-[10px] bg-cta text-primary-foreground px-3 py-1 rounded-full font-bold uppercase tracking-widest shadow-sm">
+                          {t("store.donation")}
+                        </span>
+                      )}
+                    </h2>
+                    <p className="text-muted-foreground text-sm mt-1 leading-relaxed">{cat.description}</p>
+                  </div>
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 md:gap-5">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-5 md:gap-6">
                 {catProducts.map((product) => (
                   <ProductCard key={product.id} product={product} />
                 ))}
@@ -142,7 +157,7 @@ const Store = () => {
         {totalItems > 0 && (
           <Link
             to="/cart"
-            className="fixed bottom-20 end-6 z-40 bg-cta text-white px-6 py-3 rounded-full shadow-2xl shadow-cta/30 flex items-center gap-2 font-semibold text-sm hover:scale-105 transition-transform animate-scale-in"
+            className="fixed bottom-20 end-6 z-40 bg-cta text-primary-foreground px-7 py-4 rounded-full shadow-2xl shadow-cta/40 flex items-center gap-3 font-bold text-sm hover:scale-105 transition-all duration-300 animate-scale-in border-2 border-cta-hover"
           >
             <ShoppingCart size={18} />
             {t("store.view_cart")} ({totalItems})
