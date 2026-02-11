@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowLeft, Clock, Coffee, MapPin, ChevronDown } from "lucide-react";
+import { ArrowLeft, Clock, Coffee, MapPin, ChevronDown, Store } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { cn } from "@/lib/utils";
@@ -46,7 +46,7 @@ const WorkshopPageLayout = ({ workshop, currentPath }: { workshop: Workshop; cur
             {t("workshop.back")}
           </Link>
           <Link to="/store" className="text-foreground/70 hover:text-foreground transition-colors text-sm">
-            🏺 {t("workshop.store")}
+            <Store size={14} className="inline mr-1" />{t("workshop.store")}
           </Link>
         </div>
       </div>
@@ -167,8 +167,8 @@ const WorkshopPageLayout = ({ workshop, currentPath }: { workshop: Workshop; cur
                   {t(w.titleKey)} →
                 </Link>
               ))}
-            <Link to="/store" className="p-4 rounded-xl bg-card/50 hover:bg-card transition-all duration-300 text-sm font-medium hover:shadow-lg hover:scale-[1.02]">
-              🏺 {t("workshop.visit_store")}
+            <Link to="/store" className="p-4 rounded-xl bg-card/50 hover:bg-card transition-all duration-300 text-sm font-medium hover:shadow-lg hover:scale-[1.02] flex items-center gap-2">
+              <Store size={14} /> {t("workshop.visit_store")}
             </Link>
           </div>
         </div>

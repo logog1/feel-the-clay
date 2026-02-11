@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowLeft, ShoppingCart, Plus, Check } from "lucide-react";
+import { ArrowLeft, ShoppingCart, ShoppingBag, Plus, Check } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useCart } from "@/contexts/CartContext";
 import { Button } from "@/components/ui/button";
@@ -101,7 +101,7 @@ const Store = () => {
         {/* Hero header */}
         <div className="text-center mb-14 animate-fade-up">
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-cta/10 border border-cta/20 rounded-full mb-6">
-            <span className="text-lg">🏺</span>
+            <ShoppingBag size={16} className="text-cta" />
             <span className="text-sm font-semibold text-cta">{t("nav.store")}</span>
           </div>
           <h1 className="text-3xl md:text-4xl font-bold mb-3">{t("store.title")}</h1>
