@@ -77,12 +77,26 @@ const SocialImpactSection = () => {
           <p className="text-muted-foreground max-w-xl mx-auto">{t("impact.subtitle")}</p>
         </div>
 
-        <div ref={storyRef} className={cn("max-w-2xl mx-auto mb-16 transition-all duration-700", storyVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8")}>
-          <div className="relative bg-card/40 backdrop-blur-sm rounded-3xl p-8 border border-border/30">
-            <div className="absolute -top-4 -left-4 w-8 h-8 bg-primary rounded-full flex items-center justify-center">
-              <span className="text-primary-foreground text-lg">"</span>
+        <div ref={storyRef} className={cn("max-w-3xl mx-auto mb-16 transition-all duration-700", storyVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8")}>
+          <div className="relative bg-card rounded-3xl p-8 md:p-10 border-2 border-primary/20 shadow-lg">
+            <div className="absolute -top-5 left-8 px-4 py-1 bg-primary rounded-full">
+              <span className="text-primary-foreground text-sm font-semibold tracking-wide uppercase">{t("impact.origin_label")}</span>
             </div>
-            <p className="text-foreground/90 leading-relaxed text-center">{t("impact.story")}</p>
+            <div className="mt-2 text-foreground/90 leading-relaxed text-base md:text-lg space-y-4">
+              <p>
+                {t("impact.story_p1_before")}
+                <span className="font-semibold text-primary">{t("impact.story_highlight1")}</span>
+                {t("impact.story_p1_after")}
+              </p>
+              <p className="bg-primary/5 border-l-4 border-primary rounded-r-xl px-4 py-3 italic text-foreground">
+                {t("impact.story_quote")}
+              </p>
+              <p>
+                {t("impact.story_p2_before")}
+                <span className="font-semibold text-primary">{t("impact.story_highlight2")}</span>
+                {t("impact.story_p2_after")}
+              </p>
+            </div>
           </div>
         </div>
 
@@ -92,11 +106,15 @@ const SocialImpactSection = () => {
           ))}
         </div>
 
-        <div ref={galleryRef} className="grid grid-cols-2 md:grid-cols-6 gap-2 md:gap-3">
+        <div ref={galleryRef} className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
           {images.map((image, index) => (
-            <div key={index} className={cn("relative overflow-hidden rounded-xl md:rounded-2xl group transition-all duration-700 aspect-square", galleryVisible ? "opacity-100 scale-100" : "opacity-0 scale-95", image.size === "large" && "col-span-2 row-span-2", image.size === "medium" && "col-span-1 row-span-1 md:col-span-2 md:row-span-2")} style={{ transitionDelay: `${index * 80}ms` }}>
-              <img src={image.src} alt={image.alt} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-              <div className="absolute inset-0 bg-gradient-to-t from-foreground/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <div key={index} className={cn(
+              "relative overflow-hidden rounded-2xl group transition-all duration-700",
+              galleryVisible ? "opacity-100 scale-100" : "opacity-0 scale-95",
+              image.size === "large" ? "col-span-2 row-span-2 aspect-square" : "aspect-[4/5]"
+            )} style={{ transitionDelay: `${index * 80}ms` }}>
+              <img src={image.src} alt={image.alt} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
+              <div className="absolute inset-0 bg-gradient-to-t from-foreground/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </div>
           ))}
         </div>

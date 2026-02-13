@@ -34,6 +34,42 @@ export const translations = {
     ar: 'أثناء تطوعه كمرشد سياحي في تطوان، اكتشف عثمان حرفيين يعيشون على بعد دقائق من منزله — صناع لم يكن يعلم بوجودهم، يعانون من دخل منخفض وقلة التعريف. أشعل ذلك الاكتشاف مهمة: ربط السياحة بالتقاليد، وخلق دخل حقيقي لهؤلاء الحرفيين.',
     es: 'Mientras trabajaba como guía turístico voluntario en Tetuán, Otman descubrió alfareros viviendo a minutos de su casa — artesanos que nunca supo que existían, luchando con bajos ingresos y poca exposición. Ese descubrimiento encendió una misión: unir turismo con tradición y crear ingresos significativos para estos artesanos.'
   },
+  "impact.origin_label": { en: "Our Origin Story", ar: "قصة بدايتنا", es: "Nuestra Historia de Origen" },
+  "impact.story_p1_before": {
+    en: "While volunteering as a tour guide in Tetouan, Otman discovered ",
+    ar: "أثناء تطوعه كمرشد سياحي في تطوان، اكتشف عثمان ",
+    es: "Mientras trabajaba como guía turístico voluntario en Tetuán, Otman descubrió "
+  },
+  "impact.story_highlight1": {
+    en: "potters living just minutes from his home",
+    ar: "حرفيين يعيشون على بعد دقائق من منزله",
+    es: "alfareros viviendo a minutos de su casa"
+  },
+  "impact.story_p1_after": {
+    en: " — artisans he never knew existed, struggling with low income and little exposure.",
+    ar: " — صناع لم يكن يعلم بوجودهم، يعانون من دخل منخفض وقلة التعريف.",
+    es: " — artesanos que nunca supo que existían, luchando con bajos ingresos y poca exposición."
+  },
+  "impact.story_quote": {
+    en: "That discovery sparked a mission: bridge tourism with tradition, and create meaningful income for these craftspeople.",
+    ar: "أشعل ذلك الاكتشاف مهمة: ربط السياحة بالتقاليد، وخلق دخل حقيقي لهؤلاء الحرفيين.",
+    es: "Ese descubrimiento encendió una misión: unir turismo con tradición y crear ingresos significativos para estos artesanos."
+  },
+  "impact.story_p2_before": {
+    en: "Today, Feel the Clay is ",
+    ar: "اليوم، Feel the Clay هي ",
+    es: "Hoy, Feel the Clay es "
+  },
+  "impact.story_highlight2": {
+    en: "a social initiative connecting travelers with tradition",
+    ar: "مبادرة اجتماعية تربط المسافرين بالتقاليد",
+    es: "una iniciativa social que conecta viajeros con la tradición"
+  },
+  "impact.story_p2_after": {
+    en: " — giving artisans the recognition and livelihood they deserve.",
+    ar: " — تمنح الحرفيين التقدير وسبل العيش التي يستحقونها.",
+    es: " — dando a los artesanos el reconocimiento y sustento que merecen."
+  },
   "impact.artisans": { en: "artisans he never knew existed", ar: "صناع لم يكن يعلم بوجودهم", es: "artesanos que nunca supo que existían" },
   "impact.bridge": { en: " bridge tourism with tradition", ar: " ربط السياحة بالتقاليد", es: " unir turismo con tradición" },
   "impact.people_hosted": { en: "People hosted", ar: "ضيف استضفناهم", es: "Personas recibidas" },
