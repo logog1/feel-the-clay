@@ -1,17 +1,12 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import { ArrowLeft, ShoppingCart, ShoppingBag, Plus, Check, Sparkles, Heart, GraduationCap, Crown, ChevronLeft, ChevronRight } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useCart } from "@/contexts/CartContext";
 import { cn } from "@/lib/utils";
+import Header from "@/components/Header";
 
-// Product images
-import workshop15 from "@/assets/workshop-15.jpg";
-import workshop16 from "@/assets/workshop-16.jpg";
-import workshop18 from "@/assets/workshop-18.jpg";
-import workshop19 from "@/assets/workshop-19.jpg";
-import workshop20 from "@/assets/workshop-20.jpg";
-import workshop21 from "@/assets/workshop-21.jpg";
+// Product images - only real product photos
 import productHeartMug from "@/assets/product-heart-mug.png";
 import productTexturedBowl1 from "@/assets/product-textured-bowl-1.png";
 import productTexturedBowl2 from "@/assets/product-textured-bowl-2.png";
@@ -21,6 +16,16 @@ import productCarvedCup from "@/assets/product-carved-cup.png";
 import productDoubleCup from "@/assets/product-double-cup.png";
 import productTwinCups from "@/assets/product-twin-cups.png";
 import productTerrariaPot from "@/assets/product-terraria-pot.png";
+import productTerrariaPotTop from "@/assets/product-terraria-pot-top.png";
+import productTerrariaPotClosed from "@/assets/product-terraria-pot-closed.png";
+import productSimpleCup from "@/assets/product-simple-cup.png";
+import productHeartCup1 from "@/assets/product-heart-cup-1.png";
+import productHeartCup2 from "@/assets/product-heart-cup-2.png";
+import productStrawCup from "@/assets/product-straw-cup.png";
+import productTwistedVase from "@/assets/product-twisted-vase.png";
+import productStickerCup from "@/assets/product-sticker-cup.png";
+import productCatMug1 from "@/assets/product-cat-mug-1.png";
+import productCatMug2 from "@/assets/product-cat-mug-2.png";
 
 interface Product {
   id: string;
@@ -33,18 +38,19 @@ interface Product {
 
 const products: Product[] = [
   // Terraria's Collection
-  { id: "t1", name: "Terraria Signature Pot", price: 150, priceLabel: "150 DH", images: [productTerrariaPot, workshop15], category: "terraria" },
-  { id: "t2", name: "Carved Cup Set", price: 120, priceLabel: "120 DH", images: [productCarvedCup, productTwinCups], category: "terraria" },
+  { id: "t1", name: "Terraria Signature Pot", price: 150, priceLabel: "150 DH", images: [productTerrariaPot, productTerrariaPotTop, productTerrariaPotClosed], category: "terraria" },
+  { id: "t2", name: "Carved Cup Set", price: 120, priceLabel: "120 DH", images: [productCarvedCup, productTwinCups, productDoubleCup], category: "terraria" },
   { id: "t3", name: "Bowl & Plate Set", price: 180, priceLabel: "180 DH", images: [productPlateBowl, productSet], category: "terraria" },
   // Artisan
-  { id: "1", name: "Handmade Bowl", price: 80, priceLabel: "80 DH", images: [workshop15, productTexturedBowl1, productTexturedBowl2], category: "artisan" },
-  { id: "2", name: "Glazed Mug", price: 60, priceLabel: "60 DH", images: [workshop16, productHeartMug], category: "artisan" },
-  { id: "3", name: "Decorative Plate", price: 120, priceLabel: "120 DH", images: [workshop18, productPlateBowl], category: "artisan" },
+  { id: "1", name: "Textured Bowl", price: 80, priceLabel: "80 DH", images: [productTexturedBowl1, productTexturedBowl2], category: "artisan" },
+  { id: "2", name: "Heart Mug", price: 60, priceLabel: "60 DH", images: [productHeartMug], category: "artisan" },
+  { id: "3", name: "Simple Cup", price: 45, priceLabel: "45 DH", images: [productSimpleCup], category: "artisan" },
   // Traveler
-  { id: "4", name: "Traveler's Cup", price: 50, priceLabel: "50 DH", images: [workshop19, productDoubleCup], category: "traveler" },
-  { id: "5", name: "Memory Bowl", price: 50, priceLabel: "50 DH", images: [workshop20, productTexturedBowl1], category: "traveler" },
+  { id: "4", name: "Heart Cup", price: 50, priceLabel: "50 DH", images: [productHeartCup1, productHeartCup2], category: "traveler" },
+  { id: "5", name: "Sticker Cup", price: 50, priceLabel: "50 DH", images: [productStickerCup, productStrawCup], category: "traveler" },
+  { id: "6", name: "Twisted Vase", price: 50, priceLabel: "50 DH", images: [productTwistedVase], category: "traveler" },
   // Student
-  { id: "6", name: "Student Vase", price: 70, priceLabel: "70 DH", images: [workshop21, productCarvedCup], category: "student" },
+  { id: "7", name: "Cat Mug", price: 70, priceLabel: "70 DH", images: [productCatMug1, productCatMug2], category: "student" },
 ];
 
 const categoryIcons = {
@@ -59,7 +65,7 @@ const ImageCarousel = ({ images, alt }: { images: string[]; alt: string }) => {
   const touchStartX = useRef(0);
 
   if (images.length <= 1) {
-    return <img src={images[0]} alt={alt} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" loading="lazy" />;
+    return <img src={images[0]} alt={alt} className="w-full h-full object-cover" loading="lazy" />;
   }
 
   return (
@@ -73,14 +79,13 @@ const ImageCarousel = ({ images, alt }: { images: string[]; alt: string }) => {
         }
       }}
     >
-      <img src={images[current]} alt={alt} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" loading="lazy" />
+      <img src={images[current]} alt={alt} className="w-full h-full object-cover transition-opacity duration-300" loading="lazy" />
       {/* Dots */}
       <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
         {images.map((_, i) => (
           <button key={i} onClick={(e) => { e.stopPropagation(); setCurrent(i); }} className={cn("w-1.5 h-1.5 rounded-full transition-all", i === current ? "bg-white w-4" : "bg-white/50")} />
         ))}
       </div>
-      {/* Nav arrows */}
       {current > 0 && (
         <button onClick={(e) => { e.stopPropagation(); setCurrent(current - 1); }} className="absolute left-1 top-1/2 -translate-y-1/2 w-6 h-6 bg-black/40 backdrop-blur-sm rounded-full flex items-center justify-center text-white z-10 hover:bg-black/60">
           <ChevronLeft size={14} />
@@ -107,7 +112,7 @@ const ProductCard = ({ product }: { product: Product }) => {
   };
 
   return (
-    <div className="group relative rounded-3xl overflow-hidden bg-card border-2 border-border/40 hover:border-cta/40 transition-all duration-500 hover:shadow-2xl hover:shadow-cta/10 hover:-translate-y-2">
+    <div className="group relative rounded-3xl overflow-hidden bg-card border-2 border-border/40 transition-all duration-300 active:scale-[0.97] active:shadow-xl active:shadow-cta/15 hover:border-cta/40 hover:shadow-2xl hover:shadow-cta/10 hover:-translate-y-2">
       <div className="aspect-[4/5] overflow-hidden relative">
         <ImageCarousel images={product.images} alt={product.name} />
         <div className="absolute inset-0 bg-gradient-to-t from-foreground/60 via-transparent to-transparent pointer-events-none" />
@@ -146,22 +151,7 @@ const Store = () => {
 
   return (
     <main className="min-h-screen bg-background">
-      {/* Nav */}
-      <div className="fixed top-0 left-0 right-0 z-50 bg-foreground/90 backdrop-blur-xl border-b border-white/10 shadow-sm">
-        <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2 text-white/70 hover:text-white transition-colors text-sm font-medium">
-            <ArrowLeft size={16} /> {t("store.back")}
-          </Link>
-          <Link to="/cart" className="relative flex items-center gap-2 bg-white/10 hover:bg-white/20 px-4 py-2 rounded-2xl transition-all">
-            <ShoppingCart size={18} className="text-white/70" />
-            {totalItems > 0 && (
-              <span className="absolute -top-1.5 -end-1.5 w-5 h-5 bg-cta text-primary-foreground text-[10px] font-bold rounded-full flex items-center justify-center animate-scale-in shadow-md shadow-cta/30">
-                {totalItems}
-              </span>
-            )}
-          </Link>
-        </div>
-      </div>
+      <Header />
 
       <div className="max-w-6xl mx-auto px-6 pt-24 pb-16">
         {/* Hero header */}
