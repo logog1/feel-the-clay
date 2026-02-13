@@ -91,7 +91,7 @@
   }
 
   .container-narrow {
-    @apply max-w-2xl mx-auto;
+    @apply max-w-2xl mx-auto px-5 sm:px-6;
   }
 
   .container-wide {
