@@ -1,4 +1,5 @@
 import heroBg from "@/assets/hero-bg.jpg";
+import tetouanCity from "@/assets/tetouan-city.jpg";
 import { useLanguage } from "@/i18n/LanguageContext";
 
 const HeroSection = () => {
@@ -26,6 +27,17 @@ const HeroSection = () => {
           <p className="text-lg md:text-xl text-foreground/80 font-light max-w-sm drop-shadow-sm">
             {t("hero.subtitle")}
           </p>
+        </div>
+
+        {/* Tetouan city highlight */}
+        <div className="mt-10 flex items-center gap-4 animate-fade-up" style={{ animationDelay: '0.3s' }}>
+          <div className="w-16 h-16 md:w-20 md:h-20 rounded-2xl overflow-hidden border-2 border-white/30 shadow-lg flex-shrink-0">
+            <img src={tetouanCity} alt="Tetouan, Morocco" className="w-full h-full object-cover" />
+          </div>
+          <div>
+            <p className="text-sm font-bold text-foreground">{t("hero.city_name")}</p>
+            <p className="text-xs text-foreground/60">{t("hero.city_desc")}</p>
+          </div>
         </div>
       </div>
       <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-fade-in" style={{ animationDelay: '1s' }}>

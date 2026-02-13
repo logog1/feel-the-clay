@@ -66,7 +66,7 @@ const SocialImpactSection = () => {
   ];
 
   return (
-    <section ref={sectionRef} className="section-padding bg-gradient-to-b from-background to-secondary/30 overflow-hidden">
+    <section id="about" ref={sectionRef} className="section-padding bg-gradient-to-b from-background to-secondary/30 overflow-hidden">
       <div className="container-wide">
         <div className={cn("text-center mb-12 transition-all duration-700", sectionVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8")}>
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full mb-6">

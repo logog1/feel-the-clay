@@ -1,38 +1,98 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { ArrowLeft, ShoppingCart, ShoppingBag, Plus, Check, Sparkles, Heart, GraduationCap } from "lucide-react";
+import { ArrowLeft, ShoppingCart, ShoppingBag, Plus, Check, Sparkles, Heart, GraduationCap, Crown, ChevronLeft, ChevronRight } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useCart } from "@/contexts/CartContext";
 import { cn } from "@/lib/utils";
+
+// Product images
 import workshop15 from "@/assets/workshop-15.jpg";
 import workshop16 from "@/assets/workshop-16.jpg";
 import workshop18 from "@/assets/workshop-18.jpg";
 import workshop19 from "@/assets/workshop-19.jpg";
 import workshop20 from "@/assets/workshop-20.jpg";
 import workshop21 from "@/assets/workshop-21.jpg";
+import productHeartMug from "@/assets/product-heart-mug.png";
+import productTexturedBowl1 from "@/assets/product-textured-bowl-1.png";
+import productTexturedBowl2 from "@/assets/product-textured-bowl-2.png";
+import productPlateBowl from "@/assets/product-plate-bowl.png";
+import productSet from "@/assets/product-set.png";
+import productCarvedCup from "@/assets/product-carved-cup.png";
+import productDoubleCup from "@/assets/product-double-cup.png";
+import productTwinCups from "@/assets/product-twin-cups.png";
+import productTerrariaPot from "@/assets/product-terraria-pot.png";
 
 interface Product {
   id: string;
   name: string;
   price: number;
   priceLabel: string;
-  image: string;
-  category: "artisan" | "traveler" | "student";
+  images: string[];
+  category: "terraria" | "artisan" | "traveler" | "student";
 }
 
 const products: Product[] = [
-  { id: "1", name: "Handmade Bowl", price: 80, priceLabel: "80 DH", image: workshop15, category: "artisan" },
-  { id: "2", name: "Glazed Mug", price: 60, priceLabel: "60 DH", image: workshop16, category: "artisan" },
-  { id: "3", name: "Decorative Plate", price: 120, priceLabel: "120 DH", image: workshop18, category: "artisan" },
-  { id: "4", name: "Traveler's Cup", price: 50, priceLabel: "50 DH", image: workshop19, category: "traveler" },
-  { id: "5", name: "Memory Bowl", price: 50, priceLabel: "50 DH", image: workshop20, category: "traveler" },
-  { id: "6", name: "Student Vase", price: 70, priceLabel: "70 DH", image: workshop21, category: "student" },
+  // Terraria's Collection
+  { id: "t1", name: "Terraria Signature Pot", price: 150, priceLabel: "150 DH", images: [productTerrariaPot, workshop15], category: "terraria" },
+  { id: "t2", name: "Carved Cup Set", price: 120, priceLabel: "120 DH", images: [productCarvedCup, productTwinCups], category: "terraria" },
+  { id: "t3", name: "Bowl & Plate Set", price: 180, priceLabel: "180 DH", images: [productPlateBowl, productSet], category: "terraria" },
+  // Artisan
+  { id: "1", name: "Handmade Bowl", price: 80, priceLabel: "80 DH", images: [workshop15, productTexturedBowl1, productTexturedBowl2], category: "artisan" },
+  { id: "2", name: "Glazed Mug", price: 60, priceLabel: "60 DH", images: [workshop16, productHeartMug], category: "artisan" },
+  { id: "3", name: "Decorative Plate", price: 120, priceLabel: "120 DH", images: [workshop18, productPlateBowl], category: "artisan" },
+  // Traveler
+  { id: "4", name: "Traveler's Cup", price: 50, priceLabel: "50 DH", images: [workshop19, productDoubleCup], category: "traveler" },
+  { id: "5", name: "Memory Bowl", price: 50, priceLabel: "50 DH", images: [workshop20, productTexturedBowl1], category: "traveler" },
+  // Student
+  { id: "6", name: "Student Vase", price: 70, priceLabel: "70 DH", images: [workshop21, productCarvedCup], category: "student" },
 ];
 
 const categoryIcons = {
+  terraria: Crown,
   artisan: Sparkles,
   traveler: Heart,
   student: GraduationCap,
+};
+
+const ImageCarousel = ({ images, alt }: { images: string[]; alt: string }) => {
+  const [current, setCurrent] = useState(0);
+  const touchStartX = useRef(0);
+
+  if (images.length <= 1) {
+    return <img src={images[0]} alt={alt} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" loading="lazy" />;
+  }
+
+  return (
+    <div
+      className="relative w-full h-full"
+      onTouchStart={(e) => { touchStartX.current = e.touches[0].clientX; }}
+      onTouchEnd={(e) => {
+        const diff = touchStartX.current - e.changedTouches[0].clientX;
+        if (Math.abs(diff) > 40) {
+          setCurrent((p) => diff > 0 ? Math.min(p + 1, images.length - 1) : Math.max(p - 1, 0));
+        }
+      }}
+    >
+      <img src={images[current]} alt={alt} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" loading="lazy" />
+      {/* Dots */}
+      <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
+        {images.map((_, i) => (
+          <button key={i} onClick={(e) => { e.stopPropagation(); setCurrent(i); }} className={cn("w-1.5 h-1.5 rounded-full transition-all", i === current ? "bg-white w-4" : "bg-white/50")} />
+        ))}
+      </div>
+      {/* Nav arrows */}
+      {current > 0 && (
+        <button onClick={(e) => { e.stopPropagation(); setCurrent(current - 1); }} className="absolute left-1 top-1/2 -translate-y-1/2 w-6 h-6 bg-black/40 backdrop-blur-sm rounded-full flex items-center justify-center text-white z-10 hover:bg-black/60">
+          <ChevronLeft size={14} />
+        </button>
+      )}
+      {current < images.length - 1 && (
+        <button onClick={(e) => { e.stopPropagation(); setCurrent(current + 1); }} className="absolute right-1 top-1/2 -translate-y-1/2 w-6 h-6 bg-black/40 backdrop-blur-sm rounded-full flex items-center justify-center text-white z-10 hover:bg-black/60">
+          <ChevronRight size={14} />
+        </button>
+      )}
+    </div>
+  );
 };
 
 const ProductCard = ({ product }: { product: Product }) => {
@@ -41,23 +101,20 @@ const ProductCard = ({ product }: { product: Product }) => {
   const [added, setAdded] = useState(false);
 
   const handleAdd = () => {
-    addItem({ id: product.id, name: product.name, price: product.price, image: product.image, category: product.category });
+    addItem({ id: product.id, name: product.name, price: product.price, image: product.images[0], category: product.category });
     setAdded(true);
     setTimeout(() => setAdded(false), 1500);
   };
 
   return (
     <div className="group relative rounded-3xl overflow-hidden bg-card border-2 border-border/40 hover:border-cta/40 transition-all duration-500 hover:shadow-2xl hover:shadow-cta/10 hover:-translate-y-2">
-      {/* Image with overlay gradient */}
       <div className="aspect-[4/5] overflow-hidden relative">
-        <img src={product.image} alt={product.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" loading="lazy" />
-        <div className="absolute inset-0 bg-gradient-to-t from-foreground/60 via-transparent to-transparent" />
-        {/* Price badge floating on image */}
+        <ImageCarousel images={product.images} alt={product.name} />
+        <div className="absolute inset-0 bg-gradient-to-t from-foreground/60 via-transparent to-transparent pointer-events-none" />
         <div className="absolute bottom-3 left-3 bg-card/95 backdrop-blur-md px-3 py-1.5 rounded-xl border border-border/50 shadow-lg">
           <span className="text-cta font-bold text-base">{product.priceLabel}</span>
         </div>
       </div>
-      {/* Content */}
       <div className="p-4 space-y-3 bg-card">
         <h3 className="font-semibold text-sm text-foreground tracking-tight">{product.name}</h3>
         <button
@@ -81,6 +138,7 @@ const Store = () => {
   const { totalItems } = useCart();
 
   const categories = [
+    { key: "terraria" as const, title: t("store.terraria_title"), description: t("store.terraria_desc") },
     { key: "artisan" as const, title: t("store.artisan_title"), description: t("store.artisan_desc") },
     { key: "traveler" as const, title: t("store.traveler_title"), description: t("store.traveler_desc"), donation: true },
     { key: "student" as const, title: t("store.student_title"), description: t("store.student_desc") },
@@ -89,13 +147,13 @@ const Store = () => {
   return (
     <main className="min-h-screen bg-background">
       {/* Nav */}
-      <div className="fixed top-0 left-0 right-0 z-50 bg-card/90 backdrop-blur-xl border-b-2 border-border/30 shadow-sm">
+      <div className="fixed top-0 left-0 right-0 z-50 bg-foreground/90 backdrop-blur-xl border-b border-white/10 shadow-sm">
         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2 text-foreground/70 hover:text-foreground transition-colors text-sm font-medium">
+          <Link to="/" className="flex items-center gap-2 text-white/70 hover:text-white transition-colors text-sm font-medium">
             <ArrowLeft size={16} /> {t("store.back")}
           </Link>
-          <Link to="/cart" className="relative flex items-center gap-2 bg-foreground/5 hover:bg-foreground/10 px-4 py-2 rounded-2xl transition-all">
-            <ShoppingCart size={18} className="text-foreground/70" />
+          <Link to="/cart" className="relative flex items-center gap-2 bg-white/10 hover:bg-white/20 px-4 py-2 rounded-2xl transition-all">
+            <ShoppingCart size={18} className="text-white/70" />
             {totalItems > 0 && (
               <span className="absolute -top-1.5 -end-1.5 w-5 h-5 bg-cta text-primary-foreground text-[10px] font-bold rounded-full flex items-center justify-center animate-scale-in shadow-md shadow-cta/30">
                 {totalItems}
@@ -124,7 +182,6 @@ const Store = () => {
 
           return (
             <section key={cat.key} className="mb-20">
-              {/* Category header with framed design */}
               <div className="mb-8 p-6 rounded-3xl bg-card border-2 border-border/40 shadow-sm">
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 rounded-2xl bg-cta/10 border-2 border-cta/20 flex items-center justify-center flex-shrink-0">

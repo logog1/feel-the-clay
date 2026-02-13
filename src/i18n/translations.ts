@@ -3,16 +3,21 @@ export type Language = "en" | "ar" | "es";
 export const translations = {
   // Header
   "nav.home": { en: "Home", ar: "الرئيسية", es: "Inicio" },
+  "nav.workshops": { en: "Our Workshops", ar: "ورشاتنا", es: "Nuestros Talleres" },
   "nav.experience": { en: "Experience", ar: "التجربة", es: "Experiencia" },
   "nav.gallery": { en: "Gallery", ar: "المعرض", es: "Galería" },
   "nav.store": { en: "Store", ar: "المتجر", es: "Tienda" },
+  "nav.about": { en: "About Us", ar: "من نحن", es: "Sobre Nosotros" },
   "nav.contact": { en: "Contact", ar: "اتصل بنا", es: "Contacto" },
   "nav.reserve": { en: "Reserve", ar: "احجز", es: "Reservar" },
+  "nav.book": { en: "Book a Place", ar: "احجز مكانك", es: "Reserva tu Lugar" },
 
   // Hero
   "hero.title1": { en: "Rethinking pottery as", ar: "إعادة تصور الفخار", es: "Reinventando la cerámica como" },
   "hero.highlight": { en: "community", ar: "كمجتمع", es: "comunidad" },
   "hero.subtitle": { en: "A creative, grounding experience in Tetouan.", ar: "تجربة إبداعية وأصيلة في تطوان.", es: "Una experiencia creativa y enraizada en Tetuán." },
+  "hero.city_name": { en: "Tetouan, Morocco", ar: "تطوان، المغرب", es: "Tetuán, Marruecos" },
+  "hero.city_desc": { en: "The White Dove of the Rif Mountains", ar: "الحمامة البيضاء لجبال الريف", es: "La Paloma Blanca de las Montañas del Rif" },
 
   // Belief
   "belief.line1": { en: "Craft lives through", ar: "الحرفة تعيش من خلال", es: "El oficio vive a través de" },
@@ -112,7 +117,7 @@ export const translations = {
 
   // CTA
   "cta.title": { en: "Join us", ar: "انضم إلينا", es: "Únete" },
-  "cta.reserve": { en: "Reserve a spot", ar: "احجز مكانك", es: "Reserva tu lugar" },
+  "cta.reserve": { en: "Book a Place", ar: "احجز مكانك", es: "Reserva tu Lugar" },
   "cta.whatsapp": { en: "Or message us", ar: "أو راسلنا", es: "O escríbenos" },
 
   // Location
@@ -129,7 +134,7 @@ export const translations = {
   "workshop.back": { en: "Back", ar: "رجوع", es: "Volver" },
   "workshop.store": { en: "Store", ar: "المتجر", es: "Tienda" },
   "workshop.included": { en: "What's included", ar: "ما المتضمن", es: "Qué incluye" },
-  "workshop.reserve": { en: "Reserve a Spot", ar: "احجز مكانك", es: "Reserva tu lugar" },
+  "workshop.reserve": { en: "Book a Place", ar: "احجز مكانك", es: "Reserva tu Lugar" },
   "workshop.message": { en: "Message Us", ar: "راسلنا", es: "Escríbenos" },
   "workshop.explore": { en: "Explore Other Workshops", ar: "استكشف ورشات أخرى", es: "Explora Otros Talleres" },
   "workshop.visit_store": { en: "Visit Store →", ar: "← زيارة المتجر", es: "Visitar Tienda →" },
@@ -188,6 +193,8 @@ export const translations = {
   // Store
   "store.title": { en: "Our Store", ar: "متجرنا", es: "Nuestra Tienda" },
   "store.subtitle": { en: "Every piece tells a story. From master potters to traveling souls to ambitious students — your purchase supports real people and real dreams.", ar: "كل قطعة تروي قصة. من الحرفيين المحترفين إلى المسافرين إلى الطلاب الطموحين — شراؤك يدعم أشخاصاً حقيقيين وأحلاماً حقيقية.", es: "Cada pieza cuenta una historia. De alfareros maestros a almas viajeras a estudiantes ambiciosos — tu compra apoya a personas reales y sueños reales." },
+  "store.terraria_title": { en: "Terraria's Collection", ar: "مجموعة تيراريا", es: "Colección Terraria" },
+  "store.terraria_desc": { en: "Our signature pieces — handcrafted by Terraria's own artisans. Each piece carries our mark and story.", ar: "قطعنا المميزة — مصنوعة يدوياً بواسطة حرفيي تيراريا. كل قطعة تحمل علامتنا وقصتنا.", es: "Nuestras piezas insignia — hechas a mano por los propios artesanos de Terraria. Cada pieza lleva nuestra marca e historia." },
   "store.artisan_title": { en: "Artisan Collection", ar: "مجموعة الحرفيين", es: "Colección Artesanal" },
   "store.artisan_desc": { en: "Handcrafted by our master potters using traditional wheel-throwing techniques.", ar: "مصنوعة يدوياً بواسطة حرفيينا المحترفين باستخدام تقنيات العجلة التقليدية.", es: "Hechas a mano por nuestros alfareros maestros usando técnicas tradicionales de torneado." },
   "store.traveler_title": { en: "Traveler Creations", ar: "إبداعات المسافرين", es: "Creaciones de Viajeros" },
