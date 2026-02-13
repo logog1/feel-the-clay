@@ -4,7 +4,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 
 const HeroSection = () => {
   const { t } = useLanguage();
-  
+
   return (
     <section id="hero" className="min-h-[85vh] md:min-h-screen flex flex-col justify-end md:justify-center section-padding pb-16 md:pb-0 pt-24 md:pt-20 relative overflow-hidden">
       <div className="absolute inset-0 bg-cover bg-no-repeat bg-center" style={{ backgroundImage: `url(${heroBg})` }} />
@@ -41,13 +41,13 @@ const HeroSection = () => {
         </div>
       </div>
       <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-fade-in" style={{ animationDelay: '1s' }}>
-        <div className="w-6 h-10 border-2 border-foreground/40 rounded-full flex justify-center pt-2 backdrop-blur-sm">
-          <div className="w-1.5 h-3 bg-foreground/50 rounded-full animate-bounce" />
-        </div>
+        
+
+
       </div>
       <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-terracotta/30 to-transparent" />
-    </section>
-  );
+    </section>);
+
 };
 
 export default HeroSection;
