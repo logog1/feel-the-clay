@@ -3,6 +3,7 @@ import { ArrowLeft, Minus, Plus, Trash2, ShoppingBag, ShoppingCart } from "lucid
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/contexts/CartContext";
 import { useLanguage } from "@/i18n/LanguageContext";
+import Header from "@/components/Header";
 
 const Cart = () => {
   const { items, updateQuantity, removeItem, clearCart, totalPrice, totalItems } = useCart();
