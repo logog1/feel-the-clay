@@ -13,9 +13,9 @@ const Header = () => {
 
   const navLinks = [
     { label: t("nav.home"), href: "#hero" },
-    { label: t("nav.experience"), href: "#experience" },
-    { label: t("nav.gallery"), href: "#gallery" },
+    { label: t("nav.workshops"), href: "#offers" },
     { label: t("nav.store"), href: "/store", isRoute: true },
+    { label: t("nav.about"), href: "#about" },
     { label: t("nav.contact"), href: "#location" },
   ];
 
@@ -37,7 +37,7 @@ const Header = () => {
   };
 
   return (
-    <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${isScrolled ? "bg-terracotta/80 backdrop-blur-md shadow-lg" : "bg-transparent"}`}>
+    <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${isScrolled ? "bg-foreground/90 backdrop-blur-md shadow-lg" : "bg-foreground/70 backdrop-blur-sm"}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <a href="#hero" onClick={(e) => { e.preventDefault(); scrollToSection("#hero"); }} className="flex items-center">
@@ -49,8 +49,8 @@ const Header = () => {
                 {link.label}
               </a>
             ))}
-            <a href="#cta" onClick={(e) => { e.preventDefault(); scrollToSection("#cta"); }} className="bg-cta hover:bg-cta/90 text-white px-5 py-2 rounded-md text-sm font-semibold transition-colors">
-              {t("nav.reserve")}
+            <a href="#cta" onClick={(e) => { e.preventDefault(); scrollToSection("#cta"); }} className="bg-cta hover:bg-cta-hover text-white px-6 py-2.5 rounded-full text-sm font-bold transition-all shadow-lg shadow-cta/30 hover:shadow-xl hover:shadow-cta/40 hover:scale-105">
+              {t("nav.book")}
             </a>
           </nav>
           <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="md:hidden text-white p-2" aria-label="Toggle menu">
@@ -65,8 +65,8 @@ const Header = () => {
                   {link.label}
                 </a>
               ))}
-              <a href="#cta" onClick={(e) => { e.preventDefault(); scrollToSection("#cta"); }} className="bg-cta hover:bg-cta/90 text-white px-5 py-3 rounded-md text-sm font-semibold transition-colors text-center mt-2">
-                {t("nav.reserve")}
+              <a href="#cta" onClick={(e) => { e.preventDefault(); scrollToSection("#cta"); }} className="bg-cta hover:bg-cta-hover text-white px-5 py-3 rounded-full text-sm font-bold transition-colors text-center mt-2 shadow-lg">
+                {t("nav.book")}
               </a>
             </div>
           </nav>
