@@ -7,6 +7,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState("");
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useLanguage();
@@ -24,6 +25,30 @@ const Header = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // Track active section via IntersectionObserver on homepage
+  useEffect(() => {
+    if (location.pathname !== "/") return;
+    const sectionIds = ["hero", "offers", "about", "location"];
+    const observers: IntersectionObserver[] = [];
+    sectionIds.forEach((id) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const obs = new IntersectionObserver(
+        ([entry]) => { if (entry.isIntersecting) setActiveSection(`#${id}`); },
+        { threshold: 0.3 }
+      );
+      obs.observe(el);
+      observers.push(obs);
+    });
+    return () => observers.forEach((o) => o.disconnect());
+  }, [location.pathname]);
+
+  const isActive = (link: { href: string; isRoute?: boolean }) => {
+    if (link.isRoute) return location.pathname === link.href;
+    if (location.pathname !== "/") return false;
+    return activeSection === link.href;
+  };
 
   const scrollToSection = (href: string, isRoute?: boolean) => {
     setMobileMenuOpen(false);
@@ -45,8 +70,18 @@ const Header = () => {
           </a>
           <nav className="hidden md:flex items-center gap-8">
             {navLinks.map((link) => (
-              <a key={link.href} href={link.href} onClick={(e) => { e.preventDefault(); scrollToSection(link.href, (link as any).isRoute); }} className="text-white/80 hover:text-white transition-colors text-sm font-medium">
+              <a
+                key={link.href}
+                href={link.href}
+                onClick={(e) => { e.preventDefault(); scrollToSection(link.href, (link as any).isRoute); }}
+                className={`relative text-sm font-medium transition-colors pb-1 ${
+                  isActive(link) ? "text-white" : "text-white/60 hover:text-white"
+                }`}
+              >
                 {link.label}
+                {isActive(link) && (
+                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-cta rounded-full" />
+                )}
               </a>
             ))}
             <a href="#cta" onClick={(e) => { e.preventDefault(); scrollToSection("#cta"); }} className="bg-cta hover:bg-cta-hover text-white px-6 py-2.5 rounded-full text-sm font-bold transition-all shadow-lg shadow-cta/30 hover:shadow-xl hover:shadow-cta/40 hover:scale-105">
@@ -59,13 +94,22 @@ const Header = () => {
         </div>
         {mobileMenuOpen && (
           <nav className="md:hidden py-4 border-t border-white/10">
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-1">
               {navLinks.map((link) => (
-                <a key={link.href} href={link.href} onClick={(e) => { e.preventDefault(); scrollToSection(link.href, (link as any).isRoute); }} className="text-white/80 hover:text-white transition-colors text-sm font-medium py-2">
+                <a
+                  key={link.href}
+                  href={link.href}
+                  onClick={(e) => { e.preventDefault(); scrollToSection(link.href, (link as any).isRoute); }}
+                  className={`text-sm font-medium py-2.5 px-3 rounded-lg transition-all ${
+                    isActive(link)
+                      ? "text-white bg-white/10 border-l-2 border-cta"
+                      : "text-white/60 hover:text-white hover:bg-white/5"
+                  }`}
+                >
                   {link.label}
                 </a>
               ))}
-              <a href="#cta" onClick={(e) => { e.preventDefault(); scrollToSection("#cta"); }} className="bg-cta hover:bg-cta-hover text-white px-5 py-3 rounded-full text-sm font-bold transition-colors text-center mt-2 shadow-lg">
+              <a href="#cta" onClick={(e) => { e.preventDefault(); scrollToSection("#cta"); }} className="bg-cta hover:bg-cta-hover text-white px-5 py-3 rounded-full text-sm font-bold transition-colors text-center mt-3 shadow-lg">
                 {t("nav.book")}
               </a>
             </div>
