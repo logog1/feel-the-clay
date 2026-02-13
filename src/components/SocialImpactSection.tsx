@@ -114,7 +114,7 @@ const SocialImpactSection = () => {
               image.size === "large" ? "col-span-2 row-span-2 aspect-square" : "aspect-[4/5]"
             )} style={{ transitionDelay: `${index * 80}ms` }}>
               <img src={image.src} alt={image.alt} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
-              <div className="absolute inset-0 bg-gradient-to-t from-foreground/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              
             </div>
           ))}
         </div>
