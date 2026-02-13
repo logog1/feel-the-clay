@@ -56,19 +56,19 @@ export const translations = {
     es: "Ese descubrimiento encendió una misión: unir turismo con tradición y crear ingresos significativos para estos artesanos."
   },
   "impact.story_p2_before": {
-    en: "Today, Feel the Clay is ",
-    ar: "اليوم، Feel the Clay هي ",
-    es: "Hoy, Feel the Clay es "
+    en: "That's how Terraria was born — what started with local potters has grown into ",
+    ar: "هكذا وُلدت Terraria — ما بدأ مع حرفيين محليين تحوّل إلى ",
+    es: "Así nació Terraria — lo que comenzó con alfareros locales se ha convertido en "
   },
   "impact.story_highlight2": {
-    en: "a social initiative connecting travelers with tradition",
-    ar: "مبادرة اجتماعية تربط المسافرين بالتقاليد",
-    es: "una iniciativa social que conecta viajeros con la tradición"
+    en: "a creative movement bridging culture, craft, and community",
+    ar: "حركة إبداعية تجمع بين الثقافة والحرفة والمجتمع",
+    es: "un movimiento creativo que une cultura, artesanía y comunidad"
   },
   "impact.story_p2_after": {
-    en: " — giving artisans the recognition and livelihood they deserve.",
-    ar: " — تمنح الحرفيين التقدير وسبل العيش التي يستحقونها.",
-    es: " — dando a los artesanos el reconocimiento y sustento que merecen."
+    en: " — empowering people and preserving heritage through meaningful experiences.",
+    ar: " — تمكين الناس والحفاظ على التراث من خلال تجارب ذات معنى.",
+    es: " — empoderando personas y preservando el patrimonio a través de experiencias significativas."
   },
   "impact.artisans": { en: "artisans he never knew existed", ar: "صناع لم يكن يعلم بوجودهم", es: "artesanos que nunca supo que existían" },
   "impact.bridge": { en: " bridge tourism with tradition", ar: " ربط السياحة بالتقاليد", es: " unir turismo con tradición" },
