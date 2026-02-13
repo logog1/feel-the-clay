@@ -22,13 +22,7 @@ const Cart = () => {
   if (items.length === 0) {
     return (
       <main className="min-h-screen bg-background">
-        <div className="fixed top-0 left-0 right-0 z-50 bg-card/90 backdrop-blur-xl border-b-2 border-border/30 shadow-sm">
-          <div className="max-w-5xl mx-auto px-4 py-3 flex items-center">
-            <Link to="/store" className="flex items-center gap-2 text-foreground/70 hover:text-foreground transition-colors text-sm font-medium">
-              <ArrowLeft size={16} /> {t("store.back")}
-            </Link>
-          </div>
-        </div>
+        <Header />
         <div className="max-w-md mx-auto px-6 pt-32 pb-12 text-center">
           <div className="w-24 h-24 mx-auto mb-6 rounded-3xl bg-cta/10 border-2 border-cta/20 flex items-center justify-center">
             <ShoppingBag size={40} className="text-cta/60" />
@@ -45,16 +39,11 @@ const Cart = () => {
 
   return (
     <main className="min-h-screen bg-background">
-      {/* Nav */}
-      <div className="fixed top-0 left-0 right-0 z-50 bg-card/90 backdrop-blur-xl border-b-2 border-border/30 shadow-sm">
-        <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
-          <Link to="/store" className="flex items-center gap-2 text-foreground/70 hover:text-foreground transition-colors text-sm font-medium">
-            <ArrowLeft size={16} /> {t("nav.store")}
-          </Link>
-          <button onClick={clearCart} className="text-xs text-foreground/40 hover:text-destructive transition-colors font-medium px-3 py-1.5 rounded-xl hover:bg-destructive/10">
-            {t("cart.clear")}
-          </button>
-        </div>
+      <Header />
+      <div className="max-w-5xl mx-auto px-4 pt-20 pb-2 flex items-center justify-end">
+        <button onClick={clearCart} className="text-xs text-foreground/40 hover:text-destructive transition-colors font-medium px-3 py-1.5 rounded-xl hover:bg-destructive/10">
+          {t("cart.clear")}
+        </button>
       </div>
 
       <div className="max-w-2xl mx-auto px-6 pt-24 pb-32">
