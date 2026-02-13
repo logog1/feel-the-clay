@@ -4,6 +4,7 @@ import { ArrowLeft, Clock, Coffee, MapPin, ChevronDown, Store, Star } from "luci
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { cn } from "@/lib/utils";
+import Header from "@/components/Header";
 
 interface Workshop {
   title: string;
@@ -38,21 +39,10 @@ const WorkshopPageLayout = ({ workshop, currentPath }: { workshop: Workshop; cur
 
   return (
     <main className="min-h-screen bg-background">
-      {/* Back nav */}
-      <div className="fixed top-0 left-0 right-0 z-50 bg-card/90 backdrop-blur-xl border-b-2 border-border/30 shadow-sm">
-        <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2 text-foreground/70 hover:text-foreground transition-colors text-sm font-medium">
-            <ArrowLeft size={16} />
-            {t("workshop.back")}
-          </Link>
-          <Link to="/store" className="flex items-center gap-2 text-foreground/70 hover:text-foreground transition-colors text-sm font-medium bg-foreground/5 hover:bg-foreground/10 px-4 py-2 rounded-2xl">
-            <Store size={14} />{t("workshop.store")}
-          </Link>
-        </div>
-      </div>
+      <Header />
 
       {/* Hero image with overlay */}
-      <div className="pt-12 relative">
+      <div className="pt-16 relative">
         <div className="aspect-[16/9] md:aspect-[21/9] overflow-hidden">
           <img src={workshop.images[0]} alt={workshop.title} className="w-full h-full object-cover animate-fade-in" />
         </div>
@@ -62,7 +52,7 @@ const WorkshopPageLayout = ({ workshop, currentPath }: { workshop: Workshop; cur
       {/* Content */}
       <div className="max-w-3xl mx-auto px-6 py-8 md:py-12">
         <div className="space-y-8">
-          {/* Title card - framed */}
+          {/* Title card */}
           <div className="animate-fade-up p-6 rounded-3xl bg-card border-2 border-border/40 shadow-sm -mt-16 relative z-10">
             {workshop.popular && (
               <span className="inline-flex items-center gap-1.5 bg-cta text-primary-foreground text-xs font-bold px-4 py-1.5 rounded-full mb-4 shadow-md shadow-cta/20">
@@ -73,7 +63,7 @@ const WorkshopPageLayout = ({ workshop, currentPath }: { workshop: Workshop; cur
             <p className="text-muted-foreground mt-2 text-lg">{workshop.tagline}</p>
           </div>
 
-          {/* Quick info pills - framed container */}
+          {/* Quick info pills */}
           <div className="p-5 rounded-3xl bg-card border-2 border-border/40 shadow-sm">
             <div className="flex flex-wrap gap-3">
               <span className="flex items-center gap-2 bg-cta/10 border-2 border-cta/20 px-4 py-2.5 rounded-2xl text-sm font-medium text-foreground">
@@ -93,14 +83,14 @@ const WorkshopPageLayout = ({ workshop, currentPath }: { workshop: Workshop; cur
             </div>
           </div>
 
-          {/* Description - framed */}
+          {/* Description */}
           <div className="p-6 rounded-3xl bg-card border-2 border-border/40 shadow-sm space-y-4">
             {workshop.description.map((p, i) => (
               <p key={i} className="text-foreground/80 leading-relaxed text-base">{p}</p>
             ))}
           </div>
 
-          {/* Highlights - framed with accent */}
+          {/* Highlights */}
           <div className="rounded-3xl border-2 border-cta/20 bg-cta/5 p-6 shadow-sm">
             <h3 className="font-bold mb-5 text-lg text-foreground flex items-center gap-2">
               <Star size={16} className="text-cta" /> {t("workshop.included")}
@@ -149,7 +139,7 @@ const WorkshopPageLayout = ({ workshop, currentPath }: { workshop: Workshop; cur
             </div>
           )}
 
-          {/* CTAs - bold framed */}
+          {/* CTAs */}
           <div className="flex flex-col sm:flex-row gap-4 pt-4">
             <Button variant="cta" size="lg" asChild className="flex-1 text-base py-6 shadow-xl shadow-cta/20">
               <a href="https://forms.gle/NfrnW6E2yr65WAVbA" target="_blank" rel="noopener noreferrer">{t("workshop.reserve")}</a>
@@ -162,7 +152,7 @@ const WorkshopPageLayout = ({ workshop, currentPath }: { workshop: Workshop; cur
           </div>
         </div>
 
-        {/* Other workshops - framed */}
+        {/* Other workshops */}
         <div className="mt-16 pt-8 border-t-2 border-border/30">
           <h3 className="text-lg font-bold mb-5 text-foreground tracking-tight">{t("workshop.explore")}</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
