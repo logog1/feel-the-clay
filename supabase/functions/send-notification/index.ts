@@ -87,6 +87,7 @@ Deno.serve(async (req) => {
     const emailJson = await emailResult.json();
 
     // Send WhatsApp via Twilio
+    console.log("WhatsApp From:", TWILIO_WHATSAPP_NUMBER, "To:", OWNER_WHATSAPP_NUMBER);
     const twilioUrl = `https://api.twilio.com/2010-04-01/Accounts/${TWILIO_ACCOUNT_SID}/Messages.json`;
     const twilioBody = new URLSearchParams({
       From: `whatsapp:${TWILIO_WHATSAPP_NUMBER?.startsWith('+') ? '' : '+'}${TWILIO_WHATSAPP_NUMBER}`,
