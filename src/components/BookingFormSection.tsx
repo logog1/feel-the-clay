@@ -11,6 +11,7 @@ import { CalendarIcon, Send, CheckCircle } from "lucide-react";
 import { format, isWeekend, isSaturday, isSunday } from "date-fns";
 import { cn } from "@/lib/utils";
 import { z } from "zod";
+import { supabase } from "@/integrations/supabase/client";
 
 const bookingSchema = z.object({
   name: z.string().trim().min(1, "Required").max(100),
@@ -92,6 +93,25 @@ const BookingFormSection = () => {
       (form.notes ? `\n📝 Notes: ${form.notes}` : "")
     );
     window.open(`https://wa.me/message/SBUBJACPVCNGM1?text=${msg}`, "_blank");
+
+    // Send notification via backend
+    supabase.functions.invoke("send-notification", {
+      body: {
+        type: "booking",
+        data: {
+          name: form.name,
+          city: form.city,
+          email: form.email,
+          phone: form.phone,
+          workshop: workshopLabel,
+          sessionInfo: sessionInfo.trim(),
+          participants: String(form.participants),
+          date: dateStr,
+          notes: form.notes || "",
+        },
+      },
+    }).catch(console.error);
+
     setSubmitted(true);
   };
 
