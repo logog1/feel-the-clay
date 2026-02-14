@@ -14,10 +14,10 @@ const Header = () => {
 
   const navLinks = [
     { label: t("nav.home"), href: "#hero" },
+    { label: t("nav.about"), href: "#about" },
     { label: t("nav.workshops"), href: "#offers" },
     { label: t("nav.store"), href: "/store", isRoute: true },
-    { label: t("nav.about"), href: "#about" },
-    { label: t("nav.contact"), href: "#location" },
+    { label: t("nav.contact"), href: "#contact" },
   ];
 
   useEffect(() => {
@@ -29,7 +29,7 @@ const Header = () => {
   // Track active section via IntersectionObserver on homepage
   useEffect(() => {
     if (location.pathname !== "/") return;
-    const sectionIds = ["hero", "offers", "about", "location"];
+    const sectionIds = ["hero", "about", "offers", "contact"];
     const observers: IntersectionObserver[] = [];
     sectionIds.forEach((id) => {
       const el = document.getElementById(id);
@@ -84,7 +84,7 @@ const Header = () => {
                 )}
               </a>
             ))}
-            <a href="#cta" onClick={(e) => { e.preventDefault(); scrollToSection("#cta"); }} className="bg-cta hover:bg-cta-hover text-white px-6 py-2.5 rounded-full text-sm font-bold transition-all shadow-lg shadow-cta/30 hover:shadow-xl hover:shadow-cta/40 hover:scale-105">
+            <a href="#booking" onClick={(e) => { e.preventDefault(); scrollToSection("#booking"); }} className="bg-cta hover:bg-cta-hover text-white px-6 py-2.5 rounded-full text-sm font-bold transition-all shadow-lg shadow-cta/30 hover:shadow-xl hover:shadow-cta/40 hover:scale-105">
               {t("nav.book")}
             </a>
           </nav>
@@ -109,7 +109,7 @@ const Header = () => {
                   {link.label}
                 </a>
               ))}
-              <a href="#cta" onClick={(e) => { e.preventDefault(); scrollToSection("#cta"); }} className="bg-cta hover:bg-cta-hover text-white px-5 py-3 rounded-full text-sm font-bold transition-colors text-center mt-3 shadow-lg">
+              <a href="#booking" onClick={(e) => { e.preventDefault(); scrollToSection("#booking"); }} className="bg-cta hover:bg-cta-hover text-white px-5 py-3 rounded-full text-sm font-bold transition-colors text-center mt-3 shadow-lg">
                 {t("nav.book")}
               </a>
             </div>

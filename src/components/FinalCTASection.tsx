@@ -10,7 +10,7 @@ const FinalCTASection = () => {
           <h2 className="text-xl md:text-2xl font-light">{t("cta.title")}</h2>
           <div className="pt-2">
             <Button variant="cta" size="xl" asChild>
-              <a href="https://forms.gle/NfrnW6E2yr65WAVbA" target="_blank" rel="noopener noreferrer">{t("cta.reserve")}</a>
+              <a href="#booking" onClick={(e) => { e.preventDefault(); document.querySelector("#booking")?.scrollIntoView({ behavior: "smooth" }); }}>{t("cta.reserve")}</a>
             </Button>
           </div>
           <div className="pt-4">
