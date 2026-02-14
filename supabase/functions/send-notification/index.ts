@@ -77,7 +77,7 @@ Deno.serve(async (req) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: "Terraria <onboarding@resend.dev>",
+        from: "Terraria <notifications@terrariaworkshops.com>",
         to: ["contact.terraria@gmail.com"],
         subject: emailSubject,
         html: emailBody,
