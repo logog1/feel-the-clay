@@ -55,7 +55,12 @@ const BookingFormSection = () => {
       // Less than 4: only weekends
       return !isWeekend(date);
     }
-    return false; // 4+: any day
+    // 4+ with open workshop: weekends only
+    if (form.sessionType === "open") {
+      return !isWeekend(date);
+    }
+    // 4+ with private: any day
+    return false;
   };
 
   const handleSubmit = (e: React.FormEvent) => {
