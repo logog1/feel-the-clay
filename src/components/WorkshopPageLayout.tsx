@@ -139,10 +139,9 @@ const WorkshopPageLayout = ({ workshop, currentPath }: { workshop: Workshop; cur
             </div>
           )}
 
-          {/* CTAs */}
           <div className="flex flex-col sm:flex-row gap-4 pt-4">
             <Button variant="cta" size="lg" asChild className="flex-1 text-base py-6 shadow-xl shadow-cta/20">
-              <a href="https://forms.gle/NfrnW6E2yr65WAVbA" target="_blank" rel="noopener noreferrer">{t("workshop.reserve")}</a>
+              <Link to="/#booking">{t("workshop.reserve")}</Link>
             </Button>
             <Button variant="ctaOutline" size="lg" asChild className="flex-1 py-6 border-2">
               <a href="https://wa.me/message/SBUBJACPVCNGM1" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">

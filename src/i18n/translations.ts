@@ -156,6 +156,36 @@ export const translations = {
   "cta.reserve": { en: "Book a Place", ar: "احجز مكانك", es: "Reserva tu Lugar" },
   "cta.whatsapp": { en: "Or message us", ar: "أو راسلنا", es: "O escríbenos" },
 
+  // Contact
+  "contact.title": { en: "Contact Us", ar: "تواصل معنا", es: "Contáctanos" },
+  "contact.location": { en: "Tetouan, Morocco", ar: "تطوان، المغرب", es: "Tetuán, Marruecos" },
+
+  // Booking Form
+  "booking.title": { en: "Book a Place", ar: "احجز مكانك", es: "Reserva tu Lugar" },
+  "booking.subtitle": { en: "Fill in your details and we'll confirm your spot via WhatsApp", ar: "املأ بياناتك وسنؤكد مكانك عبر واتساب", es: "Completa tus datos y confirmaremos tu lugar por WhatsApp" },
+  "booking.personal": { en: "Personal Info", ar: "المعلومات الشخصية", es: "Información Personal" },
+  "booking.name": { en: "Full Name", ar: "الاسم الكامل", es: "Nombre Completo" },
+  "booking.city": { en: "City", ar: "المدينة", es: "Ciudad" },
+  "booking.email": { en: "Email", ar: "البريد الإلكتروني", es: "Correo Electrónico" },
+  "booking.phone": { en: "WhatsApp Number", ar: "رقم واتساب", es: "Número de WhatsApp" },
+  "booking.select_workshop": { en: "Select Workshop", ar: "اختر الورشة", es: "Selecciona el Taller" },
+  "booking.participants": { en: "Number of Participants", ar: "عدد المشاركين", es: "Número de Participantes" },
+  "booking.session_type": { en: "Session Type", ar: "نوع الجلسة", es: "Tipo de Sesión" },
+  "booking.large_group_info": { en: "Groups of 4+ can join open workshops (Sat & Sun) or schedule a private session any weekday (subject to staff availability).", ar: "المجموعات من 4 فأكثر يمكنها الانضمام للورشات المفتوحة (السبت والأحد) أو جدولة جلسة خاصة أي يوم خلال الأسبوع (حسب توفر الطاقم).", es: "Grupos de 4+ pueden unirse a talleres abiertos (Sáb y Dom) o programar una sesión privada cualquier día de la semana (sujeto a disponibilidad del personal)." },
+  "booking.small_group_info": { en: "Groups under 4 can join our open workshops on Saturday & Sunday at 4 PM.", ar: "المجموعات أقل من 4 يمكنها الانضمام لورشاتنا المفتوحة يومي السبت والأحد الساعة 4 مساءً.", es: "Grupos de menos de 4 pueden unirse a nuestros talleres abiertos los Sábados y Domingos a las 4 PM." },
+  "booking.open_workshop": { en: "Open Workshop", ar: "ورشة مفتوحة", es: "Taller Abierto" },
+  "booking.open_desc": { en: "Saturday & Sunday at 4 PM", ar: "السبت والأحد الساعة 4 مساءً", es: "Sábado y Domingo a las 4 PM" },
+  "booking.private_session": { en: "Private Session", ar: "جلسة خاصة", es: "Sesión Privada" },
+  "booking.private_desc": { en: "Any weekday (staff availability)", ar: "أي يوم خلال الأسبوع (حسب توفر الطاقم)", es: "Cualquier día de la semana (disponibilidad del personal)" },
+  "booking.date": { en: "Preferred Date", ar: "التاريخ المفضل", es: "Fecha Preferida" },
+  "booking.pick_date": { en: "Pick a date", ar: "اختر تاريخاً", es: "Elige una fecha" },
+  "booking.notes": { en: "Questions or Notes", ar: "أسئلة أو ملاحظات", es: "Preguntas o Notas" },
+  "booking.notes_placeholder": { en: "Any special requests, questions, or things we should know? (optional)", ar: "أي طلبات خاصة، أسئلة، أو أشياء يجب أن نعرفها؟ (اختياري)", es: "¿Alguna solicitud especial, preguntas o cosas que debamos saber? (opcional)" },
+  "booking.submit": { en: "Send Booking Request", ar: "إرسال طلب الحجز", es: "Enviar Solicitud de Reserva" },
+  "booking.success_title": { en: "Request Sent!", ar: "تم إرسال الطلب!", es: "¡Solicitud Enviada!" },
+  "booking.success_desc": { en: "We'll confirm your booking via WhatsApp shortly.", ar: "سنؤكد حجزك عبر واتساب قريباً.", es: "Confirmaremos tu reserva por WhatsApp pronto." },
+  "booking.another": { en: "Book Another", ar: "حجز آخر", es: "Reservar Otro" },
+
   // Location
   "location.title": { en: "Find us", ar: "موقعنا", es: "Encuéntranos" },
   "location.maps": { en: "Open in Google Maps", ar: "افتح في خرائط جوجل", es: "Abrir en Google Maps" },

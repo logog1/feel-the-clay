@@ -8,11 +8,10 @@ import ProcessSection from "@/components/ProcessSection";
 import GallerySection from "@/components/GallerySection";
 import OffersSection from "@/components/OffersSection";
 import TestimonialsSection from "@/components/TestimonialsSection";
-import CraftsExpansionSection from "@/components/CraftsExpansionSection";
 import FAQSection from "@/components/FAQSection";
-import LocationSection from "@/components/LocationSection";
+import ContactSection from "@/components/ContactSection";
 import LanguagesSection from "@/components/LanguagesSection";
-import FinalCTASection from "@/components/FinalCTASection";
+import BookingFormSection from "@/components/BookingFormSection";
 import TrustSection from "@/components/TrustSection";
 import AnimatedSection from "@/components/AnimatedSection";
 import SocialImpactSection from "@/components/SocialImpactSection";
@@ -32,11 +31,10 @@ const Index = () => {
       <AnimatedSection><GallerySection /></AnimatedSection>
       <AnimatedSection><OffersSection /></AnimatedSection>
       <AnimatedSection><TestimonialsSection /></AnimatedSection>
-      
       <AnimatedSection><FAQSection /></AnimatedSection>
       <AnimatedSection><LanguagesSection /></AnimatedSection>
-      <AnimatedSection><FinalCTASection /></AnimatedSection>
-      <AnimatedSection><LocationSection /></AnimatedSection>
+      <AnimatedSection><BookingFormSection /></AnimatedSection>
+      <AnimatedSection><ContactSection /></AnimatedSection>
       <AnimatedSection><TrustSection /></AnimatedSection>
       <Footer />
     </main>
