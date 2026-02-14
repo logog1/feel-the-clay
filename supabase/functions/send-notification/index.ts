@@ -21,6 +21,7 @@ Deno.serve(async (req) => {
     const TWILIO_ACCOUNT_SID = Deno.env.get("TWILIO_ACCOUNT_SID");
     const TWILIO_AUTH_TOKEN = Deno.env.get("TWILIO_AUTH_TOKEN");
     const TWILIO_WHATSAPP_NUMBER = Deno.env.get("TWILIO_WHATSAPP_NUMBER");
+    const OWNER_WHATSAPP_NUMBER = Deno.env.get("OWNER_WHATSAPP_NUMBER");
 
     let emailSubject: string;
     let emailBody: string;
@@ -89,7 +90,7 @@ Deno.serve(async (req) => {
     const twilioUrl = `https://api.twilio.com/2010-04-01/Accounts/${TWILIO_ACCOUNT_SID}/Messages.json`;
     const twilioBody = new URLSearchParams({
       From: `whatsapp:+${TWILIO_WHATSAPP_NUMBER}`,
-      To: `whatsapp:+${TWILIO_WHATSAPP_NUMBER}`,
+      To: `whatsapp:+${OWNER_WHATSAPP_NUMBER}`,
       Body: whatsappMessage,
     });
 
