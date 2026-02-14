@@ -4,6 +4,17 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+function escapeHtml(text: string): string {
+  const map: Record<string, string> = {
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'
+  };
+  return text.replace(/[&<>"']/g, (m) => map[m]);
+}
+
+function sanitizeText(text: string): string {
+  return text.replace(/[*_~`]/g, '');
+}
+
 interface NotificationPayload {
   type: "booking" | "purchase";
   data: Record<string, unknown>;
@@ -33,23 +44,23 @@ Deno.serve(async (req) => {
       emailBody = `
         <h2>New Booking Request</h2>
         <table style="border-collapse:collapse;font-family:sans-serif;">
-          <tr><td style="padding:6px 12px;font-weight:bold;">Name</td><td style="padding:6px 12px;">${d.name}</td></tr>
-          <tr><td style="padding:6px 12px;font-weight:bold;">City</td><td style="padding:6px 12px;">${d.city}</td></tr>
-          <tr><td style="padding:6px 12px;font-weight:bold;">Email</td><td style="padding:6px 12px;">${d.email}</td></tr>
-          <tr><td style="padding:6px 12px;font-weight:bold;">Phone</td><td style="padding:6px 12px;">${d.phone}</td></tr>
-          <tr><td style="padding:6px 12px;font-weight:bold;">Workshop</td><td style="padding:6px 12px;">${d.workshop}</td></tr>
-          <tr><td style="padding:6px 12px;font-weight:bold;">Session</td><td style="padding:6px 12px;">${d.sessionInfo || "Open Workshop"}</td></tr>
-          <tr><td style="padding:6px 12px;font-weight:bold;">Participants</td><td style="padding:6px 12px;">${d.participants}</td></tr>
-          <tr><td style="padding:6px 12px;font-weight:bold;">Date</td><td style="padding:6px 12px;">${d.date}</td></tr>
-          ${d.notes ? `<tr><td style="padding:6px 12px;font-weight:bold;">Notes</td><td style="padding:6px 12px;">${d.notes}</td></tr>` : ""}
+          <tr><td style="padding:6px 12px;font-weight:bold;">Name</td><td style="padding:6px 12px;">${escapeHtml(d.name)}</td></tr>
+          <tr><td style="padding:6px 12px;font-weight:bold;">City</td><td style="padding:6px 12px;">${escapeHtml(d.city)}</td></tr>
+          <tr><td style="padding:6px 12px;font-weight:bold;">Email</td><td style="padding:6px 12px;">${escapeHtml(d.email)}</td></tr>
+          <tr><td style="padding:6px 12px;font-weight:bold;">Phone</td><td style="padding:6px 12px;">${escapeHtml(d.phone)}</td></tr>
+          <tr><td style="padding:6px 12px;font-weight:bold;">Workshop</td><td style="padding:6px 12px;">${escapeHtml(d.workshop)}</td></tr>
+          <tr><td style="padding:6px 12px;font-weight:bold;">Session</td><td style="padding:6px 12px;">${escapeHtml(d.sessionInfo || "Open Workshop")}</td></tr>
+          <tr><td style="padding:6px 12px;font-weight:bold;">Participants</td><td style="padding:6px 12px;">${escapeHtml(d.participants)}</td></tr>
+          <tr><td style="padding:6px 12px;font-weight:bold;">Date</td><td style="padding:6px 12px;">${escapeHtml(d.date)}</td></tr>
+          ${d.notes ? `<tr><td style="padding:6px 12px;font-weight:bold;">Notes</td><td style="padding:6px 12px;">${escapeHtml(d.notes)}</td></tr>` : ""}
         </table>
       `;
       whatsappMessage =
         `🏺 *New Booking*\n\n` +
-        `👤 ${d.name}\n🏙️ ${d.city}\n📧 ${d.email}\n📱 ${d.phone}\n\n` +
-        `🎨 ${d.workshop} — ${d.sessionInfo || "Open Workshop"}\n` +
-        `👥 ${d.participants} participants\n📅 ${d.date}` +
-        (d.notes ? `\n📝 ${d.notes}` : "");
+        `👤 ${sanitizeText(d.name)}\n🏙️ ${sanitizeText(d.city)}\n📧 ${sanitizeText(d.email)}\n📱 ${sanitizeText(d.phone)}\n\n` +
+        `🎨 ${sanitizeText(d.workshop)} — ${sanitizeText(d.sessionInfo || "Open Workshop")}\n` +
+        `👥 ${sanitizeText(d.participants)} participants\n📅 ${sanitizeText(d.date)}` +
+        (d.notes ? `\n📝 ${sanitizeText(d.notes)}` : "");
     } else {
       // Purchase
       const d = data as Record<string, unknown>;
@@ -115,8 +126,9 @@ Deno.serve(async (req) => {
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (error) {
+    console.error('Notification error:', error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: 'Failed to send notification. Please try again later.' }),
       {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
