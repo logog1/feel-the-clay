@@ -64,7 +64,9 @@ const BookingFormSection = () => {
     return false;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [sending, setSending] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const result = bookingSchema.safeParse(form);
     if (!result.success) {
@@ -76,42 +78,34 @@ const BookingFormSection = () => {
       return;
     }
     setErrors({});
+    setSending(true);
 
-    // Build WhatsApp message
     const workshopLabel = workshops.find(w => w.value === form.workshop)?.label || form.workshop;
     const sessionInfo = isLargeGroup && form.sessionType ? ` (${form.sessionType === "private" ? "Private Session" : "Open Workshop"})` : " (Open Workshop - Weekend 4PM)";
     const dateStr = form.date ? format(form.date, "PPP") : "";
-    const msg = encodeURIComponent(
-      `🏺 *New Booking Request*\n\n` +
-      `👤 Name: ${form.name}\n` +
-      `🏙️ City: ${form.city}\n` +
-      `📧 Email: ${form.email}\n` +
-      `📱 WhatsApp: ${form.phone}\n\n` +
-      `🎨 Workshop: ${workshopLabel}${sessionInfo}\n` +
-      `👥 Participants: ${form.participants}\n` +
-      `📅 Date: ${dateStr}\n` +
-      (form.notes ? `\n📝 Notes: ${form.notes}` : "")
-    );
-    window.open(`https://wa.me/message/SBUBJACPVCNGM1?text=${msg}`, "_blank");
 
-    // Send notification via backend
-    supabase.functions.invoke("send-notification", {
-      body: {
-        type: "booking",
-        data: {
-          name: form.name,
-          city: form.city,
-          email: form.email,
-          phone: form.phone,
-          workshop: workshopLabel,
-          sessionInfo: sessionInfo.trim(),
-          participants: String(form.participants),
-          date: dateStr,
-          notes: form.notes || "",
+    try {
+      await supabase.functions.invoke("send-notification", {
+        body: {
+          type: "booking",
+          data: {
+            name: form.name,
+            city: form.city,
+            email: form.email,
+            phone: form.phone,
+            workshop: workshopLabel,
+            sessionInfo: sessionInfo.trim(),
+            participants: String(form.participants),
+            date: dateStr,
+            notes: form.notes || "",
+          },
         },
-      },
-    }).catch(console.error);
+      });
+    } catch (err) {
+      console.error(err);
+    }
 
+    setSending(false);
     setSubmitted(true);
   };
 
@@ -280,9 +274,9 @@ const BookingFormSection = () => {
           </div>
 
           {/* Submit */}
-          <Button type="submit" variant="cta" size="xl" className="w-full shadow-xl shadow-cta/20">
+          <Button type="submit" variant="cta" size="xl" className="w-full shadow-xl shadow-cta/20" disabled={sending}>
             <Send className="w-4 h-4 mr-2" />
-            {t("booking.submit")}
+            {sending ? "..." : t("booking.submit")}
           </Button>
         </form>
       </div>

@@ -93,16 +93,33 @@ Deno.serve(async (req) => {
         .map((i) => `• ${i.name} × ${i.quantity} — ${i.price * i.quantity} DH`)
         .join("\n");
 
-      emailSubject = `🛒 New Order — ${d.totalPrice} DH`;
+      const customerName = sanitizeText(String(d.customerName || ""));
+      const customerPhone = sanitizeText(String(d.customerPhone || ""));
+      const customerAddress = sanitizeText(String(d.customerAddress || ""));
+      const region = sanitizeText(String(d.region || ""));
+      const deliveryFee = d.deliveryFee || 0;
+      const grandTotal = d.grandTotal || d.totalPrice;
+
+      emailSubject = `🛒 New Order — ${grandTotal} DH — ${escapeHtml(customerName)}`;
       emailBody = `
         <h2>New Store Order</h2>
         <table style="border-collapse:collapse;font-family:sans-serif;">
-          ${items.map((i) => `<tr><td style="padding:4px 12px;">${i.name} × ${i.quantity}</td><td style="padding:4px 12px;text-align:right;">${i.price * i.quantity} DH</td></tr>`).join("")}
-          <tr style="border-top:2px solid #333;"><td style="padding:8px 12px;font-weight:bold;">Total</td><td style="padding:8px 12px;text-align:right;font-weight:bold;">${d.totalPrice} DH</td></tr>
+          <tr><td style="padding:6px 12px;font-weight:bold;">Customer</td><td style="padding:6px 12px;">${escapeHtml(customerName)}</td></tr>
+          <tr><td style="padding:6px 12px;font-weight:bold;">Phone</td><td style="padding:6px 12px;">${escapeHtml(customerPhone)}</td></tr>
+          <tr><td style="padding:6px 12px;font-weight:bold;">Address</td><td style="padding:6px 12px;">${escapeHtml(customerAddress)}</td></tr>
+          <tr><td style="padding:6px 12px;font-weight:bold;">Region</td><td style="padding:6px 12px;">${escapeHtml(region)}</td></tr>
+          <tr><td colspan="2" style="padding:8px 12px;"><hr/></td></tr>
+          ${items.map((i) => `<tr><td style="padding:4px 12px;">${escapeHtml(i.name)} × ${i.quantity}</td><td style="padding:4px 12px;text-align:right;">${i.price * i.quantity} DH</td></tr>`).join("")}
+          <tr><td style="padding:4px 12px;">Delivery (${escapeHtml(region)})</td><td style="padding:4px 12px;text-align:right;">${deliveryFee} DH</td></tr>
+          <tr style="border-top:2px solid #333;"><td style="padding:8px 12px;font-weight:bold;">Total</td><td style="padding:8px 12px;text-align:right;font-weight:bold;">${grandTotal} DH</td></tr>
         </table>
       `;
       whatsappMessage =
-        `🛒 *New Order*\n\n${itemLines}\n\n*Total: ${d.totalPrice} DH*\n*Items: ${d.totalItems}*`;
+        `🛒 *New Order*\n\n` +
+        `👤 ${customerName}\n📱 ${customerPhone}\n📍 ${customerAddress}\n🚚 ${region}\n\n` +
+        `${itemLines}\n\n` +
+        `🚚 Delivery: ${deliveryFee} DH\n` +
+        `*Total: ${grandTotal} DH*`;
     }
 
     // Send email via Resend

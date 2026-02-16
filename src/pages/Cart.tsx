@@ -1,24 +1,89 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowLeft, Minus, Plus, Trash2, ShoppingBag, ShoppingCart } from "lucide-react";
+import { Minus, Plus, Trash2, ShoppingBag, ShoppingCart, Send, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Textarea } from "@/components/ui/textarea";
 import { useCart } from "@/contexts/CartContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { cn } from "@/lib/utils";
 import Header from "@/components/Header";
+
+type Region = "north" | "morocco";
+
+const DELIVERY_FEES: Record<Region, number> = {
+  north: 20,
+  morocco: 40,
+};
 
 const Cart = () => {
   const { items, updateQuantity, removeItem, clearCart, totalPrice, totalItems } = useCart();
   const { t } = useLanguage();
+  const [region, setRegion] = useState<Region>("north");
+  const [form, setForm] = useState({ name: "", phone: "", address: "" });
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [sending, setSending] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
 
-  const generateWhatsAppMessage = () => {
-    let msg = "*New Order from Terraria Store*\n\n";
-    items.forEach((item) => {
-      msg += `• ${item.name} × ${item.quantity} — ${item.price * item.quantity} DH\n`;
-    });
-    msg += `\n*Total: ${totalPrice} DH*`;
-    msg += `\n*Items: ${totalItems}*`;
-    return encodeURIComponent(msg);
+  const deliveryFee = DELIVERY_FEES[region];
+  const grandTotal = totalPrice + deliveryFee;
+
+  const handleCheckout = async () => {
+    const newErrors: Record<string, string> = {};
+    if (!form.name.trim()) newErrors.name = "Required";
+    if (!form.phone.trim() || form.phone.trim().length < 6) newErrors.phone = "Required";
+    if (!form.address.trim()) newErrors.address = "Required";
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+    setErrors({});
+    setSending(true);
+
+    try {
+      await supabase.functions.invoke("send-notification", {
+        body: {
+          type: "purchase",
+          data: {
+            items: items.map(i => ({ name: i.name, quantity: i.quantity, price: i.price })),
+            totalPrice,
+            totalItems,
+            deliveryFee,
+            grandTotal,
+            region: region === "north" ? "North (Tetouan/Tanger)" : "Rest of Morocco",
+            customerName: form.name,
+            customerPhone: form.phone,
+            customerAddress: form.address,
+          },
+        },
+      });
+    } catch (err) {
+      console.error(err);
+    }
+
+    setSending(false);
+    setSubmitted(true);
+    clearCart();
   };
+
+  if (submitted) {
+    return (
+      <main className="min-h-screen bg-background">
+        <Header />
+        <div className="max-w-md mx-auto px-6 pt-32 pb-12 text-center">
+          <CheckCircle className="w-16 h-16 text-cta mx-auto mb-6" />
+          <h1 className="text-2xl font-bold text-foreground mb-2">{t("cart.order_success")}</h1>
+          <p className="text-muted-foreground text-sm mb-8">{t("cart.order_success_desc")}</p>
+          <Link to="/store">
+            <Button variant="cta" size="lg" className="gap-2"><ShoppingBag size={16} /> {t("cart.browse")}</Button>
+          </Link>
+        </div>
+      </main>
+    );
+  }
 
   if (items.length === 0) {
     return (
@@ -41,22 +106,21 @@ const Cart = () => {
   return (
     <main className="min-h-screen bg-background">
       <Header />
-      <div className="max-w-5xl mx-auto px-4 pt-20 pb-2 flex items-center justify-end">
-        <button onClick={clearCart} className="text-xs text-foreground/40 hover:text-destructive transition-colors font-medium px-3 py-1.5 rounded-xl hover:bg-destructive/10">
-          {t("cart.clear")}
-        </button>
-      </div>
-
-      <div className="max-w-2xl mx-auto px-6 pt-24 pb-32">
-        <div className="flex items-center gap-3 mb-8">
-          <div className="w-10 h-10 rounded-2xl bg-cta/10 border-2 border-cta/20 flex items-center justify-center">
-            <ShoppingCart size={18} className="text-cta" />
+      <div className="max-w-2xl mx-auto px-6 pt-24 pb-12">
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-cta/10 border-2 border-cta/20 flex items-center justify-center">
+              <ShoppingCart size={18} className="text-cta" />
+            </div>
+            <h1 className="text-2xl md:text-3xl font-bold text-foreground">{t("cart.title")} <span className="text-cta">({totalItems})</span></h1>
           </div>
-          <h1 className="text-2xl md:text-3xl font-bold text-foreground">{t("cart.title")} <span className="text-cta">({totalItems})</span></h1>
+          <button onClick={clearCart} className="text-xs text-foreground/40 hover:text-destructive transition-colors font-medium px-3 py-1.5 rounded-xl hover:bg-destructive/10">
+            {t("cart.clear")}
+          </button>
         </div>
 
         {/* Items */}
-        <div className="space-y-4">
+        <div className="space-y-4 mb-8">
           {items.map((item) => (
             <div key={item.id} className="flex gap-4 p-4 rounded-3xl bg-card border-2 border-border/40 hover:border-cta/20 transition-all duration-300 shadow-sm">
               <div className="w-20 h-20 rounded-2xl overflow-hidden flex-shrink-0 border-2 border-border/30">
@@ -84,37 +148,82 @@ const Cart = () => {
             </div>
           ))}
         </div>
-      </div>
 
-      {/* Sticky checkout bar */}
-      <div className="fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur-xl border-t-2 border-border/30 p-4 z-50 shadow-2xl shadow-foreground/5">
-        <div className="max-w-2xl mx-auto flex items-center justify-between gap-4">
-          <div>
-            <p className="text-xs text-muted-foreground font-medium">{t("cart.total")}</p>
-            <p className="text-2xl font-bold text-foreground">{totalPrice} <span className="text-sm font-normal text-muted-foreground">DH</span></p>
+        {/* Delivery Region */}
+        <div className="p-6 rounded-3xl bg-card border-2 border-border/40 shadow-sm space-y-4 mb-6">
+          <h3 className="text-sm font-bold uppercase tracking-widest text-cta">{t("cart.region")}</h3>
+          <RadioGroup value={region} onValueChange={(v) => setRegion(v as Region)}>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <label className={cn(
+                "flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all",
+                region === "north" ? "border-cta bg-cta/5" : "border-border/40 hover:border-cta/30"
+              )}>
+                <RadioGroupItem value="north" />
+                <div>
+                  <span className="text-sm font-medium block">{t("cart.region_north")}</span>
+                  <span className="text-xs text-cta font-bold">20 DH</span>
+                </div>
+              </label>
+              <label className={cn(
+                "flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all",
+                region === "morocco" ? "border-cta bg-cta/5" : "border-border/40 hover:border-cta/30"
+              )}>
+                <RadioGroupItem value="morocco" />
+                <div>
+                  <span className="text-sm font-medium block">{t("cart.region_morocco")}</span>
+                  <span className="text-xs text-cta font-bold">40 DH</span>
+                </div>
+              </label>
+            </div>
+          </RadioGroup>
+        </div>
+
+        {/* Customer Info */}
+        <div className="p-6 rounded-3xl bg-card border-2 border-border/40 shadow-sm space-y-4 mb-6">
+          <h3 className="text-sm font-bold uppercase tracking-widest text-cta">{t("cart.customer_info")}</h3>
+          <div className="space-y-3">
+            <div className="space-y-1.5">
+              <Label htmlFor="cart-name">{t("cart.name")} *</Label>
+              <Input id="cart-name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="rounded-xl" />
+              {errors.name && <p className="text-xs text-destructive">{errors.name}</p>}
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="cart-phone">{t("cart.phone")} *</Label>
+              <Input id="cart-phone" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="+212..." className="rounded-xl" />
+              {errors.phone && <p className="text-xs text-destructive">{errors.phone}</p>}
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="cart-address">{t("cart.address")} *</Label>
+              <Textarea id="cart-address" value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} className="rounded-xl min-h-[80px]" />
+              {errors.address && <p className="text-xs text-destructive">{errors.address}</p>}
+            </div>
           </div>
-          <a
-            href={`https://wa.me/message/SBUBJACPVCNGM1?text=${generateWhatsAppMessage()}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={() => {
-              supabase.functions.invoke("send-notification", {
-                body: {
-                  type: "purchase",
-                  data: {
-                    items: items.map(i => ({ name: i.name, quantity: i.quantity, price: i.price })),
-                    totalPrice,
-                    totalItems,
-                  },
-                },
-              }).catch(console.error);
-            }}
+        </div>
+
+        {/* Order Summary & Checkout */}
+        <div className="p-6 rounded-3xl bg-card border-2 border-border/40 shadow-sm space-y-4">
+          <div className="flex justify-between text-sm">
+            <span className="text-muted-foreground">{t("cart.subtotal")}</span>
+            <span className="font-medium text-foreground">{totalPrice} DH</span>
+          </div>
+          <div className="flex justify-between text-sm">
+            <span className="text-muted-foreground">{t("cart.delivery")}</span>
+            <span className="font-medium text-foreground">{deliveryFee} DH</span>
+          </div>
+          <div className="border-t-2 border-border/30 pt-3 flex justify-between">
+            <span className="font-bold text-foreground">{t("cart.total")}</span>
+            <span className="text-xl font-bold text-cta">{grandTotal} DH</span>
+          </div>
+          <Button
+            variant="cta"
+            size="xl"
+            className="w-full shadow-xl shadow-cta/20 gap-2"
+            onClick={handleCheckout}
+            disabled={sending}
           >
-            <Button variant="cta" size="lg" className="gap-2 px-8 shadow-xl shadow-cta/20">
-              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
-              {t("cart.checkout")}
-            </Button>
-          </a>
+            <Send size={16} />
+            {sending ? t("cart.sending") : t("cart.checkout")}
+          </Button>
         </div>
       </div>
     </main>

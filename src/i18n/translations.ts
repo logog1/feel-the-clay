@@ -162,7 +162,7 @@ export const translations = {
 
   // Booking Form
   "booking.title": { en: "Book a Place", ar: "احجز مكانك", es: "Reserva tu lugar" },
-  "booking.subtitle": { en: "Fill in your details and we'll confirm your spot via WhatsApp", ar: "أدخل بياناتك وسنتواصل معك عبر واتساب لتأكيد الحجز", es: "Completa tus datos y te confirmaremos por WhatsApp" },
+  "booking.subtitle": { en: "Fill in your details and we'll confirm your spot shortly", ar: "أدخل بياناتك وسنتواصل معك لتأكيد الحجز قريباً", es: "Completa tus datos y te confirmaremos en breve" },
   "booking.personal": { en: "Personal Info", ar: "بياناتك الشخصية", es: "Datos personales" },
   "booking.name": { en: "Full Name", ar: "الاسم الكامل", es: "Nombre completo" },
   "booking.city": { en: "City", ar: "المدينة", es: "Ciudad" },
@@ -183,7 +183,7 @@ export const translations = {
   "booking.notes_placeholder": { en: "Any special requests, questions, or things we should know? (optional)", ar: "هل لديك طلبات خاصة أو أسئلة أو أي شيء تود إخبارنا به؟ (اختياري)", es: "¿Tienes alguna solicitud especial, pregunta o algo que debamos saber? (opcional)" },
   "booking.submit": { en: "Send Booking Request", ar: "إرسال طلب الحجز", es: "Enviar solicitud de reserva" },
   "booking.success_title": { en: "Request Sent!", ar: "تم إرسال طلبك!", es: "¡Solicitud enviada!" },
-  "booking.success_desc": { en: "We'll confirm your booking via WhatsApp shortly.", ar: "سنتواصل معك عبر واتساب لتأكيد حجزك قريباً.", es: "Te confirmaremos la reserva por WhatsApp en breve." },
+  "booking.success_desc": { en: "We'll confirm your booking shortly via phone or email.", ar: "سنتواصل معك لتأكيد حجزك قريباً عبر الهاتف أو البريد.", es: "Te confirmaremos la reserva en breve por teléfono o correo." },
   "booking.another": { en: "Book Another", ar: "حجز جديد", es: "Hacer otra reserva" },
 
   // Location
@@ -283,8 +283,20 @@ export const translations = {
   "cart.browse": { en: "Browse Store", ar: "تصفح المتجر", es: "Explorar Tienda" },
   "cart.clear": { en: "Clear all", ar: "مسح الكل", es: "Limpiar todo" },
   "cart.total": { en: "Total", ar: "المجموع", es: "Total" },
-  "cart.checkout": { en: "Order via WhatsApp", ar: "اطلب عبر واتساب", es: "Pedir por WhatsApp" },
+  "cart.checkout": { en: "Place Order", ar: "أرسل الطلب", es: "Hacer Pedido" },
   "cart.items": { en: "items", ar: "عناصر", es: "artículos" },
+  "cart.delivery": { en: "Delivery", ar: "التوصيل", es: "Envío" },
+  "cart.subtotal": { en: "Subtotal", ar: "المجموع الفرعي", es: "Subtotal" },
+  "cart.region": { en: "Delivery Region", ar: "منطقة التوصيل", es: "Región de envío" },
+  "cart.region_north": { en: "North (Tetouan, Tanger)", ar: "الشمال (تطوان، طنجة)", es: "Norte (Tetuán, Tánger)" },
+  "cart.region_morocco": { en: "Rest of Morocco", ar: "باقي المغرب", es: "Resto de Marruecos" },
+  "cart.customer_info": { en: "Your Details", ar: "بياناتك", es: "Tus Datos" },
+  "cart.name": { en: "Full Name", ar: "الاسم الكامل", es: "Nombre completo" },
+  "cart.phone": { en: "Phone Number", ar: "رقم الهاتف", es: "Número de teléfono" },
+  "cart.address": { en: "Delivery Address", ar: "عنوان التوصيل", es: "Dirección de envío" },
+  "cart.order_success": { en: "Order Placed!", ar: "تم إرسال الطلب!", es: "¡Pedido enviado!" },
+  "cart.order_success_desc": { en: "We'll contact you shortly to confirm your order.", ar: "سنتواصل معك قريباً لتأكيد طلبك.", es: "Te contactaremos pronto para confirmar tu pedido." },
+  "cart.sending": { en: "Sending...", ar: "جاري الإرسال...", es: "Enviando..." },
 } as const;
 
 export type TranslationKey = keyof typeof translations;
