@@ -20,12 +20,36 @@ interface NotificationPayload {
   data: Record<string, unknown>;
 }
 
+// In-memory rate limiting
+const rateLimits = new Map<string, { count: number; resetAt: number }>();
+const MAX_REQUESTS = 3;
+const WINDOW_MS = 3600000; // 1 hour
+
+function isRateLimited(ip: string): boolean {
+  const now = Date.now();
+  const limit = rateLimits.get(ip);
+  if (limit && now < limit.resetAt) {
+    if (limit.count >= MAX_REQUESTS) return true;
+    limit.count++;
+    return false;
+  }
+  rateLimits.set(ip, { count: 1, resetAt: now + WINDOW_MS });
+  return false;
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
+    const clientIp = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+    if (isRateLimited(clientIp)) {
+      return new Response(
+        JSON.stringify({ error: "Rate limit exceeded. Try again later." }),
+        { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
     const { type, data } = (await req.json()) as NotificationPayload;
 
     const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
