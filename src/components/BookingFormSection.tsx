@@ -75,6 +75,23 @@ const BookingFormSection = () => {
         if (err.path[0]) fieldErrors[String(err.path[0])] = err.message;
       });
       setErrors(fieldErrors);
+
+      // Find the first error field and scroll to it
+      const firstErrorField = result.error.errors[0]?.path[0];
+      if (firstErrorField) {
+        const fieldMap: Record<string, string> = {
+          name: "name", city: "city", email: "email", phone: "phone",
+          workshop: "workshop-section", date: "date-section",
+        };
+        const targetId = fieldMap[String(firstErrorField)];
+        if (targetId) {
+          const el = document.getElementById(targetId);
+          el?.scrollIntoView({ behavior: "smooth", block: "center" });
+          // Brief shake animation
+          el?.classList.add("animate-[shake_0.4s_ease-in-out]");
+          setTimeout(() => el?.classList.remove("animate-[shake_0.4s_ease-in-out]"), 500);
+        }
+      }
       return;
     }
     setErrors({});
@@ -137,7 +154,7 @@ const BookingFormSection = () => {
           <div className="space-y-4">
             <h3 className="text-sm font-bold uppercase tracking-widest text-cta">{t("booking.personal")}</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-1.5">
+              <div id="name" className="space-y-1.5">
                 <Label htmlFor="name">{t("booking.name")} *</Label>
                 <Input id="name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="rounded-xl" />
                 {errors.name && <p className="text-xs text-destructive">{errors.name}</p>}
@@ -161,7 +178,7 @@ const BookingFormSection = () => {
           </div>
 
           {/* Workshop Selection */}
-          <div className="space-y-3">
+          <div id="workshop-section" className="space-y-3">
             <h3 className="text-sm font-bold uppercase tracking-widest text-cta">{t("booking.select_workshop")}</h3>
             <RadioGroup value={form.workshop} onValueChange={(v) => setForm({ ...form, workshop: v })}>
               <div className="grid grid-cols-1 gap-2">
@@ -239,7 +256,7 @@ const BookingFormSection = () => {
           )}
 
           {/* Date */}
-          <div className="space-y-3">
+          <div id="date-section" className="space-y-3">
             <h3 className="text-sm font-bold uppercase tracking-widest text-cta">{t("booking.date")}</h3>
             <Popover>
               <PopoverTrigger asChild>

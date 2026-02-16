@@ -283,6 +283,7 @@ export const translations = {
   "store.add_to_cart": { en: "Add to Cart", ar: "أضف إلى السلة", es: "Añadir al Carrito", fr: "Ajouter au panier" },
   "store.added": { en: "Added!", ar: "تمت الإضافة!", es: "¡Añadido!", fr: "Ajouté !" },
   "store.view_cart": { en: "View Cart", ar: "عرض السلة", es: "Ver Carrito", fr: "Voir le panier" },
+  "store.bottom_quote": { en: "Every piece tells a story — yours begins with clay.", ar: "كل قطعة تروي قصة — قصتك تبدأ بالطين.", es: "Cada pieza cuenta una historia — la tuya comienza con arcilla.", fr: "Chaque pièce raconte une histoire — la vôtre commence avec l'argile." },
 
   // Cart
   "cart.title": { en: "Your Cart", ar: "سلتك", es: "Tu Carrito", fr: "Votre panier" },
