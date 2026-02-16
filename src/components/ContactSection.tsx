@@ -16,9 +16,9 @@ const ContactSection = () => {
           <h2 className="text-xl md:text-2xl font-medium">{t("contact.title")}</h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <a href="mailto:hello@terrariaworkshops.com" className="flex items-center gap-3 p-4 rounded-2xl bg-card border-2 border-border/40 hover:border-cta/30 transition-all text-sm">
+            <a href="mailto:hello@terrariaworkshops.com" className="flex items-center gap-3 p-4 rounded-2xl bg-card border-2 border-border/40 hover:border-cta/30 transition-all text-sm min-w-0">
               <Mail size={18} className="text-cta flex-shrink-0" />
-              <span className="text-foreground/80">hello@terrariaworkshops.com</span>
+              <span className="text-foreground/80 truncate break-all text-xs sm:text-sm">hello@terrariaworkshops.com</span>
             </a>
             <a href="https://wa.me/message/SBUBJACPVCNGM1" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-4 rounded-2xl bg-card border-2 border-border/40 hover:border-cta/30 transition-all text-sm">
               <WhatsAppIcon />

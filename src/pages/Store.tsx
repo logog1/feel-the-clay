@@ -200,6 +200,15 @@ const Store = () => {
           );
         })}
 
+        {/* Bottom message */}
+        <div className="mt-8 mb-4 text-center py-12 px-6 rounded-3xl bg-card border-2 border-border/40">
+          <p className="text-lg md:text-xl font-medium text-foreground/80 italic leading-relaxed max-w-xl mx-auto">
+            "{t("store.bottom_quote")}"
+          </p>
+          <div className="w-12 h-1 bg-cta rounded-full mx-auto mt-4" />
+          <p className="text-xs text-muted-foreground mt-3 uppercase tracking-widest font-bold">Terraria Workshops</p>
+        </div>
+
         {/* Cart floating button */}
         {totalItems > 0 && (
           <Link
