@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 
 const langs: { code: Language; label: string; short: string }[] = [
   { code: "en", label: "English", short: "EN" },
+  { code: "fr", label: "Français", short: "FR" },
   { code: "ar", label: "العربية", short: "AR" },
   { code: "es", label: "Español", short: "ES" },
 ];
