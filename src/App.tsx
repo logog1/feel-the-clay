@@ -15,6 +15,8 @@ import HandbuildingWorkshop from "./pages/HandbuildingWorkshop";
 import EmbroideryWorkshop from "./pages/EmbroideryWorkshop";
 import Store from "./pages/Store";
 import Cart from "./pages/Cart";
+import AdminLogin from "./pages/AdminLogin";
+import AdminDashboard from "./pages/AdminDashboard";
 
 const queryClient = new QueryClient();
 
@@ -37,6 +39,8 @@ const App = () => {
               <Route path="/workshop/embroidery" element={<EmbroideryWorkshop />} />
               <Route path="/store" element={<Store />} />
               <Route path="/cart" element={<Cart />} />
+              <Route path="/admin/login" element={<AdminLogin />} />
+              <Route path="/admin" element={<AdminDashboard />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
