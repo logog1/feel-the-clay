@@ -17,6 +17,38 @@ function sanitizeText(text: string): string {
   return text.replace(/[*_~`]/g, '');
 }
 
+// Simple validation helpers
+function validateString(val: unknown, maxLen: number): string {
+  if (typeof val !== "string") return "";
+  return val.trim().slice(0, maxLen);
+}
+
+function validateEmail(val: unknown): string | null {
+  const s = validateString(val, 255);
+  if (!s) return null;
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(s) ? s : null;
+}
+
+function validatePhone(val: unknown): string | null {
+  const s = validateString(val, 30);
+  if (!s) return null;
+  // Allow digits, spaces, +, -, (, )
+  return /^[\d\s+\-()]+$/.test(s) ? s : null;
+}
+
+function validateInt(val: unknown, min: number, max: number, fallback: number): number {
+  const n = typeof val === "number" ? val : parseInt(String(val), 10);
+  if (isNaN(n) || n < min || n > max) return fallback;
+  return Math.floor(n);
+}
+
+function validateNumber(val: unknown, min: number, max: number, fallback: number): number {
+  const n = typeof val === "number" ? val : parseFloat(String(val));
+  if (isNaN(n) || n < min || n > max) return fallback;
+  return n;
+}
+
 interface NotificationPayload {
   type: "booking" | "purchase";
   data: Record<string, unknown>;
@@ -52,7 +84,32 @@ Deno.serve(async (req) => {
         { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
-    const { type, data } = (await req.json()) as NotificationPayload;
+
+    let payload: NotificationPayload;
+    try {
+      payload = await req.json();
+    } catch {
+      return new Response(
+        JSON.stringify({ error: "Invalid JSON payload." }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    const { type, data } = payload;
+
+    if (type !== "booking" && type !== "purchase") {
+      return new Response(
+        JSON.stringify({ error: "Invalid notification type." }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    if (!data || typeof data !== "object") {
+      return new Response(
+        JSON.stringify({ error: "Invalid data payload." }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
 
     const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
     const TWILIO_ACCOUNT_SID = Deno.env.get("TWILIO_ACCOUNT_SID");
@@ -60,7 +117,6 @@ Deno.serve(async (req) => {
     const TWILIO_WHATSAPP_NUMBER = Deno.env.get("TWILIO_WHATSAPP_NUMBER");
     const OWNER_WHATSAPP_NUMBER = Deno.env.get("OWNER_WHATSAPP_NUMBER");
 
-    // Create Supabase admin client to save to DB
     const supabaseAdmin = createClient(
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
@@ -71,86 +127,122 @@ Deno.serve(async (req) => {
     let whatsappMessage: string;
 
     if (type === "booking") {
-      const d = data as Record<string, string>;
+      // Validate booking fields
+      const name = validateString(data.name, 100);
+      const city = validateString(data.city, 100);
+      const email = validateEmail(data.email);
+      const phone = validatePhone(data.phone);
+      const workshop = validateString(data.workshop, 100);
+      const sessionInfo = validateString(data.sessionInfo, 200);
+      const participants = validateInt(data.participants, 1, 50, 1);
+      const date = validateString(data.date, 50);
+      const notes = validateString(data.notes, 500);
 
-      // Save booking to DB
+      if (!name || !workshop) {
+        return new Response(
+          JSON.stringify({ error: "Name and workshop are required." }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
       await supabaseAdmin.from("bookings").insert({
-        name: d.name,
-        city: d.city,
-        email: d.email,
-        phone: d.phone,
-        workshop: d.workshop,
-        session_info: d.sessionInfo,
-        participants: parseInt(d.participants) || 1,
-        booking_date: d.date,
-        notes: d.notes || null,
+        name,
+        city: city || null,
+        email: email || null,
+        phone: phone || null,
+        workshop,
+        session_info: sessionInfo || null,
+        participants,
+        booking_date: date || null,
+        notes: notes || null,
       });
 
-      emailSubject = `🏺 New Booking: ${d.workshop} — ${d.name}`;
+      emailSubject = `🏺 New Booking: ${workshop} — ${name}`;
       emailBody = `
         <h2>New Booking Request</h2>
         <table style="border-collapse:collapse;font-family:sans-serif;">
-          <tr><td style="padding:6px 12px;font-weight:bold;">Name</td><td style="padding:6px 12px;">${escapeHtml(d.name)}</td></tr>
-          <tr><td style="padding:6px 12px;font-weight:bold;">City</td><td style="padding:6px 12px;">${escapeHtml(d.city)}</td></tr>
-          <tr><td style="padding:6px 12px;font-weight:bold;">Email</td><td style="padding:6px 12px;">${escapeHtml(d.email)}</td></tr>
-          <tr><td style="padding:6px 12px;font-weight:bold;">Phone</td><td style="padding:6px 12px;">${escapeHtml(d.phone)}</td></tr>
-          <tr><td style="padding:6px 12px;font-weight:bold;">Workshop</td><td style="padding:6px 12px;">${escapeHtml(d.workshop)}</td></tr>
-          <tr><td style="padding:6px 12px;font-weight:bold;">Session</td><td style="padding:6px 12px;">${escapeHtml(d.sessionInfo || "Open Workshop")}</td></tr>
-          <tr><td style="padding:6px 12px;font-weight:bold;">Participants</td><td style="padding:6px 12px;">${escapeHtml(d.participants)}</td></tr>
-          <tr><td style="padding:6px 12px;font-weight:bold;">Date</td><td style="padding:6px 12px;">${escapeHtml(d.date)}</td></tr>
-          ${d.notes ? `<tr><td style="padding:6px 12px;font-weight:bold;">Notes</td><td style="padding:6px 12px;">${escapeHtml(d.notes)}</td></tr>` : ""}
+          <tr><td style="padding:6px 12px;font-weight:bold;">Name</td><td style="padding:6px 12px;">${escapeHtml(name)}</td></tr>
+          <tr><td style="padding:6px 12px;font-weight:bold;">City</td><td style="padding:6px 12px;">${escapeHtml(city)}</td></tr>
+          <tr><td style="padding:6px 12px;font-weight:bold;">Email</td><td style="padding:6px 12px;">${escapeHtml(email || "")}</td></tr>
+          <tr><td style="padding:6px 12px;font-weight:bold;">Phone</td><td style="padding:6px 12px;">${escapeHtml(phone || "")}</td></tr>
+          <tr><td style="padding:6px 12px;font-weight:bold;">Workshop</td><td style="padding:6px 12px;">${escapeHtml(workshop)}</td></tr>
+          <tr><td style="padding:6px 12px;font-weight:bold;">Session</td><td style="padding:6px 12px;">${escapeHtml(sessionInfo || "Open Workshop")}</td></tr>
+          <tr><td style="padding:6px 12px;font-weight:bold;">Participants</td><td style="padding:6px 12px;">${participants}</td></tr>
+          <tr><td style="padding:6px 12px;font-weight:bold;">Date</td><td style="padding:6px 12px;">${escapeHtml(date)}</td></tr>
+          ${notes ? `<tr><td style="padding:6px 12px;font-weight:bold;">Notes</td><td style="padding:6px 12px;">${escapeHtml(notes)}</td></tr>` : ""}
         </table>
       `;
       whatsappMessage =
         `🏺 *New Booking*\n\n` +
-        `👤 ${sanitizeText(d.name)}\n🏙️ ${sanitizeText(d.city)}\n📧 ${sanitizeText(d.email)}\n📱 ${sanitizeText(d.phone)}\n\n` +
-        `🎨 ${sanitizeText(d.workshop)} — ${sanitizeText(d.sessionInfo || "Open Workshop")}\n` +
-        `👥 ${sanitizeText(d.participants)} participants\n📅 ${sanitizeText(d.date)}` +
-        (d.notes ? `\n📝 ${sanitizeText(d.notes)}` : "");
+        `👤 ${sanitizeText(name)}\n🏙️ ${sanitizeText(city)}\n📧 ${sanitizeText(email || "")}\n📱 ${sanitizeText(phone || "")}\n\n` +
+        `🎨 ${sanitizeText(workshop)} — ${sanitizeText(sessionInfo || "Open Workshop")}\n` +
+        `👥 ${participants} participants\n📅 ${sanitizeText(date)}` +
+        (notes ? `\n📝 ${sanitizeText(notes)}` : "");
     } else {
-      // Purchase
-      const d = data as Record<string, unknown>;
-      const items = d.items as Array<{ name: string; quantity: number; price: number }>;
-      const itemLines = items
-        .map((i) => `• ${i.name} × ${i.quantity} — ${i.price * i.quantity} DH`)
-        .join("\n");
+      // Purchase - validate fields
+      const customerName = validateString(data.customerName, 100);
+      const customerPhone = validatePhone(data.customerPhone);
+      const customerAddress = validateString(data.customerAddress, 300);
+      const region = validateString(data.region, 100);
 
-      const customerName = sanitizeText(String(d.customerName || ""));
-      const customerPhone = sanitizeText(String(d.customerPhone || ""));
-      const customerAddress = sanitizeText(String(d.customerAddress || ""));
-      const region = sanitizeText(String(d.region || ""));
-      const deliveryFee = d.deliveryFee || 0;
-      const grandTotal = d.grandTotal || d.totalPrice;
+      if (!customerName) {
+        return new Response(
+          JSON.stringify({ error: "Customer name is required." }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
 
-      // Save order to DB
+      // Validate items array
+      const rawItems = Array.isArray(data.items) ? data.items : [];
+      const items = rawItems.slice(0, 50).map((i: Record<string, unknown>) => ({
+        name: validateString(i?.name, 100) || "Unknown",
+        quantity: validateInt(i?.quantity, 1, 100, 1),
+        price: validateNumber(i?.price, 0, 100000, 0),
+      }));
+
+      if (items.length === 0) {
+        return new Response(
+          JSON.stringify({ error: "At least one item is required." }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      const deliveryFee = validateNumber(data.deliveryFee, 0, 10000, 0);
+      const subtotal = items.reduce((sum: number, i: { price: number; quantity: number }) => sum + i.price * i.quantity, 0);
+      const grandTotal = subtotal + deliveryFee;
+
       await supabaseAdmin.from("orders").insert({
-        customer_name: String(d.customerName || ""),
-        customer_phone: String(d.customerPhone || ""),
-        customer_address: String(d.customerAddress || ""),
-        region: String(d.region || ""),
-        items: items,
-        subtotal: d.totalPrice,
+        customer_name: customerName,
+        customer_phone: customerPhone || null,
+        customer_address: customerAddress || null,
+        region: region || null,
+        items,
+        subtotal,
         delivery_fee: deliveryFee,
         grand_total: grandTotal,
       });
+
+      const itemLines = items
+        .map((i: { name: string; quantity: number; price: number }) => `• ${i.name} × ${i.quantity} — ${i.price * i.quantity} DH`)
+        .join("\n");
 
       emailSubject = `🛒 New Order — ${grandTotal} DH — ${escapeHtml(customerName)}`;
       emailBody = `
         <h2>New Store Order</h2>
         <table style="border-collapse:collapse;font-family:sans-serif;">
           <tr><td style="padding:6px 12px;font-weight:bold;">Customer</td><td style="padding:6px 12px;">${escapeHtml(customerName)}</td></tr>
-          <tr><td style="padding:6px 12px;font-weight:bold;">Phone</td><td style="padding:6px 12px;">${escapeHtml(customerPhone)}</td></tr>
+          <tr><td style="padding:6px 12px;font-weight:bold;">Phone</td><td style="padding:6px 12px;">${escapeHtml(customerPhone || "")}</td></tr>
           <tr><td style="padding:6px 12px;font-weight:bold;">Address</td><td style="padding:6px 12px;">${escapeHtml(customerAddress)}</td></tr>
           <tr><td style="padding:6px 12px;font-weight:bold;">Region</td><td style="padding:6px 12px;">${escapeHtml(region)}</td></tr>
           <tr><td colspan="2" style="padding:8px 12px;"><hr/></td></tr>
-          ${items.map((i) => `<tr><td style="padding:4px 12px;">${escapeHtml(i.name)} × ${i.quantity}</td><td style="padding:4px 12px;text-align:right;">${i.price * i.quantity} DH</td></tr>`).join("")}
+          ${items.map((i: { name: string; quantity: number; price: number }) => `<tr><td style="padding:4px 12px;">${escapeHtml(i.name)} × ${i.quantity}</td><td style="padding:4px 12px;text-align:right;">${i.price * i.quantity} DH</td></tr>`).join("")}
           <tr><td style="padding:4px 12px;">Delivery (${escapeHtml(region)})</td><td style="padding:4px 12px;text-align:right;">${deliveryFee} DH</td></tr>
           <tr style="border-top:2px solid #333;"><td style="padding:8px 12px;font-weight:bold;">Total</td><td style="padding:8px 12px;text-align:right;font-weight:bold;">${grandTotal} DH</td></tr>
         </table>
       `;
       whatsappMessage =
         `🛒 *New Order*\n\n` +
-        `👤 ${customerName}\n📱 ${customerPhone}\n📍 ${customerAddress}\n🚚 ${region}\n\n` +
+        `👤 ${sanitizeText(customerName)}\n📱 ${sanitizeText(customerPhone || "")}\n📍 ${sanitizeText(customerAddress)}\n🚚 ${sanitizeText(region)}\n\n` +
         `${itemLines}\n\n` +
         `🚚 Delivery: ${deliveryFee} DH\n` +
         `*Total: ${grandTotal} DH*`;
@@ -192,11 +284,7 @@ Deno.serve(async (req) => {
     const whatsappJson = await whatsappResult.json();
 
     return new Response(
-      JSON.stringify({
-        success: true,
-        email: emailJson,
-        whatsapp: whatsappJson,
-      }),
+      JSON.stringify({ success: true }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (error) {
