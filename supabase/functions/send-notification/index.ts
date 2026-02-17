@@ -1,3 +1,5 @@
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
@@ -58,12 +60,32 @@ Deno.serve(async (req) => {
     const TWILIO_WHATSAPP_NUMBER = Deno.env.get("TWILIO_WHATSAPP_NUMBER");
     const OWNER_WHATSAPP_NUMBER = Deno.env.get("OWNER_WHATSAPP_NUMBER");
 
+    // Create Supabase admin client to save to DB
+    const supabaseAdmin = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
+    );
+
     let emailSubject: string;
     let emailBody: string;
     let whatsappMessage: string;
 
     if (type === "booking") {
       const d = data as Record<string, string>;
+
+      // Save booking to DB
+      await supabaseAdmin.from("bookings").insert({
+        name: d.name,
+        city: d.city,
+        email: d.email,
+        phone: d.phone,
+        workshop: d.workshop,
+        session_info: d.sessionInfo,
+        participants: parseInt(d.participants) || 1,
+        booking_date: d.date,
+        notes: d.notes || null,
+      });
+
       emailSubject = `🏺 New Booking: ${d.workshop} — ${d.name}`;
       emailBody = `
         <h2>New Booking Request</h2>
@@ -99,6 +121,18 @@ Deno.serve(async (req) => {
       const region = sanitizeText(String(d.region || ""));
       const deliveryFee = d.deliveryFee || 0;
       const grandTotal = d.grandTotal || d.totalPrice;
+
+      // Save order to DB
+      await supabaseAdmin.from("orders").insert({
+        customer_name: String(d.customerName || ""),
+        customer_phone: String(d.customerPhone || ""),
+        customer_address: String(d.customerAddress || ""),
+        region: String(d.region || ""),
+        items: items,
+        subtotal: d.totalPrice,
+        delivery_fee: deliveryFee,
+        grand_total: grandTotal,
+      });
 
       emailSubject = `🛒 New Order — ${grandTotal} DH — ${escapeHtml(customerName)}`;
       emailBody = `
@@ -138,7 +172,6 @@ Deno.serve(async (req) => {
     });
     const emailJson = await emailResult.json();
 
-    // Send WhatsApp via Twilio
     // Send WhatsApp via Twilio
     const twilioUrl = `https://api.twilio.com/2010-04-01/Accounts/${TWILIO_ACCOUNT_SID}/Messages.json`;
     const twilioBody = new URLSearchParams({
