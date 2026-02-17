@@ -32,6 +32,7 @@ const BookingFormSection = () => {
     workshop: "", participants: 1, sessionType: "",
     date: undefined as Date | undefined, notes: "",
   });
+  const [honeypot, setHoneypot] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitted, setSubmitted] = useState(false);
 
@@ -68,6 +69,7 @@ const BookingFormSection = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (honeypot) return; // bot detected
     const result = bookingSchema.safeParse(form);
     if (!result.success) {
       const fieldErrors: Record<string, string> = {};
@@ -288,6 +290,12 @@ const BookingFormSection = () => {
               placeholder={t("booking.notes_placeholder")}
               className="rounded-xl min-h-[80px]"
             />
+          </div>
+
+          {/* Honeypot - hidden from real users */}
+          <div className="absolute opacity-0 pointer-events-none h-0 overflow-hidden" aria-hidden="true" tabIndex={-1}>
+            <label htmlFor="website">Website</label>
+            <input id="website" name="website" type="text" value={honeypot} onChange={(e) => setHoneypot(e.target.value)} autoComplete="off" tabIndex={-1} />
           </div>
 
           {/* Submit */}

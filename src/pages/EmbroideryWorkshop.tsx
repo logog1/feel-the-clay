@@ -1,5 +1,6 @@
 import WorkshopPageLayout from "@/components/WorkshopPageLayout";
 import { useLanguage } from "@/i18n/LanguageContext";
+import SEOHead from "@/components/SEOHead";
 import workshop11 from "@/assets/workshop-11.jpg";
 import workshop12 from "@/assets/workshop-12.jpg";
 import workshop13 from "@/assets/workshop-13.jpg";
@@ -19,7 +20,12 @@ const EmbroideryWorkshop = () => {
     images: [workshop11, workshop12, workshop13, workshop14],
   };
 
-  return <WorkshopPageLayout workshop={workshop} currentPath="/workshop/embroidery" />;
+  return (
+    <>
+      <SEOHead title="Embroidery Workshop" description="Learn traditional Moroccan embroidery in a hands-on workshop in Tetouan." path="/workshop/embroidery" />
+      <WorkshopPageLayout workshop={workshop} currentPath="/workshop/embroidery" />
+    </>
+  );
 };
 
 export default EmbroideryWorkshop;

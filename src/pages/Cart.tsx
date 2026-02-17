@@ -25,6 +25,7 @@ const Cart = () => {
   const [region, setRegion] = useState<Region>("north");
   const [form, setForm] = useState({ name: "", phone: "", address: "" });
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [honeypot, setHoneypot] = useState("");
   const [sending, setSending] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
@@ -32,6 +33,7 @@ const Cart = () => {
   const grandTotal = totalPrice + deliveryFee;
 
   const handleCheckout = async () => {
+    if (honeypot) return; // bot detected
     const newErrors: Record<string, string> = {};
     if (!form.name.trim()) newErrors.name = "Required";
     if (!form.phone.trim() || form.phone.trim().length < 6) newErrors.phone = "Required";
@@ -213,6 +215,11 @@ const Cart = () => {
           <div className="border-t-2 border-border/30 pt-3 flex justify-between">
             <span className="font-bold text-foreground">{t("cart.total")}</span>
             <span className="text-xl font-bold text-cta">{grandTotal} DH</span>
+          </div>
+          {/* Honeypot */}
+          <div className="absolute opacity-0 pointer-events-none h-0 overflow-hidden" aria-hidden="true" tabIndex={-1}>
+            <label htmlFor="cart-website">Website</label>
+            <input id="cart-website" name="website" type="text" value={honeypot} onChange={(e) => setHoneypot(e.target.value)} autoComplete="off" tabIndex={-1} />
           </div>
           <Button
             variant="cta"
