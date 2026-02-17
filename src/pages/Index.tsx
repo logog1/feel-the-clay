@@ -3,7 +3,7 @@ import HeroSection from "@/components/HeroSection";
 import BeliefSection from "@/components/BeliefSection";
 import AboutSection from "@/components/AboutSection";
 import ExperienceSection from "@/components/ExperienceSection";
-import DetailsSection from "@/components/DetailsSection";
+// DetailsSection is now integrated into OffersSection
 import ProcessSection from "@/components/ProcessSection";
 import GallerySection from "@/components/GallerySection";
 import OffersSection from "@/components/OffersSection";
@@ -47,7 +47,6 @@ const Index = () => {
       <AnimatedSection><ProcessSection /></AnimatedSection>
       <AnimatedSection><GallerySection /></AnimatedSection>
       <AnimatedSection><OffersSection /></AnimatedSection>
-      <AnimatedSection><DetailsSection /></AnimatedSection>
       <AnimatedSection><TestimonialsSection /></AnimatedSection>
       <AnimatedSection><FAQSection /></AnimatedSection>
       <AnimatedSection><LanguagesSection /></AnimatedSection>
