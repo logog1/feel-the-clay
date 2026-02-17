@@ -87,6 +87,8 @@ export const translations = {
   "impact.products": { en: "Products sold", ar: "منتج مباع", es: "Productos vendidos", fr: "Produits vendus" },
   "impact.years": { en: "Of impact", ar: "من التأثير", es: "De impacto", fr: "D'impact" },
   "impact.tagline": { en: "Every workshop is a step toward preserving tradition ✦", ar: "كل ورشة هي خطوة نحو الحفاظ على التقاليد ✦", es: "Cada taller es un paso hacia la preservación de la tradición ✦", fr: "Chaque atelier est un pas vers la préservation de la tradition ✦" },
+  "impact.see_more": { en: "See more of our story", ar: "شاهد المزيد من قصتنا", es: "Ver más de nuestra historia", fr: "Voir plus de notre histoire" },
+  "impact.see_less": { en: "Show less", ar: "عرض أقل", es: "Mostrar menos", fr: "Afficher moins" },
 
   // Experience
   "exp.label": { en: "The experience", ar: "التجربة", es: "La experiencia", fr: "L'expérience" },
@@ -125,6 +127,8 @@ export const translations = {
   "offers.embroidery": { en: "Embroidery Workshop", ar: "ورشة التطريز", es: "Taller de Bordado", fr: "Atelier de Broderie" },
   "offers.popular": { en: "Most Popular", ar: "الأكثر شعبية", es: "Más Popular", fr: "Le plus populaire" },
   "offers.tap": { en: "Tap for more info →", ar: "← اضغط لمزيد من المعلومات", es: "Toca para más info →", fr: "Appuyez pour plus d'infos →" },
+  "offers.learn_more": { en: "Learn More", ar: "اعرف أكثر", es: "Saber más", fr: "En savoir plus" },
+  "offers.book_now": { en: "Book Now", ar: "احجز الآن", es: "Reservar ahora", fr: "Réserver maintenant" },
   "offers.store": { en: "Visit our Store", ar: "زيارة متجرنا", es: "Visita nuestra Tienda", fr: "Visitez notre Boutique" },
 
   // Testimonials

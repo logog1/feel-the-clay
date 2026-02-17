@@ -44,10 +44,10 @@ const Index = () => {
       <AnimatedSection><SocialImpactSection /></AnimatedSection>
       <AnimatedSection><AboutSection /></AnimatedSection>
       <AnimatedSection><ExperienceSection /></AnimatedSection>
-      <AnimatedSection><DetailsSection /></AnimatedSection>
       <AnimatedSection><ProcessSection /></AnimatedSection>
       <AnimatedSection><GallerySection /></AnimatedSection>
       <AnimatedSection><OffersSection /></AnimatedSection>
+      <AnimatedSection><DetailsSection /></AnimatedSection>
       <AnimatedSection><TestimonialsSection /></AnimatedSection>
       <AnimatedSection><FAQSection /></AnimatedSection>
       <AnimatedSection><LanguagesSection /></AnimatedSection>
