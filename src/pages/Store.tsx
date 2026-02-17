@@ -5,6 +5,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { useCart } from "@/contexts/CartContext";
 import { cn } from "@/lib/utils";
 import Header from "@/components/Header";
+import SEOHead from "@/components/SEOHead";
 
 // Product images - only real product photos
 import productHeartMug from "@/assets/product-heart-mug.png";
@@ -151,6 +152,7 @@ const Store = () => {
 
   return (
     <main className="min-h-screen bg-background">
+      <SEOHead title="Store — Handmade Pottery" description="Shop handmade pottery, bowls, mugs, and vases crafted in Tetouan, Morocco. Every piece is unique." path="/store" />
       <Header />
 
       <div className="max-w-6xl mx-auto px-6 pt-24 pb-16">

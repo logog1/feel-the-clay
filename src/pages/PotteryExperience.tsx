@@ -1,5 +1,6 @@
 import WorkshopPageLayout from "@/components/WorkshopPageLayout";
 import { useLanguage } from "@/i18n/LanguageContext";
+import SEOHead from "@/components/SEOHead";
 import workshop1 from "@/assets/workshop-1.jpg";
 import workshop3 from "@/assets/workshop-3.jpg";
 import workshop4 from "@/assets/workshop-4.jpg";
@@ -18,7 +19,12 @@ const PotteryExperience = () => {
     images: [workshop1, workshop3, workshop4, workshop9],
   };
 
-  return <WorkshopPageLayout workshop={workshop} currentPath="/workshop/pottery-experience" />;
+  return (
+    <>
+      <SEOHead title="Pottery Wheel Experience" description="Try a 3-hour pottery wheel session in Tetouan. No experience needed — create your own ceramic piece." path="/workshop/pottery-experience" />
+      <WorkshopPageLayout workshop={workshop} currentPath="/workshop/pottery-experience" />
+    </>
+  );
 };
 
 export default PotteryExperience;

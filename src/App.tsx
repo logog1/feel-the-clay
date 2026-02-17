@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { LanguageProvider } from "@/i18n/LanguageContext";
 import { CartProvider } from "@/contexts/CartContext";
+import { HelmetProvider } from "react-helmet-async";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import ScrollToTop from "@/components/ScrollToTop";
 import Index from "./pages/Index";
@@ -19,6 +20,7 @@ const queryClient = new QueryClient();
 
 const App = () => {
   return (
+  <HelmetProvider>
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <LanguageProvider>
@@ -42,6 +44,7 @@ const App = () => {
       </LanguageProvider>
     </TooltipProvider>
   </QueryClientProvider>
+  </HelmetProvider>
   );
 };
 
