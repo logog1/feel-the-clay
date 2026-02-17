@@ -1,8 +1,10 @@
+import { useState } from "react";
 import { useScrollAnimation } from "@/hooks/use-scroll-animation";
 import { useCountAnimation } from "@/hooks/use-count-animation";
-import { Users, Heart, ShoppingBag, Calendar, Sparkles, Briefcase } from "lucide-react";
+import { Users, Heart, ShoppingBag, Calendar, Sparkles, Briefcase, ChevronDown, ChevronUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const impact1 = "/images/impact-1.jpg";
 const impact2 = "/images/impact-2.jpg";
@@ -43,6 +45,8 @@ const SocialImpactSection = () => {
   const { ref: storyRef, isVisible: storyVisible } = useScrollAnimation(0.15);
   const { ref: galleryRef, isVisible: galleryVisible } = useScrollAnimation(0.1);
   const { t } = useLanguage();
+  const isMobile = useIsMobile();
+  const [showAll, setShowAll] = useState(false);
 
   const metrics = [
     { icon: <Users className="w-7 h-7 text-primary" />, value: 700, suffix: "+", label: t("impact.people_hosted"), delay: 0 },
@@ -64,6 +68,10 @@ const SocialImpactSection = () => {
     { src: impact6, alt: "Finished pieces" },
     { src: impact11, alt: "Pottery lamp with workshop" },
   ];
+
+  // On mobile, show only first 4 images unless expanded
+  const mobilePreviewCount = 4;
+  const visibleImages = isMobile && !showAll ? images.slice(0, mobilePreviewCount) : images;
 
   return (
     <section id="about" ref={sectionRef} className="section-padding bg-gradient-to-b from-background to-secondary/30 overflow-hidden">
@@ -106,17 +114,39 @@ const SocialImpactSection = () => {
           ))}
         </div>
 
-        <div ref={galleryRef} className="grid grid-cols-2 md:grid-cols-5 gap-2 md:gap-3 auto-rows-[1fr]">
-          {images.map((image, index) => (
+        <div ref={galleryRef} className={cn(
+          "grid gap-2 md:gap-3 auto-rows-[1fr]",
+          isMobile ? "grid-cols-2" : "grid-cols-5"
+        )}>
+          {visibleImages.map((image, index) => (
             <div key={index} className={cn(
               "relative overflow-hidden rounded-2xl group transition-all duration-700 aspect-square",
               galleryVisible ? "opacity-100 scale-100" : "opacity-0 scale-95",
-              image.size === "large" && "col-span-2 row-span-2"
+              !isMobile && image.size === "large" && "col-span-2 row-span-2"
             )} style={{ transitionDelay: `${index * 80}ms` }}>
               <img src={image.src} alt={image.alt} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
             </div>
           ))}
         </div>
+
+        {isMobile && images.length > mobilePreviewCount && (
+          <button
+            onClick={() => setShowAll(!showAll)}
+            className="mt-4 mx-auto flex items-center gap-2 px-5 py-2.5 bg-primary/10 hover:bg-primary/20 text-primary rounded-full text-sm font-medium transition-all duration-300"
+          >
+            {showAll ? (
+              <>
+                {t("impact.see_less")}
+                <ChevronUp className="w-4 h-4" />
+              </>
+            ) : (
+              <>
+                {t("impact.see_more")}
+                <ChevronDown className="w-4 h-4" />
+              </>
+            )}
+          </button>
+        )}
 
         <p className={cn("text-center text-muted-foreground mt-12 text-sm transition-all duration-700 delay-500", galleryVisible ? "opacity-100" : "opacity-0")}>{t("impact.tagline")}</p>
       </div>
