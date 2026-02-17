@@ -32,11 +32,11 @@ const OffersSection = () => {
         </div>
 
         {/* Horizontal scrolling on mobile, grid on desktop */}
-        <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory md:grid md:grid-cols-3 md:overflow-visible md:pb-0">
+        <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory md:grid md:grid-cols-3 md:overflow-visible md:pb-0">
           {offers.map((offer) => (
             <div
               key={offer.title}
-              className="flex-shrink-0 w-[80vw] sm:w-[65vw] md:w-auto snap-center rounded-2xl overflow-hidden bg-card border border-border/40 hover:shadow-2xl transition-shadow duration-500 flex flex-col"
+              className="flex-shrink-0 w-[60vw] sm:w-[50vw] md:w-auto snap-start rounded-2xl overflow-hidden bg-card border border-border/40 hover:shadow-2xl transition-shadow duration-500 flex flex-col"
             >
               {/* Image with link */}
               <Link to={offer.link} className="group relative block">
