@@ -1,8 +1,11 @@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { useScrollAnimation } from "@/hooks/use-scroll-animation";
+import { cn } from "@/lib/utils";
 
 const FAQSection = () => {
   const { t } = useLanguage();
+  const { ref, isVisible } = useScrollAnimation(0.15);
 
   const faqs = [
     { question: t("faq.q1"), answer: t("faq.a1") },
@@ -14,17 +17,27 @@ const FAQSection = () => {
   ];
 
   return (
-    <section className="py-12 md:py-16 bg-background">
+    <section ref={ref} className="py-14 md:py-20 bg-background">
       <div className="container-narrow">
         <div className="space-y-6">
-          <h2 className="text-xl md:text-2xl font-medium text-center">{t("faq.title")}</h2>
-          <Accordion type="single" collapsible className="w-full">
+          <div className={cn("text-center transition-all duration-700", isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6")}>
+            <span className="text-xs uppercase tracking-[0.3em] text-cta font-medium">{t("faq.title")}</span>
+          </div>
+          <Accordion type="single" collapsible className="w-full space-y-2">
             {faqs.map((faq, index) => (
-              <AccordionItem key={index} value={`item-${index}`} className="border-sand-dark/30">
-                <AccordionTrigger className="text-left hover:no-underline hover:text-terracotta transition-colors text-start">
+              <AccordionItem
+                key={index}
+                value={`item-${index}`}
+                className={cn(
+                  "glass-card px-4 md:px-5 border transition-all duration-700",
+                  isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+                )}
+                style={{ transitionDelay: `${(index + 1) * 80}ms` }}
+              >
+                <AccordionTrigger className="text-left hover:no-underline hover:text-terracotta transition-colors text-start text-sm md:text-base py-4">
                   {faq.question}
                 </AccordionTrigger>
-                <AccordionContent className="text-muted-foreground">{faq.answer}</AccordionContent>
+                <AccordionContent className="text-muted-foreground text-sm pb-4">{faq.answer}</AccordionContent>
               </AccordionItem>
             ))}
           </Accordion>

@@ -1,5 +1,7 @@
 import { MapPin, Mail } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { useScrollAnimation } from "@/hooks/use-scroll-animation";
+import { cn } from "@/lib/utils";
 
 const WhatsAppIcon = () => (
   <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
@@ -9,29 +11,42 @@ const WhatsAppIcon = () => (
 
 const ContactSection = () => {
   const { t } = useLanguage();
+  const { ref, isVisible } = useScrollAnimation(0.15);
+
+  const contacts = [
+    { icon: <Mail size={18} className="text-cta flex-shrink-0" />, label: "hello@terrariaworkshops.com", href: "mailto:hello@terrariaworkshops.com", truncate: true },
+    { icon: <WhatsAppIcon />, label: "WhatsApp", href: "https://wa.me/message/SBUBJACPVCNGM1", external: true },
+    { icon: <MapPin size={18} className="text-cta flex-shrink-0" />, label: t("contact.location"), href: "https://maps.app.goo.gl/h4c9BhEj1WZrESG59?g_st=ic", external: true },
+  ];
+
   return (
-    <section id="contact" className="py-12 md:py-16 bg-sand-light">
+    <section id="contact" ref={ref} className="py-14 md:py-20 bg-sand-light">
       <div className="container-narrow">
         <div className="space-y-6">
-          <h2 className="text-xl md:text-2xl font-medium">{t("contact.title")}</h2>
-
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <a href="mailto:hello@terrariaworkshops.com" className="flex items-center gap-3 p-4 rounded-2xl bg-card border-2 border-border/40 hover:border-cta/30 transition-all text-sm min-w-0">
-              <Mail size={18} className="text-cta flex-shrink-0" />
-              <span className="text-foreground/80 truncate break-all text-xs sm:text-sm">hello@terrariaworkshops.com</span>
-            </a>
-            <a href="https://wa.me/message/SBUBJACPVCNGM1" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-4 rounded-2xl bg-card border-2 border-border/40 hover:border-cta/30 transition-all text-sm">
-              <WhatsAppIcon />
-              <span className="text-foreground/80">WhatsApp</span>
-            </a>
-            <a href="https://maps.app.goo.gl/h4c9BhEj1WZrESG59?g_st=ic" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-4 rounded-2xl bg-card border-2 border-border/40 hover:border-cta/30 transition-all text-sm">
-              <MapPin size={18} className="text-cta flex-shrink-0" />
-              <span className="text-foreground/80">{t("contact.location")}</span>
-            </a>
+          <div className={cn("transition-all duration-700", isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6")}>
+            <h2 className="text-xl md:text-2xl font-medium">{t("contact.title")}</h2>
           </div>
 
-          {/* Map */}
-          <div className="aspect-video md:aspect-[2/1] rounded-xl overflow-hidden">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            {contacts.map((c, i) => (
+              <a
+                key={i}
+                href={c.href}
+                target={c.external ? "_blank" : undefined}
+                rel={c.external ? "noopener noreferrer" : undefined}
+                className={cn(
+                  "flex items-center gap-3 p-4 glass-card hover:border-cta/30 hover:-translate-y-0.5 hover:shadow-md transition-all duration-500 text-sm min-w-0",
+                  isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+                )}
+                style={{ transitionDelay: `${(i + 1) * 100}ms` }}
+              >
+                {c.icon}
+                <span className={cn("text-foreground/80 text-xs sm:text-sm", c.truncate && "truncate break-all")}>{c.label}</span>
+              </a>
+            ))}
+          </div>
+
+          <div className={cn("aspect-video md:aspect-[2/1] rounded-2xl overflow-hidden shadow-lg transition-all duration-700 delay-300", isVisible ? "opacity-100 scale-100" : "opacity-0 scale-95")}>
             <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d800!2d-5.35338!3d35.58475!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xd0b42526f4c8c0f%3A0x7a5e5e8c8c8c8c8c!2sTERRARIA%20Workshops!5e0!3m2!1sen!2sma!4v1705000000000!5m2!1sen!2sma" width="100%" height="100%" style={{ border: 0 }} allowFullScreen loading="lazy" referrerPolicy="no-referrer-when-downgrade" title="TERRARIA Workshops location" />
           </div>
         </div>
