@@ -264,24 +264,33 @@ Deno.serve(async (req) => {
     });
     const emailJson = await emailResult.json();
 
-    // Send WhatsApp via Twilio
+    // Send WhatsApp via Twilio to both numbers simultaneously
     const twilioUrl = `https://api.twilio.com/2010-04-01/Accounts/${TWILIO_ACCOUNT_SID}/Messages.json`;
-    const twilioBody = new URLSearchParams({
-      From: `whatsapp:${TWILIO_WHATSAPP_NUMBER?.startsWith('+') ? '' : '+'}${TWILIO_WHATSAPP_NUMBER}`,
-      To: `whatsapp:${OWNER_WHATSAPP_NUMBER?.startsWith('+') ? '' : '+'}${OWNER_WHATSAPP_NUMBER}`,
-      Body: whatsappMessage,
-    });
+    const twilioHeaders = {
+      Authorization: "Basic " + btoa(`${TWILIO_ACCOUNT_SID}:${TWILIO_AUTH_TOKEN}`),
+      "Content-Type": "application/x-www-form-urlencoded",
+    };
+    const fromNumber = `whatsapp:${TWILIO_WHATSAPP_NUMBER?.startsWith('+') ? '' : '+'}${TWILIO_WHATSAPP_NUMBER}`;
 
-    const whatsappResult = await fetch(twilioUrl, {
-      method: "POST",
-      headers: {
-        Authorization:
-          "Basic " + btoa(`${TWILIO_ACCOUNT_SID}:${TWILIO_AUTH_TOKEN}`),
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: twilioBody.toString(),
-    });
-    const whatsappJson = await whatsappResult.json();
+    const whatsappRecipients = [
+      OWNER_WHATSAPP_NUMBER,
+      "+212687323997",
+    ].filter(Boolean);
+
+    const whatsappResults = await Promise.allSettled(
+      whatsappRecipients.map((toNumber) => {
+        const body = new URLSearchParams({
+          From: fromNumber,
+          To: `whatsapp:${toNumber!.startsWith('+') ? '' : '+'}${toNumber}`,
+          Body: whatsappMessage,
+        });
+        return fetch(twilioUrl, {
+          method: "POST",
+          headers: twilioHeaders,
+          body: body.toString(),
+        });
+      })
+    );
 
     return new Response(
       JSON.stringify({ success: true }),
