@@ -45,6 +45,10 @@
     --orange-cta: 24 90% 50%;
     --orange-cta-hover: 24 90% 42%;
     --cream: 35 50% 95%;
+    
+    /* Glass tokens */
+    --glass-bg: 30 30% 96% / 0.6;
+    --glass-border: 30 30% 88% / 0.4;
   }
 
   .dark {
@@ -87,7 +91,7 @@
 
 @layer components {
   .section-padding {
-    @apply px-6 py-10 md:px-12 md:py-24 lg:px-20;
+    @apply px-5 py-10 md:px-12 md:py-24 lg:px-20;
   }
 
   .container-narrow {
@@ -97,6 +101,16 @@
   .container-wide {
     @apply max-w-5xl mx-auto;
   }
+
+  /* Glass card */
+  .glass-card {
+    @apply bg-card/60 backdrop-blur-md border border-border/30 rounded-2xl shadow-sm;
+  }
+
+  /* Section divider */
+  .section-divider {
+    @apply w-full h-px bg-gradient-to-r from-transparent via-border to-transparent;
+  }
 }
 
 @layer utilities {
@@ -104,6 +118,9 @@
     text-wrap: balance;
   }
 
+  /* ===== ADVANCED ANIMATIONS ===== */
+
+  /* Fade up - default entrance */
   .animate-fade-up {
     animation: fadeUp 0.8s ease-out forwards;
   }
@@ -116,10 +133,32 @@
     animation: gentleFloat 6s ease-in-out infinite;
   }
 
+  /* Underline grow from left */
+  .animate-underline-grow {
+    animation: underlineGrow 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.6s forwards;
+  }
+
+  /* Blur in */
+  .animate-blur-in {
+    animation: blurIn 0.8s ease-out forwards;
+  }
+
+  /* Scale in with bounce */
+  .animate-scale-bounce {
+    animation: scaleBounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+
+  /* Counter spin */
+  .animate-count-up {
+    animation: countPulse 0.3s ease-out;
+  }
+
+  /* ===== KEYFRAMES ===== */
+
   @keyframes fadeUp {
     from {
       opacity: 0;
-      transform: translateY(20px);
+      transform: translateY(24px);
     }
     to {
       opacity: 1;
@@ -135,6 +174,69 @@
   @keyframes gentleFloat {
     0%, 100% { transform: translateY(0); }
     50% { transform: translateY(-10px); }
+  }
+
+  @keyframes underlineGrow {
+    from {
+      transform: scaleX(0);
+      transform-origin: left center;
+    }
+    to {
+      transform: scaleX(1);
+      transform-origin: left center;
+    }
+  }
+
+  @keyframes blurIn {
+    from {
+      opacity: 0;
+      filter: blur(10px);
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      filter: blur(0);
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes scaleBounce {
+    from {
+      opacity: 0;
+      transform: scale(0.8);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes countPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+  }
+
+  @keyframes slideInLeft {
+    from {
+      opacity: 0;
+      transform: translateX(-40px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes slideInRight {
+    from {
+      opacity: 0;
+      transform: translateX(40px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
   }
 
   @keyframes scrollLeft {
@@ -165,5 +267,12 @@
   }
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
+  }
+
+  /* Scroll progress bar */
+  .scroll-progress {
+    @apply fixed top-0 left-0 h-[3px] bg-cta z-[60];
+    transform-origin: left;
+    will-change: transform;
   }
 }

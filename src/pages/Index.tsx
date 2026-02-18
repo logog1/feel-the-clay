@@ -3,7 +3,6 @@ import HeroSection from "@/components/HeroSection";
 import BeliefSection from "@/components/BeliefSection";
 import AboutSection from "@/components/AboutSection";
 import ExperienceSection from "@/components/ExperienceSection";
-// DetailsSection is now integrated into OffersSection
 import ProcessSection from "@/components/ProcessSection";
 import GallerySection from "@/components/GallerySection";
 import OffersSection from "@/components/OffersSection";
@@ -17,6 +16,7 @@ import AnimatedSection from "@/components/AnimatedSection";
 import SocialImpactSection from "@/components/SocialImpactSection";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
+import ScrollProgress from "@/components/ScrollProgress";
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -38,21 +38,26 @@ const Index = () => {
         path="/"
         jsonLd={jsonLd}
       />
+      <ScrollProgress />
       <Header />
       <HeroSection />
-      <AnimatedSection><BeliefSection /></AnimatedSection>
-      <AnimatedSection><SocialImpactSection /></AnimatedSection>
-      <AnimatedSection><AboutSection /></AnimatedSection>
-      <AnimatedSection><ExperienceSection /></AnimatedSection>
-      <AnimatedSection><ProcessSection /></AnimatedSection>
-      <AnimatedSection><GallerySection /></AnimatedSection>
-      <AnimatedSection><OffersSection /></AnimatedSection>
-      <AnimatedSection><TestimonialsSection /></AnimatedSection>
-      <AnimatedSection><FAQSection /></AnimatedSection>
-      <AnimatedSection><LanguagesSection /></AnimatedSection>
-      <AnimatedSection><BookingFormSection /></AnimatedSection>
-      <AnimatedSection><ContactSection /></AnimatedSection>
-      <AnimatedSection><TrustSection /></AnimatedSection>
+      <AnimatedSection variant="blur"><BeliefSection /></AnimatedSection>
+      <div className="section-divider" />
+      <AnimatedSection variant="fade-up"><SocialImpactSection /></AnimatedSection>
+      <AnimatedSection variant="fade-up"><AboutSection /></AnimatedSection>
+      <div className="section-divider" />
+      <AnimatedSection variant="fade-left" delay={100}><ExperienceSection /></AnimatedSection>
+      <AnimatedSection variant="blur"><ProcessSection /></AnimatedSection>
+      <AnimatedSection variant="scale"><GallerySection /></AnimatedSection>
+      <div className="section-divider" />
+      <AnimatedSection variant="fade-up"><OffersSection /></AnimatedSection>
+      <AnimatedSection variant="fade-right" delay={100}><TestimonialsSection /></AnimatedSection>
+      <AnimatedSection variant="fade-up"><FAQSection /></AnimatedSection>
+      <AnimatedSection variant="blur"><LanguagesSection /></AnimatedSection>
+      <div className="section-divider" />
+      <AnimatedSection variant="fade-up"><BookingFormSection /></AnimatedSection>
+      <AnimatedSection variant="fade-up"><ContactSection /></AnimatedSection>
+      <AnimatedSection variant="scale"><TrustSection /></AnimatedSection>
       <Footer />
     </main>
   );
