@@ -6,13 +6,13 @@
 
 @layer base {
   :root {
-    --background: 30 30% 96%;
+    --background: 32 35% 91%;
     --foreground: 20 30% 15%;
 
-    --card: 30 25% 92%;
+    --card: 0 0% 100%;
     --card-foreground: 20 30% 15%;
 
-    --popover: 30 25% 92%;
+    --popover: 0 0% 100%;
     --popover-foreground: 20 30% 15%;
 
     --primary: 24 90% 50%;
@@ -47,8 +47,8 @@
     --cream: 35 50% 95%;
     
     /* Glass tokens */
-    --glass-bg: 30 30% 96% / 0.6;
-    --glass-border: 30 30% 88% / 0.4;
+    --glass-bg: 32 35% 91% / 0.6;
+    --glass-border: 30 30% 80% / 0.4;
   }
 
   .dark {
