@@ -288,6 +288,11 @@ export const translations = {
   "store.added": { en: "Added!", ar: "تمت الإضافة!", es: "¡Añadido!", fr: "Ajouté !" },
   "store.view_cart": { en: "View Cart", ar: "عرض السلة", es: "Ver Carrito", fr: "Voir le panier" },
   "store.bottom_quote": { en: "Every piece tells a story — yours begins with clay.", ar: "كل قطعة تروي قصة — قصتك تبدأ بالطين.", es: "Cada pieza cuenta una historia — la tuya comienza con arcilla.", fr: "Chaque pièce raconte une histoire — la vôtre commence avec l'argile." },
+  "store.amazigh_title": { en: "Amazigh Rugs — Handwoven Heritage", ar: "سجاد أمازيغي — إرث منسوج", es: "Alfombras Amazigh — Patrimonio Tejido", fr: "Tapis Amazigh — Héritage Tissé" },
+  "store.amazigh_desc": { en: "Handwoven in Midelt by a master weaver using traditional Amazigh techniques. Every rug is one of a kind — a piece of living heritage from the Atlas Mountains.", ar: "منسوجة يدويًا في ميدلت من قِبل حرفية بارعة باستخدام تقنيات أمازيغية تقليدية. كل سجادة فريدة من نوعها — قطعة من التراث الحي للأطلس.", es: "Tejidas a mano en Midelt por una artesana experta usando técnicas amazighs tradicionales. Cada alfombra es única — una pieza del patrimonio vivo del Atlas.", fr: "Tissés à la main à Midelt par une maître tisserande utilisant des techniques amazighes traditionnelles. Chaque tapis est unique — une pièce du patrimoine vivant de l'Atlas." },
+  "store.sold_out": { en: "Sold Out", ar: "نفد المخزون", es: "Agotado", fr: "Épuisé" },
+  "store.on_sale": { en: "Sale", ar: "تخفيض", es: "Oferta", fr: "Solde" },
+  "store.dimensions": { en: "Size", ar: "الحجم", es: "Tamaño", fr: "Taille" },
 
   // Cart
   "cart.title": { en: "Your Cart", ar: "سلتك", es: "Tu Carrito", fr: "Votre panier" },
