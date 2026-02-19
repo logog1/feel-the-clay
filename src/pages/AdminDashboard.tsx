@@ -425,13 +425,132 @@ const AdminDashboard = () => {
 
           {/* ── Products ── */}
           <TabsContent value="products">
+            {/* Add Product Button */}
+            <div className="flex justify-end mb-4">
+              <Button
+                onClick={() => setShowAddProduct((v) => !v)}
+                className="gap-2 rounded-xl bg-cta hover:bg-cta-hover text-primary-foreground"
+              >
+                {showAddProduct ? <X size={16} /> : <Plus size={16} />}
+                {showAddProduct ? "Cancel" : "Add New Product"}
+              </Button>
+            </div>
+
+            {/* Add Product Form */}
+            {showAddProduct && (
+              <div className="p-6 rounded-3xl bg-card border-2 border-cta/30 mb-6 space-y-4">
+                <h3 className="font-bold text-foreground flex items-center gap-2"><ImagePlus size={18} className="text-cta" /> New Product</h3>
+
+                {/* Image upload */}
+                <div>
+                  <label className="text-xs font-medium text-muted-foreground mb-2 block">Product Images *</label>
+                  <div
+                    onClick={() => fileInputRef.current?.click()}
+                    className="border-2 border-dashed border-border/60 hover:border-cta/40 rounded-2xl p-6 text-center cursor-pointer transition-colors"
+                  >
+                    {uploadingImage ? (
+                      <p className="text-sm text-muted-foreground">Uploading...</p>
+                    ) : (
+                      <>
+                        <Upload size={24} className="mx-auto mb-2 text-muted-foreground" />
+                        <p className="text-sm text-muted-foreground">Click to upload images (multiple allowed)</p>
+                      </>
+                    )}
+                  </div>
+                  <input ref={fileInputRef} type="file" accept="image/*" multiple className="hidden" onChange={handleImageUpload} />
+                  {newProductImages.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mt-3">
+                      {newProductImages.map((url, i) => (
+                        <div key={i} className="relative w-16 h-16 rounded-xl overflow-hidden border border-border/40">
+                          <img src={url} className="w-full h-full object-cover" alt="" />
+                          <button
+                            onClick={() => setNewProductImages((imgs) => imgs.filter((_, idx) => idx !== i))}
+                            className="absolute top-0.5 right-0.5 w-4 h-4 bg-destructive text-destructive-foreground rounded-full flex items-center justify-center text-[10px]"
+                          >×</button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  <div>
+                    <label className="text-xs font-medium text-muted-foreground mb-1 block">Product ID * (unique, no spaces)</label>
+                    <Input value={newProduct.id} onChange={(e) => setNewProduct(p => ({ ...p, id: e.target.value.replace(/\s/g, "-").toLowerCase() }))} className="rounded-xl h-9 text-sm" placeholder="e.g. rug-red-2025" />
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-muted-foreground mb-1 block">Name *</label>
+                    <Input value={newProduct.name} onChange={(e) => setNewProduct(p => ({ ...p, name: e.target.value }))} className="rounded-xl h-9 text-sm" placeholder="Product name" />
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-muted-foreground mb-1 block">Category *</label>
+                    <select
+                      value={newProduct.category}
+                      onChange={(e) => setNewProduct(p => ({ ...p, category: e.target.value }))}
+                      className="w-full h-9 rounded-xl border border-input bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                    >
+                      <option value="terraria">Terraria</option>
+                      <option value="artisan">Artisan</option>
+                      <option value="traveler">Traveler</option>
+                      <option value="student">Student</option>
+                      <option value="amazigh">Amazigh Rugs</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-muted-foreground mb-1 block">Price (DH) *</label>
+                    <Input type="number" value={newProduct.price} onChange={(e) => setNewProduct(p => ({ ...p, price: Number(e.target.value) }))} className="rounded-xl h-9 text-sm" />
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-muted-foreground mb-1 block">Original Price (for strikethrough)</label>
+                    <Input type="number" value={newProduct.original_price} onChange={(e) => setNewProduct(p => ({ ...p, original_price: e.target.value }))} className="rounded-xl h-9 text-sm" placeholder="Leave empty if none" />
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-muted-foreground mb-1 block">Stock (quantity)</label>
+                    <Input type="number" value={newProduct.stock} onChange={(e) => setNewProduct(p => ({ ...p, stock: Number(e.target.value) }))} className="rounded-xl h-9 text-sm" />
+                  </div>
+                  <div className="col-span-2 sm:col-span-1">
+                    <label className="text-xs font-medium text-muted-foreground mb-1 block">Dimensions (optional)</label>
+                    <Input value={newProduct.dimensions} onChange={(e) => setNewProduct(p => ({ ...p, dimensions: e.target.value }))} className="rounded-xl h-9 text-sm" placeholder="e.g. 68cm × 138cm" />
+                  </div>
+                  <div className="flex items-center gap-3 pt-4">
+                    <label className="text-xs font-medium text-muted-foreground">Promotion?</label>
+                    <button onClick={() => setNewProduct(p => ({ ...p, is_promotion: !p.is_promotion }))} className={cn("w-10 h-6 rounded-full transition-colors relative flex-shrink-0", newProduct.is_promotion ? "bg-cta" : "bg-muted")}>
+                      <div className={cn("absolute top-1 w-4 h-4 rounded-full bg-card transition-all shadow", newProduct.is_promotion ? "left-5" : "left-1")} />
+                    </button>
+                  </div>
+                  {newProduct.is_promotion && (
+                    <div>
+                      <label className="text-xs font-medium text-muted-foreground mb-1 block">Promotion Label</label>
+                      <Input value={newProduct.promotion_label} onChange={(e) => setNewProduct(p => ({ ...p, promotion_label: e.target.value }))} className="rounded-xl h-9 text-sm" placeholder="e.g. -20%, Special Offer" />
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex justify-end">
+                  <Button
+                    onClick={saveNewProduct}
+                    disabled={savingNewProduct || !newProduct.id || !newProduct.name || newProductImages.length === 0}
+                    className="rounded-xl gap-2 bg-cta hover:bg-cta-hover text-primary-foreground"
+                  >
+                    <CheckCircle2 size={16} />
+                    {savingNewProduct ? "Saving..." : "Add Product"}
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Existing Products */}
             <div className="space-y-4">
               {products.map((p) => (
                 <div key={p.id} className="p-5 rounded-3xl bg-card border-2 border-border/40 space-y-4">
                   <div className="flex items-center justify-between gap-4 flex-wrap">
                     <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-2xl overflow-hidden border border-border/40 flex-shrink-0">
-                        <img src={`/placeholder.svg`} alt={p.name} className="w-full h-full object-cover" />
+                      <div className="w-12 h-12 rounded-2xl overflow-hidden border border-border/40 flex-shrink-0 bg-muted">
+                        {p.images[0]?.startsWith("http") ? (
+                          <img src={p.images[0]} alt={p.name} className="w-full h-full object-cover" />
+                        ) : (
+                          <img src={`/placeholder.svg`} alt={p.name} className="w-full h-full object-cover" />
+                        )}
                       </div>
                       <div>
                         <h3 className="font-bold text-foreground">{p.name}</h3>
@@ -439,13 +558,16 @@ const AdminDashboard = () => {
                       </div>
                     </div>
                     <div className="flex items-center gap-2 flex-wrap">
-                      {p.is_sold_out && <span className="text-xs bg-red-100 text-red-700 border border-red-200 px-2.5 py-0.5 rounded-full font-medium">Sold Out</span>}
+                      {p.is_sold_out && <span className="text-xs bg-destructive/10 text-destructive border border-destructive/20 px-2.5 py-0.5 rounded-full font-medium">Sold Out</span>}
                       {p.is_promotion && <span className="text-xs bg-amber-100 text-amber-700 border border-amber-200 px-2.5 py-0.5 rounded-full font-medium flex items-center gap-1"><Tag size={10}/> {p.promotion_label || "On Sale"}</span>}
                       <Button size="sm" variant="outline" className="rounded-xl text-xs" onClick={() => p.id === editingProduct ? cancelEdit() : startEdit(p)}>
                         {p.id === editingProduct ? "Cancel" : "Edit"}
                       </Button>
-                      <Button size="sm" variant="outline" className={cn("rounded-xl text-xs gap-1", p.is_sold_out ? "text-emerald-600" : "text-red-600")} onClick={() => toggleSoldOut(p)}>
+                      <Button size="sm" variant="outline" className={cn("rounded-xl text-xs gap-1", p.is_sold_out ? "text-emerald-600" : "text-destructive")} onClick={() => toggleSoldOut(p)}>
                         {p.is_sold_out ? <><ToggleRight size={12}/> Mark Available</> : <><ToggleLeft size={12}/> Mark Sold Out</>}
+                      </Button>
+                      <Button size="sm" variant="outline" className="rounded-xl text-xs gap-1 text-destructive" onClick={() => deleteProduct(p.id)}>
+                        <Trash2 size={12}/> Delete
                       </Button>
                     </div>
                   </div>
