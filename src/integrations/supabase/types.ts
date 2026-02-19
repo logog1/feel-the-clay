@@ -101,6 +101,54 @@ export type Database = {
         }
         Relationships: []
       }
+      products: {
+        Row: {
+          category: string
+          created_at: string
+          dimensions: string | null
+          id: string
+          images: Json
+          is_promotion: boolean
+          is_sold_out: boolean
+          name: string
+          original_price: number | null
+          price: number
+          promotion_label: string | null
+          stock: number
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          dimensions?: string | null
+          id: string
+          images?: Json
+          is_promotion?: boolean
+          is_sold_out?: boolean
+          name: string
+          original_price?: number | null
+          price?: number
+          promotion_label?: string | null
+          stock?: number
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          dimensions?: string | null
+          id?: string
+          images?: Json
+          is_promotion?: boolean
+          is_sold_out?: boolean
+          name?: string
+          original_price?: number | null
+          price?: number
+          promotion_label?: string | null
+          stock?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -119,6 +167,30 @@ export type Database = {
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
           user_id?: string
+        }
+        Relationships: []
+      }
+      workshop_availability: {
+        Row: {
+          created_at: string
+          date: string
+          id: string
+          is_available: boolean
+          workshop: string
+        }
+        Insert: {
+          created_at?: string
+          date: string
+          id?: string
+          is_available?: boolean
+          workshop?: string
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          id?: string
+          is_available?: boolean
+          workshop?: string
         }
         Relationships: []
       }
