@@ -212,11 +212,11 @@ const Store = () => {
   }, []);
 
   const categories = [
-    { key: "amazigh", title: t("store.amazigh_title"), description: t("store.amazigh_desc") },
     { key: "terraria", title: t("store.terraria_title"), description: t("store.terraria_desc") },
     { key: "artisan", title: t("store.artisan_title"), description: t("store.artisan_desc") },
     { key: "traveler", title: t("store.traveler_title"), description: t("store.traveler_desc"), donation: true },
     { key: "student", title: t("store.student_title"), description: t("store.student_desc") },
+    { key: "amazigh", title: t("store.amazigh_title"), description: t("store.amazigh_desc") },
   ];
 
   return (

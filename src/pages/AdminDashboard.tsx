@@ -1,10 +1,10 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
-import { LogOut, CalendarDays, ShoppingCart, RefreshCw, Clock, CheckCircle2, XCircle, Package, Calendar, Plus, Trash2, Tag, ToggleLeft, ToggleRight, ChevronLeft, ChevronRight } from "lucide-react";
+import { LogOut, CalendarDays, ShoppingCart, RefreshCw, Clock, CheckCircle2, XCircle, Package, Calendar, Plus, Trash2, Tag, ToggleLeft, ToggleRight, ChevronLeft, ChevronRight, Upload, ImagePlus, X } from "lucide-react";
 import SEOHead from "@/components/SEOHead";
 import { cn } from "@/lib/utils";
 import { format, addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, getDay } from "date-fns";
@@ -60,6 +60,18 @@ const AdminDashboard = () => {
   // Products edit state
   const [editingProduct, setEditingProduct] = useState<string | null>(null);
   const [productDraft, setProductDraft] = useState<Partial<Product>>({});
+
+  // Add product form
+  const [showAddProduct, setShowAddProduct] = useState(false);
+  const [newProduct, setNewProduct] = useState({
+    id: "", name: "", price: 0, original_price: "", stock: 1,
+    category: "terraria", dimensions: "", is_promotion: false,
+    promotion_label: "", is_sold_out: false,
+  });
+  const [newProductImages, setNewProductImages] = useState<string[]>([]);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [savingNewProduct, setSavingNewProduct] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Availability calendar
   const [calMonth, setCalMonth] = useState(new Date());
@@ -121,6 +133,55 @@ const AdminDashboard = () => {
 
   const toggleSoldOut = async (p: Product) => {
     await supabase.from("products").update({ is_sold_out: !p.is_sold_out }).eq("id", p.id);
+    fetchAll();
+  };
+
+  // ── Add new product ────────────────────────────────────────────────────
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    setUploadingImage(true);
+    const uploaded: string[] = [];
+    for (const file of Array.from(files)) {
+      const ext = file.name.split(".").pop();
+      const fileName = `product-${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+      const { error } = await supabase.storage.from("product-images").upload(fileName, file, { upsert: true });
+      if (!error) {
+        const { data: urlData } = supabase.storage.from("product-images").getPublicUrl(fileName);
+        uploaded.push(urlData.publicUrl);
+      }
+    }
+    setNewProductImages((prev) => [...prev, ...uploaded]);
+    setUploadingImage(false);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const saveNewProduct = async () => {
+    if (!newProduct.id || !newProduct.name || newProductImages.length === 0) return;
+    setSavingNewProduct(true);
+    await supabase.from("products").insert({
+      id: newProduct.id,
+      name: newProduct.name,
+      price: newProduct.price,
+      original_price: newProduct.original_price ? Number(newProduct.original_price) : null,
+      stock: newProduct.stock,
+      category: newProduct.category,
+      dimensions: newProduct.dimensions || null,
+      is_promotion: newProduct.is_promotion,
+      promotion_label: newProduct.promotion_label || null,
+      is_sold_out: newProduct.is_sold_out,
+      images: newProductImages,
+    });
+    setNewProduct({ id: "", name: "", price: 0, original_price: "", stock: 1, category: "terraria", dimensions: "", is_promotion: false, promotion_label: "", is_sold_out: false });
+    setNewProductImages([]);
+    setShowAddProduct(false);
+    setSavingNewProduct(false);
+    fetchAll();
+  };
+
+  const deleteProduct = async (id: string) => {
+    if (!confirm("Delete this product?")) return;
+    await supabase.from("products").delete().eq("id", id);
     fetchAll();
   };
 
