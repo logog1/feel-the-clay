@@ -8,7 +8,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { CalendarIcon, Send, CheckCircle } from "lucide-react";
-import { format, isWeekend } from "date-fns";
+import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
@@ -65,17 +65,8 @@ const BookingFormSection = () => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     if (date < today) return true;
-
     const dateStr = format(date, "yyyy-MM-dd");
-    // Admin explicitly blocked → always disabled
-    if (blockedDates.includes(dateStr)) return true;
-    // Admin explicitly opened → always enabled
-    if (availableDates.includes(dateStr)) return false;
-
-    // Default logic
-    if (!isLargeGroup) return !isWeekend(date);
-    if (form.sessionType === "open") return !isWeekend(date);
-    return false;
+    return blockedDates.includes(dateStr);
   };
 
   const [sending, setSending] = useState(false);
