@@ -9,8 +9,7 @@ import SEOHead from "@/components/SEOHead";
 
 // Product images - only real product photos
 import productHeartMug from "@/assets/product-heart-mug.png";
-import productTexturedBowl1 from "@/assets/product-textured-bowl-1.png";
-import productTexturedBowl2 from "@/assets/product-textured-bowl-2.png";
+import productTexturedBowlNew from "@/assets/product-textured-bowl-new.png";
 import productPlateBowl from "@/assets/product-plate-bowl.png";
 import productSet from "@/assets/product-set.png";
 import productCarvedCup from "@/assets/product-carved-cup.png";
@@ -43,7 +42,7 @@ const products: Product[] = [
   { id: "t2", name: "Carved Cup Set", price: 120, priceLabel: "120 DH", images: [productCarvedCup, productTwinCups, productDoubleCup], category: "terraria" },
   { id: "t3", name: "Bowl & Plate Set", price: 180, priceLabel: "180 DH", images: [productPlateBowl, productSet], category: "terraria" },
   // Artisan
-  { id: "1", name: "Textured Bowl", price: 80, priceLabel: "80 DH", images: [productTexturedBowl1, productTexturedBowl2], category: "artisan" },
+  { id: "1", name: "Textured Bowl", price: 80, priceLabel: "80 DH", images: [productTexturedBowlNew], category: "artisan" },
   { id: "2", name: "Heart Mug", price: 60, priceLabel: "60 DH", images: [productHeartMug], category: "artisan" },
   { id: "3", name: "Simple Cup", price: 45, priceLabel: "45 DH", images: [productSimpleCup], category: "artisan" },
   // Traveler
