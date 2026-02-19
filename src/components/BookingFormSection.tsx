@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,7 +8,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { CalendarIcon, Send, CheckCircle } from "lucide-react";
-import { format, isWeekend, isSaturday, isSunday } from "date-fns";
+import { format, isWeekend } from "date-fns";
 import { cn } from "@/lib/utils";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
@@ -35,6 +35,19 @@ const BookingFormSection = () => {
   const [honeypot, setHoneypot] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitted, setSubmitted] = useState(false);
+  const [availableDates, setAvailableDates] = useState<string[]>([]);
+  const [blockedDates, setBlockedDates] = useState<string[]>([]);
+
+  useEffect(() => {
+    const fetchAvailability = async () => {
+      const { data } = await supabase.from("workshop_availability").select("*");
+      if (data) {
+        setAvailableDates(data.filter((d: any) => d.is_available).map((d: any) => d.date));
+        setBlockedDates(data.filter((d: any) => !d.is_available).map((d: any) => d.date));
+      }
+    };
+    fetchAvailability();
+  }, []);
 
   const isLargeGroup = form.participants >= 4;
 
@@ -53,15 +66,15 @@ const BookingFormSection = () => {
     today.setHours(0, 0, 0, 0);
     if (date < today) return true;
 
-    if (!isLargeGroup) {
-      // Less than 4: only weekends
-      return !isWeekend(date);
-    }
-    // 4+ with open workshop: weekends only
-    if (form.sessionType === "open") {
-      return !isWeekend(date);
-    }
-    // 4+ with private: any day
+    const dateStr = format(date, "yyyy-MM-dd");
+    // Admin explicitly blocked → always disabled
+    if (blockedDates.includes(dateStr)) return true;
+    // Admin explicitly opened → always enabled
+    if (availableDates.includes(dateStr)) return false;
+
+    // Default logic
+    if (!isLargeGroup) return !isWeekend(date);
+    if (form.sessionType === "open") return !isWeekend(date);
     return false;
   };
 
