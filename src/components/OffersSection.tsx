@@ -100,7 +100,7 @@ const OffersSection = () => {
                   <img
                     src={offer.image}
                     alt={offer.title}
-                    className={cn("w-full h-full object-cover transition-transform duration-700", offer.unavailable ? "grayscale-[40%]" : "group-hover:scale-110")}
+                    className={cn("w-full h-full object-contain transition-transform duration-700", offer.unavailable ? "grayscale-[40%]" : "group-hover:scale-110")}
                     loading="lazy"
                   />
                   {offer.unavailable && (
