@@ -54,7 +54,7 @@ const BookingFormSection = () => {
   const workshops = [
     { value: "pottery", label: t("offers.pottery") },
     { value: "handbuilding", label: t("offers.handbuilding") },
-    { value: "embroidery", label: t("offers.embroidery") },
+    { value: "embroidery", label: t("offers.embroidery"), unavailable: true },
   ];
 
   const participantOptions = useMemo(() =>

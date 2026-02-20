@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { ArrowRight, ShoppingBag, Star, Clock, Infinity, Package, Coffee, Heart, Users } from "lucide-react";
+import { ArrowRight, ShoppingBag, Star, Clock, Infinity, Package, Coffee, Heart, Users, Ban } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useScrollAnimation } from "@/hooks/use-scroll-animation";
 import { cn } from "@/lib/utils";
@@ -71,8 +71,9 @@ const OffersSection = () => {
     },
     {
       title: t("offers.embroidery"),
-      image: productImages["traveler"] || fallbackImages.embroidery,
+      image: fallbackImages.embroidery,
       link: "/workshop/embroidery",
+      unavailable: true,
     },
   ];
 
