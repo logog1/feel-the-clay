@@ -145,10 +145,12 @@ const ProductCard = ({ product }: { product: Product }) => {
           </div>
         )}
         {product.is_sold_out && (
-          <div className="absolute inset-0 bg-black/40 flex items-center justify-center z-10">
-            <span className="bg-card/90 text-foreground px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest">
-              {t("store.sold_out")}
-            </span>
+          <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-10">
+            <div className="rotate-[-35deg] border-4 border-red-500 rounded-lg px-5 py-2 shadow-2xl">
+              <span className="text-red-500 text-lg font-black uppercase tracking-widest drop-shadow">
+                {t("store.sold_out")}
+              </span>
+            </div>
           </div>
         )}
         <div className="absolute bottom-3 left-3 bg-card/95 backdrop-blur-md px-3 py-1.5 rounded-xl border border-border/50 shadow-lg">
