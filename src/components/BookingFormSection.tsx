@@ -66,7 +66,12 @@ const BookingFormSection = () => {
     today.setHours(0, 0, 0, 0);
     if (date < today) return true;
     const dateStr = format(date, "yyyy-MM-dd");
-    return blockedDates.includes(dateStr);
+    if (blockedDates.includes(dateStr)) return true;
+    // Small groups (< 4) can only book weekends (Sat=6, Sun=0)
+    const day = date.getDay();
+    const isWeekend = day === 0 || day === 6;
+    if (!isLargeGroup && !isWeekend) return true;
+    return false;
   };
 
   const [sending, setSending] = useState(false);

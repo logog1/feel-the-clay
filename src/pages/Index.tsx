@@ -29,20 +29,52 @@ const jsonLd = {
   sameAs: ["https://www.instagram.com/terraria.workshops"],
 };
 
-/* Smooth organic wave between sections */
-const WaveDown = ({ fill = "hsl(24 50% 87%)" }: { fill?: string }) => (
-  <div className="w-full overflow-hidden leading-none" style={{ height: 56, marginBottom: -2 }}>
-    <svg viewBox="0 0 1440 56" preserveAspectRatio="none" className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
-      <path d="M0,0 C360,56 1080,0 1440,56 L1440,56 L0,56 Z" fill={fill} />
-    </svg>
+/** Angled band separator — goes into a darker warm zone */
+const SlantDown = () => (
+  <div className="relative w-full overflow-hidden pointer-events-none" style={{ height: 64 }}>
+    <div
+      className="absolute inset-0"
+      style={{
+        background: "hsl(24 50% 87%)",
+        clipPath: "polygon(0 0, 100% 40%, 100% 100%, 0 100%)",
+      }}
+    />
   </div>
 );
 
-const WaveUp = ({ fill = "hsl(24 50% 87%)" }: { fill?: string }) => (
-  <div className="w-full overflow-hidden leading-none" style={{ height: 56, marginTop: -2 }}>
-    <svg viewBox="0 0 1440 56" preserveAspectRatio="none" className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
-      <path d="M0,56 C360,0 1080,56 1440,0 L1440,56 L0,56 Z" fill={fill} />
-    </svg>
+const SlantUp = () => (
+  <div className="relative w-full overflow-hidden pointer-events-none" style={{ height: 64 }}>
+    <div
+      className="absolute inset-0"
+      style={{
+        background: "hsl(24 50% 87%)",
+        clipPath: "polygon(0 0, 100% 0, 100% 60%, 0 100%)",
+      }}
+    />
+  </div>
+);
+
+const SlantDownLight = () => (
+  <div className="relative w-full overflow-hidden pointer-events-none" style={{ height: 64 }}>
+    <div
+      className="absolute inset-0"
+      style={{
+        background: "hsl(25 55% 94%)",
+        clipPath: "polygon(0 0, 100% 40%, 100% 100%, 0 100%)",
+      }}
+    />
+  </div>
+);
+
+const SlantUpLight = () => (
+  <div className="relative w-full overflow-hidden pointer-events-none" style={{ height: 64 }}>
+    <div
+      className="absolute inset-0"
+      style={{
+        background: "hsl(25 55% 94%)",
+        clipPath: "polygon(0 0, 100% 0, 100% 60%, 0 100%)",
+      }}
+    />
   </div>
 );
 
@@ -59,49 +91,45 @@ const Index = () => {
       <Header />
       <HeroSection />
 
-      {/* BeliefSection — same bg */}
       <AnimatedSection variant="blur"><BeliefSection /></AnimatedSection>
 
-      {/* Wave into elevated/sunken zone */}
-      <WaveDown fill="hsl(24 50% 87%)" />
+      {/* Slant into sunken zone */}
+      <SlantDown />
       <div className="section-sunken">
         <AnimatedSection variant="fade-up"><SocialImpactSection /></AnimatedSection>
         <AnimatedSection variant="fade-up"><AboutSection /></AnimatedSection>
       </div>
-      <WaveUp fill="hsl(24 50% 87%)" />
+      <SlantUp />
 
-      {/* Experience — on default bg, slightly elevated card feel */}
       <AnimatedSection variant="fade-left" delay={100}><ExperienceSection /></AnimatedSection>
 
-      {/* Wave into elevated pale section */}
-      <WaveDown fill="hsl(25 55% 94%)" />
+      {/* Slant into light elevated zone */}
+      <SlantDownLight />
       <div className="section-elevated">
         <AnimatedSection variant="blur"><ProcessSection /></AnimatedSection>
       </div>
-      <WaveUp fill="hsl(25 55% 94%)" />
+      <SlantUpLight />
 
-      {/* Gallery on default */}
       <AnimatedSection variant="scale"><GallerySection /></AnimatedSection>
 
-      {/* Wave into sunken zone for offers + testimonials */}
-      <WaveDown fill="hsl(24 50% 87%)" />
+      {/* Slant into sunken zone for offers + testimonials */}
+      <SlantDown />
       <div className="section-sunken">
         <AnimatedSection variant="fade-up"><OffersSection /></AnimatedSection>
         <AnimatedSection variant="fade-right" delay={100}><TestimonialsSection /></AnimatedSection>
       </div>
-      <WaveUp fill="hsl(24 50% 87%)" />
+      <SlantUp />
 
-      {/* FAQ + Languages on default */}
       <AnimatedSection variant="fade-up"><FAQSection /></AnimatedSection>
       <AnimatedSection variant="blur"><LanguagesSection /></AnimatedSection>
 
-      {/* Wave into booking zone */}
-      <WaveDown fill="hsl(25 55% 94%)" />
+      {/* Slant into booking zone */}
+      <SlantDownLight />
       <div className="section-elevated">
         <AnimatedSection variant="fade-up"><BookingFormSection /></AnimatedSection>
         <AnimatedSection variant="fade-up"><ContactSection /></AnimatedSection>
       </div>
-      <WaveUp fill="hsl(25 55% 94%)" />
+      <SlantUpLight />
 
       <AnimatedSection variant="scale"><TrustSection /></AnimatedSection>
       <Footer />
