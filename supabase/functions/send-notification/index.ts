@@ -278,22 +278,33 @@ Deno.serve(async (req) => {
     ].filter(Boolean);
 
     const whatsappResults = await Promise.allSettled(
-      whatsappRecipients.map((toNumber) => {
+      whatsappRecipients.map(async (toNumber) => {
         const body = new URLSearchParams({
           From: fromNumber,
           To: `whatsapp:${toNumber!.startsWith('+') ? '' : '+'}${toNumber}`,
           Body: whatsappMessage,
         });
-        return fetch(twilioUrl, {
+        const res = await fetch(twilioUrl, {
           method: "POST",
           headers: twilioHeaders,
           body: body.toString(),
         });
+        const json = await res.json();
+        console.log(`WhatsApp to ${toNumber}: status=${res.status}`, JSON.stringify(json));
+        return { status: res.status, body: json };
       })
     );
 
+    const whatsappSummary = whatsappResults.map((r, i) => ({
+      to: whatsappRecipients[i],
+      result: r.status === "fulfilled" ? r.value : { error: String((r as PromiseRejectedResult).reason) },
+    }));
+
+    console.log("Email result:", JSON.stringify(emailJson));
+    console.log("WhatsApp summary:", JSON.stringify(whatsappSummary));
+
     return new Response(
-      JSON.stringify({ success: true }),
+      JSON.stringify({ success: true, whatsapp: whatsappSummary }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (error) {
