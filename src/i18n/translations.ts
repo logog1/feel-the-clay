@@ -49,10 +49,10 @@ export const translations = {
     fr: "des potiers vivant à quelques minutes de chez lui"
   },
   "impact.story_p1_after": {
-    en: " — artisans he never knew existed, struggling with low income and little exposure.",
-    ar: " — صناع لم يكن يعلم بوجودهم، يعانون من دخل منخفض وقلة التعريف.",
-    es: " — artesanos que nunca supo que existían, luchando con bajos ingresos y poca exposición.",
-    fr: " — des artisans dont il ignorait l'existence, luttant avec de faibles revenus et peu de visibilité."
+    en: ", artisans he never knew existed, struggling with low income and little exposure.",
+    ar: "، صناع لم يكن يعلم بوجودهم، يعانون من دخل منخفض وقلة التعريف.",
+    es: ", artesanos que nunca supo que existían, luchando con bajos ingresos y poca exposición.",
+    fr: ", des artisans dont il ignorait l'existence, luttant avec de faibles revenus et peu de visibilité."
   },
   "impact.story_quote": {
     en: "That discovery sparked a mission: bridge tourism with tradition, and create meaningful income for these craftspeople.",
@@ -61,10 +61,10 @@ export const translations = {
     fr: "Cette découverte a déclenché une mission : relier le tourisme à la tradition et créer des revenus significatifs pour ces artisans."
   },
   "impact.story_p2_before": {
-    en: "That's how Terraria was born — what started with local potters has grown into ",
-    ar: "هكذا وُلدت Terraria — ما بدأ مع حرفيين محليين تحوّل إلى ",
-    es: "Así nació Terraria — lo que comenzó con alfareros locales se ha convertido en ",
-    fr: "C'est ainsi que Terraria est née — ce qui a commencé avec des potiers locaux est devenu "
+    en: "That's how Terraria was born. What started with local potters has grown into ",
+    ar: "هكذا وُلدت Terraria. ما بدأ مع حرفيين محليين تحوّل إلى ",
+    es: "Así nació Terraria. Lo que comenzó con alfareros locales se ha convertido en ",
+    fr: "C'est ainsi que Terraria est née. Ce qui a commencé avec des potiers locaux est devenu "
   },
   "impact.story_highlight2": {
     en: "a creative movement bridging culture, craft, and community",
@@ -73,10 +73,10 @@ export const translations = {
     fr: "un mouvement créatif reliant culture, artisanat et communauté"
   },
   "impact.story_p2_after": {
-    en: " — empowering people and preserving heritage through meaningful experiences.",
-    ar: " — تمكين الناس والحفاظ على التراث من خلال تجارب ذات معنى.",
-    es: " — empoderando personas y preservando el patrimonio a través de experiencias significativas.",
-    fr: " — en autonomisant les gens et en préservant le patrimoine à travers des expériences significatives."
+    en: ", empowering people and preserving heritage through meaningful experiences.",
+    ar: "، تمكين الناس والحفاظ على التراث من خلال تجارب ذات معنى.",
+    es: ", empoderando personas y preservando el patrimonio a través de experiencias significativas.",
+    fr: ", en autonomisant les gens et en préservant le patrimoine à travers des expériences significatives."
   },
   "impact.artisans": { en: "artisans he never knew existed", ar: "صناع لم يكن يعلم بوجودهم", es: "artesanos que nunca supo que existían", fr: "des artisans dont il ignorait l'existence" },
   "impact.bridge": { en: " bridge tourism with tradition", ar: " ربط السياحة بالتقاليد", es: " unir turismo con tradición", fr: " relier le tourisme à la tradition" },
@@ -221,12 +221,12 @@ export const translations = {
 
   // Pottery Experience
   "pottery.title": { en: "Full Pottery Experience", ar: "تجربة الفخار الكاملة", es: "Experiencia Completa de Cerámica", fr: "Expérience Poterie Complète" },
-  "pottery.tagline": { en: "Witness the entire journey of clay — from raw earth to the kiln", ar: "شاهد رحلة الطين الكاملة — من التراب إلى الفرن", es: "Presencia todo el viaje de la arcilla — desde la tierra cruda hasta el horno", fr: "Assistez au voyage complet de l'argile — de la terre brute au four" },
+  "pottery.tagline": { en: "Witness the entire journey of clay, from raw earth to the kiln", ar: "شاهد رحلة الطين الكاملة، من التراب إلى الفرن", es: "Presencia todo el viaje de la arcilla, desde la tierra cruda hasta el horno", fr: "Assistez au voyage complet de l'argile, de la terre brute au four" },
   "pottery.price": { en: "100 DH", ar: "100 درهم", es: "100 DH", fr: "100 DH" },
   "pottery.duration": { en: "3 hours", ar: "3 ساعات", es: "3 horas", fr: "3 heures" },
   "pottery.drink": { en: "Cup of tea included", ar: "كوب شاي متضمن", es: "Taza de té incluida", fr: "Tasse de thé incluse" },
-  "pottery.desc1": { en: "Immerse yourself in the world of pottery from start to finish. Join a master potter and experience the full process — from preparing raw earth, shaping it on the wheel, to understanding how pieces are fired in the traditional kiln.", ar: "انغمس في عالم الفخار من البداية إلى النهاية. انضم إلى حرفي محترف واختبر العملية الكاملة — من تحضير التراب، وتشكيله على العجلة، إلى فهم كيفية حرق القطع في الفرن التقليدي.", es: "Sumérgete en el mundo de la cerámica de principio a fin. Únete a un alfarero maestro y experimenta todo el proceso — desde preparar la tierra cruda, darle forma en el torno, hasta entender cómo se cuecen las piezas en el horno tradicional.", fr: "Plongez dans le monde de la poterie du début à la fin. Rejoignez un maître potier et vivez le processus complet — de la préparation de la terre brute, au façonnage sur le tour, jusqu'à la cuisson traditionnelle au four." },
-  "pottery.desc2": { en: "This is not just a workshop — it's a journey through centuries of craftsmanship. Watch, learn, and feel the magic of transforming earth into art.", ar: "هذه ليست مجرد ورشة — إنها رحلة عبر قرون من الحرفية. شاهد، تعلم، واشعر بسحر تحويل التراب إلى فن.", es: "Esto no es solo un taller — es un viaje a través de siglos de artesanía. Observa, aprende y siente la magia de transformar la tierra en arte.", fr: "Ce n'est pas qu'un atelier — c'est un voyage à travers des siècles d'artisanat. Observez, apprenez et ressentez la magie de transformer la terre en art." },
+  "pottery.desc1": { en: "Immerse yourself in the world of pottery from start to finish. Join a master potter and experience the full process: from preparing raw earth, shaping it on the wheel, to understanding how pieces are fired in the traditional kiln.", ar: "انغمس في عالم الفخار من البداية إلى النهاية. انضم إلى حرفي محترف واختبر العملية الكاملة: من تحضير التراب، وتشكيله على العجلة، إلى فهم كيفية حرق القطع في الفرن التقليدي.", es: "Sumérgete en el mundo de la cerámica de principio a fin. Únete a un alfarero maestro y experimenta todo el proceso: desde preparar la tierra cruda, darle forma en el torno, hasta entender cómo se cuecen las piezas en el horno tradicional.", fr: "Plongez dans le monde de la poterie du début à la fin. Rejoignez un maître potier et vivez le processus complet: de la préparation de la terre brute, au façonnage sur le tour, jusqu'à la cuisson traditionnelle au four." },
+  "pottery.desc2": { en: "This is not just a workshop. It's a journey through centuries of craftsmanship. Watch, learn, and feel the magic of transforming earth into art.", ar: "هذه ليست مجرد ورشة. إنها رحلة عبر قرون من الحرفية. شاهد، تعلم، واشعر بسحر تحويل التراب إلى فن.", es: "Esto no es solo un taller. Es un viaje a través de siglos de artesanía. Observa, aprende y siente la magia de transformar la tierra en arte.", fr: "Ce n'est pas qu'un atelier. C'est un voyage à travers des siècles d'artisanat. Observez, apprenez et ressentez la magie de transformer la terre en art." },
   "pottery.h1": { en: "Full pottery process from earth to kiln", ar: "عملية فخارية كاملة من التراب إلى الفرن", es: "Proceso completo desde la tierra hasta el horno", fr: "Processus complet de la terre au four" },
   "pottery.h2": { en: "Work alongside a professional potter", ar: "اعمل بجانب حرفي محترف", es: "Trabaja junto a un alfarero profesional", fr: "Travaillez aux côtés d'un potier professionnel" },
   "pottery.h3": { en: "Learn wheel throwing and traditional techniques", ar: "تعلم تقنيات العجلة والتقنيات التقليدية", es: "Aprende torneado y técnicas tradicionales", fr: "Apprenez le tournage et les techniques traditionnelles" },
@@ -243,7 +243,7 @@ export const translations = {
   "hand.location": { en: "Riad in the heart of old Medina, Tetouan", ar: "رياض في قلب المدينة القديمة، تطوان", es: "Riad en el corazón de la antigua Medina, Tetuán", fr: "Riad au cœur de l'ancienne Médina, Tétouan" },
   "hand.desc1": { en: "Our most popular experience! Step into a beautifully restored riad in the heart of Tetouan's old medina and let your hands do the talking. With handbuilding techniques, you'll shape clay into bowls, cups, sculptures — whatever your imagination desires.", ar: "تجربتنا الأكثر شعبية! ادخل إلى رياض مرمم بشكل جميل في قلب المدينة القديمة لتطوان ودع يديك تتحدث. بتقنيات النحت اليدوي، ستشكل الطين إلى أوعية، أكواب، منحوتات — ما تشاء خيالك.", es: "¡Nuestra experiencia más popular! Entra en un riad bellamente restaurado en el corazón de la antigua medina de Tetuán y deja que tus manos hablen. Con técnicas de modelado, darás forma a la arcilla en cuencos, tazas, esculturas — lo que tu imaginación desee.", fr: "Notre expérience la plus populaire ! Entrez dans un magnifique riad restauré au cœur de l'ancienne médina de Tétouan et laissez vos mains s'exprimer. Avec les techniques de modelage, vous façonnerez l'argile en bols, tasses, sculptures — tout ce que votre imagination désire." },
   "hand.desc2": { en: "Make unlimited pieces during your session. After firing, your creations will be ready for you to take home as unique souvenirs. All this while soaking in the authentic Moroccan vibes of the medina — the sounds, the scents, the warmth.", ar: "اصنع قطع غير محدودة خلال جلستك. بعد الحرق، ستكون إبداعاتك جاهزة لتأخذها معك كهدايا تذكارية فريدة. كل هذا أثناء الاستمتاع بأجواء مغربية أصيلة — الأصوات، الروائح، الدفء.", es: "Haz piezas ilimitadas durante tu sesión. Después de la cocción, tus creaciones estarán listas para llevártelas como recuerdos únicos. Todo esto mientras disfrutas del auténtico ambiente marroquí de la medina — los sonidos, los aromas, la calidez.", fr: "Créez des pièces illimitées pendant votre session. Après la cuisson, vos créations seront prêtes à emporter comme souvenirs uniques. Le tout en vous imprégnant de l'ambiance marocaine authentique de la médina — les sons, les senteurs, la chaleur." },
-  "hand.h1": { en: "Unlimited pieces — make as many as you want", ar: "قطع غير محدودة — اصنع ما تشاء", es: "Piezas ilimitadas — haz tantas como quieras", fr: "Pièces illimitées — faites-en autant que vous voulez" },
+  "hand.h1": { en: "Unlimited pieces, make as many as you want", ar: "قطع غير محدودة، اصنع ما تشاء", es: "Piezas ilimitadas, haz tantas como quieras", fr: "Pièces illimitées, faites-en autant que vous voulez" },
   "hand.h2": { en: "Take your fired creations home as memories", ar: "خذ إبداعاتك المحروقة كذكريات", es: "Llévate tus creaciones cocidas como recuerdos", fr: "Emportez vos créations cuites comme souvenirs" },
   "hand.h3": { en: "Set in a charming riad with Moroccan vibes", ar: "في رياض ساحر بأجواء مغربية", es: "En un riad encantador con ambiente marroquí", fr: "Dans un riad charmant avec une ambiance marocaine" },
   "hand.h4": { en: "Drink of your choice included", ar: "مشروب من اختيارك متضمن", es: "Bebida de tu elección incluida", fr: "Boisson de votre choix incluse" },
@@ -287,7 +287,7 @@ export const translations = {
   "store.add_to_cart": { en: "Add to Cart", ar: "أضف إلى السلة", es: "Añadir al Carrito", fr: "Ajouter au panier" },
   "store.added": { en: "Added!", ar: "تمت الإضافة!", es: "¡Añadido!", fr: "Ajouté !" },
   "store.view_cart": { en: "View Cart", ar: "عرض السلة", es: "Ver Carrito", fr: "Voir le panier" },
-  "store.bottom_quote": { en: "Every piece tells a story — yours begins with clay.", ar: "كل قطعة تروي قصة — قصتك تبدأ بالطين.", es: "Cada pieza cuenta una historia — la tuya comienza con arcilla.", fr: "Chaque pièce raconte une histoire — la vôtre commence avec l'argile." },
+  "store.bottom_quote": { en: "Every piece tells a story. Yours begins with clay.", ar: "كل قطعة تروي قصة. قصتك تبدأ بالطين.", es: "Cada pieza cuenta una historia. La tuya comienza con arcilla.", fr: "Chaque pièce raconte une histoire. La vôtre commence avec l'argile." },
   "store.amazigh_title": { en: "Amazigh Rugs — Handwoven Heritage", ar: "سجاد أمازيغي — إرث منسوج", es: "Alfombras Amazigh — Patrimonio Tejido", fr: "Tapis Amazigh — Héritage Tissé" },
   "store.amazigh_desc": { en: "Handwoven in Midelt by a master weaver using traditional Amazigh techniques. Every rug is one of a kind — a piece of living heritage from the Atlas Mountains.", ar: "منسوجة يدويًا في ميدلت من قِبل حرفية بارعة باستخدام تقنيات أمازيغية تقليدية. كل سجادة فريدة من نوعها — قطعة من التراث الحي للأطلس.", es: "Tejidas a mano en Midelt por una artesana experta usando técnicas amazighs tradicionales. Cada alfombra es única — una pieza del patrimonio vivo del Atlas.", fr: "Tissés à la main à Midelt par une maître tisserande utilisant des techniques amazighes traditionnelles. Chaque tapis est unique — une pièce du patrimoine vivant de l'Atlas." },
   "store.sold_out": { en: "Sold Out", ar: "نفد المخزون", es: "Agotado", fr: "Épuisé" },
