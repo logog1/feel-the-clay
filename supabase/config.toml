@@ -1,4 +1,7 @@
 project_id = "akwjovwwqpgsftshlgth"
 
+[auth.password]
+hibp_enabled = true
+
 [functions.send-notification]
 verify_jwt = false
