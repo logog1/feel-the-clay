@@ -195,11 +195,19 @@ const BookingFormSection = () => {
               <div className="grid grid-cols-1 gap-2">
                 {workshops.map((w) => (
                   <label key={w.value} className={cn(
-                    "flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all",
-                    form.workshop === w.value ? "border-cta bg-cta/5" : "border-border/40 hover:border-cta/30"
+                    "flex items-center gap-3 p-4 rounded-xl border-2 transition-all",
+                    w.unavailable
+                      ? "cursor-not-allowed opacity-50 border-border/40 bg-muted/30"
+                      : "cursor-pointer",
+                    !w.unavailable && (form.workshop === w.value ? "border-cta bg-cta/5" : "border-border/40 hover:border-cta/30")
                   )}>
-                    <RadioGroupItem value={w.value} />
-                    <span className="text-sm font-medium">{w.label}</span>
+                    <RadioGroupItem value={w.value} disabled={w.unavailable} />
+                    <span className="text-sm font-medium flex-1">{w.label}</span>
+                    {w.unavailable && (
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-destructive border border-destructive/60 rounded px-1.5 py-0.5">
+                        Coming Soon
+                      </span>
+                    )}
                   </label>
                 ))}
               </div>
