@@ -6,13 +6,13 @@ import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import workshop2 from "@/assets/workshop-2.jpg";
-import workshop7 from "@/assets/workshop-7.jpg";
+import handbuildingHero from "@/assets/handbuilding-hero.jpg";
 import embrHero from "@/assets/embr-hero.jpg";
 
 // Fallback images per workshop type
 const fallbackImages: Record<string, string> = {
   pottery: workshop2,
-  handbuilding: workshop7,
+  handbuilding: handbuildingHero,
   embroidery: embrHero,
 };
 
