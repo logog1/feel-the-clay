@@ -1,6 +1,7 @@
 import WorkshopPageLayout from "@/components/WorkshopPageLayout";
 import { useLanguage } from "@/i18n/LanguageContext";
 import SEOHead from "@/components/SEOHead";
+import handbuildingHero from "@/assets/handbuilding-hero.jpg";
 import workshop5 from "@/assets/workshop-5.jpg";
 import workshop6 from "@/assets/workshop-6.jpg";
 import workshop8 from "@/assets/workshop-8.jpg";
@@ -18,7 +19,7 @@ const HandbuildingWorkshop = () => {
     popular: true,
     description: [t("hand.desc1"), t("hand.desc2")],
     highlights: [t("hand.h1"), t("hand.h2"), t("hand.h3"), t("hand.h4"), t("hand.h5"), t("hand.h6"), t("hand.h7")],
-    images: [workshop5, workshop6, workshop8, workshop10],
+    images: [handbuildingHero, workshop5, workshop6, workshop8, workshop10],
   };
 
   return (
