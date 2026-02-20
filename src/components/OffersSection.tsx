@@ -12,7 +12,7 @@ import potteryGirls from "@/assets/pottery-girls.jpg";
 
 // Fallback images per workshop type
 const fallbackImages: Record<string, string> = {
-  pottery: workshop2,
+  pottery: potteryGirls,
   handbuilding: handbuildingHero,
   embroidery: embrHero,
 };
