@@ -3,7 +3,7 @@ import HeroSection from "@/components/HeroSection";
 import BeliefSection from "@/components/BeliefSection";
 import AboutSection from "@/components/AboutSection";
 import ExperienceSection from "@/components/ExperienceSection";
-import ProcessSection from "@/components/ProcessSection";
+
 import GallerySection from "@/components/GallerySection";
 import OffersSection from "@/components/OffersSection";
 import TestimonialsSection from "@/components/TestimonialsSection";
@@ -103,12 +103,6 @@ const Index = () => {
 
       <AnimatedSection variant="fade-left" delay={100}><ExperienceSection /></AnimatedSection>
 
-      {/* Slant into light elevated zone */}
-      <SlantDownLight />
-      <div className="section-elevated">
-        <AnimatedSection variant="blur"><ProcessSection /></AnimatedSection>
-      </div>
-      <SlantUpLight />
 
       <AnimatedSection variant="scale"><GallerySection /></AnimatedSection>
 

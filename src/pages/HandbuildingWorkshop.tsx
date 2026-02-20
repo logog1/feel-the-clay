@@ -1,6 +1,7 @@
 import WorkshopPageLayout from "@/components/WorkshopPageLayout";
 import { useLanguage } from "@/i18n/LanguageContext";
 import SEOHead from "@/components/SEOHead";
+import ProcessSection from "@/components/ProcessSection";
 import workshop5 from "@/assets/workshop-5.jpg";
 import workshop6 from "@/assets/workshop-6.jpg";
 import workshop8 from "@/assets/workshop-8.jpg";
@@ -25,6 +26,7 @@ const HandbuildingWorkshop = () => {
     <>
       <SEOHead title="Handbuilding Workshop" description="Shape clay with your hands in a relaxing 3-hour handbuilding workshop in Tetouan, Morocco." path="/workshop/handbuilding" />
       <WorkshopPageLayout workshop={workshop} currentPath="/workshop/handbuilding" />
+      <ProcessSection />
     </>
   );
 };
