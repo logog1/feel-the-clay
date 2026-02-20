@@ -13,7 +13,7 @@ import embrHero from "@/assets/embr-hero.jpg";
 const fallbackImages: Record<string, string> = {
   pottery: workshop2,
   handbuilding: workshop7,
-  embroidery: workshop17,
+  embroidery: embrHero,
 };
 
 const OffersSection = () => {
