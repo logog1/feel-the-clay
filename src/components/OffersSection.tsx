@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { ArrowRight, ShoppingBag, Star, Clock, Infinity, Package, Coffee, Heart, Users } from "lucide-react";
+import { ArrowRight, ShoppingBag, Star, Clock, Infinity, Package, Coffee, Heart, Users, Ban } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useScrollAnimation } from "@/hooks/use-scroll-animation";
 import { cn } from "@/lib/utils";
@@ -7,13 +7,13 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import workshop2 from "@/assets/workshop-2.jpg";
 import workshop7 from "@/assets/workshop-7.jpg";
-import workshop17 from "@/assets/workshop-17.jpg";
+import embrHero from "@/assets/embr-hero.jpg";
 
 // Fallback images per workshop type
 const fallbackImages: Record<string, string> = {
   pottery: workshop2,
   handbuilding: workshop7,
-  embroidery: workshop17,
+  embroidery: embrHero,
 };
 
 const OffersSection = () => {
@@ -71,8 +71,9 @@ const OffersSection = () => {
     },
     {
       title: t("offers.embroidery"),
-      image: productImages["traveler"] || fallbackImages.embroidery,
+      image: fallbackImages.embroidery,
       link: "/workshop/embroidery",
+      unavailable: true,
     },
   ];
 
@@ -95,13 +96,20 @@ const OffersSection = () => {
               style={{ transitionDelay: `${(index + 1) * 150}ms` }}
             >
               <Link to={offer.link} className="group relative block">
-                <div className="aspect-[4/3] overflow-hidden">
+                <div className="aspect-[4/3] overflow-hidden relative">
                   <img
                     src={offer.image}
                     alt={offer.title}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                    className={cn("w-full h-full object-cover transition-transform duration-700", offer.unavailable ? "grayscale-[40%]" : "group-hover:scale-110")}
                     loading="lazy"
                   />
+                  {offer.unavailable && (
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="rotate-[-25deg] border-4 border-destructive/80 rounded-lg px-4 py-2 bg-background/10 backdrop-blur-[2px]">
+                        <span className="text-destructive font-black text-lg md:text-xl tracking-[0.2em] uppercase drop-shadow-lg">Coming Soon</span>
+                      </div>
+                    </div>
+                  )}
                 </div>
                 {offer.popular && (
                   <span className="absolute top-3 start-3 z-10 bg-cta text-primary-foreground text-xs font-semibold px-3 py-1 rounded-full shadow-md flex items-center gap-1">

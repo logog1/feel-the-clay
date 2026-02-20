@@ -17,6 +17,7 @@ interface Workshop {
   highlights: string[];
   images: string[];
   popular?: boolean;
+  unavailable?: boolean;
 }
 
 const WhatsAppIcon = () => (
@@ -54,11 +55,18 @@ const WorkshopPageLayout = ({ workshop, currentPath }: { workshop: Workshop; cur
         <div className="space-y-8">
           {/* Title card */}
           <div className="animate-fade-up p-6 rounded-3xl bg-card border-2 border-border/40 shadow-sm -mt-16 relative z-10">
-            {workshop.popular && (
-              <span className="inline-flex items-center gap-1.5 bg-cta text-primary-foreground text-xs font-bold px-4 py-1.5 rounded-full mb-4 shadow-md shadow-cta/20">
-                <Star size={12} fill="currentColor" /> {t("offers.popular")}
-              </span>
-            )}
+            <div className="flex flex-wrap gap-2 mb-3">
+              {workshop.popular && (
+                <span className="inline-flex items-center gap-1.5 bg-cta text-primary-foreground text-xs font-bold px-4 py-1.5 rounded-full shadow-md shadow-cta/20">
+                  <Star size={12} fill="currentColor" /> {t("offers.popular")}
+                </span>
+              )}
+              {workshop.unavailable && (
+                <span className="inline-flex items-center gap-1.5 border-2 border-destructive text-destructive text-xs font-black px-4 py-1.5 rounded-full tracking-widest uppercase">
+                  Coming Soon
+                </span>
+              )}
+            </div>
             <h1 className="text-2xl md:text-4xl font-bold text-foreground tracking-tight">{workshop.title}</h1>
             <p className="text-muted-foreground mt-2 text-lg">{workshop.tagline}</p>
           </div>
