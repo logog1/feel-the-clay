@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import workshop2 from "@/assets/workshop-2.jpg";
 import handbuildingHero from "@/assets/handbuilding-hero.jpg";
 import embrHero from "@/assets/embr-hero.jpg";
+import potteryGirls from "@/assets/pottery-girls.jpg";
 
 // Fallback images per workshop type
 const fallbackImages: Record<string, string> = {
