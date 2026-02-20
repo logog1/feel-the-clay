@@ -191,33 +191,59 @@ const ProductCard = ({ product }: { product: Product }) => {
   );
 };
 
+interface StoreSection {
+  id: string;
+  title_en: string; title_ar: string; title_es: string; title_fr: string;
+  description_en: string; description_ar: string; description_es: string; description_fr: string;
+  enabled: boolean;
+  sort_order: number;
+  donation: boolean;
+}
+
 const Store = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { totalItems } = useCart();
   const [products, setProducts] = useState<Product[]>([]);
+  const [sections, setSections] = useState<StoreSection[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      const { data } = await supabase.from("products").select("*").order("created_at");
-      if (data) {
-        setProducts(data.map((p) => ({
+    const fetchData = async () => {
+      const [productsRes, sectionsRes] = await Promise.all([
+        supabase.from("products").select("*").order("created_at"),
+        supabase.from("store_sections").select("*").order("sort_order"),
+      ]);
+      if (productsRes.data) {
+        setProducts(productsRes.data.map((p) => ({
           ...p,
           images: Array.isArray(p.images) ? p.images as string[] : JSON.parse(p.images as string),
         })));
       }
+      if (sectionsRes.data) {
+        setSections(sectionsRes.data as StoreSection[]);
+      }
       setLoading(false);
     };
-    fetchProducts();
+    fetchData();
   }, []);
 
-  const categories = [
-    { key: "terraria", title: t("store.terraria_title"), description: t("store.terraria_desc") },
-    { key: "artisan", title: t("store.artisan_title"), description: t("store.artisan_desc") },
-    { key: "traveler", title: t("store.traveler_title"), description: t("store.traveler_desc"), donation: true },
-    { key: "student", title: t("store.student_title"), description: t("store.student_desc") },
-    { key: "amazigh", title: t("store.amazigh_title"), description: t("store.amazigh_desc") },
-  ];
+  // Build categories from DB sections, falling back to translations for any missing
+  const categories = sections.length > 0
+    ? sections
+        .filter((s) => s.enabled)
+        .map((s) => ({
+          key: s.id,
+          title: (s as any)[`title_${language}`] || s.title_en,
+          description: (s as any)[`description_${language}`] || s.description_en,
+          donation: s.donation,
+        }))
+    : [
+        { key: "terraria", title: t("store.terraria_title"), description: t("store.terraria_desc"), donation: false },
+        { key: "artisan", title: t("store.artisan_title"), description: t("store.artisan_desc"), donation: false },
+        { key: "traveler", title: t("store.traveler_title"), description: t("store.traveler_desc"), donation: true },
+        { key: "student", title: t("store.student_title"), description: t("store.student_desc"), donation: false },
+        { key: "amazigh", title: t("store.amazigh_title"), description: t("store.amazigh_desc"), donation: false },
+      ];
 
   return (
     <main className="min-h-screen bg-background">

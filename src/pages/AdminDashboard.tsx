@@ -4,10 +4,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
-import { LogOut, CalendarDays, ShoppingCart, RefreshCw, Clock, CheckCircle2, XCircle, Package, Calendar, Plus, Trash2, Tag, ToggleLeft, ToggleRight, ChevronLeft, ChevronRight, Upload, ImagePlus, X } from "lucide-react";
+import { LogOut, CalendarDays, ShoppingCart, RefreshCw, Clock, CheckCircle2, XCircle, Package, Calendar, Plus, Trash2, Tag, ToggleLeft, ToggleRight, ChevronLeft, ChevronRight, Upload, ImagePlus, X, LayoutList, GripVertical, Eye, EyeOff, Save } from "lucide-react";
 import SEOHead from "@/components/SEOHead";
 import { cn } from "@/lib/utils";
-import { format, addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, getDay } from "date-fns";
+import { format, addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterval, getDay } from "date-fns";
 
 // ── Types ──────────────────────────────────────────────────────────────────
 interface Booking {
@@ -26,6 +26,12 @@ interface Product {
   id: string; name: string; price: number; original_price: number | null;
   images: string[]; category: string; stock: number; is_sold_out: boolean;
   is_promotion: boolean; promotion_label: string | null; dimensions: string | null;
+}
+interface StoreSection {
+  id: string;
+  title_en: string; title_ar: string; title_es: string; title_fr: string;
+  description_en: string; description_ar: string; description_es: string; description_fr: string;
+  enabled: boolean; sort_order: number; donation: boolean;
 }
 interface Availability {
   id: string; date: string; workshop: string; is_available: boolean;
@@ -53,6 +59,9 @@ const AdminDashboard = () => {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
+  const [storeSections, setStoreSections] = useState<StoreSection[]>([]);
+  const [sectionDrafts, setSectionDrafts] = useState<Record<string, StoreSection>>({});
+  const [savingSection, setSavingSection] = useState<string | null>(null);
   const [availability, setAvailability] = useState<Availability[]>([]);
   const [loading, setLoading] = useState(true);
   const [authed, setAuthed] = useState(false);
@@ -91,11 +100,12 @@ const AdminDashboard = () => {
 
   const fetchAll = useCallback(async () => {
     setLoading(true);
-    const [b, o, p, a] = await Promise.all([
+    const [b, o, p, a, s] = await Promise.all([
       supabase.from("bookings").select("*").order("created_at", { ascending: false }),
       supabase.from("orders").select("*").order("created_at", { ascending: false }),
       supabase.from("products").select("*").order("category"),
       supabase.from("workshop_availability").select("*"),
+      supabase.from("store_sections").select("*").order("sort_order"),
     ]);
     setBookings((b.data as Booking[]) || []);
     setOrders((o.data as Order[]) || []);
@@ -104,6 +114,11 @@ const AdminDashboard = () => {
       images: Array.isArray(prod.images) ? prod.images : JSON.parse(prod.images || "[]"),
     })));
     setAvailability((a.data as Availability[]) || []);
+    const secs = (s.data as StoreSection[]) || [];
+    setStoreSections(secs);
+    const drafts: Record<string, StoreSection> = {};
+    secs.forEach((sec) => { drafts[sec.id] = { ...sec }; });
+    setSectionDrafts(drafts);
     setLoading(false);
   }, []);
 
@@ -113,6 +128,25 @@ const AdminDashboard = () => {
   };
 
   const handleLogout = async () => { await supabase.auth.signOut(); navigate("/admin/login"); };
+
+  // ── Store Sections management ─────────────────────────────────────────
+  const updateSectionDraft = (id: string, field: keyof StoreSection, value: any) => {
+    setSectionDrafts((d) => ({ ...d, [id]: { ...d[id], [field]: value } }));
+  };
+
+  const saveSection = async (id: string) => {
+    const draft = sectionDrafts[id];
+    if (!draft) return;
+    setSavingSection(id);
+    await supabase.from("store_sections").update({
+      title_en: draft.title_en, title_ar: draft.title_ar, title_es: draft.title_es, title_fr: draft.title_fr,
+      description_en: draft.description_en, description_ar: draft.description_ar,
+      description_es: draft.description_es, description_fr: draft.description_fr,
+      enabled: draft.enabled, sort_order: draft.sort_order, donation: draft.donation,
+    }).eq("id", id);
+    setSavingSection(null);
+    fetchAll();
+  };
 
   // ── Products management ────────────────────────────────────────────────
   const startEdit = (p: Product) => { setEditingProduct(p.id); setProductDraft({ ...p }); };
@@ -351,6 +385,7 @@ const AdminDashboard = () => {
             <TabsTrigger value="orders" className="rounded-xl gap-2 data-[state=active]:bg-card"><ShoppingCart size={14} /> Orders</TabsTrigger>
             <TabsTrigger value="products" className="rounded-xl gap-2 data-[state=active]:bg-card"><Package size={14} /> Products</TabsTrigger>
             <TabsTrigger value="availability" className="rounded-xl gap-2 data-[state=active]:bg-card"><Calendar size={14} /> Availability</TabsTrigger>
+            <TabsTrigger value="sections" className="rounded-xl gap-2 data-[state=active]:bg-card"><LayoutList size={14} /> Store Sections</TabsTrigger>
           </TabsList>
 
           {/* ── Bookings ── */}
@@ -732,6 +767,112 @@ const AdminDashboard = () => {
                   )}
                 </div>
               </div>
+            </div>
+          </TabsContent>
+
+          {/* ── Store Sections ── */}
+          <TabsContent value="sections">
+            <div className="space-y-4">
+              <p className="text-sm text-muted-foreground mb-2">
+                Edit store section titles, descriptions, visibility, and order. Changes go live immediately after saving.
+              </p>
+              {storeSections.map((sec) => {
+                const draft = sectionDrafts[sec.id] || sec;
+                const isSaving = savingSection === sec.id;
+                return (
+                  <div key={sec.id} className={cn("p-5 rounded-3xl bg-card border-2 transition-all", draft.enabled ? "border-border/40" : "border-border/20 opacity-60")}>
+                    <div className="flex items-center justify-between mb-4 gap-3 flex-wrap">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-2xl bg-cta/10 border border-cta/20 flex items-center justify-center">
+                          <GripVertical size={16} className="text-cta" />
+                        </div>
+                        <div>
+                          <span className="font-bold text-foreground capitalize">{sec.id}</span>
+                          <p className="text-xs text-muted-foreground">Category key: <code className="bg-muted px-1 rounded">{sec.id}</code></p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {/* Sort order */}
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-xs text-muted-foreground">Order:</span>
+                          <Input
+                            type="number"
+                            value={draft.sort_order}
+                            onChange={(e) => updateSectionDraft(sec.id, "sort_order", Number(e.target.value))}
+                            className="rounded-xl h-8 w-16 text-sm text-center"
+                          />
+                        </div>
+                        {/* Donation toggle */}
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-xs text-muted-foreground">Donation</span>
+                          <button
+                            onClick={() => updateSectionDraft(sec.id, "donation", !draft.donation)}
+                            className={cn("w-9 h-5 rounded-full transition-colors relative flex-shrink-0", draft.donation ? "bg-amber-400" : "bg-muted")}
+                          >
+                            <div className={cn("absolute top-0.5 w-4 h-4 rounded-full bg-card transition-all shadow", draft.donation ? "left-4" : "left-0.5")} />
+                          </button>
+                        </div>
+                        {/* Enabled toggle */}
+                        <button
+                          onClick={() => updateSectionDraft(sec.id, "enabled", !draft.enabled)}
+                          className={cn("flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-xl border-2 transition-all",
+                            draft.enabled
+                              ? "border-emerald-300 bg-emerald-50 text-emerald-700 hover:bg-emerald-100"
+                              : "border-border/40 bg-muted text-muted-foreground hover:bg-muted/80"
+                          )}
+                        >
+                          {draft.enabled ? <Eye size={12} /> : <EyeOff size={12} />}
+                          {draft.enabled ? "Visible" : "Hidden"}
+                        </button>
+                        <Button
+                          size="sm"
+                          disabled={isSaving}
+                          onClick={() => saveSection(sec.id)}
+                          className="rounded-xl gap-1.5 bg-cta hover:bg-cta-hover text-primary-foreground text-xs"
+                        >
+                          <Save size={12} />
+                          {isSaving ? "Saving..." : "Save"}
+                        </Button>
+                      </div>
+                    </div>
+
+                    {/* Titles */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+                      {(["en", "ar", "es", "fr"] as const).map((lang) => (
+                        <div key={lang}>
+                          <label className="text-xs font-medium text-muted-foreground mb-1 block uppercase tracking-wide">
+                            Title ({lang.toUpperCase()})
+                          </label>
+                          <Input
+                            value={(draft as any)[`title_${lang}`] ?? ""}
+                            onChange={(e) => updateSectionDraft(sec.id, `title_${lang}` as keyof StoreSection, e.target.value)}
+                            className="rounded-xl h-9 text-sm"
+                            dir={lang === "ar" ? "rtl" : "ltr"}
+                          />
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Descriptions */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      {(["en", "ar", "es", "fr"] as const).map((lang) => (
+                        <div key={lang}>
+                          <label className="text-xs font-medium text-muted-foreground mb-1 block uppercase tracking-wide">
+                            Description ({lang.toUpperCase()})
+                          </label>
+                          <textarea
+                            value={(draft as any)[`description_${lang}`] ?? ""}
+                            onChange={(e) => updateSectionDraft(sec.id, `description_${lang}` as keyof StoreSection, e.target.value)}
+                            className="w-full rounded-xl border border-input bg-background px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-ring"
+                            rows={2}
+                            dir={lang === "ar" ? "rtl" : "ltr"}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </TabsContent>
         </Tabs>

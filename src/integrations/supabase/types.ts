@@ -149,6 +149,54 @@ export type Database = {
         }
         Relationships: []
       }
+      store_sections: {
+        Row: {
+          description_ar: string
+          description_en: string
+          description_es: string
+          description_fr: string
+          donation: boolean
+          enabled: boolean
+          id: string
+          sort_order: number
+          title_ar: string
+          title_en: string
+          title_es: string
+          title_fr: string
+          updated_at: string
+        }
+        Insert: {
+          description_ar?: string
+          description_en?: string
+          description_es?: string
+          description_fr?: string
+          donation?: boolean
+          enabled?: boolean
+          id: string
+          sort_order?: number
+          title_ar?: string
+          title_en: string
+          title_es?: string
+          title_fr?: string
+          updated_at?: string
+        }
+        Update: {
+          description_ar?: string
+          description_en?: string
+          description_es?: string
+          description_fr?: string
+          donation?: boolean
+          enabled?: boolean
+          id?: string
+          sort_order?: number
+          title_ar?: string
+          title_en?: string
+          title_es?: string
+          title_fr?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
