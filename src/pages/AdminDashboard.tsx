@@ -154,6 +154,7 @@ const AdminDashboard = () => {
 
   const saveProduct = async (id: string) => {
     await supabase.from("products").update({
+      name: productDraft.name,
       price: productDraft.price,
       original_price: productDraft.original_price || null,
       stock: productDraft.stock,
@@ -668,6 +669,10 @@ const AdminDashboard = () => {
 
                       {/* Fields grid */}
                       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                        <div className="col-span-2 sm:col-span-3">
+                          <label className="text-xs font-medium text-muted-foreground mb-1 block">Product Name</label>
+                          <Input value={productDraft.name ?? ""} onChange={(e) => setProductDraft(d => ({ ...d, name: e.target.value }))} className="rounded-xl h-9 text-sm" placeholder="Product name" />
+                        </div>
                         <div>
                           <label className="text-xs font-medium text-muted-foreground mb-1 block">Price (DH)</label>
                           <Input type="number" value={productDraft.price ?? ""} onChange={(e) => setProductDraft(d => ({ ...d, price: Number(e.target.value) }))} className="rounded-xl h-9 text-sm" />
