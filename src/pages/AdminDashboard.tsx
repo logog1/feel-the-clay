@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
-import { LogOut, CalendarDays, ShoppingCart, RefreshCw, Clock, CheckCircle2, XCircle, Package, Calendar, Plus, Trash2, Tag, ToggleLeft, ToggleRight, ChevronLeft, ChevronRight, Upload, ImagePlus, X, LayoutList, GripVertical, Eye, EyeOff, Save } from "lucide-react";
+import { LogOut, CalendarDays, ShoppingCart, RefreshCw, Clock, CheckCircle2, XCircle, Package, Calendar, Plus, Trash2, Tag, ToggleLeft, ToggleRight, ChevronLeft, ChevronRight, Upload, ImagePlus, X, LayoutList, GripVertical, Eye, EyeOff, Save, AlertTriangle } from "lucide-react";
 import SEOHead from "@/components/SEOHead";
 import { cn } from "@/lib/utils";
 import { format, addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterval, getDay } from "date-fns";
@@ -66,6 +66,9 @@ const AdminDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [authed, setAuthed] = useState(false);
 
+  // Confirm delete dialog
+  const [confirmDelete, setConfirmDelete] = useState<{ id: string; name: string } | null>(null);
+
   // Products edit state
   const [editingProduct, setEditingProduct] = useState<string | null>(null);
   const [productDraft, setProductDraft] = useState<Partial<Product>>({});
@@ -123,8 +126,8 @@ const AdminDashboard = () => {
   }, []);
 
   const updateStatus = async (table: "bookings" | "orders", id: string, status: string) => {
-    await supabase.from(table).update({ status }).eq("id", id);
-    fetchAll();
+    const { error } = await supabase.from(table).update({ status }).eq("id", id);
+    if (!error) await fetchAll();
   };
 
   const handleLogout = async () => { await supabase.auth.signOut(); navigate("/admin/login"); };
@@ -153,7 +156,7 @@ const AdminDashboard = () => {
   const cancelEdit = () => { setEditingProduct(null); setProductDraft({}); };
 
   const saveProduct = async (id: string) => {
-    await supabase.from("products").update({
+    const { error } = await supabase.from("products").update({
       name: productDraft.name,
       price: productDraft.price,
       original_price: productDraft.original_price || null,
@@ -165,8 +168,15 @@ const AdminDashboard = () => {
       images: productDraft.images || [],
       category: productDraft.category,
     }).eq("id", id);
-    setEditingProduct(null);
-    fetchAll();
+    if (!error) {
+      setEditingProduct(null);
+      await fetchAll();
+    }
+  };
+
+  const toggleSoldOut = async (p: Product) => {
+    const { error } = await supabase.from("products").update({ is_sold_out: !p.is_sold_out }).eq("id", p.id);
+    if (!error) await fetchAll();
   };
 
   // Upload images for an existing product being edited
@@ -194,11 +204,6 @@ const AdminDashboard = () => {
 
   const removeEditImage = (idx: number) => {
     setProductDraft((d) => ({ ...d, images: (d.images || []).filter((_, i) => i !== idx) }));
-  };
-
-  const toggleSoldOut = async (p: Product) => {
-    await supabase.from("products").update({ is_sold_out: !p.is_sold_out }).eq("id", p.id);
-    fetchAll();
   };
 
   // ── Add new product ────────────────────────────────────────────────────
@@ -241,13 +246,18 @@ const AdminDashboard = () => {
     setNewProductImages([]);
     setShowAddProduct(false);
     setSavingNewProduct(false);
-    fetchAll();
+    await fetchAll();
   };
 
-  const deleteProduct = async (id: string) => {
-    if (!confirm("Delete this product?")) return;
-    await supabase.from("products").delete().eq("id", id);
-    fetchAll();
+  const confirmDeleteProduct = (id: string, name: string) => {
+    setConfirmDelete({ id, name });
+  };
+
+  const executeDelete = async () => {
+    if (!confirmDelete) return;
+    const { error } = await supabase.from("products").delete().eq("id", confirmDelete.id);
+    setConfirmDelete(null);
+    if (!error) await fetchAll();
   };
 
   // ── Availability calendar ─────────────────────────────────────────────
@@ -632,7 +642,7 @@ const AdminDashboard = () => {
                       <Button size="sm" variant="outline" className={cn("rounded-xl text-xs gap-1", p.is_sold_out ? "text-emerald-600" : "text-destructive")} onClick={() => toggleSoldOut(p)}>
                         {p.is_sold_out ? <><ToggleRight size={12}/> Mark Available</> : <><ToggleLeft size={12}/> Mark Sold Out</>}
                       </Button>
-                      <Button size="sm" variant="outline" className="rounded-xl text-xs gap-1 text-destructive" onClick={() => deleteProduct(p.id)}>
+                      <Button size="sm" variant="outline" className="rounded-xl text-xs gap-1 text-destructive" onClick={() => confirmDeleteProduct(p.id, p.name)}>
                         <Trash2 size={12}/> Delete
                       </Button>
                     </div>
@@ -895,6 +905,41 @@ const AdminDashboard = () => {
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* ── Delete Confirmation Dialog ── */}
+      {confirmDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+          <div className="bg-card border-2 border-destructive/30 rounded-3xl p-6 max-w-sm w-full mx-4 shadow-2xl">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-12 h-12 rounded-2xl bg-destructive/10 border border-destructive/20 flex items-center justify-center flex-shrink-0">
+                <AlertTriangle size={22} className="text-destructive" />
+              </div>
+              <div>
+                <h3 className="font-bold text-foreground">Delete Product?</h3>
+                <p className="text-sm text-muted-foreground">This action cannot be undone.</p>
+              </div>
+            </div>
+            <p className="text-sm text-foreground mb-6 bg-muted/40 px-4 py-3 rounded-xl">
+              Are you sure you want to delete <strong>"{confirmDelete.name}"</strong>?
+            </p>
+            <div className="flex gap-3">
+              <Button
+                variant="outline"
+                className="flex-1 rounded-xl"
+                onClick={() => setConfirmDelete(null)}
+              >
+                Cancel
+              </Button>
+              <Button
+                className="flex-1 rounded-xl bg-destructive hover:bg-destructive/90 text-destructive-foreground gap-2"
+                onClick={executeDelete}
+              >
+                <Trash2 size={14} /> Yes, Delete
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 };
