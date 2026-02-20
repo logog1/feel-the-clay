@@ -60,7 +60,7 @@ const OffersSection = () => {
   const offers = [
     {
       title: t("offers.handbuilding"),
-      image: productImages["artisan"] || fallbackImages.handbuilding,
+      image: fallbackImages.handbuilding,
       link: "/workshop/handbuilding",
       popular: true,
     },
