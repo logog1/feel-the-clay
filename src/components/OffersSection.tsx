@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import workshop2 from "@/assets/workshop-2.jpg";
 import workshop7 from "@/assets/workshop-7.jpg";
-import workshop17 from "@/assets/workshop-17.jpg";
+import embrHero from "@/assets/embr-hero.jpg";
 
 // Fallback images per workshop type
 const fallbackImages: Record<string, string> = {
