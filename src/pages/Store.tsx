@@ -87,7 +87,7 @@ const ImageCarousel = ({ images, alt }: { images: string[]; alt: string }) => {
 
   return (
     <div
-      className="relative w-full h-full"
+      className="relative w-full h-full overflow-hidden"
       onTouchStart={(e) => { touchStartX.current = e.touches[0].clientX; }}
       onTouchEnd={(e) => {
         const diff = touchStartX.current - e.changedTouches[0].clientX;
@@ -96,19 +96,37 @@ const ImageCarousel = ({ images, alt }: { images: string[]; alt: string }) => {
         }
       }}
     >
-      <img src={images[current]} alt={alt} className="w-full h-full object-cover transition-opacity duration-300" loading="lazy" />
-      <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
-        {images.map((_, i) => (
-          <button key={i} onClick={(e) => { e.stopPropagation(); setCurrent(i); }} className={cn("w-1.5 h-1.5 rounded-full transition-all", i === current ? "bg-white w-4" : "bg-white/50")} />
+      {/* All images are pre-rendered in the DOM; only CSS transform moves between them — no re-fetch */}
+      <div
+        className="flex h-full transition-transform duration-300 ease-out will-change-transform"
+        style={{ transform: `translateX(-${current * 100}%)`, width: `${images.length * 100}%` }}
+      >
+        {images.map((src, i) => (
+          <img
+            key={i}
+            src={src}
+            alt={i === 0 ? alt : ""}
+            className="h-full object-cover flex-shrink-0"
+            style={{ width: `${100 / images.length}%` }}
+            loading={i === 0 ? "eager" : "lazy"}
+          />
         ))}
       </div>
+      {/* Dots */}
+      <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
+        {images.map((_, i) => (
+          <button key={i} onClick={(e) => { e.stopPropagation(); setCurrent(i); }} className={cn("h-1.5 rounded-full transition-all duration-200", i === current ? "bg-white w-4" : "bg-white/50 w-1.5")} />
+        ))}
+      </div>
+      {/* Prev */}
       {current > 0 && (
-        <button onClick={(e) => { e.stopPropagation(); setCurrent(current - 1); }} className="absolute left-1 top-1/2 -translate-y-1/2 w-6 h-6 bg-black/40 backdrop-blur-sm rounded-full flex items-center justify-center text-white z-10 hover:bg-black/60">
+        <button onClick={(e) => { e.stopPropagation(); setCurrent(current - 1); }} className="absolute left-1 top-1/2 -translate-y-1/2 w-6 h-6 bg-black/40 backdrop-blur-sm rounded-full flex items-center justify-center text-white z-10 hover:bg-black/60 transition-colors">
           <ChevronLeft size={14} />
         </button>
       )}
+      {/* Next */}
       {current < images.length - 1 && (
-        <button onClick={(e) => { e.stopPropagation(); setCurrent(current + 1); }} className="absolute right-1 top-1/2 -translate-y-1/2 w-6 h-6 bg-black/40 backdrop-blur-sm rounded-full flex items-center justify-center text-white z-10 hover:bg-black/60">
+        <button onClick={(e) => { e.stopPropagation(); setCurrent(current + 1); }} className="absolute right-1 top-1/2 -translate-y-1/2 w-6 h-6 bg-black/40 backdrop-blur-sm rounded-full flex items-center justify-center text-white z-10 hover:bg-black/60 transition-colors">
           <ChevronRight size={14} />
         </button>
       )}
