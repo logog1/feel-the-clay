@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, Clock, Coffee, MapPin, ChevronDown, Store, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -34,7 +34,15 @@ const otherWorkshopsData = [
 
 const WorkshopPageLayout = ({ workshop, currentPath }: { workshop: Workshop; currentPath: string }) => {
   const { t } = useLanguage();
+  const navigate = useNavigate();
   const [showAllPhotos, setShowAllPhotos] = useState(false);
+
+  const handleBooking = () => {
+    navigate("/");
+    setTimeout(() => {
+      document.getElementById("booking")?.scrollIntoView({ behavior: "smooth" });
+    }, 300);
+  };
   const previewImages = workshop.images.slice(0, 2);
   const remainingImages = workshop.images.slice(2);
 
@@ -148,8 +156,8 @@ const WorkshopPageLayout = ({ workshop, currentPath }: { workshop: Workshop; cur
           )}
 
           <div className="flex flex-col sm:flex-row gap-4 pt-4">
-            <Button variant="cta" size="lg" asChild className="flex-1 text-base py-6 shadow-xl shadow-cta/20">
-              <Link to="/#booking">{t("workshop.reserve")}</Link>
+            <Button variant="cta" size="lg" onClick={handleBooking} className="flex-1 text-base py-6 shadow-xl shadow-cta/20">
+              {t("workshop.reserve")}
             </Button>
             <Button variant="ctaOutline" size="lg" asChild className="flex-1 py-6 border-2">
               <a href="https://wa.me/message/SBUBJACPVCNGM1" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
