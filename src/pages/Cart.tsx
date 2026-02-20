@@ -11,6 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { cn } from "@/lib/utils";
 import Header from "@/components/Header";
+import { z } from "zod";
 
 type Region = "north" | "morocco";
 
@@ -19,12 +20,33 @@ const DELIVERY_FEES: Record<Region, number> = {
   morocco: 40,
 };
 
+const checkoutSchema = z.object({
+  name: z
+    .string()
+    .trim()
+    .min(1, "Name is required")
+    .max(100, "Name must be under 100 characters"),
+  phone: z
+    .string()
+    .trim()
+    .min(6, "Phone number is too short")
+    .max(20, "Phone number is too long")
+    .regex(/^[+\d\s\-()]+$/, "Invalid phone number format"),
+  address: z
+    .string()
+    .trim()
+    .min(1, "Address is required")
+    .max(300, "Address must be under 300 characters"),
+});
+
+type CheckoutForm = z.infer<typeof checkoutSchema>;
+
 const Cart = () => {
   const { items, updateQuantity, removeItem, clearCart, totalPrice, totalItems } = useCart();
   const { t } = useLanguage();
   const [region, setRegion] = useState<Region>("north");
-  const [form, setForm] = useState({ name: "", phone: "", address: "" });
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [form, setForm] = useState<CheckoutForm>({ name: "", phone: "", address: "" });
+  const [errors, setErrors] = useState<Partial<Record<keyof CheckoutForm, string>>>({});
   const [honeypot, setHoneypot] = useState("");
   const [sending, setSending] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -34,16 +56,21 @@ const Cart = () => {
 
   const handleCheckout = async () => {
     if (honeypot) return; // bot detected
-    const newErrors: Record<string, string> = {};
-    if (!form.name.trim()) newErrors.name = "Required";
-    if (!form.phone.trim() || form.phone.trim().length < 6) newErrors.phone = "Required";
-    if (!form.address.trim()) newErrors.address = "Required";
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
+
+    const result = checkoutSchema.safeParse(form);
+    if (!result.success) {
+      const fieldErrors: Partial<Record<keyof CheckoutForm, string>> = {};
+      result.error.errors.forEach((err) => {
+        const field = err.path[0] as keyof CheckoutForm;
+        if (!fieldErrors[field]) fieldErrors[field] = err.message;
+      });
+      setErrors(fieldErrors);
       return;
     }
     setErrors({});
     setSending(true);
+
+    const validated = result.data;
 
     try {
       await supabase.functions.invoke("send-notification", {
@@ -56,9 +83,9 @@ const Cart = () => {
             deliveryFee,
             grandTotal,
             region: region === "north" ? "North (Tetouan/Tanger)" : "Rest of Morocco",
-            customerName: form.name,
-            customerPhone: form.phone,
-            customerAddress: form.address,
+            customerName: validated.name,
+            customerPhone: validated.phone,
+            customerAddress: validated.address,
           },
         },
       });
