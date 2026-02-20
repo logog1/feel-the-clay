@@ -221,8 +221,8 @@ const BookingFormSection = () => {
           <div className="space-y-3">
             <h3 className="text-sm font-bold uppercase tracking-widest text-cta">{t("booking.participants")}</h3>
             {isPottery && (
-              <div className="p-3 rounded-xl bg-amber-500/10 border-2 border-amber-500/20">
-                <p className="text-xs text-amber-700 dark:text-amber-400 font-medium">⚠️ Full Pottery Experience requires a minimum of 4 participants.</p>
+              <div className="p-3 rounded-xl bg-cta/5 border-2 border-cta/20">
+                <p className="text-xs text-muted-foreground font-medium">⚠️ Full Pottery Experience requires a minimum of 4 participants.</p>
               </div>
             )}
             <div className="flex flex-wrap gap-2">
