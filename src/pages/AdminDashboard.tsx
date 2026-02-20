@@ -126,9 +126,38 @@ const AdminDashboard = () => {
       is_sold_out: productDraft.is_sold_out,
       is_promotion: productDraft.is_promotion,
       promotion_label: productDraft.promotion_label || null,
+      dimensions: productDraft.dimensions || null,
+      images: productDraft.images || [],
     }).eq("id", id);
     setEditingProduct(null);
     fetchAll();
+  };
+
+  // Upload images for an existing product being edited
+  const editFileInputRef = useRef<HTMLInputElement>(null);
+  const [uploadingEditImage, setUploadingEditImage] = useState(false);
+
+  const handleEditImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    setUploadingEditImage(true);
+    const uploaded: string[] = [];
+    for (const file of Array.from(files)) {
+      const ext = file.name.split(".").pop();
+      const fileName = `product-${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+      const { error } = await supabase.storage.from("product-images").upload(fileName, file, { upsert: true });
+      if (!error) {
+        const { data: urlData } = supabase.storage.from("product-images").getPublicUrl(fileName);
+        uploaded.push(urlData.publicUrl);
+      }
+    }
+    setProductDraft((d) => ({ ...d, images: [...(d.images || []), ...uploaded] }));
+    setUploadingEditImage(false);
+    if (editFileInputRef.current) editFileInputRef.current.value = "";
+  };
+
+  const removeEditImage = (idx: number) => {
+    setProductDraft((d) => ({ ...d, images: (d.images || []).filter((_, i) => i !== idx) }));
   };
 
   const toggleSoldOut = async (p: Product) => {
@@ -573,35 +602,69 @@ const AdminDashboard = () => {
                   </div>
 
                   {editingProduct === p.id && (
-                    <div className="border-t border-border/30 pt-4 grid grid-cols-2 sm:grid-cols-3 gap-3">
+                    <div className="border-t border-border/30 pt-4 space-y-4">
+                      {/* Image management */}
                       <div>
-                        <label className="text-xs font-medium text-muted-foreground mb-1 block">Price (DH)</label>
-                        <Input type="number" value={productDraft.price ?? ""} onChange={(e) => setProductDraft(d => ({ ...d, price: Number(e.target.value) }))} className="rounded-xl h-9 text-sm" />
-                      </div>
-                      <div>
-                        <label className="text-xs font-medium text-muted-foreground mb-1 block">Original Price (for strikethrough)</label>
-                        <Input type="number" value={productDraft.original_price ?? ""} onChange={(e) => setProductDraft(d => ({ ...d, original_price: e.target.value ? Number(e.target.value) : null }))} className="rounded-xl h-9 text-sm" placeholder="Empty = no strikethrough" />
-                      </div>
-                      <div>
-                        <label className="text-xs font-medium text-muted-foreground mb-1 block">Stock</label>
-                        <Input type="number" value={productDraft.stock ?? ""} onChange={(e) => setProductDraft(d => ({ ...d, stock: Number(e.target.value) }))} className="rounded-xl h-9 text-sm" />
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <label className="text-xs font-medium text-muted-foreground">Promotion?</label>
-                        <button onClick={() => setProductDraft(d => ({ ...d, is_promotion: !d.is_promotion }))} className={cn("w-10 h-6 rounded-full transition-colors relative", productDraft.is_promotion ? "bg-cta" : "bg-muted")}>
-                          <div className={cn("absolute top-1 w-4 h-4 rounded-full bg-card transition-all shadow", productDraft.is_promotion ? "left-5" : "left-1")} />
-                        </button>
-                      </div>
-                      {productDraft.is_promotion && (
-                        <div>
-                          <label className="text-xs font-medium text-muted-foreground mb-1 block">Promotion Label</label>
-                          <Input value={productDraft.promotion_label ?? ""} onChange={(e) => setProductDraft(d => ({ ...d, promotion_label: e.target.value }))} className="rounded-xl h-9 text-sm" placeholder="e.g. -20%, Special Offer" />
+                        <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2 block">Product Images</label>
+                        <div className="flex flex-wrap gap-2 mb-3">
+                          {(productDraft.images || []).map((url, idx) => (
+                            <div key={idx} className="relative w-20 h-20 rounded-xl overflow-hidden border-2 border-border/40 group">
+                              <img src={url} alt="" className="w-full h-full object-cover" />
+                              <button
+                                onClick={() => removeEditImage(idx)}
+                                className="absolute inset-0 bg-destructive/70 text-destructive-foreground opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-xs font-bold"
+                              >
+                                ✕ Remove
+                              </button>
+                            </div>
+                          ))}
+                          <button
+                            onClick={() => editFileInputRef.current?.click()}
+                            disabled={uploadingEditImage}
+                            className="w-20 h-20 rounded-xl border-2 border-dashed border-border/60 hover:border-cta/40 flex flex-col items-center justify-center gap-1 text-muted-foreground hover:text-cta transition-colors text-xs"
+                          >
+                            {uploadingEditImage ? <RefreshCw size={16} className="animate-spin" /> : <Upload size={16} />}
+                            {uploadingEditImage ? "..." : "Add"}
+                          </button>
+                          <input ref={editFileInputRef} type="file" accept="image/*" multiple className="hidden" onChange={handleEditImageUpload} />
                         </div>
-                      )}
-                      <div className="col-span-full flex justify-end">
-                        <Button size="sm" className="rounded-xl gap-2 bg-cta hover:bg-cta-hover text-primary-foreground" onClick={() => saveProduct(p.id)}>
-                          <CheckCircle2 size={14} /> Save Changes
-                        </Button>
+                      </div>
+
+                      {/* Fields grid */}
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                        <div>
+                          <label className="text-xs font-medium text-muted-foreground mb-1 block">Price (DH)</label>
+                          <Input type="number" value={productDraft.price ?? ""} onChange={(e) => setProductDraft(d => ({ ...d, price: Number(e.target.value) }))} className="rounded-xl h-9 text-sm" />
+                        </div>
+                        <div>
+                          <label className="text-xs font-medium text-muted-foreground mb-1 block">Original Price (strikethrough)</label>
+                          <Input type="number" value={productDraft.original_price ?? ""} onChange={(e) => setProductDraft(d => ({ ...d, original_price: e.target.value ? Number(e.target.value) : null }))} className="rounded-xl h-9 text-sm" placeholder="Empty = none" />
+                        </div>
+                        <div>
+                          <label className="text-xs font-medium text-muted-foreground mb-1 block">Stock</label>
+                          <Input type="number" value={productDraft.stock ?? ""} onChange={(e) => setProductDraft(d => ({ ...d, stock: Number(e.target.value) }))} className="rounded-xl h-9 text-sm" />
+                        </div>
+                        <div className="col-span-2 sm:col-span-1">
+                          <label className="text-xs font-medium text-muted-foreground mb-1 block">Dimensions</label>
+                          <Input value={productDraft.dimensions ?? ""} onChange={(e) => setProductDraft(d => ({ ...d, dimensions: e.target.value }))} className="rounded-xl h-9 text-sm" placeholder="e.g. 68cm × 138cm" />
+                        </div>
+                        <div className="flex items-center gap-3 pt-4">
+                          <label className="text-xs font-medium text-muted-foreground">Promotion?</label>
+                          <button onClick={() => setProductDraft(d => ({ ...d, is_promotion: !d.is_promotion }))} className={cn("w-10 h-6 rounded-full transition-colors relative", productDraft.is_promotion ? "bg-cta" : "bg-muted")}>
+                            <div className={cn("absolute top-1 w-4 h-4 rounded-full bg-card transition-all shadow", productDraft.is_promotion ? "left-5" : "left-1")} />
+                          </button>
+                        </div>
+                        {productDraft.is_promotion && (
+                          <div>
+                            <label className="text-xs font-medium text-muted-foreground mb-1 block">Promotion Label</label>
+                            <Input value={productDraft.promotion_label ?? ""} onChange={(e) => setProductDraft(d => ({ ...d, promotion_label: e.target.value }))} className="rounded-xl h-9 text-sm" placeholder="e.g. -20%, Special Offer" />
+                          </div>
+                        )}
+                        <div className="col-span-full flex justify-end">
+                          <Button size="sm" className="rounded-xl gap-2 bg-cta hover:bg-cta-hover text-primary-foreground" onClick={() => saveProduct(p.id)}>
+                            <CheckCircle2 size={14} /> Save Changes
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   )}

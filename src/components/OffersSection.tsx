@@ -3,13 +3,50 @@ import { ArrowRight, ShoppingBag, Star, Clock, Infinity, Package, Coffee, Heart,
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useScrollAnimation } from "@/hooks/use-scroll-animation";
 import { cn } from "@/lib/utils";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import workshop2 from "@/assets/workshop-2.jpg";
 import workshop7 from "@/assets/workshop-7.jpg";
 import workshop17 from "@/assets/workshop-17.jpg";
 
+// Fallback images per workshop type
+const fallbackImages: Record<string, string> = {
+  pottery: workshop2,
+  handbuilding: workshop7,
+  embroidery: workshop17,
+};
+
 const OffersSection = () => {
   const { t } = useLanguage();
   const { ref, isVisible } = useScrollAnimation(0.1);
+  const [productImages, setProductImages] = useState<Record<string, string>>({});
+
+  // Fetch first product image per relevant category from the DB
+  useEffect(() => {
+    const fetchImages = async () => {
+      const { data } = await supabase
+        .from("products")
+        .select("category, images")
+        .in("category", ["terraria", "artisan", "traveler"])
+        .order("created_at", { ascending: true });
+
+      if (!data) return;
+
+      const map: Record<string, string> = {};
+      for (const prod of data) {
+        const raw = prod.images;
+        const imgs: string[] = Array.isArray(raw)
+          ? raw.map(String)
+          : JSON.parse(typeof raw === "string" ? raw : "[]");
+        const url = imgs.find((u) => typeof u === "string" && u.startsWith("http"));
+        if (url && !map[prod.category]) {
+          map[prod.category] = url;
+        }
+      }
+      setProductImages(map);
+    };
+    fetchImages();
+  }, []);
 
   const details = [
     { icon: Clock, label: t("details.3h") },
@@ -21,9 +58,22 @@ const OffersSection = () => {
   ];
 
   const offers = [
-    { title: t("offers.handbuilding"), image: workshop7, link: "/workshop/handbuilding", popular: true },
-    { title: t("offers.pottery"), image: workshop2, link: "/workshop/pottery-experience" },
-    { title: t("offers.embroidery"), image: workshop17, link: "/workshop/embroidery" },
+    {
+      title: t("offers.handbuilding"),
+      image: productImages["artisan"] || fallbackImages.handbuilding,
+      link: "/workshop/handbuilding",
+      popular: true,
+    },
+    {
+      title: t("offers.pottery"),
+      image: productImages["terraria"] || fallbackImages.pottery,
+      link: "/workshop/pottery-experience",
+    },
+    {
+      title: t("offers.embroidery"),
+      image: productImages["traveler"] || fallbackImages.embroidery,
+      link: "/workshop/embroidery",
+    },
   ];
 
   return (
