@@ -162,6 +162,7 @@ const AdminDashboard = () => {
       promotion_label: productDraft.promotion_label || null,
       dimensions: productDraft.dimensions || null,
       images: productDraft.images || [],
+      category: productDraft.category,
     }).eq("id", id);
     setEditingProduct(null);
     fetchAll();
@@ -682,6 +683,18 @@ const AdminDashboard = () => {
                         <div className="col-span-2 sm:col-span-1">
                           <label className="text-xs font-medium text-muted-foreground mb-1 block">Dimensions</label>
                           <Input value={productDraft.dimensions ?? ""} onChange={(e) => setProductDraft(d => ({ ...d, dimensions: e.target.value }))} className="rounded-xl h-9 text-sm" placeholder="e.g. 68cm × 138cm" />
+                        </div>
+                        <div className="col-span-2 sm:col-span-1">
+                          <label className="text-xs font-medium text-muted-foreground mb-1 block">Section</label>
+                          <select
+                            value={productDraft.category ?? ""}
+                            onChange={(e) => setProductDraft(d => ({ ...d, category: e.target.value }))}
+                            className="flex h-9 w-full rounded-xl border border-input bg-background px-3 py-1 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                          >
+                            {storeSections.map(s => (
+                              <option key={s.id} value={s.id}>{s.title_en}</option>
+                            ))}
+                          </select>
                         </div>
                         <div className="flex items-center gap-3 pt-4">
                           <label className="text-xs font-medium text-muted-foreground">Promotion?</label>
