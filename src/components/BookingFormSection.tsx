@@ -51,11 +51,20 @@ const BookingFormSection = () => {
 
   const isLargeGroup = form.participants >= 4;
 
+  // Auto-correct participants to 4 when pottery is selected with fewer than 4
+  useEffect(() => {
+    if (form.workshop === "pottery" && form.participants < 4) {
+      setForm((prev) => ({ ...prev, participants: 4, sessionType: "", date: undefined }));
+    }
+  }, [form.workshop]);
+
   const workshops = [
     { value: "pottery", label: t("offers.pottery") },
     { value: "handbuilding", label: t("offers.handbuilding") },
     { value: "embroidery", label: t("offers.embroidery"), unavailable: true },
   ];
+
+  const isPottery = form.workshop === "pottery";
 
   const participantOptions = useMemo(() =>
     Array.from({ length: 20 }, (_, i) => i + 1), []
@@ -218,20 +227,30 @@ const BookingFormSection = () => {
           {/* Participants */}
           <div className="space-y-3">
             <h3 className="text-sm font-bold uppercase tracking-widest text-cta">{t("booking.participants")}</h3>
+            {isPottery && (
+              <div className="p-3 rounded-xl bg-cta/5 border-2 border-cta/20">
+                <p className="text-xs text-muted-foreground font-medium">⚠️ Full Pottery Experience requires a minimum of 4 participants.</p>
+              </div>
+            )}
             <div className="flex flex-wrap gap-2">
-              {participantOptions.map((n) => (
-                <button
-                  key={n}
-                  type="button"
-                  onClick={() => setForm({ ...form, participants: n, sessionType: "", date: undefined })}
-                  className={cn(
-                    "w-10 h-10 rounded-xl text-sm font-medium border-2 transition-all",
-                    form.participants === n ? "border-cta bg-cta text-primary-foreground" : "border-border/40 hover:border-cta/30"
-                  )}
-                >
-                  {n}
-                </button>
-              ))}
+              {participantOptions.map((n) => {
+                const disabled = isPottery && n < 4;
+                return (
+                  <button
+                    key={n}
+                    type="button"
+                    disabled={disabled}
+                    onClick={() => !disabled && setForm({ ...form, participants: n, sessionType: "", date: undefined })}
+                    className={cn(
+                      "w-10 h-10 rounded-xl text-sm font-medium border-2 transition-all",
+                      disabled ? "opacity-30 cursor-not-allowed border-border/40" :
+                      form.participants === n ? "border-cta bg-cta text-primary-foreground" : "border-border/40 hover:border-cta/30"
+                    )}
+                  >
+                    {n}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
