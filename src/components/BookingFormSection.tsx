@@ -57,6 +57,8 @@ const BookingFormSection = () => {
     { value: "embroidery", label: t("offers.embroidery"), unavailable: true },
   ];
 
+  const isPottery = form.workshop === "pottery";
+
   const participantOptions = useMemo(() =>
     Array.from({ length: 20 }, (_, i) => i + 1), []
   );

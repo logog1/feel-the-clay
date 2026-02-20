@@ -67,7 +67,7 @@ const OffersSection = () => {
     },
     {
       title: t("offers.pottery"),
-      image: productImages["terraria"] || fallbackImages.pottery,
+      image: fallbackImages.pottery,
       link: "/workshop/pottery-experience",
     },
     {
