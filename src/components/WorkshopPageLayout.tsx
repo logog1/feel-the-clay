@@ -17,6 +17,7 @@ interface Workshop {
   highlights: string[];
   images: string[];
   popular?: boolean;
+  unavailable?: boolean;
 }
 
 const WhatsAppIcon = () => (
