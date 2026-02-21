@@ -267,7 +267,7 @@ const Store = () => {
 
   return (
     <main className="min-h-screen bg-background">
-      <SEOHead title="Store — Handmade Pottery & Amazigh Rugs" description="Shop handmade pottery and authentic Amazigh rugs crafted in Morocco. Every piece is unique." path="/store" />
+      <SEOHead title="Pottery Products" description="Handmade pottery pieces by Terraria Workshops. Available with cash on delivery (COD) or pick-up in Tétouan." path="/store" />
       <Header />
 
       <div className="max-w-6xl mx-auto px-6 pt-24 pb-16">
@@ -279,6 +279,7 @@ const Store = () => {
           </div>
           <h1 className="text-4xl md:text-5xl font-bold mb-4 text-foreground tracking-tight">{t("store.title")}</h1>
           <p className="text-muted-foreground max-w-lg mx-auto text-base leading-relaxed">{t("store.subtitle")}</p>
+          <p className="text-sm text-muted-foreground mt-4 font-medium">💵 Cash on delivery / pay on pickup — No online payment.</p>
           <div className="w-16 h-1 bg-cta rounded-full mx-auto mt-6" />
         </div>
 

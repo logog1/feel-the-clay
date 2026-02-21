@@ -18,6 +18,7 @@ import Cart from "./pages/Cart";
 import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
+import LegalNotice from "./pages/LegalNotice";
 
 const queryClient = new QueryClient();
 
@@ -43,6 +44,7 @@ const App = () => {
               <Route path="/admin/login" element={<AdminLogin />} />
               <Route path="/admin" element={<AdminDashboard />} />
               <Route path="/privacy" element={<PrivacyPolicy />} />
+              <Route path="/legal" element={<LegalNotice />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
