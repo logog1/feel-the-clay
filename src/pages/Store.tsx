@@ -106,8 +106,8 @@ const ImageCarousel = ({ images, alt }: { images: string[]; alt: string }) => {
             key={i}
             src={src}
             alt={i === 0 ? alt : ""}
-            className="h-full object-cover flex-shrink-0"
-            style={{ width: `${100 / images.length}%` }}
+            className="h-full object-cover flex-shrink-0 min-w-0"
+            style={{ width: `${100 / images.length}%`, maxWidth: `${100 / images.length}%` }}
             loading={i === 0 ? "eager" : "lazy"}
           />
         ))}
