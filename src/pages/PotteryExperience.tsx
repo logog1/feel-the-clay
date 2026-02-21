@@ -22,7 +22,7 @@ const PotteryExperience = () => {
 
   return (
     <>
-      <SEOHead title="Pottery Wheel Experience" description="Try a 3-hour pottery wheel session in Tetouan. No experience needed — create your own ceramic piece." path="/workshop/pottery-experience" />
+      <SEOHead title="Pottery Wheel Workshop" description="Pottery workshops for beginners and creatives in Tétouan. Session details, schedule, pricing, and what's included." path="/workshop/pottery-experience" />
       <WorkshopPageLayout workshop={workshop} currentPath="/workshop/pottery-experience" />
       <ProcessSection />
     </>

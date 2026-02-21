@@ -24,7 +24,7 @@ const HandbuildingWorkshop = () => {
 
   return (
     <>
-      <SEOHead title="Handbuilding Workshop" description="Shape clay with your hands in a relaxing 3-hour handbuilding workshop in Tetouan, Morocco." path="/workshop/handbuilding" />
+      <SEOHead title="Handbuilding Workshop" description="Pottery workshops for beginners and creatives in Tétouan. Session details, schedule, pricing, and what's included." path="/workshop/handbuilding" />
       <WorkshopPageLayout workshop={workshop} currentPath="/workshop/handbuilding" />
       <ProcessSection />
     </>

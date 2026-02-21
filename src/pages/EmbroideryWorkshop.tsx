@@ -25,7 +25,7 @@ const EmbroideryWorkshop = () => {
 
   return (
     <>
-      <SEOHead title="Embroidery Workshop" description="Learn traditional Moroccan embroidery in a hands-on workshop in Tetouan." path="/workshop/embroidery" />
+      <SEOHead title="Embroidery Workshop" description="Pottery workshops for beginners and creatives in Tétouan. Session details, schedule, pricing, and what's included." path="/workshop/embroidery" />
       <WorkshopPageLayout workshop={workshop} currentPath="/workshop/embroidery" />
     </>
   );

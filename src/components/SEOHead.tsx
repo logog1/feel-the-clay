@@ -8,9 +8,9 @@ interface SEOHeadProps {
   jsonLd?: Record<string, unknown>;
 }
 
-const SITE_URL = "https://feel-the-clay.lovable.app";
+const SITE_URL = "https://www.terrariaworkshops.com";
 const SITE_NAME = "Terraria Workshops";
-const OG_IMAGE = `${SITE_URL}/images/impact-1.jpg`;
+const OG_IMAGE = `${SITE_URL}/og.jpg`;
 
 const SEOHead = ({ title, description, path, type = "website", jsonLd }: SEOHeadProps) => {
   const fullTitle = `${title} | ${SITE_NAME}`;

@@ -22,9 +22,9 @@ const jsonLd = {
   "@context": "https://schema.org",
   "@type": "LocalBusiness",
   name: "Terraria Workshops",
-  description: "Pottery, handbuilding & embroidery workshops in Tetouan, Morocco.",
-  url: "https://feel-the-clay.lovable.app",
-  address: { "@type": "PostalAddress", addressLocality: "Tetouan", addressCountry: "MA" },
+  description: "Hands-on pottery workshops in Tétouan, Morocco. Wheel throwing, hand-building, all materials included.",
+  url: "https://www.terrariaworkshops.com",
+  address: { "@type": "PostalAddress", addressLocality: "Tétouan", addressCountry: "MA" },
   priceRange: "$$",
   sameAs: ["https://www.instagram.com/terraria.workshops"],
 };
@@ -82,8 +82,8 @@ const Index = () => {
   return (
     <main className="min-h-screen">
       <SEOHead
-        title="Pottery & Craft Experiences in Tetouan"
-        description="Book a hands-on pottery or embroidery workshop in Tetouan, Morocco. No experience needed — shape clay, slow down, and create something beautiful."
+        title="Pottery workshops in Tétouan"
+        description="Hands-on pottery workshops in Tétouan. Learn wheel throwing and hand-building, all materials included. Book your spot and pay on site."
         path="/"
         jsonLd={jsonLd}
       />
