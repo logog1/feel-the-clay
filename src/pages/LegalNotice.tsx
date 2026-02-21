@@ -20,24 +20,16 @@ const LegalNotice = () => {
           <h2 className="text-xl font-medium text-foreground mt-10 mb-4">1. Business Information</h2>
           <ul className="list-none pl-0 space-y-2 text-muted-foreground">
             <li><strong>Business name:</strong> Terraria Workshops</li>
-            <li><strong>Owner:</strong> [YOUR FULL NAME]</li>
-            <li><strong>Status:</strong> Auto-entrepreneur / Micro-entrepreneur</li>
-            <li><strong>SIRET:</strong> [SIRET NUMBER IF APPLICABLE]</li>
-            <li><strong>Address:</strong> [BUSINESS ADDRESS], Tétouan, Morocco</li>
+            <li><strong>Owner:</strong> Errachidy Othmane</li>
+            <li><strong>Address:</strong> Tétouan, Morocco</li>
             <li><strong>Email:</strong> hello@terrariaworkshops.com</li>
-            <li><strong>Phone / WhatsApp:</strong> [PHONE NUMBER]</li>
+            <li><strong>Phone / WhatsApp:</strong> +212 650 094 668</li>
           </ul>
 
           <h2 className="text-xl font-medium text-foreground mt-10 mb-4">2. Publication Director</h2>
           <p className="text-muted-foreground leading-relaxed">
-            Publication director: <strong>[YOUR FULL NAME]</strong>
+            Publication director: <strong>Errachidy Othmane</strong>
           </p>
-
-          <h2 className="text-xl font-medium text-foreground mt-10 mb-4">3. Hosting Provider</h2>
-          <ul className="list-none pl-0 space-y-2 text-muted-foreground">
-            <li><strong>Host:</strong> [HOSTING PROVIDER NAME]</li>
-            <li><strong>Address:</strong> [HOSTING PROVIDER ADDRESS]</li>
-          </ul>
 
           <h2 className="text-xl font-medium text-foreground mt-10 mb-4">4. Intellectual Property</h2>
           <p className="text-muted-foreground leading-relaxed">
