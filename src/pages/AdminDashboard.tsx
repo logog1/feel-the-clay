@@ -43,12 +43,17 @@ const statusColors: Record<string, string> = {
   confirmed: "bg-emerald-100 text-emerald-800 border-emerald-200",
   cancelled: "bg-red-100 text-red-800 border-red-200",
   delivered: "bg-blue-100 text-blue-800 border-blue-200",
+  packed: "bg-purple-100 text-purple-800 border-purple-200",
+  retour: "bg-orange-100 text-orange-800 border-orange-200",
+  done: "bg-teal-100 text-teal-800 border-teal-200",
 };
 const StatusBadge = ({ status }: { status: string }) => (
   <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium border ${statusColors[status] || statusColors.pending}`}>
     {status === "pending" && <Clock size={12} />}
-    {(status === "confirmed" || status === "delivered") && <CheckCircle2 size={12} />}
+    {(status === "confirmed" || status === "delivered" || status === "done") && <CheckCircle2 size={12} />}
     {status === "cancelled" && <XCircle size={12} />}
+    {status === "packed" && <Package size={12} />}
+    {status === "retour" && <AlertTriangle size={12} />}
     {status.charAt(0).toUpperCase() + status.slice(1)}
   </span>
 );
@@ -66,8 +71,8 @@ const AdminDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [authed, setAuthed] = useState(false);
 
-  // Confirm delete dialog
-  const [confirmDelete, setConfirmDelete] = useState<{ id: string; name: string } | null>(null);
+  // Confirm delete dialog (supports products, bookings, orders)
+  const [confirmDelete, setConfirmDelete] = useState<{ id: string; name: string; table: "products" | "bookings" | "orders" } | null>(null);
 
   // Products edit state
   const [editingProduct, setEditingProduct] = useState<string | null>(null);
@@ -249,13 +254,13 @@ const AdminDashboard = () => {
     await fetchAll();
   };
 
-  const confirmDeleteProduct = (id: string, name: string) => {
-    setConfirmDelete({ id, name });
+  const confirmDeleteItem = (id: string, name: string, table: "products" | "bookings" | "orders") => {
+    setConfirmDelete({ id, name, table });
   };
 
   const executeDelete = async () => {
     if (!confirmDelete) return;
-    const { error } = await supabase.from("products").delete().eq("id", confirmDelete.id);
+    const { error } = await supabase.from(confirmDelete.table).delete().eq("id", confirmDelete.id);
     setConfirmDelete(null);
     if (!error) await fetchAll();
   };
@@ -424,7 +429,7 @@ const AdminDashboard = () => {
                       <div><span className="text-muted-foreground">Submitted:</span> {new Date(b.created_at).toLocaleDateString()}</div>
                     </div>
                     {b.notes && <p className="text-sm text-muted-foreground bg-muted/30 p-3 rounded-xl">{b.notes}</p>}
-                    <div className="flex gap-2 pt-1">
+                    <div className="flex flex-wrap gap-2 pt-1">
                       {b.status !== "confirmed" && (
                         <Button size="sm" variant="outline" className="rounded-xl text-xs gap-1" onClick={() => updateStatus("bookings", b.id, "confirmed")}>
                           <CheckCircle2 size={12} /> Confirm
@@ -435,6 +440,9 @@ const AdminDashboard = () => {
                           <XCircle size={12} /> Cancel
                         </Button>
                       )}
+                      <Button size="sm" variant="outline" className="rounded-xl text-xs gap-1 text-destructive" onClick={() => confirmDeleteItem(b.id, b.name, "bookings")}>
+                        <Trash2 size={12} /> Delete
+                      </Button>
                     </div>
                   </div>
                 ))}
@@ -476,22 +484,40 @@ const AdminDashboard = () => {
                         <span>Total</span><span className="text-cta">{o.grand_total} DH</span>
                       </div>
                     </div>
-                    <div className="flex gap-2 pt-1">
-                      {o.status !== "confirmed" && (
+                    <div className="flex flex-wrap gap-2 pt-1">
+                      {o.status !== "confirmed" && o.status !== "packed" && o.status !== "delivered" && o.status !== "done" && (
                         <Button size="sm" variant="outline" className="rounded-xl text-xs gap-1" onClick={() => updateStatus("orders", o.id, "confirmed")}>
                           <CheckCircle2 size={12} /> Confirm
                         </Button>
                       )}
-                      {o.status === "confirmed" && (
+                      {(o.status === "confirmed") && (
+                        <Button size="sm" variant="outline" className="rounded-xl text-xs gap-1" onClick={() => updateStatus("orders", o.id, "packed")}>
+                          <Package size={12} /> Packed
+                        </Button>
+                      )}
+                      {(o.status === "packed") && (
                         <Button size="sm" variant="outline" className="rounded-xl text-xs gap-1" onClick={() => updateStatus("orders", o.id, "delivered")}>
                           <CheckCircle2 size={12} /> Delivered
                         </Button>
                       )}
-                      {o.status !== "cancelled" && (
+                      {(o.status === "delivered") && (
+                        <Button size="sm" variant="outline" className="rounded-xl text-xs gap-1" onClick={() => updateStatus("orders", o.id, "done")}>
+                          <CheckCircle2 size={12} /> Done
+                        </Button>
+                      )}
+                      {o.status !== "cancelled" && o.status !== "done" && o.status !== "retour" && (
+                        <Button size="sm" variant="outline" className="rounded-xl text-xs gap-1 text-orange-600" onClick={() => updateStatus("orders", o.id, "retour")}>
+                          <AlertTriangle size={12} /> Retour
+                        </Button>
+                      )}
+                      {o.status !== "cancelled" && o.status !== "done" && (
                         <Button size="sm" variant="outline" className="rounded-xl text-xs gap-1 text-destructive" onClick={() => updateStatus("orders", o.id, "cancelled")}>
                           <XCircle size={12} /> Cancel
                         </Button>
                       )}
+                      <Button size="sm" variant="outline" className="rounded-xl text-xs gap-1 text-destructive" onClick={() => confirmDeleteItem(o.id, o.customer_name, "orders")}>
+                        <Trash2 size={12} /> Delete
+                      </Button>
                     </div>
                   </div>
                 ))}
@@ -642,7 +668,7 @@ const AdminDashboard = () => {
                       <Button size="sm" variant="outline" className={cn("rounded-xl text-xs gap-1", p.is_sold_out ? "text-emerald-600" : "text-destructive")} onClick={() => toggleSoldOut(p)}>
                         {p.is_sold_out ? <><ToggleRight size={12}/> Mark Available</> : <><ToggleLeft size={12}/> Mark Sold Out</>}
                       </Button>
-                      <Button size="sm" variant="outline" className="rounded-xl text-xs gap-1 text-destructive" onClick={() => confirmDeleteProduct(p.id, p.name)}>
+                      <Button size="sm" variant="outline" className="rounded-xl text-xs gap-1 text-destructive" onClick={() => confirmDeleteItem(p.id, p.name, "products")}>
                         <Trash2 size={12}/> Delete
                       </Button>
                     </div>
@@ -915,7 +941,7 @@ const AdminDashboard = () => {
                 <AlertTriangle size={22} className="text-destructive" />
               </div>
               <div>
-                <h3 className="font-bold text-foreground">Delete Product?</h3>
+                <h3 className="font-bold text-foreground">Delete {confirmDelete.table === "products" ? "Product" : confirmDelete.table === "bookings" ? "Booking" : "Order"}?</h3>
                 <p className="text-sm text-muted-foreground">This action cannot be undone.</p>
               </div>
             </div>
