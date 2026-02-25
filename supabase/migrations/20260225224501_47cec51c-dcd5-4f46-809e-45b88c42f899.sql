@@ -1,0 +1,1 @@
+UPDATE public.store_sections SET sort_order = 10 WHERE id = 'amazigh';
