@@ -52,7 +52,7 @@ const imageMap: Record<string, string> = {
   "product-cat-mug-2.png": productCatMug2,
   "product-rug-geometric.png": productRugGeometric,
   "product-rug-blue-white.png": productRugBlueWhite,
-  "product-rug-diamond.png": productRugDiamond,
+  "product-rug-diamond.png": productRugDiamond
 };
 
 interface Product {
@@ -74,10 +74,10 @@ const categoryIcons: Record<string, React.ElementType> = {
   artisan: Sparkles,
   traveler: Heart,
   student: GraduationCap,
-  amazigh: Scissors,
+  amazigh: Scissors
 };
 
-const ImageCarousel = ({ images, alt }: { images: string[]; alt: string }) => {
+const ImageCarousel = ({ images, alt }: {images: string[];alt: string;}) => {
   const [current, setCurrent] = useState(0);
   const touchStartX = useRef(0);
 
@@ -88,53 +88,53 @@ const ImageCarousel = ({ images, alt }: { images: string[]; alt: string }) => {
   return (
     <div
       className="relative w-full h-full overflow-hidden"
-      onTouchStart={(e) => { touchStartX.current = e.touches[0].clientX; }}
+      onTouchStart={(e) => {touchStartX.current = e.touches[0].clientX;}}
       onTouchEnd={(e) => {
         const diff = touchStartX.current - e.changedTouches[0].clientX;
         if (Math.abs(diff) > 40) {
           setCurrent((p) => diff > 0 ? Math.min(p + 1, images.length - 1) : Math.max(p - 1, 0));
         }
-      }}
-    >
+      }}>
+
       {/* All images are pre-rendered in the DOM; only CSS transform moves between them — no re-fetch */}
       <div
         className="flex h-full transition-transform duration-300 ease-out will-change-transform"
-        style={{ transform: `translateX(-${current * 100}%)`, width: `${images.length * 100}%` }}
-      >
-        {images.map((src, i) => (
-          <img
-            key={i}
-            src={src}
-            alt={i === 0 ? alt : ""}
-            className="h-full object-cover flex-shrink-0 min-w-0"
-            style={{ width: `${100 / images.length}%`, maxWidth: `${100 / images.length}%` }}
-            loading={i === 0 ? "eager" : "lazy"}
-          />
-        ))}
+        style={{ transform: `translateX(-${current * 100}%)`, width: `${images.length * 100}%` }}>
+
+        {images.map((src, i) =>
+        <img
+          key={i}
+          src={src}
+          alt={i === 0 ? alt : ""}
+          className="h-full object-cover flex-shrink-0 min-w-0"
+          style={{ width: `${100 / images.length}%`, maxWidth: `${100 / images.length}%` }}
+          loading={i === 0 ? "eager" : "lazy"} />
+
+        )}
       </div>
       {/* Dots */}
       <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
-        {images.map((_, i) => (
-          <button key={i} onClick={(e) => { e.stopPropagation(); setCurrent(i); }} className={cn("h-1.5 rounded-full transition-all duration-200", i === current ? "bg-white w-4" : "bg-white/50 w-1.5")} />
-        ))}
+        {images.map((_, i) =>
+        <button key={i} onClick={(e) => {e.stopPropagation();setCurrent(i);}} className={cn("h-1.5 rounded-full transition-all duration-200", i === current ? "bg-white w-4" : "bg-white/50 w-1.5")} />
+        )}
       </div>
       {/* Prev */}
-      {current > 0 && (
-        <button onClick={(e) => { e.stopPropagation(); setCurrent(current - 1); }} className="absolute left-1 top-1/2 -translate-y-1/2 w-6 h-6 bg-black/40 backdrop-blur-sm rounded-full flex items-center justify-center text-white z-10 hover:bg-black/60 transition-colors">
+      {current > 0 &&
+      <button onClick={(e) => {e.stopPropagation();setCurrent(current - 1);}} className="absolute left-1 top-1/2 -translate-y-1/2 w-6 h-6 bg-black/40 backdrop-blur-sm rounded-full flex items-center justify-center text-white z-10 hover:bg-black/60 transition-colors">
           <ChevronLeft size={14} />
         </button>
-      )}
+      }
       {/* Next */}
-      {current < images.length - 1 && (
-        <button onClick={(e) => { e.stopPropagation(); setCurrent(current + 1); }} className="absolute right-1 top-1/2 -translate-y-1/2 w-6 h-6 bg-black/40 backdrop-blur-sm rounded-full flex items-center justify-center text-white z-10 hover:bg-black/60 transition-colors">
+      {current < images.length - 1 &&
+      <button onClick={(e) => {e.stopPropagation();setCurrent(current + 1);}} className="absolute right-1 top-1/2 -translate-y-1/2 w-6 h-6 bg-black/40 backdrop-blur-sm rounded-full flex items-center justify-center text-white z-10 hover:bg-black/60 transition-colors">
           <ChevronRight size={14} />
         </button>
-      )}
-    </div>
-  );
+      }
+    </div>);
+
 };
 
-const ProductCard = ({ product }: { product: Product }) => {
+const ProductCard = ({ product }: {product: Product;}) => {
   const { addItem } = useCart();
   const { t } = useLanguage();
   const [added, setAdded] = useState(false);
@@ -157,64 +157,64 @@ const ProductCard = ({ product }: { product: Product }) => {
         <ImageCarousel images={resolvedImages} alt={product.name} />
         <div className="absolute inset-0 bg-gradient-to-t from-foreground/60 via-transparent to-transparent pointer-events-none" />
         {/* Badges */}
-        {product.is_promotion && product.promotion_label && (
-          <div className="absolute top-3 left-3 bg-red-500 text-white px-2.5 py-1 rounded-xl text-[10px] font-bold uppercase tracking-widest shadow-lg z-10">
+        {product.is_promotion && product.promotion_label &&
+        <div className="absolute top-3 left-3 bg-red-500 text-white px-2.5 py-1 rounded-xl text-[10px] font-bold uppercase tracking-widest shadow-lg z-10">
             {product.promotion_label}
           </div>
-        )}
-        {product.is_sold_out && (
-          <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-10">
+        }
+        {product.is_sold_out &&
+        <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-10">
             <div className="rotate-[-35deg] border-4 border-red-500 rounded-lg px-5 py-2 shadow-2xl">
               <span className="text-red-500 text-lg font-black uppercase tracking-widest drop-shadow">
                 {t("store.sold_out")}
               </span>
             </div>
           </div>
-        )}
+        }
         <div className="absolute bottom-2 left-2 bg-card/90 backdrop-blur-sm px-2 py-1 rounded-lg border border-border/40 shadow">
-          {product.original_price && product.original_price > product.price ? (
-            <div className="flex items-center gap-1">
+          {product.original_price && product.original_price > product.price ?
+          <div className="flex items-center gap-1">
               <span className="text-cta font-bold text-xs">{product.price} DH</span>
               <span className="text-muted-foreground line-through text-[10px]">{product.original_price}</span>
-            </div>
-          ) : (
-            <span className="text-cta font-bold text-xs">{product.price} DH</span>
-          )}
+            </div> :
+
+          <span className="text-cta font-bold text-xs">{product.price} DH</span>
+          }
         </div>
       </div>
       <div className="p-3 space-y-1.5 bg-card">
         <h3 className="font-semibold text-xs text-foreground tracking-tight line-clamp-1">{product.name}</h3>
-        {product.dimensions && (
-          <p className="text-[10px] text-muted-foreground">{product.dimensions}</p>
-        )}
+        {product.dimensions &&
+        <p className="text-[10px] text-muted-foreground">{product.dimensions}</p>
+        }
         <button
           onClick={handleAdd}
           disabled={product.is_sold_out}
           className={cn(
             "w-full py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all duration-200 border",
-            product.is_sold_out
-              ? "bg-muted text-muted-foreground border-border cursor-not-allowed"
-              : added
-                ? "bg-cta/15 text-cta border-cta/30 scale-95"
-                : "bg-cta text-primary-foreground border-cta hover:bg-cta-hover active:scale-95"
-          )}
-        >
-          {product.is_sold_out
-            ? t("store.sold_out")
-            : added
-              ? <><Check size={14} /> {t("store.added")}</>
-              : <><Plus size={14} /> {t("store.add_to_cart")}</>
+            product.is_sold_out ?
+            "bg-muted text-muted-foreground border-border cursor-not-allowed" :
+            added ?
+            "bg-cta/15 text-cta border-cta/30 scale-95" :
+            "bg-cta text-primary-foreground border-cta hover:bg-cta-hover active:scale-95"
+          )}>
+
+          {product.is_sold_out ?
+          t("store.sold_out") :
+          added ?
+          <><Check size={14} /> {t("store.added")}</> :
+          <><Plus size={14} /> {t("store.add_to_cart")}</>
           }
         </button>
       </div>
-    </div>
-  );
+    </div>);
+
 };
 
 interface StoreSection {
   id: string;
-  title_en: string; title_ar: string; title_es: string; title_fr: string;
-  description_en: string; description_ar: string; description_es: string; description_fr: string;
+  title_en: string;title_ar: string;title_es: string;title_fr: string;
+  description_en: string;description_ar: string;description_es: string;description_fr: string;
   enabled: boolean;
   sort_order: number;
   donation: boolean;
@@ -230,13 +230,13 @@ const Store = () => {
   useEffect(() => {
     const fetchData = async () => {
       const [productsRes, sectionsRes] = await Promise.all([
-        supabase.from("products").select("*").order("created_at"),
-        supabase.from("store_sections").select("*").order("sort_order"),
-      ]);
+      supabase.from("products").select("*").order("created_at"),
+      supabase.from("store_sections").select("*").order("sort_order")]
+      );
       if (productsRes.data) {
         setProducts(productsRes.data.map((p) => ({
           ...p,
-          images: Array.isArray(p.images) ? p.images as string[] : JSON.parse(p.images as string),
+          images: Array.isArray(p.images) ? p.images as string[] : JSON.parse(p.images as string)
         })));
       }
       if (sectionsRes.data) {
@@ -248,22 +248,22 @@ const Store = () => {
   }, []);
 
   // Build categories from DB sections, falling back to translations for any missing
-  const categories = sections.length > 0
-    ? sections
-        .filter((s) => s.enabled)
-        .map((s) => ({
-          key: s.id,
-          title: (s as any)[`title_${language}`] || s.title_en,
-          description: (s as any)[`description_${language}`] || s.description_en,
-          donation: s.donation,
-        }))
-    : [
-        { key: "terraria", title: t("store.terraria_title"), description: t("store.terraria_desc"), donation: false },
-        { key: "artisan", title: t("store.artisan_title"), description: t("store.artisan_desc"), donation: false },
-        { key: "traveler", title: t("store.traveler_title"), description: t("store.traveler_desc"), donation: true },
-        { key: "student", title: t("store.student_title"), description: t("store.student_desc"), donation: false },
-        { key: "amazigh", title: t("store.amazigh_title"), description: t("store.amazigh_desc"), donation: false },
-      ];
+  const categories = sections.length > 0 ?
+  sections.
+  filter((s) => s.enabled).
+  map((s) => ({
+    key: s.id,
+    title: (s as any)[`title_${language}`] || s.title_en,
+    description: (s as any)[`description_${language}`] || s.description_en,
+    donation: s.donation
+  })) :
+  [
+  { key: "terraria", title: t("store.terraria_title"), description: t("store.terraria_desc"), donation: false },
+  { key: "artisan", title: t("store.artisan_title"), description: t("store.artisan_desc"), donation: false },
+  { key: "traveler", title: t("store.traveler_title"), description: t("store.traveler_desc"), donation: true },
+  { key: "student", title: t("store.student_title"), description: t("store.student_desc"), donation: false },
+  { key: "amazigh", title: t("store.amazigh_title"), description: t("store.amazigh_desc"), donation: false }];
+
 
   return (
     <main className="min-h-screen bg-background">
@@ -279,24 +279,24 @@ const Store = () => {
           </div>
           <h1 className="text-4xl md:text-5xl font-bold mb-4 text-foreground tracking-tight">{t("store.title")}</h1>
           <p className="text-muted-foreground max-w-lg mx-auto text-base leading-relaxed">{t("store.subtitle")}</p>
-          <p className="text-sm text-muted-foreground mt-4 font-medium">💵 Cash on delivery / pay on pickup — No online payment.</p>
+          <p className="text-sm text-muted-foreground mt-4 font-medium">   Cash on delivery / pay on pickup 
+ No online payment.</p>
           <div className="w-16 h-1 bg-cta rounded-full mx-auto mt-6" />
         </div>
 
-        {loading ? (
-          <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 md:gap-4">
-            {[...Array(6)].map((_, i) => (
-              <div key={i} className="aspect-[4/5] rounded-3xl bg-muted animate-pulse" />
-            ))}
-          </div>
-        ) : (
-          categories.map((cat) => {
-            const catProducts = products.filter((p) => p.category === cat.key);
-            if (catProducts.length === 0) return null;
-            const Icon = categoryIcons[cat.key] || Sparkles;
+        {loading ? <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 md:gap-4">
+            {[...Array(6)].map((_, i) =>
+          <div key={i} className="aspect-[4/5] rounded-3xl bg-muted animate-pulse" />
+          )}
+          </div> :
 
-            return (
-              <section key={cat.key} className="mb-20">
+        categories.map((cat) => {
+          const catProducts = products.filter((p) => p.category === cat.key);
+          if (catProducts.length === 0) return null;
+          const Icon = categoryIcons[cat.key] || Sparkles;
+
+          return (
+            <section key={cat.key} className="mb-20">
                 <div className="mb-8 p-6 rounded-3xl bg-card border-2 border-border/40 shadow-sm">
                   <div className="flex items-center gap-4">
                     <div className="w-12 h-12 rounded-2xl bg-cta/10 border-2 border-cta/20 flex items-center justify-center flex-shrink-0">
@@ -305,11 +305,11 @@ const Store = () => {
                     <div className="flex-1">
                       <h2 className="text-xl font-bold text-foreground flex items-center gap-3 tracking-tight">
                         {cat.title}
-                        {cat.donation && (
-                          <span className="text-[10px] bg-cta text-primary-foreground px-3 py-1 rounded-full font-bold uppercase tracking-widest shadow-sm">
+                        {cat.donation &&
+                      <span className="text-[10px] bg-cta text-primary-foreground px-3 py-1 rounded-full font-bold uppercase tracking-widest shadow-sm">
                             {t("store.donation")}
                           </span>
-                        )}
+                      }
                       </h2>
                       <p className="text-muted-foreground text-sm mt-1 leading-relaxed">{cat.description}</p>
                     </div>
@@ -317,14 +317,14 @@ const Store = () => {
                 </div>
 
                 <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 md:gap-4">
-                  {catProducts.map((product) => (
-                    <ProductCard key={product.id} product={product} />
-                  ))}
+                  {catProducts.map((product) =>
+                <ProductCard key={product.id} product={product} />
+                )}
                 </div>
-              </section>
-            );
-          })
-        )}
+              </section>);
+
+        })
+        }
 
         {/* Bottom message */}
         <div className="mt-8 mb-4 text-center py-12 px-6 rounded-3xl bg-card border-2 border-border/40">
@@ -336,18 +336,18 @@ const Store = () => {
         </div>
 
         {/* Cart floating button */}
-        {totalItems > 0 && (
-          <Link
-            to="/cart"
-            className="fixed bottom-20 end-6 z-40 bg-cta text-primary-foreground px-7 py-4 rounded-full shadow-2xl shadow-cta/40 flex items-center gap-3 font-bold text-sm hover:scale-105 transition-all duration-300 animate-scale-in border-2 border-cta-hover"
-          >
+        {totalItems > 0 &&
+        <Link
+          to="/cart"
+          className="fixed bottom-20 end-6 z-40 bg-cta text-primary-foreground px-7 py-4 rounded-full shadow-2xl shadow-cta/40 flex items-center gap-3 font-bold text-sm hover:scale-105 transition-all duration-300 animate-scale-in border-2 border-cta-hover">
+
             <ShoppingCart size={18} />
             {t("store.view_cart")} ({totalItems})
           </Link>
-        )}
+        }
       </div>
-    </main>
-  );
+    </main>);
+
 };
 
 export default Store;
