@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { ShoppingCart, ShoppingBag, Plus, Check, Sparkles, Heart, GraduationCap, Crown, ChevronLeft, ChevronRight, Scissors, X } from "lucide-react";
+import { ShoppingCart, ShoppingBag, Plus, Check, Sparkles, Heart, GraduationCap, Crown, ChevronLeft, ChevronRight, Scissors } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useCart } from "@/contexts/CartContext";
 import { cn } from "@/lib/utils";
@@ -134,69 +134,10 @@ const ImageCarousel = ({ images, alt }: { images: string[]; alt: string }) => {
   );
 };
 
-const FullscreenViewer = ({ images, alt, startIndex, onClose }: { images: string[]; alt: string; startIndex: number; onClose: () => void }) => {
-  const [current, setCurrent] = useState(startIndex);
-  const touchStartX = useRef(0);
-
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-      if (e.key === "ArrowRight") setCurrent((p) => Math.min(p + 1, images.length - 1));
-      if (e.key === "ArrowLeft") setCurrent((p) => Math.max(p - 1, 0));
-    };
-    window.addEventListener("keydown", onKey);
-    document.body.style.overflow = "hidden";
-    return () => { window.removeEventListener("keydown", onKey); document.body.style.overflow = ""; };
-  }, [images.length, onClose]);
-
-  return (
-    <div className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-md flex items-center justify-center" onClick={onClose}>
-      <button onClick={onClose} className="absolute top-4 right-4 z-10 w-10 h-10 bg-white/10 rounded-full flex items-center justify-center text-white hover:bg-white/20 transition-colors">
-        <X size={20} />
-      </button>
-      <div
-        className="relative w-full h-full flex items-center justify-center"
-        onClick={(e) => e.stopPropagation()}
-        onTouchStart={(e) => { touchStartX.current = e.touches[0].clientX; }}
-        onTouchEnd={(e) => {
-          const diff = touchStartX.current - e.changedTouches[0].clientX;
-          if (Math.abs(diff) > 40) {
-            setCurrent((p) => diff > 0 ? Math.min(p + 1, images.length - 1) : Math.max(p - 1, 0));
-          }
-        }}
-      >
-        <img
-          src={images[current]}
-          alt={alt}
-          className="max-w-[90vw] max-h-[85vh] object-contain rounded-lg"
-        />
-        {images.length > 1 && current > 0 && (
-          <button onClick={() => setCurrent(current - 1)} className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/10 rounded-full flex items-center justify-center text-white hover:bg-white/20">
-            <ChevronLeft size={20} />
-          </button>
-        )}
-        {images.length > 1 && current < images.length - 1 && (
-          <button onClick={() => setCurrent(current + 1)} className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/10 rounded-full flex items-center justify-center text-white hover:bg-white/20">
-            <ChevronRight size={20} />
-          </button>
-        )}
-        {images.length > 1 && (
-          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2">
-            {images.map((_, i) => (
-              <button key={i} onClick={() => setCurrent(i)} className={cn("h-2 rounded-full transition-all", i === current ? "bg-white w-6" : "bg-white/40 w-2")} />
-            ))}
-          </div>
-        )}
-      </div>
-    </div>
-  );
-};
-
 const ProductCard = ({ product }: { product: Product }) => {
   const { addItem } = useCart();
   const { t } = useLanguage();
   const [added, setAdded] = useState(false);
-  const [viewerOpen, setViewerOpen] = useState(false);
 
   const resolvedImages = product.images.map((img) => imageMap[img] || img);
 
@@ -212,7 +153,7 @@ const ProductCard = ({ product }: { product: Product }) => {
       "group relative rounded-2xl overflow-hidden bg-card border border-border/30 transition-all duration-200",
       product.is_sold_out ? "opacity-70" : "active:scale-[0.98] hover:border-cta/40 hover:shadow-lg hover:shadow-cta/10"
     )}>
-      <div className="aspect-square overflow-hidden relative cursor-pointer" onClick={() => setViewerOpen(true)}>
+      <div className="aspect-square overflow-hidden relative">
         <ImageCarousel images={resolvedImages} alt={product.name} />
         <div className="absolute inset-0 bg-gradient-to-t from-foreground/60 via-transparent to-transparent pointer-events-none" />
         {/* Badges */}
@@ -266,9 +207,6 @@ const ProductCard = ({ product }: { product: Product }) => {
           }
         </button>
       </div>
-      {viewerOpen && (
-        <FullscreenViewer images={resolvedImages} alt={product.name} startIndex={0} onClose={() => setViewerOpen(false)} />
-      )}
     </div>
   );
 };
