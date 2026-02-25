@@ -150,10 +150,10 @@ const ProductCard = ({ product }: { product: Product }) => {
 
   return (
     <div className={cn(
-      "group relative rounded-3xl overflow-hidden bg-card border-2 border-border/40 transition-all duration-300",
-      product.is_sold_out ? "opacity-70" : "active:scale-[0.97] active:shadow-xl active:shadow-cta/15 hover:border-cta/40 hover:shadow-2xl hover:shadow-cta/10 hover:-translate-y-2"
+      "group relative rounded-2xl overflow-hidden bg-card border border-border/30 transition-all duration-200",
+      product.is_sold_out ? "opacity-70" : "active:scale-[0.98] hover:border-cta/40 hover:shadow-lg hover:shadow-cta/10"
     )}>
-      <div className="aspect-[4/5] overflow-hidden relative">
+      <div className="aspect-square overflow-hidden relative">
         <ImageCarousel images={resolvedImages} alt={product.name} />
         <div className="absolute inset-0 bg-gradient-to-t from-foreground/60 via-transparent to-transparent pointer-events-none" />
         {/* Badges */}
@@ -171,39 +171,39 @@ const ProductCard = ({ product }: { product: Product }) => {
             </div>
           </div>
         )}
-        <div className="absolute bottom-3 left-3 bg-card/95 backdrop-blur-md px-3 py-1.5 rounded-xl border border-border/50 shadow-lg">
+        <div className="absolute bottom-2 left-2 bg-card/90 backdrop-blur-sm px-2 py-1 rounded-lg border border-border/40 shadow">
           {product.original_price && product.original_price > product.price ? (
-            <div className="flex items-center gap-1.5">
-              <span className="text-cta font-bold text-base">{product.price} DH</span>
-              <span className="text-muted-foreground line-through text-xs">{product.original_price} DH</span>
+            <div className="flex items-center gap-1">
+              <span className="text-cta font-bold text-xs">{product.price} DH</span>
+              <span className="text-muted-foreground line-through text-[10px]">{product.original_price}</span>
             </div>
           ) : (
-            <span className="text-cta font-bold text-base">{product.price} DH</span>
+            <span className="text-cta font-bold text-xs">{product.price} DH</span>
           )}
         </div>
       </div>
-      <div className="p-4 space-y-2 bg-card">
-        <h3 className="font-semibold text-sm text-foreground tracking-tight">{product.name}</h3>
+      <div className="p-3 space-y-1.5 bg-card">
+        <h3 className="font-semibold text-xs text-foreground tracking-tight line-clamp-1">{product.name}</h3>
         {product.dimensions && (
-          <p className="text-xs text-muted-foreground">{t("store.dimensions")}: {product.dimensions}</p>
+          <p className="text-[10px] text-muted-foreground">{product.dimensions}</p>
         )}
         <button
           onClick={handleAdd}
           disabled={product.is_sold_out}
           className={cn(
-            "w-full py-3 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all duration-300 border-2",
+            "w-full py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all duration-200 border",
             product.is_sold_out
               ? "bg-muted text-muted-foreground border-border cursor-not-allowed"
               : added
                 ? "bg-cta/15 text-cta border-cta/30 scale-95"
-                : "bg-cta text-primary-foreground border-cta hover:bg-cta-hover hover:shadow-lg hover:shadow-cta/20 active:scale-95"
+                : "bg-cta text-primary-foreground border-cta hover:bg-cta-hover active:scale-95"
           )}
         >
           {product.is_sold_out
             ? t("store.sold_out")
             : added
-              ? <><Check size={16} /> {t("store.added")}</>
-              : <><Plus size={16} /> {t("store.add_to_cart")}</>
+              ? <><Check size={14} /> {t("store.added")}</>
+              : <><Plus size={14} /> {t("store.add_to_cart")}</>
           }
         </button>
       </div>
@@ -284,7 +284,7 @@ const Store = () => {
         </div>
 
         {loading ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-5 md:gap-6">
+          <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 md:gap-4">
             {[...Array(6)].map((_, i) => (
               <div key={i} className="aspect-[4/5] rounded-3xl bg-muted animate-pulse" />
             ))}
@@ -316,7 +316,7 @@ const Store = () => {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-5 md:gap-6">
+                <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 md:gap-4">
                   {catProducts.map((product) => (
                     <ProductCard key={product.id} product={product} />
                   ))}
