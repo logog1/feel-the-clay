@@ -1,7 +1,7 @@
 import Header from "@/components/Header";
 import HeroSection from "@/components/HeroSection";
 import BeliefSection from "@/components/BeliefSection";
-import AboutSection from "@/components/AboutSection";
+
 import ExperienceSection from "@/components/ExperienceSection";
 
 import GallerySection from "@/components/GallerySection";
@@ -13,7 +13,7 @@ import LanguagesSection from "@/components/LanguagesSection";
 import BookingFormSection from "@/components/BookingFormSection";
 import TrustSection from "@/components/TrustSection";
 import AnimatedSection from "@/components/AnimatedSection";
-import SocialImpactSection from "@/components/SocialImpactSection";
+
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
 import ScrollProgress from "@/components/ScrollProgress";
@@ -93,12 +93,7 @@ const Index = () => {
 
       <AnimatedSection variant="blur"><BeliefSection /></AnimatedSection>
 
-      {/* Slant into sunken zone */}
       <SlantDown />
-      <div className="section-sunken">
-        <AnimatedSection variant="fade-up"><SocialImpactSection /></AnimatedSection>
-        <AnimatedSection variant="fade-up"><AboutSection /></AnimatedSection>
-      </div>
       <SlantUp />
 
       <AnimatedSection variant="fade-left" delay={100}><ExperienceSection /></AnimatedSection>
