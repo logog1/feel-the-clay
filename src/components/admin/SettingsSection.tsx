@@ -106,6 +106,13 @@ export function SettingsSection() {
         </div>
       </div>
 
+      {/* Zapier Integration */}
+      <div className="p-6 rounded-2xl bg-card border border-primary/20 space-y-5">
+        <h4 className="font-bold text-foreground flex items-center gap-2"><Zap size={16} className="text-primary" /> Zapier Webhook</h4>
+        <p className="text-sm text-muted-foreground">Paste your Zapier webhook URL to receive order & booking notifications via Zapier (email, Slack, etc.).</p>
+        <Input value={zapierWebhookUrl} onChange={(e) => setZapierWebhookUrl(e.target.value)} placeholder="https://hooks.zapier.com/hooks/catch/..." className="rounded-xl" />
+      </div>
+
       {/* Site Images */}
       <div className="p-6 rounded-2xl bg-card border border-primary/20 space-y-5">
         <h4 className="font-bold text-foreground flex items-center gap-2"><ImageIcon size={16} className="text-primary" /> Page Images</h4>
