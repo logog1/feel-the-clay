@@ -3,6 +3,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import SEOHead from "@/components/SEOHead";
 import ProcessSection from "@/components/ProcessSection";
 import { useSiteImages } from "@/hooks/use-site-images";
+import { useSiteGallery } from "@/hooks/use-site-galleries";
 import potteryEntrance from "@/assets/pottery-entrance.jpg";
 import potteryGirls from "@/assets/pottery-girls.jpg";
 import potteryMasters from "@/assets/pottery-masters.jpg";
@@ -11,8 +12,15 @@ import potteryClaySource from "@/assets/pottery-clay-source.jpg";
 const PotteryExperience = () => {
   const { t } = useLanguage();
   const siteImages = useSiteImages(["image_workshop_pottery"]);
+  const managedGallery = useSiteGallery("gallery_workshop_pottery");
   const heroImg = siteImages["image_workshop_pottery"];
-  const images = heroImg ? [heroImg, potteryEntrance, potteryGirls, potteryMasters, potteryClaySource] : [potteryEntrance, potteryGirls, potteryMasters, potteryClaySource];
+
+  const defaultImages = [potteryEntrance, potteryGirls, potteryMasters, potteryClaySource];
+  const galleryImages = managedGallery && managedGallery.length > 0
+    ? managedGallery.map((g) => g.url)
+    : defaultImages;
+  const images = heroImg ? [heroImg, ...galleryImages] : galleryImages;
+
   const workshop = {
     title: t("pottery.title"),
     tagline: t("pottery.tagline"),

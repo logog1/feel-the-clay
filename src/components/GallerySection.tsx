@@ -1,5 +1,6 @@
 import { useRef } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { useSiteGallery } from "@/hooks/use-site-galleries";
 import workshop1 from "@/assets/workshop-1.jpg";
 import workshop3 from "@/assets/workshop-3.jpg";
 import workshop4 from "@/assets/workshop-4.jpg";
@@ -19,7 +20,7 @@ import workshop19 from "@/assets/workshop-19.jpg";
 import workshop20 from "@/assets/workshop-20.jpg";
 import workshop21 from "@/assets/workshop-21.jpg";
 
-const row1 = [
+const defaultRow1 = [
   { src: workshop1, alt: "Workshop participant shaping clay" },
   { src: workshop4, alt: "Creating pottery together" },
   { src: workshop9, alt: "Hands shaping clay pieces" },
@@ -27,7 +28,7 @@ const row1 = [
   { src: workshop14, alt: "Group workshop in the studio" },
 ];
 
-const row2 = [
+const defaultRow2 = [
   { src: workshop3, alt: "Group pottery session" },
   { src: workshop18, alt: "Artist presenting handmade mug" },
   { src: workshop5, alt: "Handbuilding clay pieces" },
@@ -37,7 +38,7 @@ const row2 = [
   { src: workshop15, alt: "Friends showing off their creations" },
 ];
 
-const row3 = [
+const defaultRow3 = [
   { src: workshop6, alt: "Coil building technique" },
   { src: workshop20, alt: "Friends with their clay creations" },
   { src: workshop8, alt: "Happy workshop participants" },
@@ -46,7 +47,9 @@ const row3 = [
   { src: workshop16, alt: "Group photo at the workshop" },
 ];
 
-const GalleryRow = ({ images, animationClass, imageWidth }: { images: typeof row1; animationClass: string; imageWidth: string }) => {
+type ImageItem = { src: string; alt: string };
+
+const GalleryRow = ({ images, animationClass, imageWidth }: { images: ImageItem[]; animationClass: string; imageWidth: string }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const rowRef = useRef<HTMLDivElement>(null);
   const isDragging = useRef(false);
@@ -80,6 +83,22 @@ const GalleryRow = ({ images, animationClass, imageWidth }: { images: typeof row
 
 const GallerySection = () => {
   const { t } = useLanguage();
+  const managed = useSiteGallery("gallery_moments");
+
+  // If managed images exist, split them into 3 rows
+  let row1: ImageItem[], row2: ImageItem[], row3: ImageItem[];
+  if (managed && managed.length > 0) {
+    const items = managed.map((m) => ({ src: m.url, alt: m.alt }));
+    const third = Math.ceil(items.length / 3);
+    row1 = items.slice(0, third);
+    row2 = items.slice(third, third * 2);
+    row3 = items.slice(third * 2);
+  } else {
+    row1 = defaultRow1;
+    row2 = defaultRow2;
+    row3 = defaultRow3;
+  }
+
   return (
     <section id="gallery" className="py-12 md:py-16 bg-background overflow-hidden select-none">
       <div className="container-narrow mb-6">
@@ -88,7 +107,7 @@ const GallerySection = () => {
       <div className="space-y-3 md:space-y-4">
         <GalleryRow images={row1} animationClass="animate-scroll-left" imageWidth="w-48 md:w-72" />
         <GalleryRow images={row2} animationClass="animate-scroll-right" imageWidth="w-56 md:w-80" />
-        <GalleryRow images={row3} animationClass="animate-scroll-left-slow" imageWidth="w-44 md:w-64" />
+        {row3.length > 0 && <GalleryRow images={row3} animationClass="animate-scroll-left-slow" imageWidth="w-44 md:w-64" />}
       </div>
     </section>
   );
