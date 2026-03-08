@@ -22,12 +22,17 @@ const AdminLogin = () => {
     const checkSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
-        const { data: roles } = await supabase.from("user_roles").select("role").eq("role", "admin").maybeSingle();
-        if (roles) {
+        const { data: roles } = await supabase.from("user_roles").select("role").maybeSingle();
+        if (roles?.role === "admin") {
           navigate("/admin");
-        } else {
+        } else if (roles) {
+          // Has a role but not admin
           await supabase.auth.signOut();
           setError("Access denied — admin only");
+        } else {
+          // No role at all — pending approval
+          await supabase.auth.signOut();
+          setError("Your account is pending approval. Please wait for an admin to grant you access.");
         }
       }
     };
@@ -57,17 +62,19 @@ const AdminLogin = () => {
     const { data: roles } = await supabase
       .from("user_roles")
       .select("role")
-      .eq("role", "admin")
       .maybeSingle();
 
-    if (!roles) {
+    if (roles?.role === "admin") {
+      navigate("/admin");
+    } else if (roles) {
       await supabase.auth.signOut();
       setError("Access denied — admin only");
       setLoading(false);
-      return;
+    } else {
+      await supabase.auth.signOut();
+      setError("Your account is pending approval. Please wait for an admin to grant you access.");
+      setLoading(false);
     }
-
-    navigate("/admin");
   };
 
   const handleGoogleLogin = async () => {

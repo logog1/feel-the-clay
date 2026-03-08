@@ -4,7 +4,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
-import { LogOut, CalendarDays, ShoppingCart, RefreshCw, Clock, CheckCircle2, XCircle, Package, Calendar, Plus, Trash2, Tag, ToggleLeft, ToggleRight, ChevronLeft, ChevronRight, Upload, ImagePlus, X, LayoutList, GripVertical, Eye, EyeOff, Save, AlertTriangle, Settings, Mail, Phone } from "lucide-react";
+import { LogOut, CalendarDays, ShoppingCart, RefreshCw, Clock, CheckCircle2, XCircle, Package, Calendar, Plus, Trash2, Tag, ToggleLeft, ToggleRight, ChevronLeft, ChevronRight, Upload, ImagePlus, X, LayoutList, GripVertical, Eye, EyeOff, Save, AlertTriangle, Settings, Mail, Phone, Users, Shield, ShieldCheck, ShieldX, UserCheck, UserX } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import SEOHead from "@/components/SEOHead";
 import { cn } from "@/lib/utils";
 import { format, addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterval, getDay } from "date-fns";
@@ -35,6 +36,9 @@ interface StoreSection {
 }
 interface Availability {
   id: string; date: string; workshop: string; is_available: boolean;
+}
+interface ManagedUser {
+  user_id: string; email: string; created_at: string; role: string; last_sign_in_at: string | null;
 }
 
 // ── Status helpers ─────────────────────────────────────────────────────────
@@ -100,6 +104,10 @@ const AdminDashboard = () => {
   const [savingContacts, setSavingContacts] = useState(false);
   const [contactsSaved, setContactsSaved] = useState(false);
 
+  // User management
+  const [managedUsers, setManagedUsers] = useState<ManagedUser[]>([]);
+  const [savingRole, setSavingRole] = useState<string | null>(null);
+
   useEffect(() => {
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
@@ -143,12 +151,28 @@ const AdminDashboard = () => {
       setContactWhatsApp(map["whatsapp_numbers"] || "");
     }
 
+    // Load users
+    const { data: usersData } = await supabase.rpc("list_users_with_roles");
+    setManagedUsers((usersData as ManagedUser[]) || []);
+
     setLoading(false);
   }, []);
 
   const updateStatus = async (table: "bookings" | "orders", id: string, status: string) => {
     const { error } = await supabase.from(table).update({ status }).eq("id", id);
     if (!error) await fetchAll();
+  };
+
+  const handleSetRole = async (userId: string, role: string) => {
+    setSavingRole(userId);
+    if (role === "pending") {
+      await supabase.rpc("remove_user_role", { _target_user_id: userId });
+    } else {
+      await supabase.rpc("set_user_role", { _target_user_id: userId, _role: role as "admin" | "user" });
+    }
+    const { data: usersData } = await supabase.rpc("list_users_with_roles");
+    setManagedUsers((usersData as ManagedUser[]) || []);
+    setSavingRole(null);
   };
 
   const handleLogout = async () => { await supabase.auth.signOut(); navigate("/admin/login"); };
@@ -431,6 +455,7 @@ const AdminDashboard = () => {
             <TabsTrigger value="availability" className="rounded-xl gap-2 data-[state=active]:bg-card"><Calendar size={14} /> Availability</TabsTrigger>
             <TabsTrigger value="sections" className="rounded-xl gap-2 data-[state=active]:bg-card"><LayoutList size={14} /> Store Sections</TabsTrigger>
             <TabsTrigger value="settings" className="rounded-xl gap-2 data-[state=active]:bg-card"><Settings size={14} /> Settings</TabsTrigger>
+            <TabsTrigger value="users" className="rounded-xl gap-2 data-[state=active]:bg-card"><Users size={14} /> Users</TabsTrigger>
           </TabsList>
 
           {/* ── Bookings ── */}
@@ -990,6 +1015,75 @@ const AdminDashboard = () => {
               >
                 {contactsSaved ? <><CheckCircle2 size={16} /> Saved!</> : <><Save size={16} /> {savingContacts ? "Saving..." : "Save Contacts"}</>}
               </Button>
+            </div>
+          </TabsContent>
+
+          {/* ── Users ── */}
+          <TabsContent value="users">
+            <div className="space-y-4">
+              <div className="p-5 rounded-3xl bg-card border-2 border-border/40 space-y-2">
+                <h3 className="font-bold text-foreground flex items-center gap-2"><Shield size={18} className="text-cta" /> User Access Management</h3>
+                <p className="text-sm text-muted-foreground">Approve or reject access for users who sign up. Users without a role cannot access the dashboard.</p>
+              </div>
+
+              {managedUsers.length === 0 ? (
+                <p className="text-center text-muted-foreground py-12">No users found</p>
+              ) : (
+                <div className="space-y-3">
+                  {managedUsers.map((u) => {
+                    const isSaving = savingRole === u.user_id;
+                    const isPending = u.role === "pending";
+                    const isAdmin = u.role === "admin";
+                    const roleColors = isPending
+                      ? "bg-amber-100 text-amber-800 border-amber-200"
+                      : isAdmin
+                        ? "bg-emerald-100 text-emerald-800 border-emerald-200"
+                        : "bg-blue-100 text-blue-800 border-blue-200";
+
+                    return (
+                      <div key={u.user_id} className="p-5 rounded-3xl bg-card border-2 border-border/40 flex flex-col sm:flex-row sm:items-center gap-4">
+                        <div className="flex-1 min-w-0">
+                          <p className="font-semibold text-foreground truncate">{u.email}</p>
+                          <p className="text-xs text-muted-foreground">
+                            Joined {new Date(u.created_at).toLocaleDateString()}
+                            {u.last_sign_in_at && ` · Last login ${new Date(u.last_sign_in_at).toLocaleDateString()}`}
+                          </p>
+                        </div>
+
+                        <div className="flex items-center gap-3">
+                          <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium border ${roleColors}`}>
+                            {isPending && <Clock size={12} />}
+                            {isAdmin && <ShieldCheck size={12} />}
+                            {u.role === "user" && <UserCheck size={12} />}
+                            {u.role.charAt(0).toUpperCase() + u.role.slice(1)}
+                          </span>
+
+                          <Select
+                            value={u.role}
+                            onValueChange={(val) => handleSetRole(u.user_id, val)}
+                            disabled={isSaving}
+                          >
+                            <SelectTrigger className="w-[130px] rounded-xl h-9 text-sm">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="pending">
+                                <span className="flex items-center gap-1.5"><ShieldX size={12} /> Pending</span>
+                              </SelectItem>
+                              <SelectItem value="user">
+                                <span className="flex items-center gap-1.5"><UserCheck size={12} /> User</span>
+                              </SelectItem>
+                              <SelectItem value="admin">
+                                <span className="flex items-center gap-1.5"><ShieldCheck size={12} /> Admin</span>
+                              </SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           </TabsContent>
         </Tabs>
