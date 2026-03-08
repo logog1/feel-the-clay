@@ -76,7 +76,7 @@ export function ProjectionsSection() {
   const [scenario, setScenario] = useState("base");
   const [allSettings, setAllSettings] = useState<Record<string, ScenarioSettings>>({ ...DEFAULT_SETTINGS });
 
-  const current = allSettings[scenario] || DEFAULT_SETTINGS[scenario];
+  const current = { ...DEFAULT_SETTINGS[scenario], ...(allSettings[scenario] || {}) };
   const setCurrent = (patch: Partial<ScenarioSettings>) => {
     setAllSettings((prev) => ({
       ...prev,
