@@ -17,6 +17,7 @@ import Store from "./pages/Store";
 import Cart from "./pages/Cart";
 import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
+import ProDashboard from "./pages/ProDashboard";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import LegalNotice from "./pages/LegalNotice";
 import AboutUs from "./pages/AboutUs";
