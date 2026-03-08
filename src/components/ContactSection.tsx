@@ -1,7 +1,9 @@
+import { useEffect, useState } from "react";
 import { MapPin, Mail } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useScrollAnimation } from "@/hooks/use-scroll-animation";
 import { cn } from "@/lib/utils";
+import { supabase } from "@/integrations/supabase/client";
 
 const WhatsAppIcon = () => (
   <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
@@ -9,13 +11,39 @@ const WhatsAppIcon = () => (
   </svg>
 );
 
+const DEFAULTS = {
+  email: "hello@terrariaworkshops.com",
+  whatsapp: "https://wa.me/message/SBUBJACPVCNGM1",
+  mapUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d800!2d-5.35338!3d35.58475!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xd0b42526f4c8c0f%3A0x7a5e5e8c8c8c8c8c!2sTERRARIA%20Workshops!5e0!3m2!1sen!2sma!4v1705000000000!5m2!1sen!2sma",
+};
+
 const ContactSection = () => {
   const { t } = useLanguage();
   const { ref, isVisible } = useScrollAnimation(0.15);
+  const [info, setInfo] = useState(DEFAULTS);
+
+  useEffect(() => {
+    const load = async () => {
+      const { data } = await supabase
+        .from("site_settings")
+        .select("key, value")
+        .in("key", ["public_email", "public_whatsapp", "public_map_url"]);
+      if (data) {
+        const map: Record<string, string> = {};
+        data.forEach((r: any) => { map[r.key] = r.value; });
+        setInfo({
+          email: map["public_email"] || DEFAULTS.email,
+          whatsapp: map["public_whatsapp"] || DEFAULTS.whatsapp,
+          mapUrl: map["public_map_url"] || DEFAULTS.mapUrl,
+        });
+      }
+    };
+    load();
+  }, []);
 
   const contacts = [
-    { icon: <Mail size={18} className="text-cta flex-shrink-0" />, label: "hello@terrariaworkshops.com", href: "mailto:hello@terrariaworkshops.com", truncate: true },
-    { icon: <WhatsAppIcon />, label: "WhatsApp", href: "https://wa.me/message/SBUBJACPVCNGM1", external: true },
+    { icon: <Mail size={18} className="text-cta flex-shrink-0" />, label: info.email, href: `mailto:${info.email}`, truncate: true },
+    { icon: <WhatsAppIcon />, label: "WhatsApp", href: info.whatsapp, external: true },
     { icon: <MapPin size={18} className="text-cta flex-shrink-0" />, label: t("contact.location"), href: "https://maps.app.goo.gl/h4c9BhEj1WZrESG59?g_st=ic", external: true },
   ];
 
@@ -47,7 +75,7 @@ const ContactSection = () => {
           </div>
 
           <div className={cn("aspect-video md:aspect-[2/1] rounded-2xl overflow-hidden shadow-lg transition-all duration-700 delay-300", isVisible ? "opacity-100 scale-100" : "opacity-0 scale-95")}>
-            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d800!2d-5.35338!3d35.58475!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xd0b42526f4c8c0f%3A0x7a5e5e8c8c8c8c8c!2sTERRARIA%20Workshops!5e0!3m2!1sen!2sma!4v1705000000000!5m2!1sen!2sma" width="100%" height="100%" style={{ border: 0 }} allowFullScreen loading="lazy" referrerPolicy="no-referrer-when-downgrade" title="TERRARIA Workshops location" />
+            <iframe src={info.mapUrl} width="100%" height="100%" style={{ border: 0 }} allowFullScreen loading="lazy" referrerPolicy="no-referrer-when-downgrade" title="TERRARIA Workshops location" />
           </div>
         </div>
       </div>

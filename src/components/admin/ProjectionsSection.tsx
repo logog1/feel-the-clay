@@ -14,12 +14,14 @@ type ScenarioSettings = {
   utilization: number;
   variableCost: number;
   fixedCosts: number;
+  groupSize: number;
+  sessionsPerDay: number;
 };
 
 const DEFAULT_SETTINGS: Record<string, ScenarioSettings> = {
-  conservative: { pricePerPerson: 150, utilization: 40, variableCost: 50, fixedCosts: 300 },
-  base: { pricePerPerson: 200, utilization: 65, variableCost: 40, fixedCosts: 500 },
-  aggressive: { pricePerPerson: 250, utilization: 85, variableCost: 35, fixedCosts: 800 },
+  conservative: { pricePerPerson: 150, utilization: 40, variableCost: 50, fixedCosts: 300, groupSize: 5, sessionsPerDay: 1 },
+  base: { pricePerPerson: 200, utilization: 65, variableCost: 40, fixedCosts: 500, groupSize: 6, sessionsPerDay: 2 },
+  aggressive: { pricePerPerson: 250, utilization: 85, variableCost: 35, fixedCosts: 800, groupSize: 8, sessionsPerDay: 3 },
 };
 
 const SCENARIO_MULTIPLIERS: Record<string, number> = {
@@ -187,10 +189,8 @@ export function ProjectionsSection() {
       {(() => {
         const totalParticipants3yr = projectionData.reduce((s, d) => s + d.participants, 0);
         const avgMonthlyPart = Math.round(totalParticipants3yr / 36);
-        const sessionsPerDay = 2;
-        const avgGroupSize = 6;
-        const monthlyWorkshops = Math.ceil(avgMonthlyPart / avgGroupSize);
-        const monthlyWorkDays = Math.ceil(monthlyWorkshops / sessionsPerDay);
+        const monthlyWorkshops = Math.ceil(avgMonthlyPart / current.groupSize);
+        const monthlyWorkDays = Math.ceil(monthlyWorkshops / current.sessionsPerDay);
         const yearlyWorkshops = monthlyWorkshops * 12;
         const yearlyWorkDays = monthlyWorkDays * 12;
         const avgRevenuePerWorkshop = avgMonthlyPart > 0 ? Math.round((current.pricePerPerson * avgMonthlyPart) / monthlyWorkshops) : 0;
@@ -200,6 +200,17 @@ export function ProjectionsSection() {
         return (
           <div className="p-5 rounded-2xl bg-card border border-border/40 space-y-4">
             <h3 className="font-bold text-foreground">Operational Breakdown <span className="text-xs font-normal text-muted-foreground ml-2">({scenario} scenario — avg/month)</span></h3>
+            {/* Capacity sliders */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pb-2 border-b border-border/20">
+              <div>
+                <div className="flex justify-between text-sm mb-2"><span className="text-muted-foreground">Group size</span><span className="font-medium text-foreground">{current.groupSize} people</span></div>
+                <Slider value={[current.groupSize]} onValueChange={([v]) => setCurrent({ groupSize: v })} min={2} max={15} step={1} />
+              </div>
+              <div>
+                <div className="flex justify-between text-sm mb-2"><span className="text-muted-foreground">Sessions / day</span><span className="font-medium text-foreground">{current.sessionsPerDay}</span></div>
+                <Slider value={[current.sessionsPerDay]} onValueChange={([v]) => setCurrent({ sessionsPerDay: v })} min={1} max={6} step={1} />
+              </div>
+            </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {[
                 { label: "Customers / month", value: avgMonthlyPart, suffix: "" },
@@ -219,7 +230,6 @@ export function ProjectionsSection() {
                 </div>
               ))}
             </div>
-            <p className="text-xs text-muted-foreground">Based on ~{avgGroupSize} participants/session, {sessionsPerDay} sessions/day</p>
           </div>
         );
       })()}
