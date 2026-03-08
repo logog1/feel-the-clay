@@ -1,4 +1,4 @@
-import { BarChart3, Users, DollarSign, BookOpen, ArrowLeft } from "lucide-react";
+import { BarChart3, Users, DollarSign, BookOpen, CalendarDays, ShoppingCart, Megaphone, Package, TrendingUp, UserCircle, Zap } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -13,9 +13,16 @@ import {
 
 const items = [
   { id: "overview", title: "Overview", icon: BarChart3 },
+  { id: "workshops", title: "Workshops", icon: CalendarDays },
+  { id: "sales", title: "Sales", icon: ShoppingCart },
   { id: "customers", title: "Customers", icon: Users },
+  { id: "marketing", title: "Marketing", icon: Megaphone },
+  { id: "inventory", title: "Inventory", icon: Package },
   { id: "finance", title: "Finance", icon: DollarSign },
   { id: "accounting", title: "Accounting", icon: BookOpen },
+  { id: "projections", title: "Projections", icon: TrendingUp },
+  { id: "employees", title: "Employees", icon: UserCircle },
+  { id: "automations", title: "Automations", icon: Zap },
 ];
 
 interface Props {

@@ -37,15 +37,16 @@ export function WorkshopsSection() {
   const avgUtilization = bookings.length > 0 ? Math.round((confirmedCount / bookings.length) * 100) : 0;
 
   // By workshop type
-  const byWorkshop = Object.entries(
-    bookings.reduce((acc: Record<string, { total: number; confirmed: number; participants: number }>, b) => {
-      if (!acc[b.workshop]) acc[b.workshop] = { total: 0, confirmed: 0, participants: 0 };
-      acc[b.workshop].total++;
-      if (b.status === "confirmed") acc[b.workshop].confirmed++;
-      acc[b.workshop].participants += b.participants || 1;
-      return acc;
-    }, {})
-  ).map(([name, data]) => ({ name, ...data, utilization: Math.round((data.confirmed / data.total) * 100) }));
+  const workshopAcc: Record<string, { total: number; confirmed: number; participants: number }> = {};
+  bookings.forEach((b) => {
+    if (!workshopAcc[b.workshop]) workshopAcc[b.workshop] = { total: 0, confirmed: 0, participants: 0 };
+    workshopAcc[b.workshop].total++;
+    if (b.status === "confirmed") workshopAcc[b.workshop].confirmed++;
+    workshopAcc[b.workshop].participants += b.participants || 1;
+  });
+  const byWorkshop = Object.entries(workshopAcc).map(([name, data]) => ({
+    name, ...data, utilization: Math.round((data.confirmed / data.total) * 100),
+  }));
 
   const statusColors: Record<string, string> = {
     pending: "bg-amber-100 text-amber-800 border-amber-200",
