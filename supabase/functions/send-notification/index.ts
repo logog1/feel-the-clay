@@ -242,6 +242,7 @@ Deno.serve(async (req) => {
         <h2>New Store Order</h2>
         <table style="border-collapse:collapse;font-family:sans-serif;">
           <tr><td style="padding:6px 12px;font-weight:bold;">Customer</td><td style="padding:6px 12px;">${escapeHtml(customerName)}</td></tr>
+          <tr><td style="padding:6px 12px;font-weight:bold;">Email</td><td style="padding:6px 12px;">${escapeHtml(customerEmail || "")}</td></tr>
           <tr><td style="padding:6px 12px;font-weight:bold;">Phone</td><td style="padding:6px 12px;">${escapeHtml(customerPhone || "")}</td></tr>
           <tr><td style="padding:6px 12px;font-weight:bold;">Address</td><td style="padding:6px 12px;">${escapeHtml(customerAddress)}</td></tr>
           <tr><td style="padding:6px 12px;font-weight:bold;">Region</td><td style="padding:6px 12px;">${escapeHtml(region)}</td></tr>
