@@ -191,6 +191,7 @@ Deno.serve(async (req) => {
         (notes ? `\n📝 ${sanitizeText(notes)}` : "");
     } else {
       const customerName = validateString(data.customerName, 100);
+      const customerEmail = validateEmail(data.customerEmail);
       const customerPhone = validatePhone(data.customerPhone);
       const customerAddress = validateString(data.customerAddress, 300);
       const region = validateString(data.region, 100);
@@ -241,6 +242,7 @@ Deno.serve(async (req) => {
         <h2>New Store Order</h2>
         <table style="border-collapse:collapse;font-family:sans-serif;">
           <tr><td style="padding:6px 12px;font-weight:bold;">Customer</td><td style="padding:6px 12px;">${escapeHtml(customerName)}</td></tr>
+          <tr><td style="padding:6px 12px;font-weight:bold;">Email</td><td style="padding:6px 12px;">${escapeHtml(customerEmail || "")}</td></tr>
           <tr><td style="padding:6px 12px;font-weight:bold;">Phone</td><td style="padding:6px 12px;">${escapeHtml(customerPhone || "")}</td></tr>
           <tr><td style="padding:6px 12px;font-weight:bold;">Address</td><td style="padding:6px 12px;">${escapeHtml(customerAddress)}</td></tr>
           <tr><td style="padding:6px 12px;font-weight:bold;">Region</td><td style="padding:6px 12px;">${escapeHtml(region)}</td></tr>
@@ -252,7 +254,7 @@ Deno.serve(async (req) => {
       `;
       whatsappMessage =
         `🛒 *New Order*\n\n` +
-        `👤 ${sanitizeText(customerName)}\n📱 ${sanitizeText(customerPhone || "")}\n📍 ${sanitizeText(customerAddress)}\n🚚 ${sanitizeText(region)}\n\n` +
+        `👤 ${sanitizeText(customerName)}\n📧 ${sanitizeText(customerEmail || "")}\n📱 ${sanitizeText(customerPhone || "")}\n📍 ${sanitizeText(customerAddress)}\n🚚 ${sanitizeText(region)}\n\n` +
         `${itemLines}\n\n` +
         `🚚 Delivery: ${deliveryFee} DH\n` +
         `*Total: ${grandTotal} DH*`;

@@ -26,6 +26,12 @@ const checkoutSchema = z.object({
     .trim()
     .min(1, "Name is required")
     .max(100, "Name must be under 100 characters"),
+  email: z
+    .string()
+    .trim()
+    .email("Invalid email address")
+    .max(255, "Email must be under 255 characters")
+    .or(z.literal("")),
   phone: z
     .string()
     .trim()
@@ -45,7 +51,7 @@ const Cart = () => {
   const { items, updateQuantity, removeItem, clearCart, totalPrice, totalItems } = useCart();
   const { t } = useLanguage();
   const [region, setRegion] = useState<Region>("north");
-  const [form, setForm] = useState<CheckoutForm>({ name: "", phone: "", address: "" });
+  const [form, setForm] = useState<CheckoutForm>({ name: "", email: "", phone: "", address: "" });
   const [errors, setErrors] = useState<Partial<Record<keyof CheckoutForm, string>>>({});
   const [honeypot, setHoneypot] = useState("");
   const [sending, setSending] = useState(false);
@@ -84,6 +90,7 @@ const Cart = () => {
             grandTotal,
             region: region === "north" ? "North (Tetouan/Tanger)" : "Rest of Morocco",
             customerName: validated.name,
+            customerEmail: validated.email || "",
             customerPhone: validated.phone,
             customerAddress: validated.address,
           },
@@ -215,6 +222,11 @@ const Cart = () => {
               <Label htmlFor="cart-name">{t("cart.name")} *</Label>
               <Input id="cart-name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="rounded-xl" />
               {errors.name && <p className="text-xs text-destructive">{errors.name}</p>}
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="cart-email">Email</Label>
+              <Input id="cart-email" type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="email@example.com" className="rounded-xl" />
+              {errors.email && <p className="text-xs text-destructive">{errors.email}</p>}
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="cart-phone">{t("cart.phone")} *</Label>
