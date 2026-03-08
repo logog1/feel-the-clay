@@ -90,6 +90,7 @@ const Cart = () => {
             grandTotal,
             region: region === "north" ? "North (Tetouan/Tanger)" : "Rest of Morocco",
             customerName: validated.name,
+            customerEmail: validated.email || "",
             customerPhone: validated.phone,
             customerAddress: validated.address,
           },
