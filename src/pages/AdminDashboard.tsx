@@ -37,6 +37,9 @@ interface StoreSection {
 interface Availability {
   id: string; date: string; workshop: string; is_available: boolean;
 }
+interface ManagedUser {
+  user_id: string; email: string; created_at: string; role: string; last_sign_in_at: string | null;
+}
 
 // ── Status helpers ─────────────────────────────────────────────────────────
 const statusColors: Record<string, string> = {
