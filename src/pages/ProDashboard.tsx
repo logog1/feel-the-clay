@@ -20,7 +20,7 @@ import { TasksSection } from "@/components/admin/TasksSection";
 import { SettingsSection } from "@/components/admin/SettingsSection";
 import SEOHead from "@/components/SEOHead";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Moon, Sun } from "lucide-react";
 
 const sectionTitles: Record<string, string> = {
   overview: "Overview",
