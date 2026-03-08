@@ -46,6 +46,12 @@ const ProDashboard = () => {
   const [activeSection, setActiveSection] = useState("overview");
   const [isAdmin, setIsAdmin] = useState(false);
   const [profileType, setProfileType] = useState("general");
+  const [dark, setDark] = useState(() => document.documentElement.classList.contains("dark"));
+
+  const toggleDark = () => {
+    document.documentElement.classList.toggle("dark");
+    setDark((d) => !d);
+  };
 
   useEffect(() => {
     const checkAuth = async () => {
