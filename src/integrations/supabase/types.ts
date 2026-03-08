@@ -447,18 +447,21 @@ export type Database = {
         Row: {
           created_at: string
           id: string
+          profile_type: string
           role: Database["public"]["Enums"]["app_role"]
           user_id: string
         }
         Insert: {
           created_at?: string
           id?: string
+          profile_type?: string
           role: Database["public"]["Enums"]["app_role"]
           user_id: string
         }
         Update: {
           created_at?: string
           id?: string
+          profile_type?: string
           role?: Database["public"]["Enums"]["app_role"]
           user_id?: string
         }
@@ -493,6 +496,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_my_profile_type: { Args: never; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -507,12 +511,17 @@ export type Database = {
           created_at: string
           email: string
           last_sign_in_at: string
+          profile_type: string
           role: string
           user_id: string
         }[]
       }
       remove_user_role: {
         Args: { _target_user_id: string }
+        Returns: undefined
+      }
+      set_user_profile_type: {
+        Args: { _profile_type: string; _target_user_id: string }
         Returns: undefined
       }
       set_user_role: {

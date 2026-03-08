@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { ProSidebar } from "@/components/admin/ProSidebar";
+import { ProSidebar, allSidebarItems, profileSections } from "@/components/admin/ProSidebar";
 import { OverviewSection } from "@/components/admin/OverviewSection";
 import { CustomersSection } from "@/components/admin/CustomersSection";
 import { FinanceSection } from "@/components/admin/FinanceSection";
@@ -44,13 +44,27 @@ const ProDashboard = () => {
   const navigate = useNavigate();
   const [authed, setAuthed] = useState(false);
   const [activeSection, setActiveSection] = useState("overview");
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [profileType, setProfileType] = useState("general");
 
   useEffect(() => {
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) { navigate("/admin/login"); return; }
-      const { data: roles } = await supabase.from("user_roles").select("role").eq("role", "admin").maybeSingle();
+
+      const { data: roles } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("role", "admin")
+        .maybeSingle();
+
       if (!roles) { await supabase.auth.signOut(); navigate("/admin/login"); return; }
+      setIsAdmin(true);
+
+      // Fetch profile type
+      const { data: pt } = await supabase.rpc("get_my_profile_type");
+      if (pt) setProfileType(pt);
+
       setAuthed(true);
     };
     checkAuth();
@@ -58,18 +72,31 @@ const ProDashboard = () => {
 
   if (!authed) return null;
 
+  // Admins see everything; others see profile-filtered sections
+  const visibleItems = isAdmin
+    ? allSidebarItems
+    : allSidebarItems.filter((item) => {
+        const allowed = profileSections[profileType] || profileSections.general;
+        return allowed.includes(item.id);
+      });
+
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-background">
         <SEOHead title="Pro Dashboard" description="Advanced admin dashboard" path="/admin/pro" />
-        <ProSidebar activeSection={activeSection} onNavigate={setActiveSection} />
+        <ProSidebar activeSection={activeSection} onNavigate={setActiveSection} visibleItems={visibleItems} />
         <div className="flex-1 flex flex-col min-w-0">
           <header className="sticky top-0 z-50 h-14 flex items-center gap-3 border-b border-border/40 bg-card/95 backdrop-blur-md px-4">
             <SidebarTrigger />
             <Button variant="ghost" size="sm" className="gap-1.5 text-muted-foreground rounded-xl" onClick={() => navigate("/admin")}>
               <ArrowLeft size={14} /> Simple
             </Button>
-            <span className="text-sm font-bold text-foreground ml-auto">{sectionTitles[activeSection] || "Dashboard"}</span>
+            <div className="ml-auto flex items-center gap-3">
+              {!isAdmin && (
+                <span className="text-xs px-2 py-0.5 rounded-full bg-muted text-muted-foreground capitalize">{profileType}</span>
+              )}
+              <span className="text-sm font-bold text-foreground">{sectionTitles[activeSection] || "Dashboard"}</span>
+            </div>
           </header>
           <main className="flex-1 p-4 md:p-6 overflow-auto">
             {activeSection === "overview" && <OverviewSection />}

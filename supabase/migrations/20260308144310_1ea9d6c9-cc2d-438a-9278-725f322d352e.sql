@@ -1,0 +1,1 @@
+ALTER TABLE public.user_roles ADD COLUMN IF NOT EXISTS profile_type text NOT NULL DEFAULT 'general';
