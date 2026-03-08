@@ -98,6 +98,9 @@ const ProDashboard = () => {
               <ArrowLeft size={14} /> Simple
             </Button>
             <div className="ml-auto flex items-center gap-3">
+              <Button variant="ghost" size="icon" className="h-8 w-8 rounded-xl" onClick={toggleDark} title={dark ? "Light mode" : "Dark mode"}>
+                {dark ? <Sun size={16} /> : <Moon size={16} />}
+              </Button>
               {!isAdmin && (
                 <span className="text-xs px-2 py-0.5 rounded-full bg-muted text-muted-foreground capitalize">{profileType}</span>
               )}
