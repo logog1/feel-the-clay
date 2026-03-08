@@ -430,6 +430,7 @@ const AdminDashboard = () => {
             <TabsTrigger value="products" className="rounded-xl gap-2 data-[state=active]:bg-card"><Package size={14} /> Products</TabsTrigger>
             <TabsTrigger value="availability" className="rounded-xl gap-2 data-[state=active]:bg-card"><Calendar size={14} /> Availability</TabsTrigger>
             <TabsTrigger value="sections" className="rounded-xl gap-2 data-[state=active]:bg-card"><LayoutList size={14} /> Store Sections</TabsTrigger>
+            <TabsTrigger value="settings" className="rounded-xl gap-2 data-[state=active]:bg-card"><Settings size={14} /> Settings</TabsTrigger>
           </TabsList>
 
           {/* ── Bookings ── */}
