@@ -88,6 +88,7 @@ const Index = () => {
         path="/"
         jsonLd={jsonLd}
       />
+      <SeasonalThemeOverlay />
       <ScrollProgress />
       <Header />
       <HeroSection />

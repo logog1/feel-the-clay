@@ -18,6 +18,7 @@ import { WorkflowSection } from "@/components/admin/WorkflowSection";
 import { AccessSection } from "@/components/admin/AccessSection";
 import { TasksSection } from "@/components/admin/TasksSection";
 import { SettingsSection } from "@/components/admin/SettingsSection";
+import { ThemeManagerSection } from "@/components/admin/ThemeManagerSection";
 import SEOHead from "@/components/SEOHead";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Moon, Sun } from "lucide-react";
