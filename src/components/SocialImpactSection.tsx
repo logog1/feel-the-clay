@@ -5,6 +5,7 @@ import { Users, Heart, ShoppingBag, Calendar, Sparkles, Briefcase, ChevronDown, 
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useSiteGallery } from "@/hooks/use-site-galleries";
 
 const impact1 = "/images/impact-1.jpg";
 const impact2 = "/images/impact-2.jpg";
@@ -28,13 +29,16 @@ interface MetricCardProps {
 }
 
 const MetricCard = ({ icon, value, suffix = "", label, subtitle, delay, isVisible }: MetricCardProps) => {
-  const count = useCountAnimation(value, 2000, isVisible);
+  const animatedValue = useCountAnimation(value, 2000, isVisible);
   return (
-    <div className={cn("flex flex-col items-center p-6 bg-card/60 backdrop-blur-sm rounded-2xl border border-border/30 transition-all duration-700", isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8")} style={{ transitionDelay: `${delay}ms` }}>
-      <div className="w-14 h-14 rounded-full bg-primary/20 flex items-center justify-center mb-4 animate-gentle-float">{icon}</div>
-      <span className="text-4xl md:text-5xl font-semibold text-foreground">{count}{suffix}</span>
-      <span className="text-sm text-muted-foreground mt-2 text-center">{label}</span>
-      {subtitle && <span className="text-xs text-muted-foreground/70 mt-1 text-center">{subtitle}</span>}
+    <div className={cn(
+      "bg-card rounded-2xl p-5 text-center border border-border/40 hover:border-primary/30 transition-all duration-500 hover:shadow-lg",
+      isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+    )} style={{ transitionDelay: `${delay}ms` }}>
+      <div className="flex justify-center mb-3">{icon}</div>
+      <div className="text-2xl md:text-3xl font-bold text-foreground">{animatedValue}{suffix}</div>
+      <div className="text-sm text-muted-foreground mt-1">{label}</div>
+      {subtitle && <div className="text-xs text-muted-foreground/70 mt-0.5">{subtitle}</div>}
     </div>
   );
 };
@@ -47,6 +51,7 @@ const SocialImpactSection = () => {
   const { t } = useLanguage();
   const isMobile = useIsMobile();
   const [showAll, setShowAll] = useState(false);
+  const managedGallery = useSiteGallery("gallery_about");
 
   const metrics = [
     { icon: <Users className="w-7 h-7 text-primary" />, value: 700, suffix: "+", label: t("impact.people_hosted"), delay: 0 },
@@ -56,7 +61,7 @@ const SocialImpactSection = () => {
     { icon: <Calendar className="w-7 h-7 text-primary" />, value: 2, suffix: " yrs", label: t("impact.years"), delay: 400 },
   ];
 
-  const images: { src: string; alt: string; size?: "large" | "medium" }[] = [
+  const defaultImages: { src: string; alt: string; size?: "large" | "medium" }[] = [
     { src: impact7, alt: "Group workshop session", size: "large" },
     { src: impact10, alt: "Friends at the workshop", size: "medium" },
     { src: impact1, alt: "Potter at work" },
@@ -69,7 +74,14 @@ const SocialImpactSection = () => {
     { src: impact11, alt: "Pottery lamp with workshop" },
   ];
 
-  // On mobile, show only first 4 images unless expanded
+  const images = managedGallery && managedGallery.length > 0
+    ? managedGallery.map((g, i) => ({
+        src: g.url,
+        alt: g.alt,
+        size: i === 0 ? "large" as const : i === 1 ? "medium" as const : undefined,
+      }))
+    : defaultImages;
+
   const mobilePreviewCount = 4;
   const visibleImages = isMobile && !showAll ? images.slice(0, mobilePreviewCount) : images;
 

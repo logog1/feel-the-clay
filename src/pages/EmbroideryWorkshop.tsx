@@ -2,6 +2,7 @@ import WorkshopPageLayout from "@/components/WorkshopPageLayout";
 import { useLanguage } from "@/i18n/LanguageContext";
 import SEOHead from "@/components/SEOHead";
 import { useSiteImages } from "@/hooks/use-site-images";
+import { useSiteGallery } from "@/hooks/use-site-galleries";
 import embrHero from "@/assets/embr-hero.jpg";
 import embrGallery1 from "@/assets/embr-gallery-1.jpg";
 import embrGallery2 from "@/assets/embr-gallery-2.jpg";
@@ -12,8 +13,15 @@ import embrGallery5 from "@/assets/embr-gallery-5.jpg";
 const EmbroideryWorkshop = () => {
   const { t } = useLanguage();
   const siteImages = useSiteImages(["image_workshop_embroidery"]);
+  const managedGallery = useSiteGallery("gallery_workshop_embroidery");
   const heroImg = siteImages["image_workshop_embroidery"];
-  const images = heroImg ? [heroImg, embrGallery1, embrGallery2, embrGallery3, embrGallery4, embrGallery5] : [embrHero, embrGallery1, embrGallery2, embrGallery3, embrGallery4, embrGallery5];
+
+  const defaultImages = [embrGallery1, embrGallery2, embrGallery3, embrGallery4, embrGallery5];
+  const galleryImages = managedGallery && managedGallery.length > 0
+    ? managedGallery.map((g) => g.url)
+    : defaultImages;
+  const images = heroImg ? [heroImg, ...galleryImages] : [embrHero, ...galleryImages];
+
   const workshop = {
     title: t("embr.title"),
     tagline: t("embr.tagline"),

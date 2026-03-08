@@ -3,6 +3,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import SEOHead from "@/components/SEOHead";
 import ProcessSection from "@/components/ProcessSection";
 import { useSiteImages } from "@/hooks/use-site-images";
+import { useSiteGallery } from "@/hooks/use-site-galleries";
 import workshop5 from "@/assets/workshop-5.jpg";
 import workshop6 from "@/assets/workshop-6.jpg";
 import workshop8 from "@/assets/workshop-8.jpg";
@@ -11,8 +12,15 @@ import workshop10 from "@/assets/workshop-10.jpg";
 const HandbuildingWorkshop = () => {
   const { t } = useLanguage();
   const siteImages = useSiteImages(["image_workshop_handbuilding"]);
+  const managedGallery = useSiteGallery("gallery_workshop_handbuilding");
   const heroImg = siteImages["image_workshop_handbuilding"];
-  const images = heroImg ? [heroImg, workshop5, workshop6, workshop8, workshop10] : [workshop5, workshop6, workshop8, workshop10];
+
+  const defaultImages = [workshop5, workshop6, workshop8, workshop10];
+  const galleryImages = managedGallery && managedGallery.length > 0
+    ? managedGallery.map((g) => g.url)
+    : defaultImages;
+  const images = heroImg ? [heroImg, ...galleryImages] : galleryImages;
+
   const workshop = {
     title: t("hand.title"),
     tagline: t("hand.tagline"),
