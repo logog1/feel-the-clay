@@ -23,7 +23,6 @@ const OffersSection = () => {
   const { ref, isVisible } = useScrollAnimation(0.1);
   const [productImages, setProductImages] = useState<Record<string, string>>({});
   const siteImages = useSiteImages(["image_workshop_handbuilding", "image_workshop_pottery", "image_workshop_embroidery"]);
-  const [productImages, setProductImages] = useState<Record<string, string>>({});
 
   // Fetch first product image per relevant category from the DB
   useEffect(() => {
