@@ -53,6 +53,33 @@ export type Database = {
         }
         Relationships: []
       }
+      automations: {
+        Row: {
+          created_at: string
+          description: string | null
+          enabled: boolean
+          id: string
+          name: string
+          trigger_type: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          enabled?: boolean
+          id?: string
+          name: string
+          trigger_type?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          enabled?: boolean
+          id?: string
+          name?: string
+          trigger_type?: string
+        }
+        Relationships: []
+      }
       bookings: {
         Row: {
           booking_date: string | null
@@ -136,6 +163,126 @@ export type Database = {
           phone?: string | null
           source?: string
           total_bookings?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      employees: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          email: string | null
+          id: string
+          is_active: boolean
+          name: string
+          notes: string | null
+          phone: string | null
+          role: string
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          notes?: string | null
+          phone?: string | null
+          role?: string
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          notes?: string | null
+          phone?: string | null
+          role?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      inventory_items: {
+        Row: {
+          category: string
+          created_at: string
+          id: string
+          linked_workshop: string | null
+          min_quantity: number
+          name: string
+          notes: string | null
+          quantity: number
+          status: string
+          unit: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          id?: string
+          linked_workshop?: string | null
+          min_quantity?: number
+          name: string
+          notes?: string | null
+          quantity?: number
+          status?: string
+          unit?: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          id?: string
+          linked_workshop?: string | null
+          min_quantity?: number
+          name?: string
+          notes?: string | null
+          quantity?: number
+          status?: string
+          unit?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      marketing_items: {
+        Row: {
+          assignee: string | null
+          created_at: string
+          due_date: string | null
+          id: string
+          notes: string | null
+          platform: string | null
+          status: string
+          title: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          assignee?: string | null
+          created_at?: string
+          due_date?: string | null
+          id?: string
+          notes?: string | null
+          platform?: string | null
+          status?: string
+          title: string
+          type?: string
+          updated_at?: string
+        }
+        Update: {
+          assignee?: string | null
+          created_at?: string
+          due_date?: string | null
+          id?: string
+          notes?: string | null
+          platform?: string | null
+          status?: string
+          title?: string
+          type?: string
           updated_at?: string
         }
         Relationships: []

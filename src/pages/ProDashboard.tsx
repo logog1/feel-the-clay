@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
@@ -7,6 +7,13 @@ import { OverviewSection } from "@/components/admin/OverviewSection";
 import { CustomersSection } from "@/components/admin/CustomersSection";
 import { FinanceSection } from "@/components/admin/FinanceSection";
 import { AccountingSection } from "@/components/admin/AccountingSection";
+import { WorkshopsSection } from "@/components/admin/WorkshopsSection";
+import { SalesSection } from "@/components/admin/SalesSection";
+import { MarketingSection } from "@/components/admin/MarketingSection";
+import { InventorySection } from "@/components/admin/InventorySection";
+import { ProjectionsSection } from "@/components/admin/ProjectionsSection";
+import { EmployeesSection } from "@/components/admin/EmployeesSection";
+import { AutomationsSection } from "@/components/admin/AutomationsSection";
 import SEOHead from "@/components/SEOHead";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
@@ -44,9 +51,16 @@ const ProDashboard = () => {
           </header>
           <main className="flex-1 p-4 md:p-6 overflow-auto">
             {activeSection === "overview" && <OverviewSection />}
+            {activeSection === "workshops" && <WorkshopsSection />}
+            {activeSection === "sales" && <SalesSection />}
             {activeSection === "customers" && <CustomersSection />}
+            {activeSection === "marketing" && <MarketingSection />}
+            {activeSection === "inventory" && <InventorySection />}
             {activeSection === "finance" && <FinanceSection />}
             {activeSection === "accounting" && <AccountingSection />}
+            {activeSection === "projections" && <ProjectionsSection />}
+            {activeSection === "employees" && <EmployeesSection />}
+            {activeSection === "automations" && <AutomationsSection />}
           </main>
         </div>
       </div>
