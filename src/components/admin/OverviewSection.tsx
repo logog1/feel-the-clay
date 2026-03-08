@@ -30,7 +30,7 @@ export function OverviewSection() {
   }, []);
 
   // Calculate revenue
-  const totalRevenue = orders.reduce((sum, o) => sum + (o.grand_total || 0), 0);
+  const totalRevenue = orders.filter((o) => o.status === "delivered" || o.status === "done").reduce((sum, o) => sum + (o.grand_total || 0), 0);
   const confirmedBookings = bookings.filter((b) => b.status === "confirmed").length;
 
   // Monthly revenue chart data (last 6 months)
