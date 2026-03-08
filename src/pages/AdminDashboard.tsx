@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
-import { LogOut, CalendarDays, ShoppingCart, RefreshCw, Clock, CheckCircle2, XCircle, Package, Calendar, Plus, Trash2, Tag, ToggleLeft, ToggleRight, ChevronLeft, ChevronRight, Upload, ImagePlus, X, LayoutList, GripVertical, Eye, EyeOff, Save, AlertTriangle, Settings, Mail, Phone, Users, Shield, ShieldCheck, ShieldX, UserCheck, UserX } from "lucide-react";
+import { LogOut, CalendarDays, ShoppingCart, RefreshCw, Clock, CheckCircle2, XCircle, Package, Calendar, Plus, Trash2, Tag, ToggleLeft, ToggleRight, ChevronLeft, ChevronRight, Upload, ImagePlus, X, LayoutList, GripVertical, Eye, EyeOff, Save, AlertTriangle, Settings, Mail, Phone, Users, Shield, ShieldCheck, ShieldX, UserCheck, UserX, Zap } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import SEOHead from "@/components/SEOHead";
 import { cn } from "@/lib/utils";
@@ -414,6 +414,9 @@ const AdminDashboard = () => {
             <p className="text-xs text-muted-foreground">{bookings.length} bookings · {orders.length} orders · {products.length} products</p>
           </div>
           <div className="flex items-center gap-3">
+            <Button size="sm" onClick={() => navigate("/admin/pro")} className="gap-2 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground">
+              <Zap size={14} /> Pro Dashboard
+            </Button>
             <Button variant="outline" size="sm" onClick={fetchAll} disabled={loading} className="gap-2 rounded-xl">
               <RefreshCw size={14} className={loading ? "animate-spin" : ""} /> Refresh
             </Button>

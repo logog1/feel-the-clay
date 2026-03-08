@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      accounting_entries: {
+        Row: {
+          amount: number
+          attachment_url: string | null
+          category: string
+          created_at: string
+          date: string
+          description: string
+          expense_type: string | null
+          id: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          amount?: number
+          attachment_url?: string | null
+          category?: string
+          created_at?: string
+          date?: string
+          description: string
+          expense_type?: string | null
+          id?: string
+          type?: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          attachment_url?: string | null
+          category?: string
+          created_at?: string
+          date?: string
+          description?: string
+          expense_type?: string | null
+          id?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       bookings: {
         Row: {
           booking_date: string | null
@@ -56,6 +95,48 @@ export type Database = {
           session_info?: string | null
           status?: string
           workshop?: string
+        }
+        Relationships: []
+      }
+      customers: {
+        Row: {
+          city: string | null
+          created_at: string
+          email: string | null
+          from_website: boolean
+          id: string
+          name: string
+          notes: string | null
+          phone: string | null
+          source: string
+          total_bookings: number
+          updated_at: string
+        }
+        Insert: {
+          city?: string | null
+          created_at?: string
+          email?: string | null
+          from_website?: boolean
+          id?: string
+          name: string
+          notes?: string | null
+          phone?: string | null
+          source?: string
+          total_bookings?: number
+          updated_at?: string
+        }
+        Update: {
+          city?: string | null
+          created_at?: string
+          email?: string | null
+          from_website?: boolean
+          id?: string
+          name?: string
+          notes?: string | null
+          phone?: string | null
+          source?: string
+          total_bookings?: number
+          updated_at?: string
         }
         Relationships: []
       }
