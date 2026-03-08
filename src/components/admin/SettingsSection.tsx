@@ -40,6 +40,7 @@ export function SettingsSection() {
         setPublicEmail(map["public_email"] || "");
         setPublicWhatsApp(map["public_whatsapp"] || "");
         setPublicMapUrl(map["public_map_url"] || "");
+        setZapierWebhookUrl(map["zapier_webhook_url"] || "");
         const imgs: Record<string, string> = {};
         IMAGE_SETTINGS.forEach((s) => { if (map[s.key]) imgs[s.key] = map[s.key]; });
         setImageUrls(imgs);
