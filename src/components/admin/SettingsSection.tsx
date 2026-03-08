@@ -19,6 +19,7 @@ export function SettingsSection() {
   const [publicEmail, setPublicEmail] = useState("");
   const [publicWhatsApp, setPublicWhatsApp] = useState("");
   const [publicMapUrl, setPublicMapUrl] = useState("");
+  const [zapierWebhookUrl, setZapierWebhookUrl] = useState("");
   const [imageUrls, setImageUrls] = useState<Record<string, string>>({});
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
