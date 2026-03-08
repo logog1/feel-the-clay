@@ -59,6 +59,7 @@ export function SettingsSection() {
       supabase.from("site_settings").upsert({ key: "public_email", value: publicEmail.trim(), updated_at: now }),
       supabase.from("site_settings").upsert({ key: "public_whatsapp", value: publicWhatsApp.trim(), updated_at: now }),
       supabase.from("site_settings").upsert({ key: "public_map_url", value: publicMapUrl.trim(), updated_at: now }),
+      supabase.from("site_settings").upsert({ key: "zapier_webhook_url", value: zapierWebhookUrl.trim(), updated_at: now }),
     ]);
     setSaving(false);
     setSaved(true);
