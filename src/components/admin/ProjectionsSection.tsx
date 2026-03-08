@@ -14,12 +14,14 @@ type ScenarioSettings = {
   utilization: number;
   variableCost: number;
   fixedCosts: number;
+  groupSize: number;
+  sessionsPerDay: number;
 };
 
 const DEFAULT_SETTINGS: Record<string, ScenarioSettings> = {
-  conservative: { pricePerPerson: 150, utilization: 40, variableCost: 50, fixedCosts: 300 },
-  base: { pricePerPerson: 200, utilization: 65, variableCost: 40, fixedCosts: 500 },
-  aggressive: { pricePerPerson: 250, utilization: 85, variableCost: 35, fixedCosts: 800 },
+  conservative: { pricePerPerson: 150, utilization: 40, variableCost: 50, fixedCosts: 300, groupSize: 5, sessionsPerDay: 1 },
+  base: { pricePerPerson: 200, utilization: 65, variableCost: 40, fixedCosts: 500, groupSize: 6, sessionsPerDay: 2 },
+  aggressive: { pricePerPerson: 250, utilization: 85, variableCost: 35, fixedCosts: 800, groupSize: 8, sessionsPerDay: 3 },
 };
 
 const SCENARIO_MULTIPLIERS: Record<string, number> = {
