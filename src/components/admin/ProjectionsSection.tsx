@@ -178,6 +178,47 @@ export function ProjectionsSection() {
           <p className={`text-2xl font-bold ${totalProjectedProfit >= 0 ? "text-emerald-700" : "text-red-600"}`}>{totalProjectedProfit.toLocaleString()} DH</p>
         </div>
       </div>
+
+      {/* Operational Breakdown */}
+      {(() => {
+        const totalParticipants3yr = projectionData.reduce((s, d) => s + d.participants, 0);
+        const avgMonthlyPart = Math.round(totalParticipants3yr / 36);
+        const sessionsPerDay = 2;
+        const avgGroupSize = 6;
+        const monthlyWorkshops = Math.ceil(avgMonthlyPart / avgGroupSize);
+        const monthlyWorkDays = Math.ceil(monthlyWorkshops / sessionsPerDay);
+        const yearlyWorkshops = monthlyWorkshops * 12;
+        const yearlyWorkDays = monthlyWorkDays * 12;
+        const avgRevenuePerWorkshop = avgMonthlyPart > 0 ? Math.round((current.pricePerPerson * avgMonthlyPart) / monthlyWorkshops) : 0;
+        const avgCostPerWorkshop = monthlyWorkshops > 0 ? Math.round(((current.fixedCosts + current.variableCost * avgMonthlyPart) / monthlyWorkshops)) : 0;
+        const avgProfitPerWorkshop = avgRevenuePerWorkshop - avgCostPerWorkshop;
+
+        return (
+          <div className="p-5 rounded-2xl bg-card border border-border/40 space-y-4">
+            <h3 className="font-bold text-foreground">Operational Breakdown <span className="text-xs font-normal text-muted-foreground ml-2">({scenario} scenario — avg/month)</span></h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {[
+                { label: "Customers / month", value: avgMonthlyPart, suffix: "" },
+                { label: "Workshops / month", value: monthlyWorkshops, suffix: "" },
+                { label: "Work days / month", value: monthlyWorkDays, suffix: " days" },
+                { label: "Customers (3yr total)", value: totalParticipants3yr.toLocaleString(), suffix: "" },
+                { label: "Workshops / year", value: yearlyWorkshops, suffix: "" },
+                { label: "Work days / year", value: yearlyWorkDays, suffix: "" },
+                { label: "Revenue / workshop", value: `${avgRevenuePerWorkshop.toLocaleString()} DH`, suffix: "" },
+                { label: "Profit / workshop", value: `${avgProfitPerWorkshop.toLocaleString()} DH`, suffix: "", color: avgProfitPerWorkshop >= 0 },
+              ].map((item) => (
+                <div key={item.label} className="p-3 rounded-xl bg-muted/30 border border-border/20">
+                  <p className="text-xs text-muted-foreground mb-1">{item.label}</p>
+                  <p className={`text-lg font-bold ${item.color === false ? "text-red-600" : item.color === true ? "text-emerald-700" : "text-foreground"}`}>
+                    {item.value}{item.suffix}
+                  </p>
+                </div>
+              ))}
+            </div>
+            <p className="text-xs text-muted-foreground">Based on ~{avgGroupSize} participants/session, {sessionsPerDay} sessions/day</p>
+          </div>
+        );
+      })()}
     </div>
   );
 }
