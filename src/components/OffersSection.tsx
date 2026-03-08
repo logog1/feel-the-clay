@@ -5,6 +5,7 @@ import { useScrollAnimation } from "@/hooks/use-scroll-animation";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useSiteImages } from "@/hooks/use-site-images";
 import workshop2 from "@/assets/workshop-2.jpg";
 import handbuildingHero from "@/assets/handbuilding-hero.jpg";
 import embrHero from "@/assets/embr-hero.jpg";
@@ -21,6 +22,7 @@ const OffersSection = () => {
   const { t } = useLanguage();
   const { ref, isVisible } = useScrollAnimation(0.1);
   const [productImages, setProductImages] = useState<Record<string, string>>({});
+  const siteImages = useSiteImages(["image_workshop_handbuilding", "image_workshop_pottery", "image_workshop_embroidery"]);
 
   // Fetch first product image per relevant category from the DB
   useEffect(() => {
@@ -61,18 +63,18 @@ const OffersSection = () => {
   const offers = [
     {
       title: t("offers.handbuilding"),
-      image: fallbackImages.handbuilding,
+      image: siteImages["image_workshop_handbuilding"] || fallbackImages.handbuilding,
       link: "/workshop/handbuilding",
       popular: true,
     },
     {
       title: t("offers.pottery"),
-      image: fallbackImages.pottery,
+      image: siteImages["image_workshop_pottery"] || fallbackImages.pottery,
       link: "/workshop/pottery-experience",
     },
     {
       title: t("offers.embroidery"),
-      image: fallbackImages.embroidery,
+      image: siteImages["image_workshop_embroidery"] || fallbackImages.embroidery,
       link: "/workshop/embroidery",
       unavailable: true,
     },

@@ -2,13 +2,16 @@ import heroBg from "@/assets/hero-bg.jpg";
 import tetouanCity from "@/assets/tetouan-city.jpg";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { ChevronDown } from "lucide-react";
+import { useSiteImages } from "@/hooks/use-site-images";
 
 const HeroSection = () => {
   const { t } = useLanguage();
+  const siteImages = useSiteImages(["image_hero_bg"]);
+  const bgImage = siteImages["image_hero_bg"] || heroBg;
 
   return (
     <section id="hero" className="min-h-[85vh] md:min-h-screen flex flex-col justify-end md:justify-center section-padding pb-20 md:pb-0 pt-24 md:pt-20 relative overflow-hidden">
-      <div className="absolute inset-0 bg-cover bg-no-repeat bg-center" style={{ backgroundImage: `url(${heroBg})` }} />
+      <div className="absolute inset-0 bg-cover bg-no-repeat bg-center" style={{ backgroundImage: `url(${bgImage})` }} />
       <div className="absolute inset-0 md:hidden bg-gradient-to-b from-transparent via-transparent to-background" style={{ top: '60%' }} />
       <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/30 to-background/80" />
 

@@ -3,7 +3,15 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Save, CheckCircle2, Mail, Phone, Globe, MapPin, Settings as SettingsIcon } from "lucide-react";
+import { Save, CheckCircle2, Mail, Phone, Globe, Settings as SettingsIcon, ImageIcon } from "lucide-react";
+import { SiteImageUploader } from "./SiteImageUploader";
+
+const IMAGE_SETTINGS = [
+  { key: "image_hero_bg", label: "Home Page Hero Background" },
+  { key: "image_workshop_handbuilding", label: "Handbuilding Workshop Card & Hero" },
+  { key: "image_workshop_pottery", label: "Pottery Workshop Card & Hero" },
+  { key: "image_workshop_embroidery", label: "Embroidery Workshop Card & Hero" },
+];
 
 export function SettingsSection() {
   const [contactEmail, setContactEmail] = useState("");
@@ -11,14 +19,16 @@ export function SettingsSection() {
   const [publicEmail, setPublicEmail] = useState("");
   const [publicWhatsApp, setPublicWhatsApp] = useState("");
   const [publicMapUrl, setPublicMapUrl] = useState("");
+  const [imageUrls, setImageUrls] = useState<Record<string, string>>({});
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
 
   useEffect(() => {
-    const fetch = async () => {
+    const fetchAll = async () => {
       const { data } = await supabase.from("site_settings").select("key, value").in("key", [
         "notification_email", "whatsapp_numbers",
         "public_email", "public_whatsapp", "public_map_url",
+        ...IMAGE_SETTINGS.map((s) => s.key),
       ]);
       if (data) {
         const map: Record<string, string> = {};
@@ -28,9 +38,12 @@ export function SettingsSection() {
         setPublicEmail(map["public_email"] || "");
         setPublicWhatsApp(map["public_whatsapp"] || "");
         setPublicMapUrl(map["public_map_url"] || "");
+        const imgs: Record<string, string> = {};
+        IMAGE_SETTINGS.forEach((s) => { if (map[s.key]) imgs[s.key] = map[s.key]; });
+        setImageUrls(imgs);
       }
     };
-    fetch();
+    fetchAll();
   }, []);
 
   const saveAll = async () => {
@@ -86,6 +99,23 @@ export function SettingsSection() {
             <Label className="text-xs text-muted-foreground">Google Maps Embed URL</Label>
             <Input value={publicMapUrl} onChange={(e) => setPublicMapUrl(e.target.value)} placeholder="https://www.google.com/maps/embed?pb=..." className="rounded-xl" />
           </div>
+        </div>
+      </div>
+
+      {/* Site Images */}
+      <div className="p-6 rounded-2xl bg-card border border-primary/20 space-y-5">
+        <h4 className="font-bold text-foreground flex items-center gap-2"><ImageIcon size={16} className="text-primary" /> Page Images</h4>
+        <p className="text-sm text-muted-foreground">Customize hero backgrounds and workshop card images. Leave empty to use defaults.</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          {IMAGE_SETTINGS.map((s) => (
+            <SiteImageUploader
+              key={s.key}
+              settingKey={s.key}
+              label={s.label}
+              currentUrl={imageUrls[s.key] || ""}
+              onUploaded={(url) => setImageUrls((prev) => ({ ...prev, [s.key]: url }))}
+            />
+          ))}
         </div>
       </div>
 
