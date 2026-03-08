@@ -104,6 +104,10 @@ const AdminDashboard = () => {
   const [savingContacts, setSavingContacts] = useState(false);
   const [contactsSaved, setContactsSaved] = useState(false);
 
+  // User management
+  const [managedUsers, setManagedUsers] = useState<ManagedUser[]>([]);
+  const [savingRole, setSavingRole] = useState<string | null>(null);
+
   useEffect(() => {
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
