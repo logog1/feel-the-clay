@@ -30,7 +30,7 @@ export function ProSidebar({ activeSection, onNavigate }: Props) {
   return (
     <Sidebar collapsible="icon">
       <SidebarContent>
-        <SidebarGroup defaultOpen>
+        <SidebarGroup>
           <SidebarGroupLabel>
             {!collapsed && "Dashboard"}
           </SidebarGroupLabel>
