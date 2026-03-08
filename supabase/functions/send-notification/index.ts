@@ -69,16 +69,17 @@ function isRateLimited(ip: string): boolean {
 }
 
 // Load notification contacts from site_settings
-async function getContacts(supabaseAdmin: any): Promise<{ email: string; whatsappNumbers: string[] }> {
-  const defaults = { email: "contact.terraria@gmail.com", whatsappNumbers: ["+212650094668", "+212687323997"] };
+async function getContacts(supabaseAdmin: any): Promise<{ email: string; whatsappNumbers: string[]; zapierWebhookUrl: string }> {
+  const defaults = { email: "contact.terraria@gmail.com", whatsappNumbers: ["+212650094668", "+212687323997"], zapierWebhookUrl: "" };
   try {
-    const { data } = await supabaseAdmin.from("site_settings").select("key, value").in("key", ["notification_email", "whatsapp_numbers"]);
+    const { data } = await supabaseAdmin.from("site_settings").select("key, value").in("key", ["notification_email", "whatsapp_numbers", "zapier_webhook_url"]);
     if (!data || data.length === 0) return defaults;
     const map: Record<string, string> = {};
     data.forEach((r: { key: string; value: string }) => { map[r.key] = r.value; });
     return {
       email: map["notification_email"] || defaults.email,
       whatsappNumbers: (map["whatsapp_numbers"] || "").split(",").map((s: string) => s.trim()).filter(Boolean),
+      zapierWebhookUrl: map["zapier_webhook_url"] || "",
     };
   } catch {
     return defaults;
@@ -315,8 +316,28 @@ Deno.serve(async (req) => {
 
     console.log("WhatsApp summary:", JSON.stringify(whatsappSummary));
 
+    // Send to Zapier webhook if configured
+    let zapierResult: any = null;
+    if (contacts.zapierWebhookUrl) {
+      try {
+        const zapierPayload = type === "booking"
+          ? { type: "booking", ...data }
+          : { type: "purchase", ...data };
+        await fetch(contacts.zapierWebhookUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ...zapierPayload, timestamp: new Date().toISOString() }),
+        });
+        zapierResult = { sent: true };
+        console.log("Zapier webhook sent successfully");
+      } catch (zapierErr) {
+        zapierResult = { error: String(zapierErr) };
+        console.error("Zapier webhook error:", String(zapierErr));
+      }
+    }
+
     return new Response(
-      JSON.stringify({ success: true, email: emailJson, whatsapp: whatsappSummary }),
+      JSON.stringify({ success: true, email: emailJson, whatsapp: whatsappSummary, zapier: zapierResult }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (error) {

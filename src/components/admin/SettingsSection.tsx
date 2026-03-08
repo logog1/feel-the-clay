@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Save, CheckCircle2, Mail, Phone, Globe, Settings as SettingsIcon, ImageIcon } from "lucide-react";
+import { Save, CheckCircle2, Mail, Phone, Globe, Settings as SettingsIcon, ImageIcon, Zap } from "lucide-react";
 import { SiteImageUploader } from "./SiteImageUploader";
 
 const IMAGE_SETTINGS = [
@@ -19,6 +19,7 @@ export function SettingsSection() {
   const [publicEmail, setPublicEmail] = useState("");
   const [publicWhatsApp, setPublicWhatsApp] = useState("");
   const [publicMapUrl, setPublicMapUrl] = useState("");
+  const [zapierWebhookUrl, setZapierWebhookUrl] = useState("");
   const [imageUrls, setImageUrls] = useState<Record<string, string>>({});
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -28,6 +29,7 @@ export function SettingsSection() {
       const { data } = await supabase.from("site_settings").select("key, value").in("key", [
         "notification_email", "whatsapp_numbers",
         "public_email", "public_whatsapp", "public_map_url",
+        "zapier_webhook_url",
         ...IMAGE_SETTINGS.map((s) => s.key),
       ]);
       if (data) {
@@ -38,6 +40,7 @@ export function SettingsSection() {
         setPublicEmail(map["public_email"] || "");
         setPublicWhatsApp(map["public_whatsapp"] || "");
         setPublicMapUrl(map["public_map_url"] || "");
+        setZapierWebhookUrl(map["zapier_webhook_url"] || "");
         const imgs: Record<string, string> = {};
         IMAGE_SETTINGS.forEach((s) => { if (map[s.key]) imgs[s.key] = map[s.key]; });
         setImageUrls(imgs);
@@ -56,6 +59,7 @@ export function SettingsSection() {
       supabase.from("site_settings").upsert({ key: "public_email", value: publicEmail.trim(), updated_at: now }),
       supabase.from("site_settings").upsert({ key: "public_whatsapp", value: publicWhatsApp.trim(), updated_at: now }),
       supabase.from("site_settings").upsert({ key: "public_map_url", value: publicMapUrl.trim(), updated_at: now }),
+      supabase.from("site_settings").upsert({ key: "zapier_webhook_url", value: zapierWebhookUrl.trim(), updated_at: now }),
     ]);
     setSaving(false);
     setSaved(true);
@@ -100,6 +104,13 @@ export function SettingsSection() {
             <Input value={publicMapUrl} onChange={(e) => setPublicMapUrl(e.target.value)} placeholder="https://www.google.com/maps/embed?pb=..." className="rounded-xl" />
           </div>
         </div>
+      </div>
+
+      {/* Zapier Integration */}
+      <div className="p-6 rounded-2xl bg-card border border-primary/20 space-y-5">
+        <h4 className="font-bold text-foreground flex items-center gap-2"><Zap size={16} className="text-primary" /> Zapier Webhook</h4>
+        <p className="text-sm text-muted-foreground">Paste your Zapier webhook URL to receive order & booking notifications via Zapier (email, Slack, etc.).</p>
+        <Input value={zapierWebhookUrl} onChange={(e) => setZapierWebhookUrl(e.target.value)} placeholder="https://hooks.zapier.com/hooks/catch/..." className="rounded-xl" />
       </div>
 
       {/* Site Images */}
