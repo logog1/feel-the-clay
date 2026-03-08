@@ -39,6 +39,7 @@ const sectionTitles: Record<string, string> = {
   access: "Access Management",
   tasks: "Tasks",
   automations: "Automations",
+  media: "Media Manager",
   themes: "Seasonal Themes",
   settings: "Settings",
 };
