@@ -120,14 +120,14 @@ export function ProjectionsSection() {
   const maxParticipantsPerMonth = Math.round(maxSessionsPerMonth * avgGroupSize);
 
   const mult = SCENARIO_MULTIPLIERS[scenario] || 1;
-  const baseMonthlyDemand = 30; // base monthly demand participants
 
   // ─── 36-month projection ───
+  // Demand is driven by capacity × utilization so sliders actually affect projections
   const projectionData = Array.from({ length: 36 }, (_, i) => {
     const monthIndex = i % 12;
     const yearFactor = 1 + Math.floor(i / 12) * 0.15;
     const seasonal = SEASONALITY[monthIndex];
-    const rawDemand = Math.round(baseMonthlyDemand * (current.utilization / 100) * seasonal * mult * yearFactor);
+    const rawDemand = Math.round(maxParticipantsPerMonth * (current.utilization / 100) * seasonal * mult * yearFactor);
     const participants = Math.min(rawDemand, maxParticipantsPerMonth); // capped by capacity
     const unmetDemand = Math.max(0, rawDemand - maxParticipantsPerMonth);
     const sessionsNeeded = Math.ceil(participants / avgGroupSize);
