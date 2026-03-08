@@ -40,7 +40,7 @@ export function OverviewSection() {
     const end = endOfMonth(month);
     const monthOrders = orders.filter((o) => {
       const d = new Date(o.created_at);
-      return d >= start && d <= end;
+      return d >= start && d <= end && (o.status === "delivered" || o.status === "done");
     });
     return {
       month: format(month, "MMM"),
