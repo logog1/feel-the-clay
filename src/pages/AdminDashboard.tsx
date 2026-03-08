@@ -94,6 +94,12 @@ const AdminDashboard = () => {
   const [calMonth, setCalMonth] = useState(new Date());
   const [savingDate, setSavingDate] = useState<string | null>(null);
 
+  // Settings / contacts
+  const [contactEmail, setContactEmail] = useState("");
+  const [contactWhatsApp, setContactWhatsApp] = useState("");
+  const [savingContacts, setSavingContacts] = useState(false);
+  const [contactsSaved, setContactsSaved] = useState(false);
+
   useEffect(() => {
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
