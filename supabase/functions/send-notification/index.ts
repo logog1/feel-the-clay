@@ -316,8 +316,28 @@ Deno.serve(async (req) => {
 
     console.log("WhatsApp summary:", JSON.stringify(whatsappSummary));
 
+    // Send to Zapier webhook if configured
+    let zapierResult: any = null;
+    if (contacts.zapierWebhookUrl) {
+      try {
+        const zapierPayload = type === "booking"
+          ? { type: "booking", ...data }
+          : { type: "purchase", ...data };
+        await fetch(contacts.zapierWebhookUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ...zapierPayload, timestamp: new Date().toISOString() }),
+        });
+        zapierResult = { sent: true };
+        console.log("Zapier webhook sent successfully");
+      } catch (zapierErr) {
+        zapierResult = { error: String(zapierErr) };
+        console.error("Zapier webhook error:", String(zapierErr));
+      }
+    }
+
     return new Response(
-      JSON.stringify({ success: true, email: emailJson, whatsapp: whatsappSummary }),
+      JSON.stringify({ success: true, email: emailJson, whatsapp: whatsappSummary, zapier: zapierResult }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (error) {
