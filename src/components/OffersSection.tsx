@@ -5,6 +5,7 @@ import { useScrollAnimation } from "@/hooks/use-scroll-animation";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useSiteImages } from "@/hooks/use-site-images";
 import workshop2 from "@/assets/workshop-2.jpg";
 import handbuildingHero from "@/assets/handbuilding-hero.jpg";
 import embrHero from "@/assets/embr-hero.jpg";
