@@ -254,7 +254,7 @@ Deno.serve(async (req) => {
       `;
       whatsappMessage =
         `🛒 *New Order*\n\n` +
-        `👤 ${sanitizeText(customerName)}\n📱 ${sanitizeText(customerPhone || "")}\n📍 ${sanitizeText(customerAddress)}\n🚚 ${sanitizeText(region)}\n\n` +
+        `👤 ${sanitizeText(customerName)}\n📧 ${sanitizeText(customerEmail || "")}\n📱 ${sanitizeText(customerPhone || "")}\n📍 ${sanitizeText(customerAddress)}\n🚚 ${sanitizeText(region)}\n\n` +
         `${itemLines}\n\n` +
         `🚚 Delivery: ${deliveryFee} DH\n` +
         `*Total: ${grandTotal} DH*`;
