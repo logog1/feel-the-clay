@@ -29,6 +29,7 @@ export function SettingsSection() {
       const { data } = await supabase.from("site_settings").select("key, value").in("key", [
         "notification_email", "whatsapp_numbers",
         "public_email", "public_whatsapp", "public_map_url",
+        "zapier_webhook_url",
         ...IMAGE_SETTINGS.map((s) => s.key),
       ]);
       if (data) {
