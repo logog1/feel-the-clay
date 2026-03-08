@@ -8,3 +8,9 @@ verify_jwt = false
 
 [functions.public-api]
 verify_jwt = false
+
+[functions.monthly-report]
+verify_jwt = false
+
+[functions.booking-reminder]
+verify_jwt = false

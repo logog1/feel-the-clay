@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
-import { LogOut, CalendarDays, ShoppingCart, RefreshCw, Clock, CheckCircle2, XCircle, Package, Calendar, Plus, Trash2, Tag, ToggleLeft, ToggleRight, ChevronLeft, ChevronRight, Upload, ImagePlus, X, LayoutList, GripVertical, Eye, EyeOff, Save, AlertTriangle } from "lucide-react";
+import { LogOut, CalendarDays, ShoppingCart, RefreshCw, Clock, CheckCircle2, XCircle, Package, Calendar, Plus, Trash2, Tag, ToggleLeft, ToggleRight, ChevronLeft, ChevronRight, Upload, ImagePlus, X, LayoutList, GripVertical, Eye, EyeOff, Save, AlertTriangle, Settings, Mail, Phone } from "lucide-react";
 import SEOHead from "@/components/SEOHead";
 import { cn } from "@/lib/utils";
 import { format, addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterval, getDay } from "date-fns";
@@ -94,6 +94,12 @@ const AdminDashboard = () => {
   const [calMonth, setCalMonth] = useState(new Date());
   const [savingDate, setSavingDate] = useState<string | null>(null);
 
+  // Settings / contacts
+  const [contactEmail, setContactEmail] = useState("");
+  const [contactWhatsApp, setContactWhatsApp] = useState("");
+  const [savingContacts, setSavingContacts] = useState(false);
+  const [contactsSaved, setContactsSaved] = useState(false);
+
   useEffect(() => {
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
@@ -127,6 +133,16 @@ const AdminDashboard = () => {
     const drafts: Record<string, StoreSection> = {};
     secs.forEach((sec) => { drafts[sec.id] = { ...sec }; });
     setSectionDrafts(drafts);
+
+    // Load contacts
+    const { data: settingsData } = await supabase.from("site_settings").select("key, value").in("key", ["notification_email", "whatsapp_numbers"]);
+    if (settingsData) {
+      const map: Record<string, string> = {};
+      settingsData.forEach((r: any) => { map[r.key] = r.value; });
+      setContactEmail(map["notification_email"] || "");
+      setContactWhatsApp(map["whatsapp_numbers"] || "");
+    }
+
     setLoading(false);
   }, []);
 
@@ -348,6 +364,17 @@ const AdminDashboard = () => {
       </div>
     );
   };
+  const saveContacts = async () => {
+    setSavingContacts(true);
+    setContactsSaved(false);
+    await Promise.all([
+      supabase.from("site_settings").upsert({ key: "notification_email", value: contactEmail.trim(), updated_at: new Date().toISOString() }),
+      supabase.from("site_settings").upsert({ key: "whatsapp_numbers", value: contactWhatsApp.trim(), updated_at: new Date().toISOString() }),
+    ]);
+    setSavingContacts(false);
+    setContactsSaved(true);
+    setTimeout(() => setContactsSaved(false), 3000);
+  };
 
   if (!authed) return null;
 
@@ -403,6 +430,7 @@ const AdminDashboard = () => {
             <TabsTrigger value="products" className="rounded-xl gap-2 data-[state=active]:bg-card"><Package size={14} /> Products</TabsTrigger>
             <TabsTrigger value="availability" className="rounded-xl gap-2 data-[state=active]:bg-card"><Calendar size={14} /> Availability</TabsTrigger>
             <TabsTrigger value="sections" className="rounded-xl gap-2 data-[state=active]:bg-card"><LayoutList size={14} /> Store Sections</TabsTrigger>
+            <TabsTrigger value="settings" className="rounded-xl gap-2 data-[state=active]:bg-card"><Settings size={14} /> Settings</TabsTrigger>
           </TabsList>
 
           {/* ── Bookings ── */}
@@ -927,6 +955,41 @@ const AdminDashboard = () => {
                   </div>
                 );
               })}
+            </div>
+          </TabsContent>
+
+          {/* ── Settings ── */}
+          <TabsContent value="settings">
+            <div className="max-w-xl space-y-6">
+              <div className="p-6 rounded-3xl bg-card border-2 border-border/40 space-y-5">
+                <h3 className="font-bold text-foreground flex items-center gap-2"><Mail size={18} className="text-cta" /> Notification Email</h3>
+                <p className="text-sm text-muted-foreground">Orders and bookings will be sent to this email address.</p>
+                <Input
+                  value={contactEmail}
+                  onChange={(e) => setContactEmail(e.target.value)}
+                  placeholder="contact@example.com"
+                  className="rounded-xl"
+                />
+              </div>
+
+              <div className="p-6 rounded-3xl bg-card border-2 border-border/40 space-y-5">
+                <h3 className="font-bold text-foreground flex items-center gap-2"><Phone size={18} className="text-cta" /> WhatsApp Numbers</h3>
+                <p className="text-sm text-muted-foreground">Comma-separated list of WhatsApp numbers to receive notifications (include country code).</p>
+                <Input
+                  value={contactWhatsApp}
+                  onChange={(e) => setContactWhatsApp(e.target.value)}
+                  placeholder="+212600000000,+212700000000"
+                  className="rounded-xl"
+                />
+              </div>
+
+              <Button
+                onClick={saveContacts}
+                disabled={savingContacts}
+                className="gap-2 rounded-xl bg-cta hover:bg-cta-hover text-primary-foreground"
+              >
+                {contactsSaved ? <><CheckCircle2 size={16} /> Saved!</> : <><Save size={16} /> {savingContacts ? "Saving..." : "Save Contacts"}</>}
+              </Button>
             </div>
           </TabsContent>
         </Tabs>

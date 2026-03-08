@@ -17,7 +17,6 @@ function sanitizeText(text: string): string {
   return text.replace(/[*_~`]/g, '');
 }
 
-// Simple validation helpers
 function validateString(val: unknown, maxLen: number): string {
   if (typeof val !== "string") return "";
   return val.trim().slice(0, maxLen);
@@ -33,7 +32,6 @@ function validateEmail(val: unknown): string | null {
 function validatePhone(val: unknown): string | null {
   const s = validateString(val, 30);
   if (!s) return null;
-  // Allow digits, spaces, +, -, (, )
   return /^[\d\s+\-()]+$/.test(s) ? s : null;
 }
 
@@ -54,10 +52,9 @@ interface NotificationPayload {
   data: Record<string, unknown>;
 }
 
-// In-memory rate limiting
 const rateLimits = new Map<string, { count: number; resetAt: number }>();
 const MAX_REQUESTS = 3;
-const WINDOW_MS = 3600000; // 1 hour
+const WINDOW_MS = 3600000;
 
 function isRateLimited(ip: string): boolean {
   const now = Date.now();
@@ -69,6 +66,23 @@ function isRateLimited(ip: string): boolean {
   }
   rateLimits.set(ip, { count: 1, resetAt: now + WINDOW_MS });
   return false;
+}
+
+// Load notification contacts from site_settings
+async function getContacts(supabaseAdmin: any): Promise<{ email: string; whatsappNumbers: string[] }> {
+  const defaults = { email: "contact.terraria@gmail.com", whatsappNumbers: ["+212650094668", "+212687323997"] };
+  try {
+    const { data } = await supabaseAdmin.from("site_settings").select("key, value").in("key", ["notification_email", "whatsapp_numbers"]);
+    if (!data || data.length === 0) return defaults;
+    const map: Record<string, string> = {};
+    data.forEach((r: { key: string; value: string }) => { map[r.key] = r.value; });
+    return {
+      email: map["notification_email"] || defaults.email,
+      whatsappNumbers: (map["whatsapp_numbers"] || "").split(",").map((s: string) => s.trim()).filter(Boolean),
+    };
+  } catch {
+    return defaults;
+  }
 }
 
 Deno.serve(async (req) => {
@@ -115,19 +129,21 @@ Deno.serve(async (req) => {
     const TWILIO_ACCOUNT_SID = Deno.env.get("TWILIO_ACCOUNT_SID");
     const TWILIO_AUTH_TOKEN = Deno.env.get("TWILIO_AUTH_TOKEN");
     const TWILIO_WHATSAPP_NUMBER = Deno.env.get("TWILIO_WHATSAPP_NUMBER");
-    const OWNER_WHATSAPP_NUMBER = Deno.env.get("OWNER_WHATSAPP_NUMBER");
 
     const supabaseAdmin = createClient(
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
+    // Load contacts from DB
+    const contacts = await getContacts(supabaseAdmin);
+    console.log("Contacts loaded:", JSON.stringify(contacts));
+
     let emailSubject: string;
     let emailBody: string;
     let whatsappMessage: string;
 
     if (type === "booking") {
-      // Validate booking fields
       const name = validateString(data.name, 100);
       const city = validateString(data.city, 100);
       const email = validateEmail(data.email);
@@ -146,15 +162,9 @@ Deno.serve(async (req) => {
       }
 
       await supabaseAdmin.from("bookings").insert({
-        name,
-        city: city || null,
-        email: email || null,
-        phone: phone || null,
-        workshop,
-        session_info: sessionInfo || null,
-        participants,
-        booking_date: date || null,
-        notes: notes || null,
+        name, city: city || null, email: email || null, phone: phone || null,
+        workshop, session_info: sessionInfo || null, participants,
+        booking_date: date || null, notes: notes || null,
       });
 
       emailSubject = `🏺 New Booking: ${workshop} — ${name}`;
@@ -179,7 +189,6 @@ Deno.serve(async (req) => {
         `👥 ${participants} participants\n📅 ${sanitizeText(date)}` +
         (notes ? `\n📝 ${sanitizeText(notes)}` : "");
     } else {
-      // Purchase - validate fields
       const customerName = validateString(data.customerName, 100);
       const customerPhone = validatePhone(data.customerPhone);
       const customerAddress = validateString(data.customerAddress, 300);
@@ -192,7 +201,6 @@ Deno.serve(async (req) => {
         );
       }
 
-      // Validate items array
       const rawItems = Array.isArray(data.items) ? data.items : [];
       const items = rawItems.slice(0, 50).map((i: Record<string, unknown>) => ({
         name: validateString(i?.name, 100) || "Unknown",
@@ -211,16 +219,17 @@ Deno.serve(async (req) => {
       const subtotal = items.reduce((sum: number, i: { price: number; quantity: number }) => sum + i.price * i.quantity, 0);
       const grandTotal = subtotal + deliveryFee;
 
-      await supabaseAdmin.from("orders").insert({
+      const { error: insertError } = await supabaseAdmin.from("orders").insert({
         customer_name: customerName,
         customer_phone: customerPhone || null,
         customer_address: customerAddress || null,
         region: region || null,
-        items,
-        subtotal,
-        delivery_fee: deliveryFee,
-        grand_total: grandTotal,
+        items, subtotal, delivery_fee: deliveryFee, grand_total: grandTotal,
       });
+
+      if (insertError) {
+        console.error("Order insert error:", JSON.stringify(insertError));
+      }
 
       const itemLines = items
         .map((i: { name: string; quantity: number; price: number }) => `• ${i.name} × ${i.quantity} — ${i.price * i.quantity} DH`)
@@ -249,22 +258,31 @@ Deno.serve(async (req) => {
     }
 
     // Send email via Resend
-    const emailResult = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${RESEND_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        from: "Terraria <hello@terrariaworkshops.com>",
-        to: ["contact.terraria@gmail.com"],
-        subject: emailSubject,
-        html: emailBody,
-      }),
-    });
-    const emailJson = await emailResult.json();
+    let emailJson: any = {};
+    try {
+      const emailResult = await fetch("https://api.resend.com/emails", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${RESEND_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          from: "Terraria <onboarding@resend.dev>",
+          to: [contacts.email],
+          subject: emailSubject,
+          html: emailBody,
+        }),
+      });
+      emailJson = await emailResult.json();
+      console.log("Email response status:", emailResult.status, "body:", JSON.stringify(emailJson));
+      if (!emailResult.ok) {
+        console.error("Email send FAILED:", JSON.stringify(emailJson));
+      }
+    } catch (emailErr) {
+      console.error("Email fetch error:", String(emailErr));
+    }
 
-    // Send WhatsApp via Twilio to both numbers simultaneously
+    // Send WhatsApp via Twilio
     const twilioUrl = `https://api.twilio.com/2010-04-01/Accounts/${TWILIO_ACCOUNT_SID}/Messages.json`;
     const twilioHeaders = {
       Authorization: "Basic " + btoa(`${TWILIO_ACCOUNT_SID}:${TWILIO_AUTH_TOKEN}`),
@@ -272,16 +290,11 @@ Deno.serve(async (req) => {
     };
     const fromNumber = `whatsapp:${TWILIO_WHATSAPP_NUMBER?.startsWith('+') ? '' : '+'}${TWILIO_WHATSAPP_NUMBER}`;
 
-    const whatsappRecipients = [
-      OWNER_WHATSAPP_NUMBER,
-      "+212687323997",
-    ].filter(Boolean);
-
     const whatsappResults = await Promise.allSettled(
-      whatsappRecipients.map(async (toNumber) => {
+      contacts.whatsappNumbers.map(async (toNumber) => {
         const body = new URLSearchParams({
           From: fromNumber,
-          To: `whatsapp:${toNumber!.startsWith('+') ? '' : '+'}${toNumber}`,
+          To: `whatsapp:${toNumber.startsWith('+') ? '' : '+'}${toNumber}`,
           Body: whatsappMessage,
         });
         const res = await fetch(twilioUrl, {
@@ -296,25 +309,21 @@ Deno.serve(async (req) => {
     );
 
     const whatsappSummary = whatsappResults.map((r, i) => ({
-      to: whatsappRecipients[i],
+      to: contacts.whatsappNumbers[i],
       result: r.status === "fulfilled" ? r.value : { error: String((r as PromiseRejectedResult).reason) },
     }));
 
-    console.log("Email result:", JSON.stringify(emailJson));
     console.log("WhatsApp summary:", JSON.stringify(whatsappSummary));
 
     return new Response(
-      JSON.stringify({ success: true, whatsapp: whatsappSummary }),
+      JSON.stringify({ success: true, email: emailJson, whatsapp: whatsappSummary }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (error) {
     console.error('Notification error:', error);
     return new Response(
       JSON.stringify({ error: 'Failed to send notification. Please try again later.' }),
-      {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
+      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
 });
