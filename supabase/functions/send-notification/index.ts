@@ -191,6 +191,7 @@ Deno.serve(async (req) => {
         (notes ? `\n📝 ${sanitizeText(notes)}` : "");
     } else {
       const customerName = validateString(data.customerName, 100);
+      const customerEmail = validateEmail(data.customerEmail);
       const customerPhone = validatePhone(data.customerPhone);
       const customerAddress = validateString(data.customerAddress, 300);
       const region = validateString(data.region, 100);
