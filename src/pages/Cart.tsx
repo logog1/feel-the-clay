@@ -51,7 +51,7 @@ const Cart = () => {
   const { items, updateQuantity, removeItem, clearCart, totalPrice, totalItems } = useCart();
   const { t } = useLanguage();
   const [region, setRegion] = useState<Region>("north");
-  const [form, setForm] = useState<CheckoutForm>({ name: "", phone: "", address: "" });
+  const [form, setForm] = useState<CheckoutForm>({ name: "", email: "", phone: "", address: "" });
   const [errors, setErrors] = useState<Partial<Record<keyof CheckoutForm, string>>>({});
   const [honeypot, setHoneypot] = useState("");
   const [sending, setSending] = useState(false);
