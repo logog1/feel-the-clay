@@ -133,6 +133,16 @@ const AdminDashboard = () => {
     const drafts: Record<string, StoreSection> = {};
     secs.forEach((sec) => { drafts[sec.id] = { ...sec }; });
     setSectionDrafts(drafts);
+
+    // Load contacts
+    const { data: settingsData } = await supabase.from("site_settings").select("key, value").in("key", ["notification_email", "whatsapp_numbers"]);
+    if (settingsData) {
+      const map: Record<string, string> = {};
+      settingsData.forEach((r: any) => { map[r.key] = r.value; });
+      setContactEmail(map["notification_email"] || "");
+      setContactWhatsApp(map["whatsapp_numbers"] || "");
+    }
+
     setLoading(false);
   }, []);
 
