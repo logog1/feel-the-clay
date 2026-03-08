@@ -62,17 +62,19 @@ const AdminLogin = () => {
     const { data: roles } = await supabase
       .from("user_roles")
       .select("role")
-      .eq("role", "admin")
       .maybeSingle();
 
-    if (!roles) {
+    if (roles?.role === "admin") {
+      navigate("/admin");
+    } else if (roles) {
       await supabase.auth.signOut();
       setError("Access denied — admin only");
       setLoading(false);
-      return;
+    } else {
+      await supabase.auth.signOut();
+      setError("Your account is pending approval. Please wait for an admin to grant you access.");
+      setLoading(false);
     }
-
-    navigate("/admin");
   };
 
   const handleGoogleLogin = async () => {
