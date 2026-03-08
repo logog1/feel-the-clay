@@ -14,9 +14,31 @@ import { InventorySection } from "@/components/admin/InventorySection";
 import { ProjectionsSection } from "@/components/admin/ProjectionsSection";
 import { EmployeesSection } from "@/components/admin/EmployeesSection";
 import { AutomationsSection } from "@/components/admin/AutomationsSection";
+import { WorkflowSection } from "@/components/admin/WorkflowSection";
+import { AccessSection } from "@/components/admin/AccessSection";
+import { TasksSection } from "@/components/admin/TasksSection";
+import { SettingsSection } from "@/components/admin/SettingsSection";
 import SEOHead from "@/components/SEOHead";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
+
+const sectionTitles: Record<string, string> = {
+  overview: "Overview",
+  workshops: "Workshops",
+  workflow: "Workflow",
+  sales: "Sales & Orders",
+  customers: "Customers",
+  marketing: "Marketing",
+  inventory: "Needs / Inventory",
+  finance: "Finance",
+  accounting: "Accounting",
+  projections: "Projections",
+  employees: "Employees",
+  access: "Access Management",
+  tasks: "Tasks",
+  automations: "Automations",
+  settings: "Settings",
+};
 
 const ProDashboard = () => {
   const navigate = useNavigate();
@@ -45,13 +67,14 @@ const ProDashboard = () => {
           <header className="sticky top-0 z-50 h-14 flex items-center gap-3 border-b border-border/40 bg-card/95 backdrop-blur-md px-4">
             <SidebarTrigger />
             <Button variant="ghost" size="sm" className="gap-1.5 text-muted-foreground rounded-xl" onClick={() => navigate("/admin")}>
-              <ArrowLeft size={14} /> Simple View
+              <ArrowLeft size={14} /> Simple
             </Button>
-            <h1 className="text-sm font-bold text-foreground ml-auto">Terraria Pro Dashboard</h1>
+            <span className="text-sm font-bold text-foreground ml-auto">{sectionTitles[activeSection] || "Dashboard"}</span>
           </header>
           <main className="flex-1 p-4 md:p-6 overflow-auto">
             {activeSection === "overview" && <OverviewSection />}
             {activeSection === "workshops" && <WorkshopsSection />}
+            {activeSection === "workflow" && <WorkflowSection />}
             {activeSection === "sales" && <SalesSection />}
             {activeSection === "customers" && <CustomersSection />}
             {activeSection === "marketing" && <MarketingSection />}
@@ -60,7 +83,10 @@ const ProDashboard = () => {
             {activeSection === "accounting" && <AccountingSection />}
             {activeSection === "projections" && <ProjectionsSection />}
             {activeSection === "employees" && <EmployeesSection />}
+            {activeSection === "access" && <AccessSection />}
+            {activeSection === "tasks" && <TasksSection />}
             {activeSection === "automations" && <AutomationsSection />}
+            {activeSection === "settings" && <SettingsSection />}
           </main>
         </div>
       </div>
