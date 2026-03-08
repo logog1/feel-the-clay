@@ -17,6 +17,7 @@ import AnimatedSection from "@/components/AnimatedSection";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
 import ScrollProgress from "@/components/ScrollProgress";
+import { SeasonalThemeOverlay } from "@/components/SeasonalTheme";
 
 const jsonLd = {
   "@context": "https://schema.org",
