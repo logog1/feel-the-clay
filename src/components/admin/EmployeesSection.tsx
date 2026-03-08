@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Trash2, CheckCircle2, UserCircle, Upload } from "lucide-react";
+import { Plus, Trash2, CheckCircle2, UserCircle, Upload, Mail, Phone, MapPin, Briefcase } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 
@@ -13,6 +13,15 @@ interface Employee {
 }
 
 const ROLES = ["instructor", "manager", "support", "sales", "finance", "admin"];
+
+const ROLE_STYLES: Record<string, { bg: string; text: string; border: string; gradient: string }> = {
+  instructor: { bg: "bg-blue-500/10", text: "text-blue-700 dark:text-blue-400", border: "border-blue-500/20", gradient: "from-blue-500/20 to-blue-600/5" },
+  manager: { bg: "bg-purple-500/10", text: "text-purple-700 dark:text-purple-400", border: "border-purple-500/20", gradient: "from-purple-500/20 to-purple-600/5" },
+  support: { bg: "bg-emerald-500/10", text: "text-emerald-700 dark:text-emerald-400", border: "border-emerald-500/20", gradient: "from-emerald-500/20 to-emerald-600/5" },
+  sales: { bg: "bg-amber-500/10", text: "text-amber-700 dark:text-amber-400", border: "border-amber-500/20", gradient: "from-amber-500/20 to-amber-600/5" },
+  finance: { bg: "bg-teal-500/10", text: "text-teal-700 dark:text-teal-400", border: "border-teal-500/20", gradient: "from-teal-500/20 to-teal-600/5" },
+  admin: { bg: "bg-red-500/10", text: "text-red-700 dark:text-red-400", border: "border-red-500/20", gradient: "from-red-500/20 to-red-600/5" },
+};
 
 export function EmployeesSection() {
   const [employees, setEmployees] = useState<Employee[]>([]);
@@ -69,27 +78,23 @@ export function EmployeesSection() {
     fetchEmployees();
   };
 
-  const roleColors: Record<string, string> = {
-    instructor: "bg-blue-100 text-blue-800 border-blue-200",
-    manager: "bg-purple-100 text-purple-800 border-purple-200",
-    support: "bg-emerald-100 text-emerald-800 border-emerald-200",
-    sales: "bg-amber-100 text-amber-800 border-amber-200",
-    finance: "bg-teal-100 text-teal-800 border-teal-200",
-    admin: "bg-red-100 text-red-800 border-red-200",
-  };
+  const getInitials = (name: string) => name.split(" ").map((w) => w[0]).join("").toUpperCase().slice(0, 2);
 
   if (loading) return <div className="flex items-center justify-center h-64 text-muted-foreground">Loading...</div>;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
+      {/* Header stats */}
       <div className="flex justify-between items-center">
         <div className="flex gap-3 text-sm">
-          <span className="px-3 py-1 rounded-xl bg-card border border-border/40">
-            <span className="font-bold text-foreground mr-1">{employees.filter((e) => e.is_active).length}</span>
+          <span className="px-3 py-1.5 rounded-xl bg-card border border-border/40 flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-emerald-500" />
+            <span className="font-bold text-foreground">{employees.filter((e) => e.is_active).length}</span>
             <span className="text-muted-foreground">Active</span>
           </span>
-          <span className="px-3 py-1 rounded-xl bg-card border border-border/40">
-            <span className="font-bold text-foreground mr-1">{employees.filter((e) => !e.is_active).length}</span>
+          <span className="px-3 py-1.5 rounded-xl bg-card border border-border/40 flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-muted-foreground/40" />
+            <span className="font-bold text-foreground">{employees.filter((e) => !e.is_active).length}</span>
             <span className="text-muted-foreground">Inactive</span>
           </span>
         </div>
@@ -99,38 +104,97 @@ export function EmployeesSection() {
       </div>
 
       {/* Employee Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {employees.map((emp) => (
-          <div key={emp.id} className={`p-5 rounded-2xl bg-card border border-border/40 space-y-3 ${!emp.is_active ? "opacity-50" : ""}`}>
-            <div className="flex items-start gap-3">
-              {emp.avatar_url ? (
-                <img src={emp.avatar_url} alt={emp.name} className="w-12 h-12 rounded-xl object-cover" />
-              ) : (
-                <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center">
-                  <UserCircle size={24} className="text-muted-foreground" />
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+        {employees.map((emp) => {
+          const style = ROLE_STYLES[emp.role] || ROLE_STYLES.support;
+          return (
+            <div
+              key={emp.id}
+              className={`group relative rounded-2xl bg-card border border-border/40 overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-0.5 ${!emp.is_active ? "opacity-50 grayscale" : ""}`}
+            >
+              {/* Top gradient accent */}
+              <div className={`h-20 bg-gradient-to-br ${style.gradient} relative`}>
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,rgba(255,255,255,0.15),transparent_60%)]" />
+                {/* Status dot */}
+                <div className="absolute top-3 right-3">
+                  <div className={`w-2.5 h-2.5 rounded-full ${emp.is_active ? "bg-emerald-500 shadow-[0_0_6px_rgba(16,185,129,0.5)]" : "bg-muted-foreground/40"}`} />
                 </div>
-              )}
-              <div className="flex-1 min-w-0">
-                <p className="font-bold text-foreground truncate">{emp.name}</p>
-                <span className={`inline-flex text-xs px-2 py-0.5 rounded-full border font-medium mt-0.5 ${roleColors[emp.role] || roleColors.support}`}>
-                  {emp.role}
-                </span>
+              </div>
+
+              {/* Avatar - overlapping */}
+              <div className="px-5 -mt-8 relative z-10">
+                {emp.avatar_url ? (
+                  <img
+                    src={emp.avatar_url}
+                    alt={emp.name}
+                    className="w-16 h-16 rounded-2xl object-cover border-[3px] border-card shadow-md"
+                  />
+                ) : (
+                  <div className={`w-16 h-16 rounded-2xl ${style.bg} border-[3px] border-card shadow-md flex items-center justify-center`}>
+                    <span className={`text-lg font-bold ${style.text}`}>{getInitials(emp.name)}</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Content */}
+              <div className="px-5 pt-3 pb-5 space-y-3">
+                <div>
+                  <h3 className="font-bold text-foreground text-base">{emp.name}</h3>
+                  <div className="flex items-center gap-1.5 mt-1">
+                    <Briefcase size={11} className={style.text} />
+                    <span className={`text-xs font-semibold capitalize ${style.text}`}>{emp.role}</span>
+                  </div>
+                </div>
+
+                {/* Contact info */}
+                <div className="space-y-1.5">
+                  {emp.email && (
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <Mail size={12} className="shrink-0" />
+                      <span className="truncate">{emp.email}</span>
+                    </div>
+                  )}
+                  {emp.phone && (
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <Phone size={12} className="shrink-0" />
+                      <span>{emp.phone}</span>
+                    </div>
+                  )}
+                </div>
+
+                {emp.notes && (
+                  <p className="text-xs text-muted-foreground/70 italic line-clamp-2">"{emp.notes}"</p>
+                )}
+
+                {/* Actions */}
+                <div className="flex gap-2 pt-1">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className={`rounded-xl text-xs flex-1 ${emp.is_active ? "" : "bg-emerald-500/10 border-emerald-500/30 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-500/20"}`}
+                    onClick={() => toggleActive(emp)}
+                  >
+                    {emp.is_active ? "Deactivate" : "Activate"}
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 rounded-xl text-destructive/60 hover:text-destructive hover:bg-destructive/10"
+                    onClick={() => setDeleteId(emp.id)}
+                  >
+                    <Trash2 size={14} />
+                  </Button>
+                </div>
               </div>
             </div>
-            {emp.email && <p className="text-xs text-muted-foreground">📧 {emp.email}</p>}
-            {emp.phone && <p className="text-xs text-muted-foreground">📞 {emp.phone}</p>}
-            <div className="flex gap-2 pt-1">
-              <Button variant="outline" size="sm" className="rounded-xl text-xs flex-1" onClick={() => toggleActive(emp)}>
-                {emp.is_active ? "Deactivate" : "Activate"}
-              </Button>
-              <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-destructive" onClick={() => setDeleteId(emp.id)}>
-                <Trash2 size={14} />
-              </Button>
-            </div>
-          </div>
-        ))}
+          );
+        })}
         {employees.length === 0 && (
-          <div className="col-span-full text-center text-muted-foreground py-12">No employees yet</div>
+          <div className="col-span-full text-center text-muted-foreground py-16">
+            <UserCircle size={48} className="mx-auto mb-3 opacity-30" />
+            <p className="font-medium">No employees yet</p>
+            <p className="text-sm mt-1">Add your first team member to get started</p>
+          </div>
         )}
       </div>
 

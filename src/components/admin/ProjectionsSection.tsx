@@ -168,13 +168,17 @@ export function ProjectionsSection() {
       </div>
 
       {/* Summary */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-3 gap-4">
         <div className="p-5 rounded-2xl bg-card border border-border/40">
-          <p className="text-sm text-muted-foreground mb-1">Total Projected Revenue (3yr)</p>
+          <p className="text-sm text-muted-foreground mb-1">Avg Monthly Revenue</p>
+          <p className="text-2xl font-bold text-foreground">{Math.round(totalProjectedRevenue / 36).toLocaleString()} DH</p>
+        </div>
+        <div className="p-5 rounded-2xl bg-card border border-border/40">
+          <p className="text-sm text-muted-foreground mb-1">Total Revenue (3yr)</p>
           <p className="text-2xl font-bold text-foreground">{totalProjectedRevenue.toLocaleString()} DH</p>
         </div>
         <div className="p-5 rounded-2xl bg-card border border-border/40">
-          <p className="text-sm text-muted-foreground mb-1">Total Projected Profit (3yr)</p>
+          <p className="text-sm text-muted-foreground mb-1">Total Profit (3yr)</p>
           <p className={`text-2xl font-bold ${totalProjectedProfit >= 0 ? "text-emerald-700" : "text-red-600"}`}>{totalProjectedProfit.toLocaleString()} DH</p>
         </div>
       </div>
