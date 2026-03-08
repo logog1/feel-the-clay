@@ -26,7 +26,7 @@ export function SalesSection() {
     return true;
   });
 
-  const totalRevenue = orders.reduce((s, o) => s + (o.grand_total || 0), 0);
+  const totalRevenue = orders.filter((o) => o.status === "delivered" || o.status === "done").reduce((s, o) => s + (o.grand_total || 0), 0);
   const paidOrders = orders.filter((o) => o.status === "delivered" || o.status === "done").length;
 
   const statusColors: Record<string, string> = {

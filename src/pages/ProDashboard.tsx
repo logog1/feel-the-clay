@@ -18,6 +18,7 @@ import { WorkflowSection } from "@/components/admin/WorkflowSection";
 import { AccessSection } from "@/components/admin/AccessSection";
 import { TasksSection } from "@/components/admin/TasksSection";
 import { SettingsSection } from "@/components/admin/SettingsSection";
+import { ThemeManagerSection } from "@/components/admin/ThemeManagerSection";
 import SEOHead from "@/components/SEOHead";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Moon, Sun } from "lucide-react";
@@ -37,6 +38,7 @@ const sectionTitles: Record<string, string> = {
   access: "Access Management",
   tasks: "Tasks",
   automations: "Automations",
+  themes: "Seasonal Themes",
   settings: "Settings",
 };
 
@@ -122,6 +124,7 @@ const ProDashboard = () => {
             {activeSection === "access" && <AccessSection />}
             {activeSection === "tasks" && <TasksSection />}
             {activeSection === "automations" && <AutomationsSection />}
+            {activeSection === "themes" && <ThemeManagerSection />}
             {activeSection === "settings" && <SettingsSection />}
           </main>
         </div>

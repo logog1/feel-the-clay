@@ -26,7 +26,7 @@ export function FinanceSection() {
 
   // Calculate totals
   const totalIncome = entries.filter((e) => e.type === "income").reduce((s, e) => s + Number(e.amount), 0)
-    + orders.reduce((s, o) => s + (o.grand_total || 0), 0);
+    + orders.filter((o) => o.status === "delivered" || o.status === "done").reduce((s, o) => s + (o.grand_total || 0), 0);
   const totalExpenses = entries.filter((e) => e.type === "expense").reduce((s, e) => s + Number(e.amount), 0);
   const profit = totalIncome - totalExpenses;
   const margin = totalIncome > 0 ? ((profit / totalIncome) * 100).toFixed(1) : "0";
@@ -39,7 +39,7 @@ export function FinanceSection() {
     
     const monthIncome = entries.filter((e) => e.type === "income" && new Date(e.date) >= start && new Date(e.date) <= end)
       .reduce((s, e) => s + Number(e.amount), 0)
-      + orders.filter((o) => new Date(o.created_at) >= start && new Date(o.created_at) <= end)
+      + orders.filter((o) => new Date(o.created_at) >= start && new Date(o.created_at) <= end && (o.status === "delivered" || o.status === "done"))
         .reduce((s, o) => s + (o.grand_total || 0), 0);
     
     const monthExpenses = entries.filter((e) => e.type === "expense" && new Date(e.date) >= start && new Date(e.date) <= end)
