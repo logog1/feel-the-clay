@@ -64,18 +64,18 @@ const OffersSection = () => {
   const offers = [
     {
       title: t("offers.handbuilding"),
-      image: fallbackImages.handbuilding,
+      image: siteImages["image_workshop_handbuilding"] || fallbackImages.handbuilding,
       link: "/workshop/handbuilding",
       popular: true,
     },
     {
       title: t("offers.pottery"),
-      image: fallbackImages.pottery,
+      image: siteImages["image_workshop_pottery"] || fallbackImages.pottery,
       link: "/workshop/pottery-experience",
     },
     {
       title: t("offers.embroidery"),
-      image: fallbackImages.embroidery,
+      image: siteImages["image_workshop_embroidery"] || fallbackImages.embroidery,
       link: "/workshop/embroidery",
       unavailable: true,
     },
