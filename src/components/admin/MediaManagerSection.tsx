@@ -1,14 +1,112 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   Image as ImageIcon, Upload, X, GripVertical, Plus, Save, CheckCircle2,
-  Home, Layers, BookOpen, Palette,
+  Home, Layers, Palette,
 } from "lucide-react";
 import { toast } from "sonner";
 
+// ─── Default image imports ───
+import heroBg from "@/assets/hero-bg.jpg";
+import handbuildingHero from "@/assets/handbuilding-hero.jpg";
+import potteryGirls from "@/assets/pottery-girls.jpg";
+import embrHero from "@/assets/embr-hero.jpg";
+
+// Moments gallery defaults
+import workshop1 from "@/assets/workshop-1.jpg";
+import workshop3 from "@/assets/workshop-3.jpg";
+import workshop4 from "@/assets/workshop-4.jpg";
+import workshop5 from "@/assets/workshop-5.jpg";
+import workshop6 from "@/assets/workshop-6.jpg";
+import workshop8 from "@/assets/workshop-8.jpg";
+import workshop9 from "@/assets/workshop-9.jpg";
+import workshop10 from "@/assets/workshop-10.jpg";
+import workshop11 from "@/assets/workshop-11.jpg";
+import workshop12 from "@/assets/workshop-12.jpg";
+import workshop13 from "@/assets/workshop-13.jpg";
+import workshop14 from "@/assets/workshop-14.jpg";
+import workshop15 from "@/assets/workshop-15.jpg";
+import workshop16 from "@/assets/workshop-16.jpg";
+import workshop18 from "@/assets/workshop-18.jpg";
+import workshop19 from "@/assets/workshop-19.jpg";
+import workshop20 from "@/assets/workshop-20.jpg";
+import workshop21 from "@/assets/workshop-21.jpg";
+
+// Workshop gallery defaults
+import potteryEntrance from "@/assets/pottery-entrance.jpg";
+import potteryMasters from "@/assets/pottery-masters.jpg";
+import potteryClaySource from "@/assets/pottery-clay-source.jpg";
+import embrGallery1 from "@/assets/embr-gallery-1.jpg";
+import embrGallery2 from "@/assets/embr-gallery-2.jpg";
+import embrGallery3 from "@/assets/embr-gallery-3.jpg";
+import embrGallery4 from "@/assets/embr-gallery-4.jpg";
+import embrGallery5 from "@/assets/embr-gallery-5.jpg";
+
 type GalleryImage = { url: string; alt: string; size?: string };
+
+// ─── Default values ───
+const DEFAULT_SINGLES: Record<string, string> = {
+  image_hero_bg: heroBg,
+  image_workshop_handbuilding: handbuildingHero,
+  image_workshop_pottery: potteryGirls,
+  image_workshop_embroidery: embrHero,
+};
+
+const DEFAULT_GALLERIES: Record<string, GalleryImage[]> = {
+  gallery_moments: [
+    { url: workshop1, alt: "Workshop participant shaping clay" },
+    { url: workshop4, alt: "Creating pottery together" },
+    { url: workshop9, alt: "Hands shaping clay pieces" },
+    { url: workshop13, alt: "Clay sculpture on pottery wheel" },
+    { url: workshop14, alt: "Group workshop in the studio" },
+    { url: workshop3, alt: "Group pottery session" },
+    { url: workshop18, alt: "Artist presenting handmade mug" },
+    { url: workshop5, alt: "Handbuilding clay pieces" },
+    { url: workshop10, alt: "Artist rolling clay" },
+    { url: workshop19, alt: "Community workshop gathering" },
+    { url: workshop12, alt: "Friends enjoying the workshop" },
+    { url: workshop15, alt: "Friends showing off their creations" },
+    { url: workshop6, alt: "Coil building technique" },
+    { url: workshop20, alt: "Friends with their clay creations" },
+    { url: workshop8, alt: "Happy workshop participants" },
+    { url: workshop11, alt: "Pottery tools on canvas" },
+    { url: workshop21, alt: "Handmade clay pieces closeup" },
+    { url: workshop16, alt: "Group photo at the workshop" },
+  ],
+  gallery_about: [
+    { url: "/images/impact-7.jpg", alt: "Group workshop session" },
+    { url: "/images/impact-10.jpg", alt: "Friends at the workshop" },
+    { url: "/images/impact-1.jpg", alt: "Potter at work" },
+    { url: "/images/impact-2.jpg", alt: "Workshop moment" },
+    { url: "/images/impact-3.jpg", alt: "Community gathering" },
+    { url: "/images/impact-4.jpg", alt: "Pottery creation" },
+    { url: "/images/impact-8.jpg", alt: "Team selfie" },
+    { url: "/images/impact-9.jpg", alt: "Woman at pottery wheel" },
+    { url: "/images/impact-6.jpg", alt: "Finished pieces" },
+    { url: "/images/impact-11.jpg", alt: "Pottery lamp with workshop" },
+  ],
+  gallery_workshop_handbuilding: [
+    { url: workshop5, alt: "Handbuilding clay pieces" },
+    { url: workshop6, alt: "Coil building technique" },
+    { url: workshop8, alt: "Happy participants" },
+    { url: workshop10, alt: "Artist rolling clay" },
+  ],
+  gallery_workshop_pottery: [
+    { url: potteryEntrance, alt: "Pottery workshop entrance" },
+    { url: potteryGirls, alt: "Group pottery session" },
+    { url: potteryMasters, alt: "Pottery masters at work" },
+    { url: potteryClaySource, alt: "Clay source" },
+  ],
+  gallery_workshop_embroidery: [
+    { url: embrGallery1, alt: "Embroidery session 1" },
+    { url: embrGallery2, alt: "Embroidery session 2" },
+    { url: embrGallery3, alt: "Embroidery session 3" },
+    { url: embrGallery4, alt: "Embroidery session 4" },
+    { url: embrGallery5, alt: "Embroidery session 5" },
+  ],
+};
 
 const HERO_SETTINGS = [
   { key: "image_hero_bg", label: "Home Page Hero Background" },
@@ -35,11 +133,13 @@ const ALL_KEYS = [
 ];
 
 // ─── Single Image Uploader ───
-function SingleImageUploader({ settingKey, label, currentUrl, onUploaded }: {
-  settingKey: string; label: string; currentUrl: string; onUploaded: (url: string) => void;
+function SingleImageUploader({ settingKey, label, currentUrl, defaultUrl, onUploaded }: {
+  settingKey: string; label: string; currentUrl: string; defaultUrl?: string; onUploaded: (url: string) => void;
 }) {
   const [uploading, setUploading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const displayUrl = currentUrl || defaultUrl || "";
+  const isDefault = !currentUrl && !!defaultUrl;
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -57,17 +157,22 @@ function SingleImageUploader({ settingKey, label, currentUrl, onUploaded }: {
 
   return (
     <div className="space-y-2">
-      <label className="text-xs text-muted-foreground font-medium">{label}</label>
-      {currentUrl ? (
+      <div className="flex items-center justify-between">
+        <label className="text-xs text-muted-foreground font-medium">{label}</label>
+        {isDefault && <span className="text-[10px] px-2 py-0.5 rounded-full bg-muted text-muted-foreground">Default</span>}
+      </div>
+      {displayUrl ? (
         <div className="relative w-full aspect-video rounded-xl overflow-hidden border border-border/40 group">
-          <img src={currentUrl} alt={label} className="w-full h-full object-cover" />
+          <img src={displayUrl} alt={label} className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
             <Button size="sm" variant="secondary" onClick={() => inputRef.current?.click()} className="rounded-lg text-xs">
               <Upload size={14} className="mr-1" /> Replace
             </Button>
-            <Button size="sm" variant="destructive" onClick={() => onUploaded("")} className="rounded-lg text-xs">
-              <X size={14} className="mr-1" /> Remove
-            </Button>
+            {currentUrl && (
+              <Button size="sm" variant="destructive" onClick={() => onUploaded("")} className="rounded-lg text-xs">
+                <X size={14} className="mr-1" /> {defaultUrl ? "Reset" : "Remove"}
+              </Button>
+            )}
           </div>
         </div>
       ) : (
@@ -141,7 +246,7 @@ function GalleryManager({ settingKey, label, images, onChange }: {
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
         {images.map((img, idx) => (
           <div
-            key={idx}
+            key={`${idx}-${img.url.slice(-20)}`}
             draggable
             onDragStart={() => handleDragStart(idx)}
             onDragOver={(e) => handleDragOver(e, idx)}
@@ -187,6 +292,7 @@ function GalleryManager({ settingKey, label, images, onChange }: {
 export function MediaManagerSection() {
   const [singleImages, setSingleImages] = useState<Record<string, string>>({});
   const [galleries, setGalleries] = useState<Record<string, GalleryImage[]>>({});
+  const [loaded, setLoaded] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
 
@@ -196,18 +302,34 @@ export function MediaManagerSection() {
       .select("key, value")
       .in("key", ALL_KEYS)
       .then(({ data }) => {
-        if (!data) return;
         const singles: Record<string, string> = {};
         const gals: Record<string, GalleryImage[]> = {};
-        data.forEach((r: any) => {
-          if (r.key.startsWith("gallery_")) {
-            try { gals[r.key] = JSON.parse(r.value) || []; } catch { gals[r.key] = []; }
-          } else {
-            singles[r.key] = r.value || "";
+
+        if (data) {
+          data.forEach((r: any) => {
+            if (r.key.startsWith("gallery_")) {
+              try {
+                const parsed = JSON.parse(r.value);
+                if (Array.isArray(parsed) && parsed.length > 0) {
+                  gals[r.key] = parsed;
+                }
+              } catch { /* use default */ }
+            } else {
+              if (r.value) singles[r.key] = r.value;
+            }
+          });
+        }
+
+        // For galleries without saved data, populate with defaults
+        for (const key of Object.keys(DEFAULT_GALLERIES)) {
+          if (!gals[key] || gals[key].length === 0) {
+            gals[key] = [...DEFAULT_GALLERIES[key]];
           }
-        });
+        }
+
         setSingleImages(singles);
         setGalleries(gals);
+        setLoaded(true);
       });
   }, []);
 
@@ -229,6 +351,8 @@ export function MediaManagerSection() {
     setTimeout(() => setSaved(false), 3000);
   };
 
+  if (!loaded) return <div className="flex items-center justify-center h-64 text-muted-foreground">Loading media…</div>;
+
   return (
     <div className="max-w-4xl space-y-8">
       {/* Header */}
@@ -237,7 +361,7 @@ export function MediaManagerSection() {
           <ImageIcon size={18} className="text-primary" /> Media Manager
         </h3>
         <p className="text-sm text-muted-foreground">
-          Manage all site images, hero backgrounds, workshop cards, and galleries in one place. Drag to reorder gallery images.
+          Manage all site images, hero backgrounds, workshop cards, and galleries in one place. Drag to reorder. Upload to replace defaults.
         </p>
       </div>
 
@@ -253,6 +377,7 @@ export function MediaManagerSection() {
               settingKey={s.key}
               label={s.label}
               currentUrl={singleImages[s.key] || ""}
+              defaultUrl={DEFAULT_SINGLES[s.key]}
               onUploaded={(url) => setSingleImages((prev) => ({ ...prev, [s.key]: url }))}
             />
           ))}
@@ -272,6 +397,7 @@ export function MediaManagerSection() {
               settingKey={s.key}
               label={s.label}
               currentUrl={singleImages[s.key] || ""}
+              defaultUrl={DEFAULT_SINGLES[s.key]}
               onUploaded={(url) => setSingleImages((prev) => ({ ...prev, [s.key]: url }))}
             />
           ))}
@@ -284,7 +410,7 @@ export function MediaManagerSection() {
           <Layers size={16} className="text-primary" /> Galleries
         </h4>
         <p className="text-sm text-muted-foreground">
-          Upload, remove, and drag-to-reorder images for each gallery. Leave empty to use defaults.
+          All current images are shown below. Drag to reorder, click × to remove, or add new ones. Changes apply after saving.
         </p>
         {GALLERY_SETTINGS.map((s) => (
           <div key={s.key} className="pt-4 border-t border-border/30 first:border-0 first:pt-0">
