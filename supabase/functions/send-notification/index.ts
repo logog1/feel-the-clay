@@ -69,16 +69,17 @@ function isRateLimited(ip: string): boolean {
 }
 
 // Load notification contacts from site_settings
-async function getContacts(supabaseAdmin: any): Promise<{ email: string; whatsappNumbers: string[] }> {
-  const defaults = { email: "contact.terraria@gmail.com", whatsappNumbers: ["+212650094668", "+212687323997"] };
+async function getContacts(supabaseAdmin: any): Promise<{ email: string; whatsappNumbers: string[]; zapierWebhookUrl: string }> {
+  const defaults = { email: "contact.terraria@gmail.com", whatsappNumbers: ["+212650094668", "+212687323997"], zapierWebhookUrl: "" };
   try {
-    const { data } = await supabaseAdmin.from("site_settings").select("key, value").in("key", ["notification_email", "whatsapp_numbers"]);
+    const { data } = await supabaseAdmin.from("site_settings").select("key, value").in("key", ["notification_email", "whatsapp_numbers", "zapier_webhook_url"]);
     if (!data || data.length === 0) return defaults;
     const map: Record<string, string> = {};
     data.forEach((r: { key: string; value: string }) => { map[r.key] = r.value; });
     return {
       email: map["notification_email"] || defaults.email,
       whatsappNumbers: (map["whatsapp_numbers"] || "").split(",").map((s: string) => s.trim()).filter(Boolean),
+      zapierWebhookUrl: map["zapier_webhook_url"] || "",
     };
   } catch {
     return defaults;
