@@ -364,6 +364,17 @@ const AdminDashboard = () => {
       </div>
     );
   };
+  const saveContacts = async () => {
+    setSavingContacts(true);
+    setContactsSaved(false);
+    await Promise.all([
+      supabase.from("site_settings").upsert({ key: "notification_email", value: contactEmail.trim(), updated_at: new Date().toISOString() }),
+      supabase.from("site_settings").upsert({ key: "whatsapp_numbers", value: contactWhatsApp.trim(), updated_at: new Date().toISOString() }),
+    ]);
+    setSavingContacts(false);
+    setContactsSaved(true);
+    setTimeout(() => setContactsSaved(false), 3000);
+  };
 
   if (!authed) return null;
 
