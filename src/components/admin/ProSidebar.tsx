@@ -18,7 +18,13 @@ import {
 } from "@/components/ui/sidebar";
 import { supabase } from "@/integrations/supabase/client";
 
-const mainItems = [
+export interface SidebarItem {
+  id: string;
+  title: string;
+  icon: React.ElementType;
+}
+
+export const allSidebarItems: SidebarItem[] = [
   { id: "overview", title: "Overview", icon: LayoutGrid },
   { id: "workshops", title: "Workshops", icon: CalendarDays },
   { id: "workflow", title: "Workflow", icon: ClipboardList },
@@ -36,15 +42,25 @@ const mainItems = [
   { id: "settings", title: "Settings", icon: Settings },
 ];
 
+// Profile type → allowed section IDs. Admins always see all.
+export const profileSections: Record<string, string[]> = {
+  general: ["overview", "workshops", "workflow", "tasks"],
+  instructor: ["overview", "workshops", "workflow", "customers", "inventory", "tasks"],
+  manager: ["overview", "workshops", "workflow", "sales", "customers", "marketing", "inventory", "employees", "tasks"],
+  finance: ["overview", "sales", "finance", "accounting", "projections", "tasks"],
+};
+
 interface Props {
   activeSection: string;
   onNavigate: (id: string) => void;
+  visibleItems?: SidebarItem[];
 }
 
-export function ProSidebar({ activeSection, onNavigate }: Props) {
+export function ProSidebar({ activeSection, onNavigate, visibleItems }: Props) {
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
   const navigate = useNavigate();
+  const items = visibleItems || allSidebarItems;
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -56,7 +72,6 @@ export function ProSidebar({ activeSection, onNavigate }: Props) {
       collapsible="icon"
       className="border-r-0"
       style={{
-        // Dark sidebar overrides
         "--sidebar-background": "20 20% 14%",
         "--sidebar-foreground": "30 20% 85%",
         "--sidebar-accent": "24 90% 50%",
@@ -66,7 +81,6 @@ export function ProSidebar({ activeSection, onNavigate }: Props) {
         "--sidebar-primary-foreground": "0 0% 100%",
       } as React.CSSProperties}
     >
-      {/* Header / Branding */}
       <SidebarHeader className="p-4">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-xl bg-[hsl(24,90%,50%)] flex items-center justify-center text-white font-bold text-sm shrink-0">
@@ -81,12 +95,11 @@ export function ProSidebar({ activeSection, onNavigate }: Props) {
         </div>
       </SidebarHeader>
 
-      {/* Main Navigation */}
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              {mainItems.map((item) => {
+              {items.map((item) => {
                 const isActive = activeSection === item.id;
                 return (
                   <SidebarMenuItem key={item.id}>
@@ -112,7 +125,6 @@ export function ProSidebar({ activeSection, onNavigate }: Props) {
         </SidebarGroup>
       </SidebarContent>
 
-      {/* Footer / Logout */}
       <SidebarFooter className="p-2">
         <SidebarMenu>
           <SidebarMenuItem>
