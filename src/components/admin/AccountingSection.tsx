@@ -1,10 +1,11 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Download, RefreshCw, Trash2, Pencil, CheckCircle2, X } from "lucide-react";
+import { Plus, Download, RefreshCw, Trash2, Pencil, CheckCircle2, X, Paperclip, FileText, ExternalLink, Loader2 } from "lucide-react";
 import { format } from "date-fns";
+import { toast } from "sonner";
 
 interface Entry {
   id: string;
@@ -38,6 +39,8 @@ const CATEGORY_COLORS: Record<string, { bg: string; text: string; border: string
 };
 
 const EXPENSE_TYPES = ["fixed", "variable", "one-time"];
+const ACCEPTED_FILE_TYPES = "image/*,.pdf,.doc,.docx,.xls,.xlsx";
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
 export function AccountingSection() {
   const [entries, setEntries] = useState<Entry[]>([]);
@@ -45,6 +48,11 @@ export function AccountingSection() {
   const [showAdd, setShowAdd] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editDraft, setEditDraft] = useState<Partial<Entry>>({});
+  const [uploading, setUploading] = useState(false);
+  const [newAttachmentFile, setNewAttachmentFile] = useState<File | null>(null);
+  const [editAttachmentFile, setEditAttachmentFile] = useState<File | null>(null);
+  const addFileRef = useRef<HTMLInputElement>(null);
+  const editFileRef = useRef<HTMLInputElement>(null);
   const [newEntry, setNewEntry] = useState({
     date: format(new Date(), "yyyy-MM-dd"),
     description: "",
@@ -64,8 +72,38 @@ export function AccountingSection() {
 
   useEffect(() => { fetchEntries(); }, [fetchEntries]);
 
+  const uploadFile = async (file: File): Promise<string | null> => {
+    if (file.size > MAX_FILE_SIZE) {
+      toast.error("File too large. Maximum size is 10MB.");
+      return null;
+    }
+    const ext = file.name.split(".").pop();
+    const path = `receipts/${Date.now()}-${Math.random().toString(36).substring(2)}.${ext}`;
+    const { error } = await supabase.storage.from("accounting-receipts").upload(path, file);
+    if (error) {
+      toast.error("Upload failed: " + error.message);
+      return null;
+    }
+    const { data: urlData } = supabase.storage.from("accounting-receipts").getPublicUrl(path);
+    return urlData.publicUrl;
+  };
+
+  const deleteAttachment = async (url: string) => {
+    try {
+      const path = url.split("/accounting-receipts/")[1];
+      if (path) await supabase.storage.from("accounting-receipts").remove([path]);
+    } catch {
+      // non-critical
+    }
+  };
+
   const addEntry = async () => {
     if (!newEntry.description || newEntry.amount <= 0) return;
+    setUploading(true);
+    let attachmentUrl: string | null = null;
+    if (newAttachmentFile) {
+      attachmentUrl = await uploadFile(newAttachmentFile);
+    }
     await supabase.from("accounting_entries").insert({
       date: newEntry.date,
       description: newEntry.description,
@@ -73,14 +111,27 @@ export function AccountingSection() {
       type: newEntry.type,
       expense_type: newEntry.type === "expense" ? newEntry.expense_type || null : null,
       amount: newEntry.amount,
+      attachment_url: attachmentUrl,
     });
     setNewEntry({ date: format(new Date(), "yyyy-MM-dd"), description: "", category: "other", type: "expense", expense_type: "", amount: 0 });
+    setNewAttachmentFile(null);
     setShowAdd(false);
+    setUploading(false);
+    toast.success("Entry added");
     fetchEntries();
   };
 
   const saveEdit = async () => {
     if (!editingId) return;
+    setUploading(true);
+    let attachmentUrl = editDraft.attachment_url || null;
+
+    if (editAttachmentFile) {
+      // Delete old attachment if replacing
+      if (attachmentUrl) await deleteAttachment(attachmentUrl);
+      attachmentUrl = await uploadFile(editAttachmentFile);
+    }
+
     await supabase.from("accounting_entries").update({
       description: editDraft.description,
       category: editDraft.category,
@@ -88,12 +139,26 @@ export function AccountingSection() {
       expense_type: editDraft.type === "expense" ? editDraft.expense_type || null : null,
       amount: editDraft.amount,
       date: editDraft.date,
+      attachment_url: attachmentUrl,
     }).eq("id", editingId);
     setEditingId(null);
+    setEditAttachmentFile(null);
+    setUploading(false);
+    toast.success("Entry updated");
+    fetchEntries();
+  };
+
+  const removeAttachment = async (entry: Entry) => {
+    if (!entry.attachment_url) return;
+    await deleteAttachment(entry.attachment_url);
+    await supabase.from("accounting_entries").update({ attachment_url: null }).eq("id", entry.id);
+    toast.success("Attachment removed");
     fetchEntries();
   };
 
   const deleteEntry = async (id: string) => {
+    const entry = entries.find(e => e.id === id);
+    if (entry?.attachment_url) await deleteAttachment(entry.attachment_url);
     await supabase.from("accounting_entries").delete().eq("id", id);
     fetchEntries();
   };
@@ -157,6 +222,20 @@ export function AccountingSection() {
       </span>
     );
   };
+
+  const AttachmentBadge = ({ url, onRemove }: { url: string; onRemove?: () => void }) => (
+    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-muted/60 border border-border/40 text-xs text-muted-foreground">
+      <FileText size={12} className="text-primary" />
+      <a href={url} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors flex items-center gap-0.5">
+        Receipt <ExternalLink size={10} />
+      </a>
+      {onRemove && (
+        <button onClick={onRemove} className="ml-1 hover:text-destructive transition-colors" title="Remove attachment">
+          <X size={11} />
+        </button>
+      )}
+    </span>
+  );
 
   if (loading) return <div className="flex items-center justify-center h-64 text-muted-foreground">Loading...</div>;
 
@@ -273,11 +352,37 @@ export function AccountingSection() {
               </Select>
             )}
           </div>
-          <div className="flex gap-2">
-            <Button size="sm" className="rounded-xl gap-1.5 bg-primary hover:bg-primary/90 text-primary-foreground" onClick={addEntry}>
-              <CheckCircle2 size={14} /> Save
+          {/* Attachment upload */}
+          <div className="flex items-center gap-3">
+            <input
+              ref={addFileRef}
+              type="file"
+              accept={ACCEPTED_FILE_TYPES}
+              className="hidden"
+              onChange={(e) => setNewAttachmentFile(e.target.files?.[0] || null)}
+            />
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="rounded-xl gap-1.5"
+              onClick={() => addFileRef.current?.click()}
+            >
+              <Paperclip size={14} /> {newAttachmentFile ? "Change file" : "Attach receipt"}
             </Button>
-            <Button variant="outline" size="sm" className="rounded-xl" onClick={() => setShowAdd(false)}>Cancel</Button>
+            {newAttachmentFile && (
+              <span className="text-xs text-muted-foreground flex items-center gap-1.5">
+                <FileText size={12} className="text-primary" />
+                {newAttachmentFile.name}
+                <button onClick={() => setNewAttachmentFile(null)} className="hover:text-destructive"><X size={12} /></button>
+              </span>
+            )}
+          </div>
+          <div className="flex gap-2">
+            <Button size="sm" className="rounded-xl gap-1.5 bg-primary hover:bg-primary/90 text-primary-foreground" onClick={addEntry} disabled={uploading}>
+              {uploading ? <Loader2 size={14} className="animate-spin" /> : <CheckCircle2 size={14} />} Save
+            </Button>
+            <Button variant="outline" size="sm" className="rounded-xl" onClick={() => { setShowAdd(false); setNewAttachmentFile(null); }}>Cancel</Button>
           </div>
         </div>
       )}
@@ -294,7 +399,7 @@ export function AccountingSection() {
                 <th className="text-right px-4 py-3 font-medium text-emerald-600">Income</th>
                 <th className="text-right px-4 py-3 font-medium text-red-500">Expenses</th>
                 <th className="text-right px-4 py-3 font-medium text-muted-foreground">Balance</th>
-                <th className="text-right px-4 py-3 font-medium text-muted-foreground w-20">Actions</th>
+                <th className="text-right px-4 py-3 font-medium text-muted-foreground w-24">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -311,7 +416,33 @@ export function AccountingSection() {
                           <SelectContent>{CATEGORIES.map((c) => <SelectItem key={c} value={c}><CategoryPill category={c} /></SelectItem>)}</SelectContent>
                         </Select>
                       </td>
-                      <td className="px-4 py-2"><Input value={editDraft.description || ""} onChange={(ev) => setEditDraft((d) => ({ ...d, description: ev.target.value }))} className="rounded-lg h-8 text-xs" /></td>
+                      <td className="px-4 py-2">
+                        <Input value={editDraft.description || ""} onChange={(ev) => setEditDraft((d) => ({ ...d, description: ev.target.value }))} className="rounded-lg h-8 text-xs" />
+                        <div className="mt-1 flex items-center gap-2">
+                          <input
+                            ref={editFileRef}
+                            type="file"
+                            accept={ACCEPTED_FILE_TYPES}
+                            className="hidden"
+                            onChange={(ev) => setEditAttachmentFile(ev.target.files?.[0] || null)}
+                          />
+                          <button
+                            type="button"
+                            className="text-xs text-muted-foreground hover:text-primary flex items-center gap-1 transition-colors"
+                            onClick={() => editFileRef.current?.click()}
+                          >
+                            <Paperclip size={11} /> {editAttachmentFile ? editAttachmentFile.name : editDraft.attachment_url ? "Replace receipt" : "Attach receipt"}
+                          </button>
+                          {editDraft.attachment_url && !editAttachmentFile && (
+                            <button
+                              className="text-xs text-destructive hover:text-destructive/80 flex items-center gap-0.5"
+                              onClick={() => setEditDraft(d => ({ ...d, attachment_url: null }))}
+                            >
+                              <X size={10} /> Remove
+                            </button>
+                          )}
+                        </div>
+                      </td>
                       <td className="px-4 py-2" colSpan={2}>
                         <div className="flex items-center gap-2">
                           <Select value={editDraft.type || ""} onValueChange={(v: "income" | "expense") => setEditDraft((d) => ({ ...d, type: v }))}>
@@ -324,8 +455,10 @@ export function AccountingSection() {
                       <td className="px-4 py-2" />
                       <td className="px-4 py-2 text-right">
                         <div className="flex items-center justify-end gap-1">
-                          <Button variant="ghost" size="icon" className="h-7 w-7 rounded-lg text-emerald-600" onClick={saveEdit}><CheckCircle2 size={13} /></Button>
-                          <Button variant="ghost" size="icon" className="h-7 w-7 rounded-lg" onClick={() => setEditingId(null)}><X size={13} /></Button>
+                          <Button variant="ghost" size="icon" className="h-7 w-7 rounded-lg text-emerald-600" onClick={saveEdit} disabled={uploading}>
+                            {uploading ? <Loader2 size={13} className="animate-spin" /> : <CheckCircle2 size={13} />}
+                          </Button>
+                          <Button variant="ghost" size="icon" className="h-7 w-7 rounded-lg" onClick={() => { setEditingId(null); setEditAttachmentFile(null); }}><X size={13} /></Button>
                         </div>
                       </td>
                     </tr>
@@ -336,7 +469,14 @@ export function AccountingSection() {
                   <tr key={e.id} className="border-b border-border/20 hover:bg-muted/20 transition-colors">
                     <td className="px-4 py-3 text-muted-foreground whitespace-nowrap">{e.date}</td>
                     <td className="px-4 py-3"><CategoryPill category={e.category} /></td>
-                    <td className="px-4 py-3 font-medium text-foreground">{e.description}</td>
+                    <td className="px-4 py-3">
+                      <span className="font-medium text-foreground">{e.description}</span>
+                      {e.attachment_url && (
+                        <span className="ml-2">
+                          <AttachmentBadge url={e.attachment_url} onRemove={() => removeAttachment(e)} />
+                        </span>
+                      )}
+                    </td>
                     <td className="px-4 py-3 text-right font-medium text-emerald-700">
                       {e.type === "income" ? `${Number(e.amount).toLocaleString()} DH` : ""}
                     </td>
@@ -348,7 +488,7 @@ export function AccountingSection() {
                     </td>
                     <td className="px-4 py-3 text-right">
                       <div className="flex items-center justify-end gap-1">
-                        <Button variant="ghost" size="icon" className="h-7 w-7 rounded-lg" onClick={() => { setEditingId(e.id); setEditDraft({ ...e }); }}>
+                        <Button variant="ghost" size="icon" className="h-7 w-7 rounded-lg" onClick={() => { setEditingId(e.id); setEditDraft({ ...e }); setEditAttachmentFile(null); }}>
                           <Pencil size={13} />
                         </Button>
                         <Button variant="ghost" size="icon" className="h-7 w-7 rounded-lg text-destructive" onClick={() => deleteEntry(e.id)}>
