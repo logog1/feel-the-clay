@@ -102,6 +102,23 @@ export function SettingsSection() {
         </div>
       </div>
 
+      {/* Site Images */}
+      <div className="p-6 rounded-2xl bg-card border border-primary/20 space-y-5">
+        <h4 className="font-bold text-foreground flex items-center gap-2"><ImageIcon size={16} className="text-primary" /> Page Images</h4>
+        <p className="text-sm text-muted-foreground">Customize hero backgrounds and workshop card images. Leave empty to use defaults.</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          {IMAGE_SETTINGS.map((s) => (
+            <SiteImageUploader
+              key={s.key}
+              settingKey={s.key}
+              label={s.label}
+              currentUrl={imageUrls[s.key] || ""}
+              onUploaded={(url) => setImageUrls((prev) => ({ ...prev, [s.key]: url }))}
+            />
+          ))}
+        </div>
+      </div>
+
       <Button onClick={saveAll} disabled={saving} className="gap-2 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground">
         {saved ? <><CheckCircle2 size={16} /> Saved!</> : <><Save size={16} /> {saving ? "Saving..." : "Save Settings"}</>}
       </Button>
