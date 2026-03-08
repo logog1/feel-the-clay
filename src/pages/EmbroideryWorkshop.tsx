@@ -1,6 +1,7 @@
 import WorkshopPageLayout from "@/components/WorkshopPageLayout";
 import { useLanguage } from "@/i18n/LanguageContext";
 import SEOHead from "@/components/SEOHead";
+import { useSiteImages } from "@/hooks/use-site-images";
 import embrHero from "@/assets/embr-hero.jpg";
 import embrGallery1 from "@/assets/embr-gallery-1.jpg";
 import embrGallery2 from "@/assets/embr-gallery-2.jpg";
@@ -10,6 +11,9 @@ import embrGallery5 from "@/assets/embr-gallery-5.jpg";
 
 const EmbroideryWorkshop = () => {
   const { t } = useLanguage();
+  const siteImages = useSiteImages(["image_workshop_embroidery"]);
+  const heroImg = siteImages["image_workshop_embroidery"];
+  const images = heroImg ? [heroImg, embrGallery1, embrGallery2, embrGallery3, embrGallery4, embrGallery5] : [embrHero, embrGallery1, embrGallery2, embrGallery3, embrGallery4, embrGallery5];
   const workshop = {
     title: t("embr.title"),
     tagline: t("embr.tagline"),
@@ -19,7 +23,7 @@ const EmbroideryWorkshop = () => {
     location: t("embr.location"),
     description: [t("embr.desc1"), t("embr.desc2")],
     highlights: [t("embr.h1"), t("embr.h2"), t("embr.h3"), t("embr.h4"), t("embr.h5"), t("embr.h6"), t("embr.h7")],
-    images: [embrHero, embrGallery1, embrGallery2, embrGallery3, embrGallery4, embrGallery5],
+    images,
     unavailable: true,
   };
 
