@@ -957,6 +957,41 @@ const AdminDashboard = () => {
               })}
             </div>
           </TabsContent>
+
+          {/* ── Settings ── */}
+          <TabsContent value="settings">
+            <div className="max-w-xl space-y-6">
+              <div className="p-6 rounded-3xl bg-card border-2 border-border/40 space-y-5">
+                <h3 className="font-bold text-foreground flex items-center gap-2"><Mail size={18} className="text-cta" /> Notification Email</h3>
+                <p className="text-sm text-muted-foreground">Orders and bookings will be sent to this email address.</p>
+                <Input
+                  value={contactEmail}
+                  onChange={(e) => setContactEmail(e.target.value)}
+                  placeholder="contact@example.com"
+                  className="rounded-xl"
+                />
+              </div>
+
+              <div className="p-6 rounded-3xl bg-card border-2 border-border/40 space-y-5">
+                <h3 className="font-bold text-foreground flex items-center gap-2"><Phone size={18} className="text-cta" /> WhatsApp Numbers</h3>
+                <p className="text-sm text-muted-foreground">Comma-separated list of WhatsApp numbers to receive notifications (include country code).</p>
+                <Input
+                  value={contactWhatsApp}
+                  onChange={(e) => setContactWhatsApp(e.target.value)}
+                  placeholder="+212600000000,+212700000000"
+                  className="rounded-xl"
+                />
+              </div>
+
+              <Button
+                onClick={saveContacts}
+                disabled={savingContacts}
+                className="gap-2 rounded-xl bg-cta hover:bg-cta-hover text-primary-foreground"
+              >
+                {contactsSaved ? <><CheckCircle2 size={16} /> Saved!</> : <><Save size={16} /> {savingContacts ? "Saving..." : "Save Contacts"}</>}
+              </Button>
+            </div>
+          </TabsContent>
         </Tabs>
       </div>
 
