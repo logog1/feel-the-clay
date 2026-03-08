@@ -322,9 +322,33 @@ Deno.serve(async (req) => {
     let zapierResult: any = null;
     if (contacts.zapierWebhookUrl) {
       try {
+        // Flatten payload so Zapier sees each field individually
+        const flatItems = (data.items || []).map((i: any, idx: number) => `${i.name} × ${i.quantity} — ${i.price * i.quantity} DH`).join(" | ");
         const zapierPayload = type === "booking"
-          ? { type: "booking", ...data }
-          : { type: "purchase", ...data };
+          ? {
+              type: "booking",
+              name: data.name || "",
+              email: data.email || "",
+              phone: data.phone || "",
+              workshop: data.workshop || "",
+              date: data.date || "",
+              participants: data.participants || "",
+              city: data.city || "",
+              notes: data.notes || "",
+            }
+          : {
+              type: "purchase",
+              customerName: data.customerName || "",
+              customerEmail: data.customerEmail || "",
+              customerPhone: data.customerPhone || "",
+              customerAddress: data.customerAddress || "",
+              region: data.region || "",
+              items: flatItems,
+              totalItems: data.totalItems || 0,
+              subtotal: data.totalPrice || 0,
+              deliveryFee: data.deliveryFee || 0,
+              grandTotal: data.grandTotal || 0,
+            };
         await fetch(contacts.zapierWebhookUrl, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
