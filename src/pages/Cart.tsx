@@ -224,7 +224,7 @@ const Cart = () => {
               {errors.name && <p className="text-xs text-destructive">{errors.name}</p>}
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="cart-email">{t("cart.email") || "Email"}</Label>
+              <Label htmlFor="cart-email">Email</Label>
               <Input id="cart-email" type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="email@example.com" className="rounded-xl" />
               {errors.email && <p className="text-xs text-destructive">{errors.email}</p>}
             </div>
