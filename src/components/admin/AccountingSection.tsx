@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Download, RefreshCw, Trash2, Pencil, CheckCircle2, X, Upload } from "lucide-react";
+import { Plus, Download, RefreshCw, Trash2, Pencil, CheckCircle2, X } from "lucide-react";
 import { format } from "date-fns";
 
 interface Entry {
@@ -18,7 +18,25 @@ interface Entry {
   created_at: string;
 }
 
-const CATEGORIES = ["materials", "utilities", "rent", "salary", "marketing", "equipment", "transport", "food", "workshop-revenue", "store-revenue", "donation", "other"];
+const CATEGORIES = [
+  "workshop", "materials", "rent", "clay", "cleaning", "paints",
+  "marketing", "prints", "transportation", "other",
+];
+
+// Color-coded category pills matching the reference spreadsheet
+const CATEGORY_COLORS: Record<string, { bg: string; text: string; border: string }> = {
+  materials:      { bg: "bg-emerald-700",  text: "text-white",       border: "border-emerald-800" },
+  rent:           { bg: "bg-yellow-400",   text: "text-yellow-900",  border: "border-yellow-500" },
+  clay:           { bg: "bg-red-600",      text: "text-white",       border: "border-red-700" },
+  cleaning:       { bg: "bg-blue-200",     text: "text-blue-900",    border: "border-blue-300" },
+  paints:         { bg: "bg-purple-700",   text: "text-white",       border: "border-purple-800" },
+  marketing:      { bg: "bg-gray-700",     text: "text-white",       border: "border-gray-800" },
+  prints:         { bg: "bg-gray-500",     text: "text-white",       border: "border-gray-600" },
+  other:          { bg: "bg-orange-200",   text: "text-orange-900",  border: "border-orange-300" },
+  workshop:       { bg: "bg-orange-400",   text: "text-white",       border: "border-orange-500" },
+  transportation: { bg: "bg-amber-100",    text: "text-amber-900",   border: "border-amber-200" },
+};
+
 const EXPENSE_TYPES = ["fixed", "variable", "one-time"];
 
 export function AccountingSection() {
@@ -81,12 +99,14 @@ export function AccountingSection() {
   };
 
   const downloadCSV = () => {
-    const headers = ["Date", "Description", "Category", "Type", "Expense Type", "Amount", "Running Balance"];
+    const headers = ["Date", "Category", "Description", "Income (DH)", "Expenses (DH)", "Balance (DH)"];
     let balance = 0;
     const sorted = [...entries].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
     const rows = sorted.map((e) => {
-      balance += e.type === "income" ? Number(e.amount) : -Number(e.amount);
-      return [e.date, e.description, e.category, e.type, e.expense_type || "", e.amount, balance.toFixed(2)];
+      const inc = e.type === "income" ? Number(e.amount) : 0;
+      const exp = e.type === "expense" ? Number(e.amount) : 0;
+      balance += inc - exp;
+      return [e.date, e.category, `"${e.description}"`, inc || "", exp || "", balance.toFixed(2)];
     });
     const csv = [headers.join(","), ...rows.map((r) => r.join(","))].join("\n");
     const blob = new Blob([csv], { type: "text/csv" });
@@ -108,7 +128,7 @@ export function AccountingSection() {
     return true;
   });
 
-  // Running balance
+  // Running balance (chronological)
   const sorted = [...filtered].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
   let runningBalance = 0;
   const withBalance = sorted.map((e) => {
@@ -119,28 +139,66 @@ export function AccountingSection() {
   // Summary
   const totalIncome = filtered.filter((e) => e.type === "income").reduce((s, e) => s + Number(e.amount), 0);
   const totalExpenses = filtered.filter((e) => e.type === "expense").reduce((s, e) => s + Number(e.amount), 0);
+  const net = totalIncome - totalExpenses;
+
+  // Category breakdown for expenses
+  const expenseByCategory = Object.entries(
+    filtered.filter((e) => e.type === "expense").reduce((acc: Record<string, number>, e) => {
+      acc[e.category] = (acc[e.category] || 0) + Number(e.amount);
+      return acc;
+    }, {})
+  ).sort((a, b) => b[1] - a[1]);
+
+  const CategoryPill = ({ category }: { category: string }) => {
+    const colors = CATEGORY_COLORS[category] || { bg: "bg-muted", text: "text-muted-foreground", border: "border-border" };
+    return (
+      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-semibold border ${colors.bg} ${colors.text} ${colors.border}`}>
+        {category}
+      </span>
+    );
+  };
 
   if (loading) return <div className="flex items-center justify-center h-64 text-muted-foreground">Loading...</div>;
 
   return (
     <div className="space-y-4">
       {/* Summary Cards */}
-      <div className="flex flex-wrap gap-3">
-        <div className="px-4 py-2 rounded-xl bg-emerald-50 border border-emerald-200 text-sm">
-          <span className="font-bold text-emerald-800 mr-1">{totalIncome.toLocaleString()} DH</span>
-          <span className="text-emerald-600">Income</span>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200">
+          <p className="text-xs text-emerald-600 font-medium">Total Income</p>
+          <p className="text-xl font-bold text-emerald-800">{totalIncome.toLocaleString()} DH</p>
         </div>
-        <div className="px-4 py-2 rounded-xl bg-red-50 border border-red-200 text-sm">
-          <span className="font-bold text-red-800 mr-1">{totalExpenses.toLocaleString()} DH</span>
-          <span className="text-red-600">Expenses</span>
+        <div className="p-4 rounded-2xl bg-red-50 border border-red-200">
+          <p className="text-xs text-red-600 font-medium">Total Expenses</p>
+          <p className="text-xl font-bold text-red-800">{totalExpenses.toLocaleString()} DH</p>
         </div>
-        <div className="px-4 py-2 rounded-xl bg-card border border-border/40 text-sm">
-          <span className={`font-bold mr-1 ${(totalIncome - totalExpenses) >= 0 ? "text-emerald-800" : "text-red-800"}`}>
-            {(totalIncome - totalExpenses).toLocaleString()} DH
-          </span>
-          <span className="text-muted-foreground">Net</span>
+        <div className={`p-4 rounded-2xl border ${net >= 0 ? "bg-emerald-50 border-emerald-200" : "bg-red-50 border-red-200"}`}>
+          <p className="text-xs text-muted-foreground font-medium">Remaining Balance</p>
+          <p className={`text-xl font-bold ${net >= 0 ? "text-emerald-800" : "text-red-800"}`}>{net.toLocaleString()} DH</p>
+        </div>
+        <div className="p-4 rounded-2xl bg-card border border-border/40">
+          <p className="text-xs text-muted-foreground font-medium">Entries</p>
+          <p className="text-xl font-bold text-foreground">{filtered.length}</p>
         </div>
       </div>
+
+      {/* Category breakdown chips */}
+      {expenseByCategory.length > 0 && (
+        <div className="flex flex-wrap gap-2">
+          {expenseByCategory.map(([cat, amount]) => (
+            <button
+              key={cat}
+              onClick={() => setCategoryFilter(categoryFilter === cat ? "all" : cat)}
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border transition-all text-sm ${
+                categoryFilter === cat ? "ring-2 ring-primary ring-offset-1" : ""
+              }`}
+            >
+              <CategoryPill category={cat} />
+              <span className="font-semibold text-foreground">{amount.toLocaleString()} DH</span>
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* Toolbar */}
       <div className="flex flex-wrap gap-2">
@@ -157,7 +215,13 @@ export function AccountingSection() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Categories</SelectItem>
-            {CATEGORIES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+            {CATEGORIES.map((c) => (
+              <SelectItem key={c} value={c}>
+                <span className="flex items-center gap-2">
+                  <CategoryPill category={c} />
+                </span>
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
         <div className="ml-auto flex gap-2">
@@ -182,7 +246,7 @@ export function AccountingSection() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             <Input type="date" value={newEntry.date} onChange={(e) => setNewEntry((n) => ({ ...n, date: e.target.value }))} className="rounded-xl h-9 text-sm" />
             <Input placeholder="Description" value={newEntry.description} onChange={(e) => setNewEntry((n) => ({ ...n, description: e.target.value }))} className="rounded-xl h-9 text-sm col-span-2 md:col-span-1" />
-            <Input type="number" placeholder="Amount" value={newEntry.amount || ""} onChange={(e) => setNewEntry((n) => ({ ...n, amount: Number(e.target.value) }))} className="rounded-xl h-9 text-sm" />
+            <Input type="number" placeholder="Amount (DH)" value={newEntry.amount || ""} onChange={(e) => setNewEntry((n) => ({ ...n, amount: Number(e.target.value) }))} className="rounded-xl h-9 text-sm" />
             <Select value={newEntry.type} onValueChange={(v: "income" | "expense") => setNewEntry((n) => ({ ...n, type: v }))}>
               <SelectTrigger className="rounded-xl h-9 text-sm"><SelectValue /></SelectTrigger>
               <SelectContent>
@@ -193,7 +257,11 @@ export function AccountingSection() {
             <Select value={newEntry.category} onValueChange={(v) => setNewEntry((n) => ({ ...n, category: v }))}>
               <SelectTrigger className="rounded-xl h-9 text-sm"><SelectValue /></SelectTrigger>
               <SelectContent>
-                {CATEGORIES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                {CATEGORIES.map((c) => (
+                  <SelectItem key={c} value={c}>
+                    <span className="flex items-center gap-2"><CategoryPill category={c} /></span>
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
             {newEntry.type === "expense" && (
@@ -221,12 +289,12 @@ export function AccountingSection() {
             <thead>
               <tr className="border-b border-border/40 bg-muted/30">
                 <th className="text-left px-4 py-3 font-medium text-muted-foreground">Date</th>
+                <th className="text-left px-4 py-3 font-medium text-muted-foreground">Category</th>
                 <th className="text-left px-4 py-3 font-medium text-muted-foreground">Description</th>
-                <th className="text-left px-4 py-3 font-medium text-muted-foreground hidden md:table-cell">Category</th>
-                <th className="text-left px-4 py-3 font-medium text-muted-foreground hidden lg:table-cell">Type</th>
-                <th className="text-right px-4 py-3 font-medium text-muted-foreground">Amount</th>
-                <th className="text-right px-4 py-3 font-medium text-muted-foreground hidden sm:table-cell">Balance</th>
-                <th className="text-right px-4 py-3 font-medium text-muted-foreground">Actions</th>
+                <th className="text-right px-4 py-3 font-medium text-emerald-600">Income</th>
+                <th className="text-right px-4 py-3 font-medium text-red-500">Expenses</th>
+                <th className="text-right px-4 py-3 font-medium text-muted-foreground">Balance</th>
+                <th className="text-right px-4 py-3 font-medium text-muted-foreground w-20">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -237,21 +305,23 @@ export function AccountingSection() {
                   return (
                     <tr key={e.id} className="border-b border-border/20 bg-muted/10">
                       <td className="px-4 py-2"><Input type="date" value={editDraft.date || ""} onChange={(ev) => setEditDraft((d) => ({ ...d, date: ev.target.value }))} className="rounded-lg h-8 text-xs" /></td>
-                      <td className="px-4 py-2"><Input value={editDraft.description || ""} onChange={(ev) => setEditDraft((d) => ({ ...d, description: ev.target.value }))} className="rounded-lg h-8 text-xs" /></td>
-                      <td className="px-4 py-2 hidden md:table-cell">
+                      <td className="px-4 py-2">
                         <Select value={editDraft.category || ""} onValueChange={(v) => setEditDraft((d) => ({ ...d, category: v }))}>
                           <SelectTrigger className="rounded-lg h-8 text-xs"><SelectValue /></SelectTrigger>
-                          <SelectContent>{CATEGORIES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
+                          <SelectContent>{CATEGORIES.map((c) => <SelectItem key={c} value={c}><CategoryPill category={c} /></SelectItem>)}</SelectContent>
                         </Select>
                       </td>
-                      <td className="px-4 py-2 hidden lg:table-cell">
-                        <Select value={editDraft.type || ""} onValueChange={(v: "income" | "expense") => setEditDraft((d) => ({ ...d, type: v }))}>
-                          <SelectTrigger className="rounded-lg h-8 text-xs"><SelectValue /></SelectTrigger>
-                          <SelectContent><SelectItem value="income">Income</SelectItem><SelectItem value="expense">Expense</SelectItem></SelectContent>
-                        </Select>
+                      <td className="px-4 py-2"><Input value={editDraft.description || ""} onChange={(ev) => setEditDraft((d) => ({ ...d, description: ev.target.value }))} className="rounded-lg h-8 text-xs" /></td>
+                      <td className="px-4 py-2" colSpan={2}>
+                        <div className="flex items-center gap-2">
+                          <Select value={editDraft.type || ""} onValueChange={(v: "income" | "expense") => setEditDraft((d) => ({ ...d, type: v }))}>
+                            <SelectTrigger className="rounded-lg h-8 text-xs w-24"><SelectValue /></SelectTrigger>
+                            <SelectContent><SelectItem value="income">Income</SelectItem><SelectItem value="expense">Expense</SelectItem></SelectContent>
+                          </Select>
+                          <Input type="number" value={editDraft.amount || ""} onChange={(ev) => setEditDraft((d) => ({ ...d, amount: Number(ev.target.value) }))} className="rounded-lg h-8 text-xs text-right w-24" />
+                        </div>
                       </td>
-                      <td className="px-4 py-2 text-right"><Input type="number" value={editDraft.amount || ""} onChange={(ev) => setEditDraft((d) => ({ ...d, amount: Number(ev.target.value) }))} className="rounded-lg h-8 text-xs text-right w-24 ml-auto" /></td>
-                      <td className="px-4 py-2 hidden sm:table-cell" />
+                      <td className="px-4 py-2" />
                       <td className="px-4 py-2 text-right">
                         <div className="flex items-center justify-end gap-1">
                           <Button variant="ghost" size="icon" className="h-7 w-7 rounded-lg text-emerald-600" onClick={saveEdit}><CheckCircle2 size={13} /></Button>
@@ -265,19 +335,15 @@ export function AccountingSection() {
                 return (
                   <tr key={e.id} className="border-b border-border/20 hover:bg-muted/20 transition-colors">
                     <td className="px-4 py-3 text-muted-foreground whitespace-nowrap">{e.date}</td>
+                    <td className="px-4 py-3"><CategoryPill category={e.category} /></td>
                     <td className="px-4 py-3 font-medium text-foreground">{e.description}</td>
-                    <td className="px-4 py-3 hidden md:table-cell">
-                      <span className="text-xs px-2 py-0.5 rounded-full border bg-muted/50 text-muted-foreground">{e.category}</span>
+                    <td className="px-4 py-3 text-right font-medium text-emerald-700">
+                      {e.type === "income" ? `${Number(e.amount).toLocaleString()} DH` : ""}
                     </td>
-                    <td className="px-4 py-3 hidden lg:table-cell">
-                      <span className={`text-xs px-2 py-0.5 rounded-full border font-medium ${e.type === "income" ? "bg-emerald-100 text-emerald-800 border-emerald-200" : "bg-red-100 text-red-800 border-red-200"}`}>
-                        {e.type}
-                      </span>
+                    <td className="px-4 py-3 text-right font-medium text-red-600">
+                      {e.type === "expense" ? `${Number(e.amount).toLocaleString()} DH` : ""}
                     </td>
-                    <td className={`px-4 py-3 text-right font-medium ${e.type === "income" ? "text-emerald-700" : "text-red-600"}`}>
-                      {e.type === "income" ? "+" : "-"}{Number(e.amount).toLocaleString()} DH
-                    </td>
-                    <td className={`px-4 py-3 text-right font-medium hidden sm:table-cell ${e.balance >= 0 ? "text-foreground" : "text-red-600"}`}>
+                    <td className={`px-4 py-3 text-right font-medium ${e.balance >= 0 ? "text-foreground" : "text-red-600"}`}>
                       {e.balance.toLocaleString()} DH
                     </td>
                     <td className="px-4 py-3 text-right">
