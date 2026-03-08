@@ -151,12 +151,28 @@ const AdminDashboard = () => {
       setContactWhatsApp(map["whatsapp_numbers"] || "");
     }
 
+    // Load users
+    const { data: usersData } = await supabase.rpc("list_users_with_roles");
+    setManagedUsers((usersData as ManagedUser[]) || []);
+
     setLoading(false);
   }, []);
 
   const updateStatus = async (table: "bookings" | "orders", id: string, status: string) => {
     const { error } = await supabase.from(table).update({ status }).eq("id", id);
     if (!error) await fetchAll();
+  };
+
+  const handleSetRole = async (userId: string, role: string) => {
+    setSavingRole(userId);
+    if (role === "pending") {
+      await supabase.rpc("remove_user_role", { _target_user_id: userId });
+    } else {
+      await supabase.rpc("set_user_role", { _target_user_id: userId, _role: role as "admin" | "user" });
+    }
+    const { data: usersData } = await supabase.rpc("list_users_with_roles");
+    setManagedUsers((usersData as ManagedUser[]) || []);
+    setSavingRole(null);
   };
 
   const handleLogout = async () => { await supabase.auth.signOut(); navigate("/admin/login"); };
