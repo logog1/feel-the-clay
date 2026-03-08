@@ -26,6 +26,12 @@ const checkoutSchema = z.object({
     .trim()
     .min(1, "Name is required")
     .max(100, "Name must be under 100 characters"),
+  email: z
+    .string()
+    .trim()
+    .email("Invalid email address")
+    .max(255, "Email must be under 255 characters")
+    .or(z.literal("")),
   phone: z
     .string()
     .trim()
