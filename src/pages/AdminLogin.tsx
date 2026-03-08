@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
@@ -16,6 +16,30 @@ const AdminLogin = () => {
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
+
+  // Auto-redirect if already authenticated (e.g. after Google OAuth redirect)
+  useEffect(() => {
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        const { data: roles } = await supabase.from("user_roles").select("role").eq("role", "admin").maybeSingle();
+        if (roles) {
+          navigate("/admin");
+        } else {
+          await supabase.auth.signOut();
+          setError("Access denied — admin only");
+        }
+      }
+    };
+    checkSession();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "SIGNED_IN" && session) {
+        checkSession();
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [navigate]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
