@@ -80,6 +80,78 @@ export type Database = {
         }
         Relationships: []
       }
+      blog_posts: {
+        Row: {
+          category: string
+          content_ar: string
+          content_en: string
+          content_es: string
+          content_fr: string
+          cover_image: string
+          created_at: string
+          excerpt_ar: string
+          excerpt_en: string
+          excerpt_es: string
+          excerpt_fr: string
+          id: string
+          is_published: boolean
+          published_at: string
+          read_time: number
+          slug: string
+          title_ar: string
+          title_en: string
+          title_es: string
+          title_fr: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string
+          content_ar?: string
+          content_en?: string
+          content_es?: string
+          content_fr?: string
+          cover_image?: string
+          created_at?: string
+          excerpt_ar?: string
+          excerpt_en?: string
+          excerpt_es?: string
+          excerpt_fr?: string
+          id?: string
+          is_published?: boolean
+          published_at?: string
+          read_time?: number
+          slug: string
+          title_ar?: string
+          title_en?: string
+          title_es?: string
+          title_fr?: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          content_ar?: string
+          content_en?: string
+          content_es?: string
+          content_fr?: string
+          cover_image?: string
+          created_at?: string
+          excerpt_ar?: string
+          excerpt_en?: string
+          excerpt_es?: string
+          excerpt_fr?: string
+          id?: string
+          is_published?: boolean
+          published_at?: string
+          read_time?: number
+          slug?: string
+          title_ar?: string
+          title_en?: string
+          title_es?: string
+          title_fr?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       bookings: {
         Row: {
           booking_date: string | null
