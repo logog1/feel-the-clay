@@ -18,6 +18,7 @@ import { WorkflowSection } from "@/components/admin/WorkflowSection";
 import { AccessSection } from "@/components/admin/AccessSection";
 import { TasksSection } from "@/components/admin/TasksSection";
 import { SettingsSection } from "@/components/admin/SettingsSection";
+import { BlogSection } from "@/components/admin/BlogSection";
 import { ThemeManagerSection } from "@/components/admin/ThemeManagerSection";
 import { MediaManagerSection } from "@/components/admin/MediaManagerSection";
 import SEOHead from "@/components/SEOHead";
@@ -40,6 +41,7 @@ const sectionTitles: Record<string, string> = {
   tasks: "Tasks",
   automations: "Automations",
   media: "Media Manager",
+  blog: "Blog",
   themes: "Seasonal Themes",
   settings: "Settings",
 };
@@ -127,6 +129,7 @@ const ProDashboard = () => {
             {activeSection === "tasks" && <TasksSection />}
             {activeSection === "automations" && <AutomationsSection />}
             {activeSection === "media" && <MediaManagerSection />}
+            {activeSection === "blog" && <BlogSection />}
             {activeSection === "themes" && <ThemeManagerSection />}
             {activeSection === "settings" && <SettingsSection />}
           </main>

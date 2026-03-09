@@ -3,18 +3,19 @@ import { Calendar, Clock, ArrowRight } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
-import { blogPosts, BlogPost } from "@/data/blogPosts";
+import { BlogPost } from "@/data/blogPosts";
+import { useBlogPosts } from "@/hooks/use-blog-posts";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
-const categoryColors: Record<BlogPost["category"], string> = {
+const categoryColors: Record<string, string> = {
   pottery: "bg-cta/10 text-cta border-cta/20",
   tetouan: "bg-blue-500/10 text-blue-600 border-blue-500/20",
   culture: "bg-purple-500/10 text-purple-600 border-purple-500/20",
 };
 
-const categoryLabels: Record<BlogPost["category"], Record<string, string>> = {
+const categoryLabels: Record<string, Record<string, string>> = {
   pottery: { en: "Pottery", ar: "الفخار", es: "Cerámica", fr: "Poterie" },
   tetouan: { en: "Tetouan", ar: "تطوان", es: "Tetuán", fr: "Tétouan" },
   culture: { en: "Culture", ar: "الثقافة", es: "Cultura", fr: "Culture" },
@@ -30,6 +31,7 @@ const jsonLd = {
 
 const Blog = () => {
   const { language } = useLanguage();
+  const { posts } = useBlogPosts();
 
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr);
@@ -72,7 +74,7 @@ const Blog = () => {
       <section className="py-16 px-5">
         <div className="max-w-6xl mx-auto">
           <div className="grid md:grid-cols-2 gap-8">
-            {blogPosts.map((post) => (
+            {posts.map((post) => (
               <Link key={post.slug} to={`/blog/${post.slug}`}>
                 <Card className="group overflow-hidden hover:shadow-xl transition-all duration-300 border-border/50 h-full">
                   <div className="aspect-[16/9] overflow-hidden">
@@ -84,8 +86,8 @@ const Blog = () => {
                   </div>
                   <CardContent className="p-6">
                     <div className="flex items-center gap-3 mb-3">
-                      <Badge variant="outline" className={categoryColors[post.category]}>
-                        {categoryLabels[post.category][language]}
+                      <Badge variant="outline" className={categoryColors[post.category] || ""}>
+                        {categoryLabels[post.category]?.[language] || post.category}
                       </Badge>
                       <span className="flex items-center gap-1 text-xs text-muted-foreground">
                         <Clock size={12} />
