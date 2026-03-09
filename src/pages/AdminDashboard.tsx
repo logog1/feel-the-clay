@@ -1035,6 +1035,7 @@ const AdminDashboard = () => {
                   <div className="space-y-1.5">
                     <label className="text-xs font-medium text-muted-foreground">Google Maps Embed URL</label>
                     <Input value={publicMapUrl} onChange={(e) => setPublicMapUrl(e.target.value)} placeholder="https://www.google.com/maps/embed?pb=..." className="rounded-xl" />
+                  </div>
                 </div>
               </div>
 
