@@ -41,6 +41,7 @@ const sectionTitles: Record<string, string> = {
   tasks: "Tasks",
   automations: "Automations",
   media: "Media Manager",
+  blog: "Blog",
   themes: "Seasonal Themes",
   settings: "Settings",
 };
