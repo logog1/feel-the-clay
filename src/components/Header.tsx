@@ -60,11 +60,11 @@ const Header = () => {
   };
 
   return (
-    <header className={`fixed top-0 left-0 right-0 z-50 transition-colors duration-200 border-b-[3px] border-foreground ${isScrolled ? "bg-foreground" : "bg-foreground/90"}`}>
+    <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${isScrolled ? "bg-foreground/95 backdrop-blur-md shadow-lg" : "bg-foreground/80 backdrop-blur-sm"}`}>
       <div className="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <a href="#hero" onClick={(e) => { e.preventDefault(); scrollToSection("#hero"); }} className="flex items-center group">
-            <img src={logo} alt="Terraria Logo" className="h-10 w-10 object-cover border-2 border-primary-foreground group-hover:border-cta transition-colors" />
+            <img src={logo} alt="Terraria Logo" className="h-10 w-10 object-cover rounded-full ring-2 ring-primary-foreground/30 group-hover:ring-cta transition-all duration-300 group-hover:scale-110" />
           </a>
           <nav className="hidden md:flex items-center gap-1">
             {navLinks.map((link) => (
@@ -72,42 +72,45 @@ const Header = () => {
                 key={link.href}
                 href={link.href}
                 onClick={(e) => { e.preventDefault(); scrollToSection(link.href, link.isRoute); }}
-                className={`mono-label px-4 py-2 transition-colors border-2 ${
+                className={`relative px-4 py-2 text-sm font-medium tracking-wide transition-all duration-300 rounded-lg ${
                   isActive(link)
-                    ? "text-foreground bg-primary-foreground border-primary-foreground"
-                    : "text-primary-foreground/70 border-transparent hover:text-primary-foreground hover:border-primary-foreground/30"
+                    ? "text-cta"
+                    : "text-primary-foreground/70 hover:text-primary-foreground"
                 }`}
               >
                 {link.label}
+                {isActive(link) && (
+                  <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-5 h-0.5 bg-cta rounded-full" />
+                )}
               </a>
             ))}
             <a
               href="/store"
               onClick={(e) => { e.preventDefault(); navigate("/store"); }}
-              className="mono-label flex items-center gap-2 px-4 py-2 text-primary-foreground/70 border-2 border-transparent hover:border-primary-foreground/30 hover:text-primary-foreground transition-colors"
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-primary-foreground/70 hover:text-primary-foreground transition-all duration-300 rounded-lg"
             >
               <ShoppingBag size={14} />
               {t("nav.store")}
             </a>
-            <a href="#booking" onClick={(e) => { e.preventDefault(); scrollToSection("#booking"); }} className="mono-label bg-cta text-primary-foreground px-6 py-2 border-2 border-cta hover:bg-cta-hover hover:border-cta-hover transition-colors ml-2">
+            <a href="#booking" onClick={(e) => { e.preventDefault(); scrollToSection("#booking"); }} className="btn-ripple bg-cta text-primary-foreground px-6 py-2 rounded-lg text-sm font-semibold hover:bg-cta-hover hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 ml-2">
               {t("nav.book")}
             </a>
           </nav>
-          <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="md:hidden text-primary-foreground p-2" aria-label="Toggle menu">
+          <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="md:hidden text-primary-foreground p-2 rounded-lg hover:bg-primary-foreground/10 transition-colors" aria-label="Toggle menu">
             {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
 
-        {/* Mobile menu — brutalist */}
-        <div className={`md:hidden overflow-hidden transition-all duration-200 ${mobileMenuOpen ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"}`}>
-          <nav className="py-4 border-t-2 border-primary-foreground/20">
-            <div className="flex flex-col gap-0">
+        {/* Mobile menu */}
+        <div className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${mobileMenuOpen ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"}`}>
+          <nav className="py-4 border-t border-primary-foreground/10">
+            <div className="flex flex-col gap-1">
               {navLinks.map((link) => (
                 <a
                   key={link.href}
                   href={link.href}
                   onClick={(e) => { e.preventDefault(); scrollToSection(link.href, link.isRoute); }}
-                  className={`mono-label py-4 px-4 border-b border-primary-foreground/10 transition-colors ${
+                  className={`py-3 px-4 rounded-lg text-sm font-medium transition-all duration-300 ${
                     isActive(link)
                       ? "text-cta bg-primary-foreground/5"
                       : "text-primary-foreground/70 hover:text-primary-foreground hover:bg-primary-foreground/5"
@@ -119,12 +122,12 @@ const Header = () => {
               <a
                 href="/store"
                 onClick={(e) => { e.preventDefault(); setMobileMenuOpen(false); navigate("/store"); }}
-                className="mono-label flex items-center gap-3 py-4 px-4 text-primary-foreground/70 border-b border-primary-foreground/10 hover:text-primary-foreground"
+                className="flex items-center gap-3 py-3 px-4 text-sm font-medium text-primary-foreground/70 hover:text-primary-foreground rounded-lg"
               >
                 <ShoppingBag size={16} />
                 {t("nav.store")}
               </a>
-              <a href="#booking" onClick={(e) => { e.preventDefault(); scrollToSection("#booking"); }} className="mono-label bg-cta text-primary-foreground px-5 py-4 text-center mt-3 border-2 border-cta hover:bg-cta-hover transition-colors">
+              <a href="#booking" onClick={(e) => { e.preventDefault(); scrollToSection("#booking"); }} className="btn-ripple bg-cta text-primary-foreground px-5 py-3 text-center rounded-lg text-sm font-semibold mt-2 hover:bg-cta-hover transition-all duration-300">
                 {t("nav.book")}
               </a>
             </div>
