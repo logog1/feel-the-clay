@@ -101,6 +101,9 @@ const AdminDashboard = () => {
   // Settings / contacts
   const [contactEmail, setContactEmail] = useState("");
   const [contactWhatsApp, setContactWhatsApp] = useState("");
+  const [publicEmail, setPublicEmail] = useState("");
+  const [publicWhatsApp, setPublicWhatsApp] = useState("");
+  const [publicMapUrl, setPublicMapUrl] = useState("");
   const [savingContacts, setSavingContacts] = useState(false);
   const [contactsSaved, setContactsSaved] = useState(false);
 
