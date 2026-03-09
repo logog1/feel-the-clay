@@ -11,6 +11,7 @@ export const translations = {
   "nav.contact": { en: "Contact", ar: "اتصل بنا", es: "Contacto", fr: "Contact" },
   "nav.reserve": { en: "Reserve", ar: "احجز", es: "Reservar", fr: "Réserver" },
   "nav.book": { en: "Book a Place", ar: "احجز مكانك", es: "Reserva tu Lugar", fr: "Réserver une place" },
+  "nav.blog": { en: "Blog", ar: "المدونة", es: "Blog", fr: "Blog" },
 
   // Hero
   "hero.title1": { en: "Rethinking pottery as", ar: "إعادة تصور الفخار", es: "Reinventando la cerámica como", fr: "Repenser la poterie comme" },
