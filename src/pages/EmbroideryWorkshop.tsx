@@ -10,6 +10,25 @@ import embrGallery3 from "@/assets/embr-gallery-3.jpg";
 import embrGallery4 from "@/assets/embr-gallery-4.jpg";
 import embrGallery5 from "@/assets/embr-gallery-5.jpg";
 
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Course",
+  name: "Traditional Embroidery Workshop in Tétouan",
+  description: "Learn traditional Moroccan embroidery techniques in Tétouan. Hands-on craft workshop with local artisans. All materials included.",
+  provider: {
+    "@type": "Organization",
+    name: "Terraria Workshops",
+    url: "https://www.terrariaworkshops.com",
+  },
+  url: "https://www.terrariaworkshops.com/workshop/embroidery",
+  courseMode: "onsite",
+  location: {
+    "@type": "Place",
+    name: "Terraria Workshops",
+    address: { "@type": "PostalAddress", addressLocality: "Tétouan", addressCountry: "MA" },
+  },
+};
+
 const EmbroideryWorkshop = () => {
   const { t } = useLanguage();
   const siteImages = useSiteImages(["image_workshop_embroidery"]);
@@ -37,7 +56,12 @@ const EmbroideryWorkshop = () => {
 
   return (
     <>
-      <SEOHead title="Embroidery Workshop" description="Pottery workshops for beginners and creatives in Tétouan. Session details, schedule, pricing, and what's included." path="/workshop/embroidery" />
+      <SEOHead
+        title="Traditional Embroidery Workshop in Tétouan"
+        description="Learn traditional Moroccan embroidery techniques in Tétouan. Hands-on craft workshop with local artisans. All materials included."
+        path="/workshop/embroidery"
+        jsonLd={jsonLd}
+      />
       <WorkshopPageLayout workshop={workshop} currentPath="/workshop/embroidery" />
     </>
   );

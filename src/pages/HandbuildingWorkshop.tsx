@@ -9,6 +9,36 @@ import workshop6 from "@/assets/workshop-6.jpg";
 import workshop8 from "@/assets/workshop-8.jpg";
 import workshop10 from "@/assets/workshop-10.jpg";
 
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Course",
+  name: "Handbuilding Pottery Workshop in Tétouan",
+  description: "Clay handbuilding workshop for all levels in Tétouan, Morocco. Shape pottery by hand with traditional techniques. All materials and tea included.",
+  provider: {
+    "@type": "Organization",
+    name: "Terraria Workshops",
+    url: "https://www.terrariaworkshops.com",
+  },
+  url: "https://www.terrariaworkshops.com/workshop/handbuilding",
+  courseMode: "onsite",
+  location: {
+    "@type": "Place",
+    name: "Terraria Workshops",
+    address: { "@type": "PostalAddress", addressLocality: "Tétouan", addressCountry: "MA" },
+  },
+  offers: {
+    "@type": "Offer",
+    price: "100",
+    priceCurrency: "MAD",
+    availability: "https://schema.org/InStock",
+  },
+  hasCourseInstance: {
+    "@type": "CourseInstance",
+    courseMode: "onsite",
+    courseWorkload: "PT1H30M",
+  },
+};
+
 const HandbuildingWorkshop = () => {
   const { t } = useLanguage();
   const siteImages = useSiteImages(["image_workshop_handbuilding"]);
@@ -36,7 +66,12 @@ const HandbuildingWorkshop = () => {
 
   return (
     <>
-      <SEOHead title="Handbuilding Workshop" description="Pottery workshops for beginners and creatives in Tétouan. Session details, schedule, pricing, and what's included." path="/workshop/handbuilding" />
+      <SEOHead
+        title="Handbuilding Pottery Workshop in Tétouan"
+        description="Clay handbuilding workshop for all levels in Tétouan, Morocco. Shape pottery by hand with traditional techniques. All materials and tea included."
+        path="/workshop/handbuilding"
+        jsonLd={jsonLd}
+      />
       <WorkshopPageLayout workshop={workshop} currentPath="/workshop/handbuilding" />
       <ProcessSection />
     </>
