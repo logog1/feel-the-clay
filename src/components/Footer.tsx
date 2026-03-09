@@ -25,6 +25,7 @@ const Footer = () => {
               Workshops
             </button>
             <Link to="/store" className="block text-muted-foreground hover:text-cta transition-colors">Products</Link>
+            <Link to="/blog" className="block text-muted-foreground hover:text-cta transition-colors">Blog</Link>
           </div>
           <div className="space-y-2">
             <h3 className="font-medium text-foreground text-xs uppercase tracking-wider mb-3">Contact</h3>
