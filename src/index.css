@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,75 +6,75 @@
 
 @layer base {
   :root {
-    --background: 25 60% 92%;
-    --foreground: 20 30% 15%;
+    --background: 0 0% 96%;
+    --foreground: 0 0% 8%;
 
     --card: 0 0% 100%;
-    --card-foreground: 20 30% 15%;
+    --card-foreground: 0 0% 8%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 20 30% 15%;
+    --popover-foreground: 0 0% 8%;
 
-    --primary: 24 90% 50%;
+    --primary: 24 95% 50%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 30 20% 88%;
-    --secondary-foreground: 20 30% 15%;
+    --secondary: 0 0% 90%;
+    --secondary-foreground: 0 0% 8%;
 
-    --muted: 30 15% 85%;
-    --muted-foreground: 20 15% 45%;
+    --muted: 0 0% 92%;
+    --muted-foreground: 0 0% 40%;
 
-    --accent: 12 60% 35%;
-    --accent-foreground: 30 30% 96%;
+    --accent: 0 0% 8%;
+    --accent-foreground: 0 0% 96%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
 
-    --border: 20 15% 82%;
-    --input: 30 15% 85%;
-    --ring: 24 90% 50%;
+    --border: 0 0% 15%;
+    --input: 0 0% 85%;
+    --ring: 24 95% 50%;
 
-    --radius: 1rem;
+    --radius: 0px;
 
-    /* Custom tokens */
-    --warm-sand: 30 30% 88%;
-    --warm-sand-light: 30 30% 93%;
-    --warm-sand-dark: 30 20% 78%;
-    --terracotta: 12 60% 35%;
-    --terracotta-light: 12 50% 48%;
-    --orange-cta: 24 90% 50%;
-    --orange-cta-hover: 24 90% 42%;
-    --cream: 35 50% 95%;
+    /* Custom tokens — brutalist */
+    --warm-sand: 0 0% 92%;
+    --warm-sand-light: 0 0% 96%;
+    --warm-sand-dark: 0 0% 82%;
+    --terracotta: 0 0% 8%;
+    --terracotta-light: 24 95% 50%;
+    --orange-cta: 24 95% 50%;
+    --orange-cta-hover: 24 95% 42%;
+    --cream: 0 0% 98%;
     
-    /* Glass tokens */
-    --glass-bg: 25 60% 92% / 0.6;
-    --glass-border: 24 40% 75% / 0.4;
+    /* Brutalist tokens */
+    --border-thick: 3px;
+    --border-heavy: 0 0% 8%;
     
-    /* Section depth */
-    --section-elevated: 25 55% 94%;
-    --section-sunken: 24 50% 87%;
+    /* Section depth — flat for brutalist */
+    --section-elevated: 0 0% 100%;
+    --section-sunken: 0 0% 90%;
   }
 
   .dark {
-    --background: 20 20% 10%;
-    --foreground: 30 20% 90%;
-    --card: 20 18% 14%;
-    --card-foreground: 30 20% 90%;
-    --popover: 20 18% 14%;
-    --popover-foreground: 30 20% 90%;
-    --primary: 24 90% 50%;
+    --background: 0 0% 5%;
+    --foreground: 0 0% 92%;
+    --card: 0 0% 10%;
+    --card-foreground: 0 0% 92%;
+    --popover: 0 0% 10%;
+    --popover-foreground: 0 0% 92%;
+    --primary: 24 95% 50%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 20 15% 18%;
-    --secondary-foreground: 30 20% 90%;
-    --muted: 20 12% 22%;
-    --muted-foreground: 30 10% 55%;
-    --accent: 12 50% 48%;
-    --accent-foreground: 30 30% 96%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 20 10% 25%;
-    --input: 20 12% 22%;
-    --ring: 24 90% 50%;
+    --secondary: 0 0% 15%;
+    --secondary-foreground: 0 0% 92%;
+    --muted: 0 0% 18%;
+    --muted-foreground: 0 0% 55%;
+    --accent: 0 0% 92%;
+    --accent-foreground: 0 0% 5%;
+    --destructive: 0 62% 30%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 80%;
+    --input: 0 0% 18%;
+    --ring: 24 95% 50%;
   }
 }
 
@@ -88,8 +88,16 @@
   }
 
   body {
-    @apply bg-background text-foreground font-sans antialiased;
-    font-family: 'Rubik', sans-serif;
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Space Grotesk', sans-serif;
+  }
+
+  /* Brutalist typography — heavy, uppercase accents */
+  h1, h2, h3, h4 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
   }
 }
 
@@ -106,41 +114,41 @@
     @apply max-w-5xl mx-auto;
   }
 
-  /* Glass card */
+  /* Brutalist card — no rounding, thick border, no shadow */
   .glass-card {
-    @apply bg-card/60 backdrop-blur-md border border-border/30 rounded-2xl shadow-sm;
+    @apply bg-card border-2 border-foreground;
   }
 
-  /* Section depth - elevated look */
+  /* Section depth - elevated — flat brutalist */
   .section-elevated {
     background: hsl(var(--section-elevated));
-    box-shadow: 
-      0 -8px 24px -4px hsl(24 40% 70% / 0.18),
-      0 8px 24px -4px hsl(24 40% 70% / 0.18),
-      inset 0 1px 0 hsl(0 0% 100% / 0.5),
-      inset 0 -1px 0 hsl(24 30% 80% / 0.3);
+    border-top: var(--border-thick) solid hsl(var(--border-heavy));
+    border-bottom: var(--border-thick) solid hsl(var(--border-heavy));
   }
 
-  /* Section depth - sunken look */
+  /* Section depth - sunken — flat brutalist */
   .section-sunken {
     background: hsl(var(--section-sunken));
-    box-shadow: 
-      inset 0 4px 16px hsl(24 40% 60% / 0.12),
-      inset 0 -4px 16px hsl(24 40% 60% / 0.08);
+    border-top: var(--border-thick) solid hsl(var(--border-heavy));
+    border-bottom: var(--border-thick) solid hsl(var(--border-heavy));
   }
 
-  /* Section divider - replaced with wave */
+  /* Section divider — thick line */
   .section-divider {
-    @apply w-full h-px bg-gradient-to-r from-transparent via-border to-transparent;
+    @apply w-full bg-foreground;
+    height: var(--border-thick);
   }
 
-  /* Wave divider */
-  .wave-divider {
-    @apply w-full overflow-hidden leading-none;
-    height: 48px;
+  /* Brutalist thick divider */
+  .brutalist-divider {
+    @apply w-full bg-foreground;
+    height: var(--border-thick);
   }
-  .wave-divider svg {
-    @apply w-full h-full;
+
+  /* Mono label — for small labels/tags */
+  .mono-label {
+    font-family: 'Space Mono', monospace;
+    @apply text-xs uppercase tracking-[0.2em] font-bold;
   }
 }
 
@@ -149,39 +157,35 @@
     text-wrap: balance;
   }
 
-  /* ===== ADVANCED ANIMATIONS ===== */
+  /* ===== BRUTALIST ANIMATIONS — minimal, snappy ===== */
 
-  /* Fade up - default entrance */
   .animate-fade-up {
-    animation: fadeUp 0.8s ease-out forwards;
+    animation: fadeUp 0.4s ease-out forwards;
   }
 
   .animate-fade-in {
-    animation: fadeIn 1s ease-out forwards;
+    animation: fadeIn 0.3s ease-out forwards;
   }
 
   .animate-gentle-float {
-    animation: gentleFloat 6s ease-in-out infinite;
+    /* Disabled for brutalist — static */
+    animation: none;
   }
 
-  /* Underline grow from left */
   .animate-underline-grow {
-    animation: underlineGrow 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.6s forwards;
+    animation: underlineGrow 0.6s ease-out 0.3s forwards;
   }
 
-  /* Blur in */
   .animate-blur-in {
-    animation: blurIn 0.8s ease-out forwards;
+    animation: fadeUp 0.4s ease-out forwards;
   }
 
-  /* Scale in with bounce */
   .animate-scale-bounce {
-    animation: scaleBounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    animation: scaleIn 0.3s ease-out forwards;
   }
 
-  /* Counter spin */
   .animate-count-up {
-    animation: countPulse 0.3s ease-out;
+    animation: countPulse 0.2s ease-out;
   }
 
   /* ===== KEYFRAMES ===== */
@@ -189,7 +193,7 @@
   @keyframes fadeUp {
     from {
       opacity: 0;
-      transform: translateY(24px);
+      transform: translateY(16px);
     }
     to {
       opacity: 1;
@@ -200,11 +204,6 @@
   @keyframes fadeIn {
     from { opacity: 0; }
     to { opacity: 1; }
-  }
-
-  @keyframes gentleFloat {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
   }
 
   @keyframes underlineGrow {
@@ -218,23 +217,10 @@
     }
   }
 
-  @keyframes blurIn {
+  @keyframes scaleIn {
     from {
       opacity: 0;
-      filter: blur(10px);
-      transform: translateY(10px);
-    }
-    to {
-      opacity: 1;
-      filter: blur(0);
-      transform: translateY(0);
-    }
-  }
-
-  @keyframes scaleBounce {
-    from {
-      opacity: 0;
-      transform: scale(0.8);
+      transform: scale(0.95);
     }
     to {
       opacity: 1;
@@ -244,30 +230,18 @@
 
   @keyframes countPulse {
     0% { transform: scale(1); }
-    50% { transform: scale(1.1); }
+    50% { transform: scale(1.05); }
     100% { transform: scale(1); }
   }
 
   @keyframes slideInLeft {
-    from {
-      opacity: 0;
-      transform: translateX(-40px);
-    }
-    to {
-      opacity: 1;
-      transform: translateX(0);
-    }
+    from { opacity: 0; transform: translateX(-20px); }
+    to { opacity: 1; transform: translateX(0); }
   }
 
   @keyframes slideInRight {
-    from {
-      opacity: 0;
-      transform: translateX(40px);
-    }
-    to {
-      opacity: 1;
-      transform: translateX(0);
-    }
+    from { opacity: 0; transform: translateX(20px); }
+    to { opacity: 1; transform: translateX(0); }
   }
 
   @keyframes scrollLeft {
@@ -302,17 +276,17 @@
 
   /* Scroll progress bar */
   .scroll-progress {
-    @apply fixed top-0 left-0 h-[3px] bg-cta z-[60];
+    @apply fixed top-0 left-0 h-[4px] bg-cta z-[60];
     transform-origin: left;
     will-change: transform;
   }
 }
 
 @keyframes floatParticle {
-  0% { transform: translateY(110vh) rotate(0deg); opacity: 0; }
-  10% { opacity: 0.6; }
-  90% { opacity: 0.6; }
-  100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+  0% { transform: translateY(110vh); opacity: 0; }
+  10% { opacity: 0.4; }
+  90% { opacity: 0.4; }
+  100% { transform: translateY(-10vh); opacity: 0; }
 }
 .animate-float-particle {
   animation: floatParticle 10s linear infinite;
