@@ -60,77 +60,71 @@ const Header = () => {
   };
 
   return (
-    <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${isScrolled ? "bg-foreground/95 backdrop-blur-xl shadow-2xl shadow-foreground/10" : "bg-foreground/70 backdrop-blur-sm"}`}>
+    <header className={`fixed top-0 left-0 right-0 z-50 transition-colors duration-200 border-b-[3px] border-foreground ${isScrolled ? "bg-foreground" : "bg-foreground/90"}`}>
       <div className="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <a href="#hero" onClick={(e) => { e.preventDefault(); scrollToSection("#hero"); }} className="flex items-center group">
-            <img src={logo} alt="Terraria Logo" className="h-10 w-10 rounded-full object-cover ring-2 ring-white/10 group-hover:ring-cta/50 transition-all duration-300" />
+            <img src={logo} alt="Terraria Logo" className="h-10 w-10 object-cover border-2 border-primary-foreground group-hover:border-cta transition-colors" />
           </a>
-          <nav className="hidden md:flex items-center gap-8">
+          <nav className="hidden md:flex items-center gap-1">
             {navLinks.map((link) => (
               <a
                 key={link.href}
                 href={link.href}
                 onClick={(e) => { e.preventDefault(); scrollToSection(link.href, link.isRoute); }}
-                className={`relative text-sm font-medium transition-colors pb-1.5 ${
-                  isActive(link) ? "text-white" : "text-white/60 hover:text-white"
+                className={`mono-label px-4 py-2 transition-colors border-2 ${
+                  isActive(link)
+                    ? "text-foreground bg-primary-foreground border-primary-foreground"
+                    : "text-primary-foreground/70 border-transparent hover:text-primary-foreground hover:border-primary-foreground/30"
                 }`}
               >
                 {link.label}
-                <span className={`absolute bottom-0 left-0 right-0 h-[2px] bg-cta rounded-full transition-transform duration-500 ease-out origin-left ${
-                  isActive(link) ? "scale-x-100" : "scale-x-0"
-                }`} />
               </a>
             ))}
-            {/* Store as primary button */}
             <a
               href="/store"
               onClick={(e) => { e.preventDefault(); navigate("/store"); }}
-              className="flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-full text-sm font-semibold transition-all border border-white/20 hover:border-white/40"
+              className="mono-label flex items-center gap-2 px-4 py-2 text-primary-foreground/70 border-2 border-transparent hover:border-primary-foreground/30 hover:text-primary-foreground transition-colors"
             >
-              <ShoppingBag size={15} />
+              <ShoppingBag size={14} />
               {t("nav.store")}
             </a>
-            <a href="#booking" onClick={(e) => { e.preventDefault(); scrollToSection("#booking"); }} className="bg-cta hover:bg-cta-hover text-white px-6 py-2.5 rounded-full text-sm font-bold transition-all shadow-lg shadow-cta/30 hover:shadow-xl hover:shadow-cta/40 hover:scale-105 active:scale-95">
+            <a href="#booking" onClick={(e) => { e.preventDefault(); scrollToSection("#booking"); }} className="mono-label bg-cta text-primary-foreground px-6 py-2 border-2 border-cta hover:bg-cta-hover hover:border-cta-hover transition-colors ml-2">
               {t("nav.book")}
             </a>
           </nav>
-          <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="md:hidden text-white p-2 active:scale-90 transition-transform" aria-label="Toggle menu">
+          <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="md:hidden text-primary-foreground p-2" aria-label="Toggle menu">
             {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
 
-        {/* Mobile menu — redesigned */}
-        <div className={`md:hidden overflow-hidden transition-all duration-400 ease-out ${mobileMenuOpen ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"}`}>
-          <nav className="py-5 border-t border-white/10">
-            <div className="flex flex-col gap-1">
-              {navLinks.map((link, i) => (
+        {/* Mobile menu — brutalist */}
+        <div className={`md:hidden overflow-hidden transition-all duration-200 ${mobileMenuOpen ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"}`}>
+          <nav className="py-4 border-t-2 border-primary-foreground/20">
+            <div className="flex flex-col gap-0">
+              {navLinks.map((link) => (
                 <a
                   key={link.href}
                   href={link.href}
                   onClick={(e) => { e.preventDefault(); scrollToSection(link.href, link.isRoute); }}
-                  className={`flex items-center gap-3 text-base font-medium py-3.5 px-5 rounded-2xl transition-all duration-300 ${
+                  className={`mono-label py-4 px-4 border-b border-primary-foreground/10 transition-colors ${
                     isActive(link)
-                      ? "text-white bg-cta/20 border-l-[3px] border-cta"
-                      : "text-white/70 hover:text-white hover:bg-white/5"
+                      ? "text-cta bg-primary-foreground/5"
+                      : "text-primary-foreground/70 hover:text-primary-foreground hover:bg-primary-foreground/5"
                   }`}
-                  style={{ transitionDelay: `${i * 40}ms` }}
                 >
                   {link.label}
                 </a>
               ))}
-
-              {/* Store — highlighted on mobile */}
               <a
                 href="/store"
                 onClick={(e) => { e.preventDefault(); setMobileMenuOpen(false); navigate("/store"); }}
-                className="flex items-center gap-3 text-base font-semibold py-3.5 px-5 rounded-2xl bg-white/10 text-white border border-white/15 mt-2 transition-all hover:bg-white/15"
+                className="mono-label flex items-center gap-3 py-4 px-4 text-primary-foreground/70 border-b border-primary-foreground/10 hover:text-primary-foreground"
               >
-                <ShoppingBag size={18} />
+                <ShoppingBag size={16} />
                 {t("nav.store")}
               </a>
-
-              <a href="#booking" onClick={(e) => { e.preventDefault(); scrollToSection("#booking"); }} className="bg-cta hover:bg-cta-hover text-white px-5 py-3.5 rounded-full text-base font-bold transition-colors text-center mt-3 shadow-lg active:scale-95 transition-transform">
+              <a href="#booking" onClick={(e) => { e.preventDefault(); scrollToSection("#booking"); }} className="mono-label bg-cta text-primary-foreground px-5 py-4 text-center mt-3 border-2 border-cta hover:bg-cta-hover transition-colors">
                 {t("nav.book")}
               </a>
             </div>

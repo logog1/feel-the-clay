@@ -30,53 +30,9 @@ const jsonLd = {
   sameAs: ["https://www.instagram.com/terraria.workshops"],
 };
 
-/** Angled band separator — goes into a darker warm zone */
-const SlantDown = () => (
-  <div className="relative w-full overflow-hidden pointer-events-none" style={{ height: 64 }}>
-    <div
-      className="absolute inset-0"
-      style={{
-        background: "hsl(24 50% 87%)",
-        clipPath: "polygon(0 0, 100% 40%, 100% 100%, 0 100%)",
-      }}
-    />
-  </div>
-);
-
-const SlantUp = () => (
-  <div className="relative w-full overflow-hidden pointer-events-none" style={{ height: 64 }}>
-    <div
-      className="absolute inset-0"
-      style={{
-        background: "hsl(24 50% 87%)",
-        clipPath: "polygon(0 0, 100% 0, 100% 60%, 0 100%)",
-      }}
-    />
-  </div>
-);
-
-const SlantDownLight = () => (
-  <div className="relative w-full overflow-hidden pointer-events-none" style={{ height: 64 }}>
-    <div
-      className="absolute inset-0"
-      style={{
-        background: "hsl(25 55% 94%)",
-        clipPath: "polygon(0 0, 100% 40%, 100% 100%, 0 100%)",
-      }}
-    />
-  </div>
-);
-
-const SlantUpLight = () => (
-  <div className="relative w-full overflow-hidden pointer-events-none" style={{ height: 64 }}>
-    <div
-      className="absolute inset-0"
-      style={{
-        background: "hsl(25 55% 94%)",
-        clipPath: "polygon(0 0, 100% 0, 100% 60%, 0 100%)",
-      }}
-    />
-  </div>
+/** Brutalist thick divider */
+const BrutalistDivider = () => (
+  <div className="w-full h-[3px] bg-foreground" />
 );
 
 const Index = () => {
@@ -93,36 +49,34 @@ const Index = () => {
       <Header />
       <HeroSection />
 
-      <AnimatedSection variant="blur"><BeliefSection /></AnimatedSection>
+      <AnimatedSection variant="fade-up"><BeliefSection /></AnimatedSection>
 
-      <SlantDown />
-      <SlantUp />
+      <BrutalistDivider />
 
-      <AnimatedSection variant="fade-left" delay={100}><ExperienceSection /></AnimatedSection>
+      <AnimatedSection variant="fade-up" delay={100}><ExperienceSection /></AnimatedSection>
 
+      <BrutalistDivider />
 
-      <AnimatedSection variant="scale"><GallerySection /></AnimatedSection>
+      <AnimatedSection variant="fade-up"><GallerySection /></AnimatedSection>
 
-      {/* Slant into sunken zone for offers + testimonials */}
-      <SlantDown />
+      <BrutalistDivider />
       <div className="section-sunken">
         <AnimatedSection variant="fade-up"><OffersSection /></AnimatedSection>
-        <AnimatedSection variant="fade-right" delay={100}><TestimonialsSection /></AnimatedSection>
+        <AnimatedSection variant="fade-up" delay={100}><TestimonialsSection /></AnimatedSection>
       </div>
-      <SlantUp />
+      <BrutalistDivider />
 
       <AnimatedSection variant="fade-up"><FAQSection /></AnimatedSection>
-      <AnimatedSection variant="blur"><LanguagesSection /></AnimatedSection>
+      <AnimatedSection variant="fade-up"><LanguagesSection /></AnimatedSection>
 
-      {/* Slant into booking zone */}
-      <SlantDownLight />
+      <BrutalistDivider />
       <div className="section-elevated">
         <AnimatedSection variant="fade-up"><BookingFormSection /></AnimatedSection>
         <AnimatedSection variant="fade-up"><ContactSection /></AnimatedSection>
       </div>
-      <SlantUpLight />
+      <BrutalistDivider />
 
-      <AnimatedSection variant="scale"><TrustSection /></AnimatedSection>
+      <AnimatedSection variant="fade-up"><TrustSection /></AnimatedSection>
       <Footer />
     </main>
   );
