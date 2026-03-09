@@ -65,6 +65,31 @@ const BlogPost = () => {
     author: { "@type": "Organization", name: "Terraria Workshops" },
   };
 
+  const renderInline = (text: string) => {
+    // Parse bold and markdown links: [text](url)
+    const tokens: React.ReactNode[] = [];
+    const regex = /\*\*(.+?)\*\*|\[([^\]]+)\]\(([^)]+)\)/g;
+    let lastIndex = 0;
+    let match;
+    let key = 0;
+    while ((match = regex.exec(text)) !== null) {
+      if (match.index > lastIndex) tokens.push(text.slice(lastIndex, match.index));
+      if (match[1]) {
+        tokens.push(<strong key={key++}>{match[1]}</strong>);
+      } else if (match[2] && match[3]) {
+        const isInternal = match[3].startsWith("/");
+        tokens.push(
+          isInternal
+            ? <Link key={key++} to={match[3]} className="text-cta hover:underline font-medium">{match[2]}</Link>
+            : <a key={key++} href={match[3]} target="_blank" rel="noopener noreferrer" className="text-cta hover:underline font-medium">{match[2]}</a>
+        );
+      }
+      lastIndex = match.index + match[0].length;
+    }
+    if (lastIndex < text.length) tokens.push(text.slice(lastIndex));
+    return tokens;
+  };
+
   const renderContent = (content: string) => {
     const lines = content.split("\n");
     return lines.map((line, i) => {
@@ -74,15 +99,14 @@ const BlogPost = () => {
         const match = line.match(/- \*\*(.+?)\*\*:?\s*(.*)/);
         if (match) return <li key={i} className="ml-4 mb-2"><strong className="text-foreground">{match[1]}</strong>{match[2] && `: ${match[2]}`}</li>;
       }
-      if (line.startsWith("- ")) return <li key={i} className="ml-4 mb-2">{line.replace("- ", "")}</li>;
+      if (line.startsWith("- ")) return <li key={i} className="ml-4 mb-2">{renderInline(line.replace("- ", ""))}</li>;
       if (line.match(/^\d+\.\s/)) {
         const match = line.match(/^\d+\.\s\*\*(.+?)\*\*\.?\s*(.*)/);
         if (match) return <p key={i} className="mb-3"><strong className="text-foreground">{match[1]}.</strong> {match[2]}</p>;
-        return <p key={i} className="mb-3">{line}</p>;
+        return <p key={i} className="mb-3">{renderInline(line)}</p>;
       }
       if (line.trim() === "") return <div key={i} className="h-2" />;
-      const parts = line.split(/\*\*(.+?)\*\*/g);
-      return <p key={i} className="mb-4 leading-relaxed">{parts.map((part, j) => (j % 2 === 1 ? <strong key={j}>{part}</strong> : part))}</p>;
+      return <p key={i} className="mb-4 leading-relaxed">{renderInline(line)}</p>;
     });
   };
 
