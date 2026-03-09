@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
-import { LogOut, CalendarDays, ShoppingCart, RefreshCw, Clock, CheckCircle2, XCircle, Package, Calendar, Plus, Trash2, Tag, ToggleLeft, ToggleRight, ChevronLeft, ChevronRight, Upload, ImagePlus, X, LayoutList, GripVertical, Eye, EyeOff, Save, AlertTriangle, Settings, Mail, Phone, Users, Shield, ShieldCheck, ShieldX, UserCheck, UserX, Zap } from "lucide-react";
+import { LogOut, CalendarDays, ShoppingCart, RefreshCw, Clock, CheckCircle2, XCircle, Package, Calendar, Plus, Trash2, Tag, ToggleLeft, ToggleRight, ChevronLeft, ChevronRight, Upload, ImagePlus, X, LayoutList, GripVertical, Eye, EyeOff, Save, AlertTriangle, Settings, Mail, Phone, Users, Shield, ShieldCheck, ShieldX, UserCheck, UserX, Zap, MapPin } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import SEOHead from "@/components/SEOHead";
 import { cn } from "@/lib/utils";
@@ -101,6 +101,9 @@ const AdminDashboard = () => {
   // Settings / contacts
   const [contactEmail, setContactEmail] = useState("");
   const [contactWhatsApp, setContactWhatsApp] = useState("");
+  const [publicEmail, setPublicEmail] = useState("");
+  const [publicWhatsApp, setPublicWhatsApp] = useState("");
+  const [publicMapUrl, setPublicMapUrl] = useState("");
   const [savingContacts, setSavingContacts] = useState(false);
   const [contactsSaved, setContactsSaved] = useState(false);
 
@@ -143,12 +146,15 @@ const AdminDashboard = () => {
     setSectionDrafts(drafts);
 
     // Load contacts
-    const { data: settingsData } = await supabase.from("site_settings").select("key, value").in("key", ["notification_email", "whatsapp_numbers"]);
+    const { data: settingsData } = await supabase.from("site_settings").select("key, value").in("key", ["notification_email", "whatsapp_numbers", "public_email", "public_whatsapp", "public_map_url"]);
     if (settingsData) {
       const map: Record<string, string> = {};
       settingsData.forEach((r: any) => { map[r.key] = r.value; });
       setContactEmail(map["notification_email"] || "");
       setContactWhatsApp(map["whatsapp_numbers"] || "");
+      setPublicEmail(map["public_email"] || "");
+      setPublicWhatsApp(map["public_whatsapp"] || "");
+      setPublicMapUrl(map["public_map_url"] || "");
     }
 
     // Load users
@@ -394,6 +400,9 @@ const AdminDashboard = () => {
     await Promise.all([
       supabase.from("site_settings").upsert({ key: "notification_email", value: contactEmail.trim(), updated_at: new Date().toISOString() }),
       supabase.from("site_settings").upsert({ key: "whatsapp_numbers", value: contactWhatsApp.trim(), updated_at: new Date().toISOString() }),
+      supabase.from("site_settings").upsert({ key: "public_email", value: publicEmail.trim(), updated_at: new Date().toISOString() }),
+      supabase.from("site_settings").upsert({ key: "public_whatsapp", value: publicWhatsApp.trim(), updated_at: new Date().toISOString() }),
+      supabase.from("site_settings").upsert({ key: "public_map_url", value: publicMapUrl.trim(), updated_at: new Date().toISOString() }),
     ]);
     setSavingContacts(false);
     setContactsSaved(true);
@@ -1009,6 +1018,25 @@ const AdminDashboard = () => {
                   placeholder="+212600000000,+212700000000"
                   className="rounded-xl"
                 />
+              </div>
+
+              <div className="p-6 rounded-3xl bg-card border-2 border-border/40 space-y-5">
+                <h3 className="font-bold text-foreground flex items-center gap-2"><MapPin size={18} className="text-cta" /> Website Contact Info</h3>
+                <p className="text-sm text-muted-foreground">These are displayed publicly on your website's Contact section.</p>
+                <div className="space-y-3">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-medium text-muted-foreground">Public Email</label>
+                    <Input value={publicEmail} onChange={(e) => setPublicEmail(e.target.value)} placeholder="hello@terrariaworkshops.com" className="rounded-xl" />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-medium text-muted-foreground">WhatsApp Link</label>
+                    <Input value={publicWhatsApp} onChange={(e) => setPublicWhatsApp(e.target.value)} placeholder="https://wa.me/message/..." className="rounded-xl" />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-medium text-muted-foreground">Google Maps Embed URL</label>
+                    <Input value={publicMapUrl} onChange={(e) => setPublicMapUrl(e.target.value)} placeholder="https://www.google.com/maps/embed?pb=..." className="rounded-xl" />
+                  </div>
+                </div>
               </div>
 
               <Button
