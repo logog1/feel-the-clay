@@ -400,6 +400,9 @@ const AdminDashboard = () => {
     await Promise.all([
       supabase.from("site_settings").upsert({ key: "notification_email", value: contactEmail.trim(), updated_at: new Date().toISOString() }),
       supabase.from("site_settings").upsert({ key: "whatsapp_numbers", value: contactWhatsApp.trim(), updated_at: new Date().toISOString() }),
+      supabase.from("site_settings").upsert({ key: "public_email", value: publicEmail.trim(), updated_at: new Date().toISOString() }),
+      supabase.from("site_settings").upsert({ key: "public_whatsapp", value: publicWhatsApp.trim(), updated_at: new Date().toISOString() }),
+      supabase.from("site_settings").upsert({ key: "public_map_url", value: publicMapUrl.trim(), updated_at: new Date().toISOString() }),
     ]);
     setSavingContacts(false);
     setContactsSaved(true);
