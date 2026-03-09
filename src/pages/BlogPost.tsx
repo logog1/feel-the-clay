@@ -83,9 +83,25 @@ const BlogPost = () => {
     "@type": "BlogPosting",
     headline: post.title.en,
     description: post.excerpt.en,
-    image: `https://www.terrariaworkshops.com${post.coverImage}`,
+    image: post.coverImage.startsWith("http")
+      ? post.coverImage
+      : `https://www.terrariaworkshops.com${post.coverImage}`,
     datePublished: post.publishedAt,
-    author: { "@type": "Organization", name: "Terraria Workshops" },
+    dateModified: post.publishedAt,
+    author: { "@type": "Organization", name: "Terraria Workshops", url: "https://www.terrariaworkshops.com" },
+    publisher: {
+      "@type": "Organization",
+      name: "Terraria Workshops",
+      url: "https://www.terrariaworkshops.com",
+      logo: { "@type": "ImageObject", url: "https://www.terrariaworkshops.com/logo.png" },
+    },
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": `https://www.terrariaworkshops.com/blog/${post.slug}`,
+    },
+    wordCount: post.content.en.split(/\s+/).length,
+    articleSection: post.category,
+    inLanguage: ["en", "fr", "es", "ar"],
   };
 
   const handleShare = async () => {

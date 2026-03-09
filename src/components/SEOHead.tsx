@@ -6,14 +6,16 @@ interface SEOHeadProps {
   path: string;
   type?: string;
   jsonLd?: Record<string, unknown>;
+  noSuffix?: boolean;
 }
 
 const SITE_URL = "https://www.terrariaworkshops.com";
 const SITE_NAME = "Terraria Workshops";
 const OG_IMAGE = `${SITE_URL}/og.jpg`;
+const SUPPORTED_LANGS = ["en", "fr", "es", "ar"] as const;
 
-const SEOHead = ({ title, description, path, type = "website", jsonLd }: SEOHeadProps) => {
-  const fullTitle = `${title} | ${SITE_NAME}`;
+const SEOHead = ({ title, description, path, type = "website", jsonLd, noSuffix }: SEOHeadProps) => {
+  const fullTitle = noSuffix ? title : `${title} | ${SITE_NAME}`;
   const canonical = `${SITE_URL}${path}`;
 
   return (
@@ -21,6 +23,12 @@ const SEOHead = ({ title, description, path, type = "website", jsonLd }: SEOHead
       <title>{fullTitle}</title>
       <meta name="description" content={description} />
       <link rel="canonical" href={canonical} />
+
+      {/* hreflang for multilingual SEO */}
+      {SUPPORTED_LANGS.map((lang) => (
+        <link key={lang} rel="alternate" hrefLang={lang} href={canonical} />
+      ))}
+      <link rel="alternate" hrefLang="x-default" href={canonical} />
 
       <meta property="og:type" content={type} />
       <meta property="og:title" content={fullTitle} />
