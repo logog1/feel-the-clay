@@ -30,14 +30,16 @@ const jsonLd = {
   sameAs: ["https://www.instagram.com/terraria.workshops"],
 };
 
-/** Brutalist thick divider */
-const BrutalistDivider = () => (
-  <div className="w-full h-[3px] bg-foreground" />
+/** Soft artisanal divider */
+const SoftDivider = () => (
+  <div className="w-full flex justify-center py-1">
+    <div className="w-16 h-px bg-border" />
+  </div>
 );
 
 const Index = () => {
   return (
-    <main className="min-h-screen">
+    <main className="min-h-screen bg-background overflow-x-hidden">
       <SEOHead
         title="Pottery workshops in Tétouan"
         description="Hands-on pottery workshops in Tétouan. Learn wheel throwing and hand-building, all materials included. Book your spot and pay on site."
@@ -51,30 +53,28 @@ const Index = () => {
 
       <AnimatedSection variant="fade-up"><BeliefSection /></AnimatedSection>
 
-      <BrutalistDivider />
+      <SoftDivider />
 
       <AnimatedSection variant="fade-up" delay={100}><ExperienceSection /></AnimatedSection>
 
-      <BrutalistDivider />
+      <SoftDivider />
 
       <AnimatedSection variant="fade-up"><GallerySection /></AnimatedSection>
 
-      <BrutalistDivider />
+      <SoftDivider />
       <div className="section-sunken">
         <AnimatedSection variant="fade-up"><OffersSection /></AnimatedSection>
         <AnimatedSection variant="fade-up" delay={100}><TestimonialsSection /></AnimatedSection>
       </div>
-      <BrutalistDivider />
 
       <AnimatedSection variant="fade-up"><FAQSection /></AnimatedSection>
       <AnimatedSection variant="fade-up"><LanguagesSection /></AnimatedSection>
 
-      <BrutalistDivider />
+      <SoftDivider />
       <div className="section-elevated">
         <AnimatedSection variant="fade-up"><BookingFormSection /></AnimatedSection>
         <AnimatedSection variant="fade-up"><ContactSection /></AnimatedSection>
       </div>
-      <BrutalistDivider />
 
       <AnimatedSection variant="fade-up"><TrustSection /></AnimatedSection>
       <Footer />
