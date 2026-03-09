@@ -25,8 +25,19 @@ const categoryLabels: Record<string, Record<string, string>> = {
 const BlogPost = () => {
   const { slug } = useParams<{ slug: string }>();
   const { language } = useLanguage();
-  const { posts, getPost } = useBlogPosts();
+  const { posts, loading, getPost } = useBlogPosts();
   const post = slug ? getPost(slug) : undefined;
+
+  if (loading) {
+    return (
+      <main className="min-h-screen bg-background">
+        <Header />
+        <div className="pt-28 pb-16 flex items-center justify-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-cta" />
+        </div>
+      </main>
+    );
+  }
 
   if (!post) {
     return <Navigate to="/blog" replace />;
