@@ -129,6 +129,7 @@ const ProDashboard = () => {
             {activeSection === "tasks" && <TasksSection />}
             {activeSection === "automations" && <AutomationsSection />}
             {activeSection === "media" && <MediaManagerSection />}
+            {activeSection === "blog" && <BlogSection />}
             {activeSection === "themes" && <ThemeManagerSection />}
             {activeSection === "settings" && <SettingsSection />}
           </main>
