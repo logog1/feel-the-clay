@@ -146,12 +146,15 @@ const AdminDashboard = () => {
     setSectionDrafts(drafts);
 
     // Load contacts
-    const { data: settingsData } = await supabase.from("site_settings").select("key, value").in("key", ["notification_email", "whatsapp_numbers"]);
+    const { data: settingsData } = await supabase.from("site_settings").select("key, value").in("key", ["notification_email", "whatsapp_numbers", "public_email", "public_whatsapp", "public_map_url"]);
     if (settingsData) {
       const map: Record<string, string> = {};
       settingsData.forEach((r: any) => { map[r.key] = r.value; });
       setContactEmail(map["notification_email"] || "");
       setContactWhatsApp(map["whatsapp_numbers"] || "");
+      setPublicEmail(map["public_email"] || "");
+      setPublicWhatsApp(map["public_whatsapp"] || "");
+      setPublicMapUrl(map["public_map_url"] || "");
     }
 
     // Load users
