@@ -39,6 +39,7 @@ export const allSidebarItems: SidebarItem[] = [
   { id: "access", title: "Access", icon: Shield },
   { id: "tasks", title: "Tasks", icon: ListTodo },
   { id: "automations", title: "Automations", icon: Zap },
+  { id: "blog", title: "Blog", icon: FileText },
   { id: "media", title: "Media", icon: ImageIcon },
   { id: "themes", title: "Themes", icon: Palette },
   { id: "settings", title: "Settings", icon: Settings },
