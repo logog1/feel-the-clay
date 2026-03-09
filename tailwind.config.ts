@@ -14,8 +14,7 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['Inter', 'sans-serif'],
-        serif: ['Cormorant Garamond', 'serif'],
+        sans: ['Rubik', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -81,7 +80,7 @@ export default {
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
-      keyframes: {
+keyframes: {
         "accordion-down": {
           from: { height: "0" },
           to: { height: "var(--radix-accordion-content-height)" },
@@ -97,6 +96,10 @@ export default {
         "scroll-right": {
           "0%": { transform: "translateX(-50%)" },
           "100%": { transform: "translateX(0)" },
+        },
+        "gentle-float": {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-6px)" },
         },
         "shake": {
           "0%, 100%": { transform: "translateX(0)" },
@@ -118,6 +121,7 @@ export default {
         "scroll-left": "scroll-left 30s linear infinite",
         "scroll-right": "scroll-right 35s linear infinite",
         "scroll-left-slow": "scroll-left 40s linear infinite",
+        "gentle-float": "gentle-float 3s ease-in-out infinite",
         "slide-up": "slide-up 0.3s ease-out",
         "fade-in": "fade-in 0.2s ease-out",
       },

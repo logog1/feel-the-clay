@@ -30,16 +30,58 @@ const jsonLd = {
   sameAs: ["https://www.instagram.com/terraria.workshops"],
 };
 
-/** Soft artisanal divider */
-const SoftDivider = () => (
-  <div className="w-full flex justify-center py-1">
-    <div className="w-16 h-px bg-border" />
+/** Angled band separator — goes into a darker warm zone */
+const SlantDown = () => (
+  <div className="relative w-full overflow-hidden pointer-events-none" style={{ height: 64 }}>
+    <div
+      className="absolute inset-0"
+      style={{
+        background: "hsl(24 50% 87%)",
+        clipPath: "polygon(0 0, 100% 40%, 100% 100%, 0 100%)",
+      }}
+    />
+  </div>
+);
+
+const SlantUp = () => (
+  <div className="relative w-full overflow-hidden pointer-events-none" style={{ height: 64 }}>
+    <div
+      className="absolute inset-0"
+      style={{
+        background: "hsl(24 50% 87%)",
+        clipPath: "polygon(0 0, 100% 0, 100% 60%, 0 100%)",
+      }}
+    />
+  </div>
+);
+
+const SlantDownLight = () => (
+  <div className="relative w-full overflow-hidden pointer-events-none" style={{ height: 64 }}>
+    <div
+      className="absolute inset-0"
+      style={{
+        background: "hsl(25 55% 94%)",
+        clipPath: "polygon(0 0, 100% 40%, 100% 100%, 0 100%)",
+      }}
+    />
+  </div>
+);
+
+const SlantUpLight = () => (
+  <div className="relative w-full overflow-hidden pointer-events-none" style={{ height: 64 }}>
+    <div
+      className="absolute inset-0"
+      style={{
+        background: "hsl(25 55% 94%)",
+        clipPath: "polygon(0 0, 100% 0, 100% 60%, 0 100%)",
+      }}
+    />
   </div>
 );
 
 const Index = () => {
   return (
-    <main className="min-h-screen bg-background overflow-x-hidden">
+    <main className="min-h-screen">
       <SEOHead
         title="Pottery workshops in Tétouan"
         description="Hands-on pottery workshops in Tétouan. Learn wheel throwing and hand-building, all materials included. Book your spot and pay on site."
@@ -51,32 +93,36 @@ const Index = () => {
       <Header />
       <HeroSection />
 
-      <AnimatedSection variant="fade-up"><BeliefSection /></AnimatedSection>
+      <AnimatedSection variant="blur"><BeliefSection /></AnimatedSection>
 
-      <SoftDivider />
+      <SlantDown />
+      <SlantUp />
 
-      <AnimatedSection variant="fade-up" delay={100}><ExperienceSection /></AnimatedSection>
+      <AnimatedSection variant="fade-left" delay={100}><ExperienceSection /></AnimatedSection>
 
-      <SoftDivider />
 
-      <AnimatedSection variant="fade-up"><GallerySection /></AnimatedSection>
+      <AnimatedSection variant="scale"><GallerySection /></AnimatedSection>
 
-      <SoftDivider />
+      {/* Slant into sunken zone for offers + testimonials */}
+      <SlantDown />
       <div className="section-sunken">
         <AnimatedSection variant="fade-up"><OffersSection /></AnimatedSection>
-        <AnimatedSection variant="fade-up" delay={100}><TestimonialsSection /></AnimatedSection>
+        <AnimatedSection variant="fade-right" delay={100}><TestimonialsSection /></AnimatedSection>
       </div>
+      <SlantUp />
 
       <AnimatedSection variant="fade-up"><FAQSection /></AnimatedSection>
-      <AnimatedSection variant="fade-up"><LanguagesSection /></AnimatedSection>
+      <AnimatedSection variant="blur"><LanguagesSection /></AnimatedSection>
 
-      <SoftDivider />
+      {/* Slant into booking zone */}
+      <SlantDownLight />
       <div className="section-elevated">
         <AnimatedSection variant="fade-up"><BookingFormSection /></AnimatedSection>
         <AnimatedSection variant="fade-up"><ContactSection /></AnimatedSection>
       </div>
+      <SlantUpLight />
 
-      <AnimatedSection variant="fade-up"><TrustSection /></AnimatedSection>
+      <AnimatedSection variant="scale"><TrustSection /></AnimatedSection>
       <Footer />
     </main>
   );
