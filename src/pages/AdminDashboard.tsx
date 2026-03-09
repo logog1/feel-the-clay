@@ -1020,6 +1020,24 @@ const AdminDashboard = () => {
                 />
               </div>
 
+              <div className="p-6 rounded-3xl bg-card border-2 border-border/40 space-y-5">
+                <h3 className="font-bold text-foreground flex items-center gap-2"><MapPin size={18} className="text-cta" /> Website Contact Info</h3>
+                <p className="text-sm text-muted-foreground">These are displayed publicly on your website's Contact section.</p>
+                <div className="space-y-3">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-medium text-muted-foreground">Public Email</label>
+                    <Input value={publicEmail} onChange={(e) => setPublicEmail(e.target.value)} placeholder="hello@terrariaworkshops.com" className="rounded-xl" />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-medium text-muted-foreground">WhatsApp Link</label>
+                    <Input value={publicWhatsApp} onChange={(e) => setPublicWhatsApp(e.target.value)} placeholder="https://wa.me/message/..." className="rounded-xl" />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-medium text-muted-foreground">Google Maps Embed URL</label>
+                    <Input value={publicMapUrl} onChange={(e) => setPublicMapUrl(e.target.value)} placeholder="https://www.google.com/maps/embed?pb=..." className="rounded-xl" />
+                  </div>
+                </div>
+
               <Button
                 onClick={saveContacts}
                 disabled={savingContacts}
