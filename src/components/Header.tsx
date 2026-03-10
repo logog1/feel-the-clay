@@ -143,6 +143,18 @@ const Header = () => {
                 {t("nav.store")}
               </a>
 
+              {/* Instagram — mobile */}
+              <a
+                href="https://www.instagram.com/terraria_workshops"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 text-base font-semibold py-3.5 px-5 rounded-2xl text-white mt-1 transition-all hover:scale-[1.02] active:scale-95"
+                style={{ background: "linear-gradient(135deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888)" }}
+              >
+                <Instagram size={18} />
+                Follow us on Instagram
+              </a>
+
               <a href="#booking" onClick={(e) => { e.preventDefault(); scrollToSection("#booking"); }} className="bg-cta hover:bg-cta-hover text-white px-5 py-3.5 rounded-full text-base font-bold transition-colors text-center mt-3 shadow-lg active:scale-95 transition-transform">
                 {t("nav.book")}
               </a>

@@ -27,7 +27,7 @@ const jsonLd = {
   url: "https://www.terrariaworkshops.com",
   address: { "@type": "PostalAddress", addressLocality: "Tétouan", addressCountry: "MA" },
   priceRange: "$$",
-  sameAs: ["https://www.instagram.com/terraria.workshops"],
+  sameAs: ["https://www.instagram.com/terraria_workshops"],
 };
 
 /** Angled band separator — goes into a darker warm zone */

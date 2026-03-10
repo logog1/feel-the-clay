@@ -82,8 +82,8 @@ const PrivacyPolicy = () => {
               hello@terrariaworkshops.com
             </a>{" "}
             or via{" "}
-            <a href="https://www.instagram.com/terraria.workshops" target="_blank" rel="noopener noreferrer" className="text-cta hover:underline">
-              Instagram @terraria.workshops
+            <a href="https://www.instagram.com/terraria_workshops" target="_blank" rel="noopener noreferrer" className="text-cta hover:underline">
+              Instagram @terraria_workshops
             </a>.
           </p>
         </div>
