@@ -1,6 +1,6 @@
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Link } from "react-router-dom";
-import { Mail } from "lucide-react";
+import { Mail, Instagram } from "lucide-react";
 
 const Footer = () => {
   const { t } = useLanguage();
