@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Menu, X, ShoppingBag } from "lucide-react";
+import { Menu, X, ShoppingBag, Instagram } from "lucide-react";
 import logo from "@/assets/logo.png";
 import { useLanguage } from "@/i18n/LanguageContext";
 
