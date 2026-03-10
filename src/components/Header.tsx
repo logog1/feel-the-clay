@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Menu, X, ShoppingBag } from "lucide-react";
+import { Menu, X, ShoppingBag, Instagram } from "lucide-react";
 import logo from "@/assets/logo.png";
 import { useLanguage } from "@/i18n/LanguageContext";
 
@@ -83,7 +83,7 @@ const Header = () => {
                 }`} />
               </a>
             ))}
-            {/* Store as primary button */}
+            {/* Store button */}
             <a
               href="/store"
               onClick={(e) => { e.preventDefault(); navigate("/store"); }}
@@ -91,6 +91,18 @@ const Header = () => {
             >
               <ShoppingBag size={15} />
               {t("nav.store")}
+            </a>
+            {/* Instagram — eye-catching gradient */}
+            <a
+              href="https://www.instagram.com/terraria_workshops"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-full text-sm font-semibold text-white transition-all hover:scale-105 active:scale-95 shadow-md"
+              style={{ background: "linear-gradient(135deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888)" }}
+              aria-label="Instagram"
+            >
+              <Instagram size={16} />
+              <span className="hidden lg:inline">Instagram</span>
             </a>
             <a href="#booking" onClick={(e) => { e.preventDefault(); scrollToSection("#booking"); }} className="bg-cta hover:bg-cta-hover text-white px-6 py-2.5 rounded-full text-sm font-bold transition-all shadow-lg shadow-cta/30 hover:shadow-xl hover:shadow-cta/40 hover:scale-105 active:scale-95">
               {t("nav.book")}
@@ -129,6 +141,18 @@ const Header = () => {
               >
                 <ShoppingBag size={18} />
                 {t("nav.store")}
+              </a>
+
+              {/* Instagram — mobile */}
+              <a
+                href="https://www.instagram.com/terraria_workshops"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 text-base font-semibold py-3.5 px-5 rounded-2xl text-white mt-1 transition-all hover:scale-[1.02] active:scale-95"
+                style={{ background: "linear-gradient(135deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888)" }}
+              >
+                <Instagram size={18} />
+                Follow us on Instagram
               </a>
 
               <a href="#booking" onClick={(e) => { e.preventDefault(); scrollToSection("#booking"); }} className="bg-cta hover:bg-cta-hover text-white px-5 py-3.5 rounded-full text-base font-bold transition-colors text-center mt-3 shadow-lg active:scale-95 transition-transform">

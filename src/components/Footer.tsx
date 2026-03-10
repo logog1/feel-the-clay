@@ -1,6 +1,6 @@
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Link } from "react-router-dom";
-import { Mail } from "lucide-react";
+import { Mail, Instagram } from "lucide-react";
 
 const Footer = () => {
   const { t } = useLanguage();
@@ -44,8 +44,15 @@ const Footer = () => {
           <div className="space-y-2">
             <h3 className="font-medium text-foreground text-xs uppercase tracking-wider mb-3">Location</h3>
             <p className="text-muted-foreground text-xs leading-relaxed">Tétouan, Morocco</p>
-            <a href="https://www.instagram.com/terraria.workshops" target="_blank" rel="noopener noreferrer" className="block text-muted-foreground hover:text-cta transition-colors">
-              Instagram
+            <a
+              href="https://www.instagram.com/terraria_workshops"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 mt-1 px-3 py-1.5 rounded-full text-xs font-semibold text-white transition-all hover:scale-105 hover:shadow-md"
+              style={{ background: "linear-gradient(135deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888)" }}
+            >
+              <Instagram size={14} />
+              @terraria_workshops
             </a>
           </div>
         </div>
