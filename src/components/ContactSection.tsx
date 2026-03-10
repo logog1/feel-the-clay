@@ -45,6 +45,7 @@ const ContactSection = () => {
     { icon: <Mail size={18} className="text-cta flex-shrink-0" />, label: info.email, href: `mailto:${info.email}`, truncate: true },
     { icon: <WhatsAppIcon />, label: "WhatsApp", href: info.whatsapp, external: true },
     { icon: <MapPin size={18} className="text-cta flex-shrink-0" />, label: t("contact.location"), href: "https://maps.app.goo.gl/h4c9BhEj1WZrESG59?g_st=ic", external: true },
+    { icon: <InstagramIcon />, label: "@terraria_workshops", href: "https://www.instagram.com/terraria_workshops", external: true, gradient: true },
   ];
 
   return (
