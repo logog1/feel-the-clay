@@ -63,20 +63,30 @@ const ContactSection = () => {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            {contacts.map((c, i) => (
+          {contacts.map((c, i) => (
               <a
                 key={i}
                 href={c.href}
                 target={c.external ? "_blank" : undefined}
                 rel={c.external ? "noopener noreferrer" : undefined}
                 className={cn(
-                  "flex items-center gap-3 p-4 glass-card hover:border-cta/30 hover:-translate-y-0.5 hover:shadow-md transition-all duration-500 text-sm min-w-0",
+                  "flex items-center gap-3 p-4 hover:-translate-y-0.5 hover:shadow-md transition-all duration-500 text-sm min-w-0 rounded-xl",
+                  c.gradient
+                    ? "text-white font-medium shadow-lg"
+                    : "glass-card hover:border-cta/30",
                   isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
                 )}
-                style={{ transitionDelay: `${(i + 1) * 100}ms` }}
+                style={{
+                  transitionDelay: `${(i + 1) * 100}ms`,
+                  ...(c.gradient ? { background: "linear-gradient(135deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888)" } : {}),
+                }}
               >
                 {c.icon}
-                <span className={cn("text-foreground/80 text-xs sm:text-sm", c.truncate && "truncate break-all")}>{c.label}</span>
+                <span className={cn(
+                  "text-xs sm:text-sm",
+                  c.gradient ? "text-white" : "text-foreground/80",
+                  c.truncate && "truncate break-all"
+                )}>{c.label}</span>
               </a>
             ))}
           </div>
