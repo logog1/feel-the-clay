@@ -40,7 +40,7 @@ const HeroSection = () => {
         {/* Tetouan city highlight */}
         <div className="mt-10 flex items-center gap-4 animate-fade-up" style={{ animationDelay: '0.3s' }}>
           <div className="w-14 h-14 md:w-20 md:h-20 rounded-2xl overflow-hidden border-2 border-white/20 shadow-xl flex-shrink-0 ring-2 ring-cta/20 ring-offset-2 ring-offset-background/50">
-            <img src={tetouanCity} alt="Tetouan, Morocco" className="w-full h-full object-cover" />
+            <img src={tetouanCity} alt="Tetouan, Morocco" className="w-full h-full object-cover" loading="lazy" />
           </div>
           <div>
             <p className="text-sm font-bold text-foreground">{t("hero.city_name")}</p>

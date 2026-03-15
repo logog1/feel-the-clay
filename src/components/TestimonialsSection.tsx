@@ -110,6 +110,7 @@ const TestimonialsSection = () => {
             alt={review.name}
             className="w-6 h-6 rounded-full object-cover"
             referrerPolicy="no-referrer"
+            loading="lazy"
           />
         ) : (
           <div className="w-6 h-6 rounded-full bg-terracotta/20 flex items-center justify-center">

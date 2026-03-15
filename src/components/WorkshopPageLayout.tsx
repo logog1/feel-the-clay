@@ -53,7 +53,7 @@ const WorkshopPageLayout = ({ workshop, currentPath }: { workshop: Workshop; cur
       {/* Hero image with overlay */}
       <div className="pt-16 relative">
         <div className="aspect-[16/9] md:aspect-[21/9] overflow-hidden">
-          <img src={workshop.images[0]} alt={workshop.title} className="w-full h-full object-cover animate-fade-in" />
+          <img src={workshop.images[0]} alt={workshop.title} className="w-full h-full object-cover animate-fade-in" loading="eager" fetchPriority="high" />
         </div>
         <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" style={{ top: '40%' }} />
       </div>

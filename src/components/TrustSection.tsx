@@ -35,7 +35,7 @@ const TrustSection = () => {
                 )}
                 style={{ transitionDelay: `${index * 120}ms` }}
               >
-                <img src={partner.src} alt={partner.alt} className="h-full w-auto object-contain drop-shadow-md hover:drop-shadow-xl transition-all duration-300" />
+                <img src={partner.src} alt={partner.alt} className="h-full w-auto object-contain drop-shadow-md hover:drop-shadow-xl transition-all duration-300" loading="lazy" />
               </div>
             ))}
           </div>
