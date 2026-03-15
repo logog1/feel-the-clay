@@ -41,6 +41,7 @@ const App = () => {
            <LanguageSwitcher />
             <CookieConsent />
             <WhatsAppFloat />
+            <GoogleAnalytics />
           <BrowserRouter>
             <ScrollToTop />
             <Routes>
