@@ -15,7 +15,7 @@ const Footer = forwardRef<HTMLElement>((_, ref) => {
   };
 
   return (
-    <footer className="py-10 px-5 border-t border-border/30">
+    <footer ref={ref} className="py-10 px-5 border-t border-border/30">
       <div className="max-w-5xl mx-auto">
         {/* Links grid */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 mb-8 text-sm">
@@ -65,6 +65,7 @@ const Footer = forwardRef<HTMLElement>((_, ref) => {
       </div>
     </footer>
   );
-};
+});
+Footer.displayName = "Footer";
 
 export default Footer;
