@@ -1,0 +1,1 @@
+ALTER TABLE IF EXISTS auth.config SET (security_invoker = false);
