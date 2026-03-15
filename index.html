@@ -37,8 +37,13 @@
       t.src=v;s=b.getElementsByTagName(e)[0];
       s.parentNode.insertBefore(t,s)}(window, document,'script',
       'https://connect.facebook.net/en_US/fbevents.js');
+      fbq('consent', 'revoke');
       fbq('init', '1217928866230083');
       fbq('track', 'PageView');
+      // Restore consent if previously accepted
+      if (localStorage.getItem('cookie_consent') === 'accepted') {
+        fbq('consent', 'grant');
+      }
     </script>
     <!-- End Meta Pixel Code -->
   </head>

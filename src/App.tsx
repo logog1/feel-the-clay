@@ -7,6 +7,7 @@ import { LanguageProvider } from "@/i18n/LanguageContext";
 import { CartProvider } from "@/contexts/CartContext";
 import { HelmetProvider } from "react-helmet-async";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import CookieConsent from "@/components/CookieConsent";
 import ScrollToTop from "@/components/ScrollToTop";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
