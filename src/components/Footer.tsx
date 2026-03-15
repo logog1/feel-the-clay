@@ -1,8 +1,9 @@
+import { forwardRef } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Link } from "react-router-dom";
 import { Mail, Instagram } from "lucide-react";
 
-const Footer = () => {
+const Footer = forwardRef<HTMLElement>((_, ref) => {
   const { t } = useLanguage();
 
   const scrollToSection = (href: string) => {
