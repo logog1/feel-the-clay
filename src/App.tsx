@@ -36,7 +36,8 @@ const App = () => {
         <CartProvider>
           <Toaster />
           <Sonner />
-          <LanguageSwitcher />
+           <LanguageSwitcher />
+            <CookieConsent />
           <BrowserRouter>
             <ScrollToTop />
             <Routes>
