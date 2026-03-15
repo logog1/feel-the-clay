@@ -39,6 +39,7 @@ const App = () => {
           <Sonner />
            <LanguageSwitcher />
             <CookieConsent />
+            <WhatsAppFloat />
           <BrowserRouter>
             <ScrollToTop />
             <Routes>
