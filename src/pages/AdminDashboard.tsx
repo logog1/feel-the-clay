@@ -1119,6 +1119,11 @@ const AdminDashboard = () => {
               )}
             </div>
           </TabsContent>
+
+          {/* ── Cities & Pricing ── */}
+          <TabsContent value="cities">
+            <CitiesPricingSection />
+          </TabsContent>
         </Tabs>
       </div>
 
