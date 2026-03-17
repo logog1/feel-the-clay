@@ -316,10 +316,19 @@ export function MediaManagerSection() {
   useEffect(() => {
     const fetchAll = async () => {
       // Fetch image settings
-      const { data } = await supabase
+      // Fetch all relevant keys in one go
+      const allFetchKeys = [...ALL_KEYS];
+      const { data: mainData } = await supabase
         .from("site_settings")
         .select("key, value")
-        .or(`key.in.(${ALL_KEYS.map(k => `"${k}"`).join(',')}),key.like.media_ratio_%`);
+        .in("key", allFetchKeys);
+      
+      const { data: ratioData } = await supabase
+        .from("site_settings")
+        .select("key, value")
+        .like("key", "media_ratio_%");
+      
+      const data = [...(mainData || []), ...(ratioData || [])];
 
       const singles: Record<string, string> = {};
       const gals: Record<string, GalleryImage[]> = {};
