@@ -46,7 +46,7 @@ import embrGallery3 from "@/assets/embr-gallery-3.jpg";
 import embrGallery4 from "@/assets/embr-gallery-4.jpg";
 import embrGallery5 from "@/assets/embr-gallery-5.jpg";
 
-type GalleryImage = { url: string; alt: string; size?: string };
+type GalleryImage = { url: string; alt: string; size?: string; frame?: FrameStyle };
 
 type DeviceRatios = { mobile: string; tablet: string; desktop: string };
 
