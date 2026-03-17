@@ -2,9 +2,10 @@ import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   Image as ImageIcon, Upload, X, GripVertical, Plus, Save, CheckCircle2,
-  Home, Layers, Palette,
+  Home, Layers, Palette, Monitor, Tablet, Smartphone, Ratio,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -45,6 +46,21 @@ import embrGallery4 from "@/assets/embr-gallery-4.jpg";
 import embrGallery5 from "@/assets/embr-gallery-5.jpg";
 
 type GalleryImage = { url: string; alt: string; size?: string };
+
+type DeviceRatios = { mobile: string; tablet: string; desktop: string };
+
+const ASPECT_RATIOS = [
+  { value: "auto", label: "Auto" },
+  { value: "1:1", label: "1:1" },
+  { value: "4:3", label: "4:3" },
+  { value: "3:2", label: "3:2" },
+  { value: "16:9", label: "16:9" },
+  { value: "3:4", label: "3:4" },
+  { value: "2:3", label: "2:3" },
+  { value: "9:16", label: "9:16" },
+];
+
+const DEFAULT_RATIOS: DeviceRatios = { mobile: "auto", tablet: "auto", desktop: "auto" };
 
 // ─── Default values ───
 const DEFAULT_SINGLES: Record<string, string> = {
@@ -292,45 +308,55 @@ function GalleryManager({ settingKey, label, images, onChange }: {
 export function MediaManagerSection() {
   const [singleImages, setSingleImages] = useState<Record<string, string>>({});
   const [galleries, setGalleries] = useState<Record<string, GalleryImage[]>>({});
+  const [mediaRatios, setMediaRatios] = useState<Record<string, DeviceRatios>>({});
   const [loaded, setLoaded] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
 
   useEffect(() => {
-    supabase
-      .from("site_settings")
-      .select("key, value")
-      .in("key", ALL_KEYS)
-      .then(({ data }) => {
-        const singles: Record<string, string> = {};
-        const gals: Record<string, GalleryImage[]> = {};
+    const fetchAll = async () => {
+      // Fetch image settings
+      const { data } = await supabase
+        .from("site_settings")
+        .select("key, value")
+        .or(`key.in.(${ALL_KEYS.map(k => `"${k}"`).join(',')}),key.like.media_ratio_%`);
 
-        if (data) {
-          data.forEach((r: any) => {
-            if (r.key.startsWith("gallery_")) {
-              try {
-                const parsed = JSON.parse(r.value);
-                if (Array.isArray(parsed) && parsed.length > 0) {
-                  gals[r.key] = parsed;
-                }
-              } catch { /* use default */ }
-            } else {
-              if (r.value) singles[r.key] = r.value;
-            }
-          });
-        }
+      const singles: Record<string, string> = {};
+      const gals: Record<string, GalleryImage[]> = {};
+      const ratios: Record<string, DeviceRatios> = {};
 
-        // For galleries without saved data, populate with defaults
-        for (const key of Object.keys(DEFAULT_GALLERIES)) {
-          if (!gals[key] || gals[key].length === 0) {
-            gals[key] = [...DEFAULT_GALLERIES[key]];
+      if (data) {
+        data.forEach((r: any) => {
+          if (r.key.startsWith("media_ratio_")) {
+            try {
+              ratios[r.key.replace("media_ratio_", "")] = JSON.parse(r.value);
+            } catch { /* ignore */ }
+          } else if (r.key.startsWith("gallery_")) {
+            try {
+              const parsed = JSON.parse(r.value);
+              if (Array.isArray(parsed) && parsed.length > 0) {
+                gals[r.key] = parsed;
+              }
+            } catch { /* use default */ }
+          } else {
+            if (r.value) singles[r.key] = r.value;
           }
-        }
+        });
+      }
 
-        setSingleImages(singles);
-        setGalleries(gals);
-        setLoaded(true);
-      });
+      // For galleries without saved data, populate with defaults
+      for (const key of Object.keys(DEFAULT_GALLERIES)) {
+        if (!gals[key] || gals[key].length === 0) {
+          gals[key] = [...DEFAULT_GALLERIES[key]];
+        }
+      }
+
+      setSingleImages(singles);
+      setGalleries(gals);
+      setMediaRatios(ratios);
+      setLoaded(true);
+    };
+    fetchAll();
   }, []);
 
   const saveAll = async () => {
@@ -340,6 +366,7 @@ export function MediaManagerSection() {
     const upserts = [
       ...Object.entries(singleImages).map(([key, value]) => ({ key, value, updated_at: now })),
       ...Object.entries(galleries).map(([key, imgs]) => ({ key, value: JSON.stringify(imgs), updated_at: now })),
+      ...Object.entries(mediaRatios).map(([key, ratios]) => ({ key: `media_ratio_${key}`, value: JSON.stringify(ratios), updated_at: now })),
     ];
     if (upserts.length) {
       const { error } = await supabase.from("site_settings").upsert(upserts);
@@ -422,6 +449,55 @@ export function MediaManagerSection() {
             />
           </div>
         ))}
+      </div>
+
+      {/* Media Aspect Ratios */}
+      <div className="p-6 rounded-2xl bg-card border border-primary/20 space-y-5">
+        <h4 className="font-bold text-foreground flex items-center gap-2">
+          <Ratio size={16} className="text-primary" /> Image Aspect Ratios by Device
+        </h4>
+        <p className="text-sm text-muted-foreground">
+          Control how images are cropped on different devices. "Auto" uses the image's natural ratio.
+        </p>
+        <div className="space-y-4">
+          {[...HERO_SETTINGS, ...CARD_SETTINGS].map((s) => {
+            const ratios = mediaRatios[s.key] || { ...DEFAULT_RATIOS };
+            const updateRatio = (device: keyof DeviceRatios, value: string) => {
+              setMediaRatios(prev => ({
+                ...prev,
+                [s.key]: { ...(prev[s.key] || DEFAULT_RATIOS), [device]: value },
+              }));
+            };
+            return (
+              <div key={s.key} className="p-4 rounded-xl bg-muted/20 space-y-3">
+                <span className="text-sm font-medium text-foreground">{s.label}</span>
+                <div className="grid grid-cols-3 gap-3">
+                  {([
+                    { key: "mobile" as const, icon: Smartphone, label: "Mobile" },
+                    { key: "tablet" as const, icon: Tablet, label: "Tablet" },
+                    { key: "desktop" as const, icon: Monitor, label: "Desktop" },
+                  ]).map(device => (
+                    <div key={device.key} className="space-y-1.5">
+                      <label className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                        <device.icon size={12} /> {device.label}
+                      </label>
+                      <Select value={ratios[device.key]} onValueChange={(v) => updateRatio(device.key, v)}>
+                        <SelectTrigger className="h-8 rounded-lg text-xs">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {ASPECT_RATIOS.map(r => (
+                            <SelectItem key={r.value} value={r.value}>{r.label}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </div>
 
       {/* Save */}

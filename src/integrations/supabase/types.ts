@@ -593,6 +593,74 @@ export type Database = {
         }
         Relationships: []
       }
+      workshop_cities: {
+        Row: {
+          city_name: string
+          created_at: string
+          id: string
+          is_active: boolean
+          schedule: Json
+          updated_at: string
+          workshop: string
+        }
+        Insert: {
+          city_name: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          schedule?: Json
+          updated_at?: string
+          workshop?: string
+        }
+        Update: {
+          city_name?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          schedule?: Json
+          updated_at?: string
+          workshop?: string
+        }
+        Relationships: []
+      }
+      workshop_city_pricing: {
+        Row: {
+          city_id: string
+          created_at: string
+          currency: string
+          id: string
+          price: number
+          session_type: string
+          updated_at: string
+        }
+        Insert: {
+          city_id: string
+          created_at?: string
+          currency?: string
+          id?: string
+          price?: number
+          session_type?: string
+          updated_at?: string
+        }
+        Update: {
+          city_id?: string
+          created_at?: string
+          currency?: string
+          id?: string
+          price?: number
+          session_type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workshop_city_pricing_city_id_fkey"
+            columns: ["city_id"]
+            isOneToOne: false
+            referencedRelation: "workshop_cities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
