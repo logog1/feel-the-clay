@@ -95,7 +95,15 @@ const WorkshopPageLayout = ({ workshop, currentPath }: { workshop: Workshop; cur
                   <MapPin size={15} className="text-cta" /> {workshop.location}
                 </span>
               )}
+              {workshop.promoLabel && (
+                <span className="bg-destructive text-destructive-foreground px-3 py-1.5 rounded-2xl text-xs font-bold">
+                  {workshop.promoLabel}
+                </span>
+              )}
               <span className="bg-cta text-primary-foreground px-5 py-2.5 rounded-2xl text-sm font-bold shadow-md shadow-cta/20">
+                {workshop.originalPrice && (
+                  <span className="line-through opacity-60 mr-2 text-xs">{workshop.originalPrice}</span>
+                )}
                 {workshop.price}
               </span>
             </div>
