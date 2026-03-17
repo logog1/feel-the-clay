@@ -26,7 +26,7 @@ const HeroSection = () => {
         <div className="absolute top-[40%] right-[25%] w-1 h-1 bg-terracotta/30 rounded-full animate-gentle-float" style={{ animationDelay: '3s' }} />
       </div>
 
-      <div className="container-narrow relative z-10">
+      <div ref={contentRef} className="container-narrow relative z-10 will-change-transform" style={{ transform: `translateY(${contentOffset}px)` }}>
         <div className="space-y-6 animate-fade-up">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-semibold leading-[1.15] text-balance text-foreground drop-shadow-sm">
             {t("hero.title1")}{" "}
