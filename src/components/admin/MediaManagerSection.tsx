@@ -451,6 +451,55 @@ export function MediaManagerSection() {
         ))}
       </div>
 
+      {/* Media Aspect Ratios */}
+      <div className="p-6 rounded-2xl bg-card border border-primary/20 space-y-5">
+        <h4 className="font-bold text-foreground flex items-center gap-2">
+          <Ratio size={16} className="text-primary" /> Image Aspect Ratios by Device
+        </h4>
+        <p className="text-sm text-muted-foreground">
+          Control how images are cropped on different devices. "Auto" uses the image's natural ratio.
+        </p>
+        <div className="space-y-4">
+          {[...HERO_SETTINGS, ...CARD_SETTINGS].map((s) => {
+            const ratios = mediaRatios[s.key] || { ...DEFAULT_RATIOS };
+            const updateRatio = (device: keyof DeviceRatios, value: string) => {
+              setMediaRatios(prev => ({
+                ...prev,
+                [s.key]: { ...(prev[s.key] || DEFAULT_RATIOS), [device]: value },
+              }));
+            };
+            return (
+              <div key={s.key} className="p-4 rounded-xl bg-muted/20 space-y-3">
+                <span className="text-sm font-medium text-foreground">{s.label}</span>
+                <div className="grid grid-cols-3 gap-3">
+                  {([
+                    { key: "mobile" as const, icon: Smartphone, label: "Mobile" },
+                    { key: "tablet" as const, icon: Tablet, label: "Tablet" },
+                    { key: "desktop" as const, icon: Monitor, label: "Desktop" },
+                  ]).map(device => (
+                    <div key={device.key} className="space-y-1.5">
+                      <label className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                        <device.icon size={12} /> {device.label}
+                      </label>
+                      <Select value={ratios[device.key]} onValueChange={(v) => updateRatio(device.key, v)}>
+                        <SelectTrigger className="h-8 rounded-lg text-xs">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {ASPECT_RATIOS.map(r => (
+                            <SelectItem key={r.value} value={r.value}>{r.label}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
       {/* Save */}
       <Button onClick={saveAll} disabled={saving} className="gap-2 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground">
         {saved ? <><CheckCircle2 size={16} /> Saved!</> : <><Save size={16} /> {saving ? "Saving..." : "Save All Media"}</>}
