@@ -47,6 +47,21 @@ import embrGallery5 from "@/assets/embr-gallery-5.jpg";
 
 type GalleryImage = { url: string; alt: string; size?: string };
 
+type DeviceRatios = { mobile: string; tablet: string; desktop: string };
+
+const ASPECT_RATIOS = [
+  { value: "auto", label: "Auto" },
+  { value: "1:1", label: "1:1" },
+  { value: "4:3", label: "4:3" },
+  { value: "3:2", label: "3:2" },
+  { value: "16:9", label: "16:9" },
+  { value: "3:4", label: "3:4" },
+  { value: "2:3", label: "2:3" },
+  { value: "9:16", label: "9:16" },
+];
+
+const DEFAULT_RATIOS: DeviceRatios = { mobile: "auto", tablet: "auto", desktop: "auto" };
+
 // ─── Default values ───
 const DEFAULT_SINGLES: Record<string, string> = {
   image_hero_bg: heroBg,
