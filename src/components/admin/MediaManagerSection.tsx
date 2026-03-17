@@ -2,9 +2,10 @@ import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   Image as ImageIcon, Upload, X, GripVertical, Plus, Save, CheckCircle2,
-  Home, Layers, Palette,
+  Home, Layers, Palette, Monitor, Tablet, Smartphone, Ratio,
 } from "lucide-react";
 import { toast } from "sonner";
 
