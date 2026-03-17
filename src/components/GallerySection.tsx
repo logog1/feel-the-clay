@@ -85,6 +85,7 @@ const GalleryRow = ({ images, animationClass, imageWidth }: { images: ImageItem[
 const GallerySection = () => {
   const { t } = useLanguage();
   const managed = useSiteGallery("gallery_moments");
+  const { ref: parallaxRef, offset } = useParallax({ speed: 0.12, clamp: 40 });
 
   // If managed images exist, split them into 3 rows
   let row1: ImageItem[], row2: ImageItem[], row3: ImageItem[];
@@ -101,11 +102,11 @@ const GallerySection = () => {
   }
 
   return (
-    <section id="gallery" className="py-12 md:py-16 bg-background overflow-hidden select-none">
+    <section id="gallery" ref={parallaxRef} className="py-12 md:py-16 bg-background overflow-hidden select-none">
       <div className="container-narrow mb-6">
         <h2 className="text-xl md:text-2xl font-medium text-center">{t("gallery.title")}</h2>
       </div>
-      <div className="space-y-3 md:space-y-4">
+      <div className="space-y-3 md:space-y-4 will-change-transform" style={{ transform: `translateY(${offset}px)` }}>
         <GalleryRow images={row1} animationClass="animate-scroll-left" imageWidth="w-48 md:w-72" />
         <GalleryRow images={row2} animationClass="animate-scroll-right" imageWidth="w-56 md:w-80" />
         {row3.length > 0 && <GalleryRow images={row3} animationClass="animate-scroll-left-slow" imageWidth="w-44 md:w-64" />}
