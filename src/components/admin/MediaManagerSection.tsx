@@ -150,13 +150,16 @@ const ALL_KEYS = [
 ];
 
 // ─── Single Image Uploader ───
-function SingleImageUploader({ settingKey, label, currentUrl, defaultUrl, onUploaded }: {
+function SingleImageUploader({ settingKey, label, currentUrl, defaultUrl, onUploaded, frame, onFrameChange }: {
   settingKey: string; label: string; currentUrl: string; defaultUrl?: string; onUploaded: (url: string) => void;
+  frame?: FrameStyle; onFrameChange?: (frame: FrameStyle) => void;
 }) {
   const [uploading, setUploading] = useState(false);
+  const [editing, setEditing] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const displayUrl = currentUrl || defaultUrl || "";
   const isDefault = !currentUrl && !!defaultUrl;
+  const currentFrame = frame || "none";
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -179,9 +182,12 @@ function SingleImageUploader({ settingKey, label, currentUrl, defaultUrl, onUplo
         {isDefault && <span className="text-[10px] px-2 py-0.5 rounded-full bg-muted text-muted-foreground">Default</span>}
       </div>
       {displayUrl ? (
-        <div className="relative w-full aspect-video rounded-xl overflow-hidden border border-border/40 group">
+        <div className={`relative w-full aspect-video rounded-xl overflow-hidden border border-border/40 group ${getFrameClasses(currentFrame)}`}>
           <img src={displayUrl} alt={label} className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+            <Button size="sm" variant="secondary" onClick={() => setEditing(true)} className="rounded-lg text-xs">
+              <Pencil size={14} className="mr-1" /> Edit
+            </Button>
             <Button size="sm" variant="secondary" onClick={() => inputRef.current?.click()} className="rounded-lg text-xs">
               <Upload size={14} className="mr-1" /> Replace
             </Button>
@@ -203,6 +209,20 @@ function SingleImageUploader({ settingKey, label, currentUrl, defaultUrl, onUplo
         </button>
       )}
       <input ref={inputRef} type="file" accept="image/*" className="hidden" onChange={handleUpload} />
+
+      {editing && displayUrl && (
+        <ImageEditorDialog
+          open={editing}
+          onClose={() => setEditing(false)}
+          imageUrl={displayUrl}
+          settingKey={settingKey}
+          initialEdits={{ ...DEFAULT_EDITS, frame: currentFrame }}
+          onApply={(newUrl, appliedEdits) => {
+            if (newUrl !== displayUrl) onUploaded(newUrl);
+            onFrameChange?.(appliedEdits.frame);
+          }}
+        />
+      )}
     </div>
   );
 }
