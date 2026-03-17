@@ -468,6 +468,7 @@ const AdminDashboard = () => {
             <TabsTrigger value="availability" className="rounded-xl gap-2 data-[state=active]:bg-card"><Calendar size={14} /> Availability</TabsTrigger>
             <TabsTrigger value="sections" className="rounded-xl gap-2 data-[state=active]:bg-card"><LayoutList size={14} /> Store Sections</TabsTrigger>
             <TabsTrigger value="settings" className="rounded-xl gap-2 data-[state=active]:bg-card"><Settings size={14} /> Settings</TabsTrigger>
+            <TabsTrigger value="cities" className="rounded-xl gap-2 data-[state=active]:bg-card"><MapPin size={14} /> Cities & Pricing</TabsTrigger>
             <TabsTrigger value="users" className="rounded-xl gap-2 data-[state=active]:bg-card"><Users size={14} /> Users</TabsTrigger>
           </TabsList>
 
