@@ -366,6 +366,7 @@ export function MediaManagerSection() {
     const upserts = [
       ...Object.entries(singleImages).map(([key, value]) => ({ key, value, updated_at: now })),
       ...Object.entries(galleries).map(([key, imgs]) => ({ key, value: JSON.stringify(imgs), updated_at: now })),
+      ...Object.entries(mediaRatios).map(([key, ratios]) => ({ key: `media_ratio_${key}`, value: JSON.stringify(ratios), updated_at: now })),
     ];
     if (upserts.length) {
       const { error } = await supabase.from("site_settings").upsert(upserts);
