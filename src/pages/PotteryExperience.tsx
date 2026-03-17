@@ -4,6 +4,7 @@ import SEOHead from "@/components/SEOHead";
 import ProcessSection from "@/components/ProcessSection";
 import { useSiteImages } from "@/hooks/use-site-images";
 import { useSiteGallery } from "@/hooks/use-site-galleries";
+import { useWorkshopConfig } from "@/hooks/use-workshop-config";
 import potteryEntrance from "@/assets/pottery-entrance.jpg";
 import potteryGirls from "@/assets/pottery-girls.jpg";
 import potteryMasters from "@/assets/pottery-masters.jpg";
@@ -40,10 +41,12 @@ const jsonLd = {
 };
 
 const PotteryExperience = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const siteImages = useSiteImages(["image_workshop_pottery"]);
   const managedGallery = useSiteGallery("gallery_workshop_pottery");
+  const { config } = useWorkshopConfig("pottery");
   const heroImg = siteImages["image_workshop_pottery"];
+  const lang = language as "en" | "ar" | "es" | "fr";
 
   const defaultImages = [potteryEntrance, potteryGirls, potteryMasters, potteryClaySource];
   const galleryImages = managedGallery && managedGallery.length > 0
@@ -52,14 +55,22 @@ const PotteryExperience = () => {
   const images = heroImg ? [heroImg, ...galleryImages] : galleryImages;
 
   const workshop = {
-    title: t("pottery.title"),
-    tagline: t("pottery.tagline"),
-    price: t("pottery.price"),
-    duration: t("pottery.duration"),
-    drink: t("pottery.drink"),
-    description: [t("pottery.desc1"), t("pottery.desc2")],
-    highlights: [t("pottery.h1"), t("pottery.h2"), t("pottery.h3"), t("pottery.h4"), t("pottery.h5"), t("pottery.h6")],
+    title: config?.title?.[lang] || t("pottery.title"),
+    tagline: config?.tagline?.[lang] || t("pottery.tagline"),
+    price: config?.promo_enabled && config?.promo_price ? config.promo_price : (config?.price || t("pottery.price")),
+    originalPrice: config?.promo_enabled ? config?.price : undefined,
+    promoLabel: config?.promo_enabled ? config?.promo_label : undefined,
+    duration: config?.duration?.[lang] || t("pottery.duration"),
+    drink: config?.drink?.[lang] || t("pottery.drink"),
+    description: config?.descriptions?.length
+      ? config.descriptions.map((d) => d[lang] || d.en).filter(Boolean)
+      : [t("pottery.desc1"), t("pottery.desc2")],
+    highlights: config?.highlights?.length
+      ? config.highlights.map((h) => h[lang] || h.en).filter(Boolean)
+      : [t("pottery.h1"), t("pottery.h2"), t("pottery.h3"), t("pottery.h4"), t("pottery.h5"), t("pottery.h6")],
     images,
+    unavailable: config ? !config.is_available : false,
+    popular: config?.is_popular || false,
   };
 
   return (
