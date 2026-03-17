@@ -478,6 +478,8 @@ export function MediaManagerSection() {
               currentUrl={singleImages[s.key] || ""}
               defaultUrl={DEFAULT_SINGLES[s.key]}
               onUploaded={(url) => setSingleImages((prev) => ({ ...prev, [s.key]: url }))}
+              frame={singleFrames[s.key]}
+              onFrameChange={(f) => setSingleFrames((prev) => ({ ...prev, [s.key]: f }))}
             />
           ))}
         </div>
