@@ -380,8 +380,13 @@ export function MediaManagerSection() {
         .from("site_settings")
         .select("key, value")
         .like("key", "media_ratio_%");
+
+      const { data: frameData } = await supabase
+        .from("site_settings")
+        .select("key, value")
+        .like("key", "media_frame_%");
       
-      const data = [...(mainData || []), ...(ratioData || [])];
+      const data = [...(mainData || []), ...(ratioData || []), ...(frameData || [])];
 
       const singles: Record<string, string> = {};
       const gals: Record<string, GalleryImage[]> = {};
