@@ -1,14 +1,16 @@
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useScrollAnimation } from "@/hooks/use-scroll-animation";
+import { useParallax } from "@/hooks/use-parallax";
 import { cn } from "@/lib/utils";
 
 const BeliefSection = () => {
   const { t } = useLanguage();
   const { ref, isVisible } = useScrollAnimation(0.2);
+  const { ref: bgRef, offset: bgOffset } = useParallax({ speed: 0.25, clamp: 80 });
 
   return (
-    <section className="py-14 md:py-32 relative overflow-hidden">
-      <div className="absolute inset-0 flex items-center justify-center overflow-hidden pointer-events-none select-none">
+    <section ref={bgRef} className="py-14 md:py-32 relative overflow-hidden">
+      <div className="absolute inset-0 flex items-center justify-center overflow-hidden pointer-events-none select-none will-change-transform" style={{ transform: `translateY(${bgOffset}px)` }}>
         <span className={cn(
           "text-[7rem] md:text-[14rem] font-bold text-terracotta/[0.03] leading-none tracking-tighter transition-all duration-1000",
           isVisible ? "opacity-100 scale-100" : "opacity-0 scale-110"

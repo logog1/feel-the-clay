@@ -3,27 +3,30 @@ import tetouanCity from "@/assets/tetouan-city.jpg";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { ChevronDown } from "lucide-react";
 import { useSiteImages } from "@/hooks/use-site-images";
+import { useParallax } from "@/hooks/use-parallax";
 
 const HeroSection = () => {
   const { t } = useLanguage();
   const siteImages = useSiteImages(["image_hero_bg"]);
   const bgImage = siteImages["image_hero_bg"] || heroBg;
+  const { ref: parallaxRef, offset: bgOffset } = useParallax({ speed: 0.4, clamp: 150 });
+  const { ref: contentRef, offset: contentOffset } = useParallax({ speed: -0.15, clamp: 60 });
 
   return (
-    <section id="hero" className="min-h-[85vh] md:min-h-screen flex flex-col justify-end md:justify-center section-padding pb-20 md:pb-0 pt-24 md:pt-20 relative overflow-hidden">
-      <div className="absolute inset-0 bg-cover bg-no-repeat bg-center" style={{ backgroundImage: `url(${bgImage})` }} />
+    <section id="hero" ref={parallaxRef} className="min-h-[85vh] md:min-h-screen flex flex-col justify-end md:justify-center section-padding pb-20 md:pb-0 pt-24 md:pt-20 relative overflow-hidden">
+      <div className="absolute inset-[-10%] bg-cover bg-no-repeat bg-center will-change-transform" style={{ backgroundImage: `url(${bgImage})`, transform: `translateY(${bgOffset * 0.5}px) scale(1.1)` }} />
       <div className="absolute inset-0 md:hidden bg-gradient-to-b from-transparent via-transparent to-background" style={{ top: '60%' }} />
       <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/30 to-background/80" />
 
       {/* Floating particles */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      <div className="absolute inset-0 overflow-hidden pointer-events-none will-change-transform" style={{ transform: `translateY(${bgOffset * 0.3}px)` }}>
         <div className="absolute top-[15%] left-[10%] w-2 h-2 bg-cta/30 rounded-full animate-gentle-float" />
         <div className="absolute top-[25%] right-[15%] w-3 h-3 bg-terracotta/20 rounded-full animate-gentle-float" style={{ animationDelay: '1s' }} />
         <div className="absolute bottom-[30%] left-[20%] w-1.5 h-1.5 bg-cta/40 rounded-full animate-gentle-float" style={{ animationDelay: '2s' }} />
         <div className="absolute top-[40%] right-[25%] w-1 h-1 bg-terracotta/30 rounded-full animate-gentle-float" style={{ animationDelay: '3s' }} />
       </div>
 
-      <div className="container-narrow relative z-10">
+      <div ref={contentRef} className="container-narrow relative z-10 will-change-transform" style={{ transform: `translateY(${contentOffset}px)` }}>
         <div className="space-y-6 animate-fade-up">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-semibold leading-[1.15] text-balance text-foreground drop-shadow-sm">
             {t("hero.title1")}{" "}
