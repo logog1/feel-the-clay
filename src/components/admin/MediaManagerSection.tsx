@@ -422,6 +422,7 @@ export function MediaManagerSection() {
       }
 
       setSingleImages(singles);
+      setSingleFrames(frames);
       setGalleries(gals);
       setMediaRatios(ratios);
       setLoaded(true);
