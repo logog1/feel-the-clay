@@ -10,6 +10,8 @@ interface Workshop {
   title: string;
   tagline: string;
   price: string;
+  originalPrice?: string;
+  promoLabel?: string;
   duration: string;
   drink: string;
   location?: string;
