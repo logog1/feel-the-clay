@@ -1,6 +1,7 @@
 import { useRef } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useSiteGallery } from "@/hooks/use-site-galleries";
+import { useParallax } from "@/hooks/use-parallax";
 import workshop1 from "@/assets/workshop-1.jpg";
 import workshop3 from "@/assets/workshop-3.jpg";
 import workshop4 from "@/assets/workshop-4.jpg";
