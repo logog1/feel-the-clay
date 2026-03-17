@@ -314,40 +314,49 @@ export function MediaManagerSection() {
   const [saved, setSaved] = useState(false);
 
   useEffect(() => {
-    supabase
-      .from("site_settings")
-      .select("key, value")
-      .in("key", ALL_KEYS)
-      .then(({ data }) => {
-        const singles: Record<string, string> = {};
-        const gals: Record<string, GalleryImage[]> = {};
+    const fetchAll = async () => {
+      // Fetch image settings
+      const { data } = await supabase
+        .from("site_settings")
+        .select("key, value")
+        .or(`key.in.(${ALL_KEYS.map(k => `"${k}"`).join(',')}),key.like.media_ratio_%`);
 
-        if (data) {
-          data.forEach((r: any) => {
-            if (r.key.startsWith("gallery_")) {
-              try {
-                const parsed = JSON.parse(r.value);
-                if (Array.isArray(parsed) && parsed.length > 0) {
-                  gals[r.key] = parsed;
-                }
-              } catch { /* use default */ }
-            } else {
-              if (r.value) singles[r.key] = r.value;
-            }
-          });
-        }
+      const singles: Record<string, string> = {};
+      const gals: Record<string, GalleryImage[]> = {};
+      const ratios: Record<string, DeviceRatios> = {};
 
-        // For galleries without saved data, populate with defaults
-        for (const key of Object.keys(DEFAULT_GALLERIES)) {
-          if (!gals[key] || gals[key].length === 0) {
-            gals[key] = [...DEFAULT_GALLERIES[key]];
+      if (data) {
+        data.forEach((r: any) => {
+          if (r.key.startsWith("media_ratio_")) {
+            try {
+              ratios[r.key.replace("media_ratio_", "")] = JSON.parse(r.value);
+            } catch { /* ignore */ }
+          } else if (r.key.startsWith("gallery_")) {
+            try {
+              const parsed = JSON.parse(r.value);
+              if (Array.isArray(parsed) && parsed.length > 0) {
+                gals[r.key] = parsed;
+              }
+            } catch { /* use default */ }
+          } else {
+            if (r.value) singles[r.key] = r.value;
           }
-        }
+        });
+      }
 
-        setSingleImages(singles);
-        setGalleries(gals);
-        setLoaded(true);
-      });
+      // For galleries without saved data, populate with defaults
+      for (const key of Object.keys(DEFAULT_GALLERIES)) {
+        if (!gals[key] || gals[key].length === 0) {
+          gals[key] = [...DEFAULT_GALLERIES[key]];
+        }
+      }
+
+      setSingleImages(singles);
+      setGalleries(gals);
+      setMediaRatios(ratios);
+      setLoaded(true);
+    };
+    fetchAll();
   }, []);
 
   const saveAll = async () => {
