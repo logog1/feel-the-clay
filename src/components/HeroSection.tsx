@@ -19,7 +19,7 @@ const HeroSection = () => {
       <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/30 to-background/80" />
 
       {/* Floating particles */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      <div className="absolute inset-0 overflow-hidden pointer-events-none will-change-transform" style={{ transform: `translateY(${bgOffset * 0.3}px)` }}>
         <div className="absolute top-[15%] left-[10%] w-2 h-2 bg-cta/30 rounded-full animate-gentle-float" />
         <div className="absolute top-[25%] right-[15%] w-3 h-3 bg-terracotta/20 rounded-full animate-gentle-float" style={{ animationDelay: '1s' }} />
         <div className="absolute bottom-[30%] left-[20%] w-1.5 h-1.5 bg-cta/40 rounded-full animate-gentle-float" style={{ animationDelay: '2s' }} />
