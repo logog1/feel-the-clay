@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useSiteImages } from "@/hooks/use-site-images";
+import { useWorkshopConfigs } from "@/hooks/use-workshop-config";
 import workshop2 from "@/assets/workshop-2.jpg";
 import handbuildingHero from "@/assets/handbuilding-hero.jpg";
 import embrHero from "@/assets/embr-hero.jpg";
@@ -19,10 +20,12 @@ const fallbackImages: Record<string, string> = {
 };
 
 const OffersSection = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { ref, isVisible } = useScrollAnimation(0.1);
   const [productImages, setProductImages] = useState<Record<string, string>>({});
   const siteImages = useSiteImages(["image_workshop_handbuilding", "image_workshop_pottery", "image_workshop_embroidery"]);
+  const { configs } = useWorkshopConfigs();
+  const lang = language as "en" | "ar" | "es" | "fr";
 
   // Fetch first product image per relevant category from the DB
   useEffect(() => {
@@ -60,23 +63,33 @@ const OffersSection = () => {
     { icon: Users, label: t("details.group") },
   ];
 
+  const handConfig = configs.handbuilding;
+  const potteryConfig = configs.pottery;
+  const embrConfig = configs.embroidery;
+
   const offers = [
     {
-      title: t("offers.handbuilding"),
+      title: handConfig?.title?.[lang] || t("offers.handbuilding"),
       image: siteImages["image_workshop_handbuilding"] || fallbackImages.handbuilding,
       link: "/workshop/handbuilding",
-      popular: true,
+      popular: handConfig?.is_popular ?? true,
+      unavailable: handConfig ? !handConfig.is_available : false,
+      promoLabel: handConfig?.promo_enabled ? handConfig.promo_label : undefined,
     },
     {
-      title: t("offers.pottery"),
+      title: potteryConfig?.title?.[lang] || t("offers.pottery"),
       image: siteImages["image_workshop_pottery"] || fallbackImages.pottery,
       link: "/workshop/pottery-experience",
+      popular: potteryConfig?.is_popular || false,
+      unavailable: potteryConfig ? !potteryConfig.is_available : false,
+      promoLabel: potteryConfig?.promo_enabled ? potteryConfig.promo_label : undefined,
     },
     {
-      title: t("offers.embroidery"),
+      title: embrConfig?.title?.[lang] || t("offers.embroidery"),
       image: siteImages["image_workshop_embroidery"] || fallbackImages.embroidery,
       link: "/workshop/embroidery",
-      unavailable: true,
+      unavailable: embrConfig ? !embrConfig.is_available : true,
+      promoLabel: embrConfig?.promo_enabled ? embrConfig.promo_label : undefined,
     },
   ];
 
