@@ -5,9 +5,10 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   Image as ImageIcon, Upload, X, GripVertical, Plus, Save, CheckCircle2,
-  Home, Layers, Palette, Monitor, Tablet, Smartphone, Ratio,
+  Home, Layers, Palette, Monitor, Tablet, Smartphone, Ratio, Pencil,
 } from "lucide-react";
 import { toast } from "sonner";
+import { ImageEditorDialog, getFrameClasses, DEFAULT_EDITS, type ImageEdits, type FrameStyle } from "./ImageEditorDialog";
 
 // ─── Default image imports ───
 import heroBg from "@/assets/hero-bg.jpg";
@@ -45,7 +46,7 @@ import embrGallery3 from "@/assets/embr-gallery-3.jpg";
 import embrGallery4 from "@/assets/embr-gallery-4.jpg";
 import embrGallery5 from "@/assets/embr-gallery-5.jpg";
 
-type GalleryImage = { url: string; alt: string; size?: string };
+type GalleryImage = { url: string; alt: string; size?: string; frame?: FrameStyle };
 
 type DeviceRatios = { mobile: string; tablet: string; desktop: string };
 
@@ -149,13 +150,16 @@ const ALL_KEYS = [
 ];
 
 // ─── Single Image Uploader ───
-function SingleImageUploader({ settingKey, label, currentUrl, defaultUrl, onUploaded }: {
+function SingleImageUploader({ settingKey, label, currentUrl, defaultUrl, onUploaded, frame, onFrameChange }: {
   settingKey: string; label: string; currentUrl: string; defaultUrl?: string; onUploaded: (url: string) => void;
+  frame?: FrameStyle; onFrameChange?: (frame: FrameStyle) => void;
 }) {
   const [uploading, setUploading] = useState(false);
+  const [editing, setEditing] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const displayUrl = currentUrl || defaultUrl || "";
   const isDefault = !currentUrl && !!defaultUrl;
+  const currentFrame = frame || "none";
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -178,9 +182,12 @@ function SingleImageUploader({ settingKey, label, currentUrl, defaultUrl, onUplo
         {isDefault && <span className="text-[10px] px-2 py-0.5 rounded-full bg-muted text-muted-foreground">Default</span>}
       </div>
       {displayUrl ? (
-        <div className="relative w-full aspect-video rounded-xl overflow-hidden border border-border/40 group">
+        <div className={`relative w-full aspect-video rounded-xl overflow-hidden border border-border/40 group ${getFrameClasses(currentFrame)}`}>
           <img src={displayUrl} alt={label} className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+            <Button size="sm" variant="secondary" onClick={() => setEditing(true)} className="rounded-lg text-xs">
+              <Pencil size={14} className="mr-1" /> Edit
+            </Button>
             <Button size="sm" variant="secondary" onClick={() => inputRef.current?.click()} className="rounded-lg text-xs">
               <Upload size={14} className="mr-1" /> Replace
             </Button>
@@ -202,6 +209,20 @@ function SingleImageUploader({ settingKey, label, currentUrl, defaultUrl, onUplo
         </button>
       )}
       <input ref={inputRef} type="file" accept="image/*" className="hidden" onChange={handleUpload} />
+
+      {editing && displayUrl && (
+        <ImageEditorDialog
+          open={editing}
+          onClose={() => setEditing(false)}
+          imageUrl={displayUrl}
+          settingKey={settingKey}
+          initialEdits={{ ...DEFAULT_EDITS, frame: currentFrame }}
+          onApply={(newUrl, appliedEdits) => {
+            if (newUrl !== displayUrl) onUploaded(newUrl);
+            onFrameChange?.(appliedEdits.frame);
+          }}
+        />
+      )}
     </div>
   );
 }
@@ -253,6 +274,14 @@ function GalleryManager({ settingKey, label, images, onChange }: {
   };
   const handleDragEnd = () => setDragIdx(null);
 
+  const [editingIdx, setEditingIdx] = useState<number | null>(null);
+
+  const updateField = (idx: number, field: keyof GalleryImage, value: string) => {
+    const updated = [...images];
+    updated[idx] = { ...updated[idx], [field]: value };
+    onChange(updated);
+  };
+
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
@@ -269,12 +298,15 @@ function GalleryManager({ settingKey, label, images, onChange }: {
             onDragEnd={handleDragEnd}
             className={`relative group rounded-xl overflow-hidden border border-border/40 bg-muted/20 transition-shadow ${dragIdx === idx ? "ring-2 ring-primary shadow-lg" : ""}`}
           >
-            <div className="aspect-square">
+            <div className={`aspect-square overflow-hidden ${getFrameClasses(img.frame || "none")}`}>
               <img src={img.url} alt={img.alt} className="w-full h-full object-cover" />
             </div>
             <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-1.5">
               <div className="flex items-center gap-1">
                 <GripVertical size={14} className="text-white/60 cursor-grab" />
+                <Button size="sm" variant="secondary" onClick={() => setEditingIdx(idx)} className="rounded-lg text-xs h-7 px-2">
+                  <Pencil size={12} />
+                </Button>
                 <Button size="sm" variant="destructive" onClick={() => remove(idx)} className="rounded-lg text-xs h-7 px-2">
                   <X size={12} />
                 </Button>
@@ -300,6 +332,26 @@ function GalleryManager({ settingKey, label, images, onChange }: {
         </button>
       </div>
       <input ref={inputRef} type="file" accept="image/*" multiple className="hidden" onChange={handleUpload} />
+
+      {editingIdx !== null && images[editingIdx] && (
+        <ImageEditorDialog
+          open={true}
+          onClose={() => setEditingIdx(null)}
+          imageUrl={images[editingIdx].url}
+          settingKey={`${settingKey}-${editingIdx}`}
+          initialEdits={{ ...DEFAULT_EDITS, frame: images[editingIdx].frame || "none" }}
+          onApply={(newUrl, appliedEdits) => {
+            const updated = [...images];
+            updated[editingIdx] = {
+              ...updated[editingIdx],
+              url: newUrl,
+              frame: appliedEdits.frame,
+            };
+            onChange(updated);
+            setEditingIdx(null);
+          }}
+        />
+      )}
     </div>
   );
 }
@@ -307,6 +359,7 @@ function GalleryManager({ settingKey, label, images, onChange }: {
 // ─── Main Component ───
 export function MediaManagerSection() {
   const [singleImages, setSingleImages] = useState<Record<string, string>>({});
+  const [singleFrames, setSingleFrames] = useState<Record<string, FrameStyle>>({});
   const [galleries, setGalleries] = useState<Record<string, GalleryImage[]>>({});
   const [mediaRatios, setMediaRatios] = useState<Record<string, DeviceRatios>>({});
   const [loaded, setLoaded] = useState(false);
@@ -327,12 +380,18 @@ export function MediaManagerSection() {
         .from("site_settings")
         .select("key, value")
         .like("key", "media_ratio_%");
+
+      const { data: frameData } = await supabase
+        .from("site_settings")
+        .select("key, value")
+        .like("key", "media_frame_%");
       
-      const data = [...(mainData || []), ...(ratioData || [])];
+      const data = [...(mainData || []), ...(ratioData || []), ...(frameData || [])];
 
       const singles: Record<string, string> = {};
       const gals: Record<string, GalleryImage[]> = {};
       const ratios: Record<string, DeviceRatios> = {};
+      const frames: Record<string, FrameStyle> = {};
 
       if (data) {
         data.forEach((r: any) => {
@@ -340,6 +399,8 @@ export function MediaManagerSection() {
             try {
               ratios[r.key.replace("media_ratio_", "")] = JSON.parse(r.value);
             } catch { /* ignore */ }
+          } else if (r.key.startsWith("media_frame_")) {
+            frames[r.key.replace("media_frame_", "")] = r.value as FrameStyle;
           } else if (r.key.startsWith("gallery_")) {
             try {
               const parsed = JSON.parse(r.value);
@@ -361,6 +422,7 @@ export function MediaManagerSection() {
       }
 
       setSingleImages(singles);
+      setSingleFrames(frames);
       setGalleries(gals);
       setMediaRatios(ratios);
       setLoaded(true);
@@ -374,6 +436,7 @@ export function MediaManagerSection() {
     const now = new Date().toISOString();
     const upserts = [
       ...Object.entries(singleImages).map(([key, value]) => ({ key, value, updated_at: now })),
+      ...Object.entries(singleFrames).map(([key, frame]) => ({ key: `media_frame_${key}`, value: frame, updated_at: now })),
       ...Object.entries(galleries).map(([key, imgs]) => ({ key, value: JSON.stringify(imgs), updated_at: now })),
       ...Object.entries(mediaRatios).map(([key, ratios]) => ({ key: `media_ratio_${key}`, value: JSON.stringify(ratios), updated_at: now })),
     ];
@@ -415,6 +478,8 @@ export function MediaManagerSection() {
               currentUrl={singleImages[s.key] || ""}
               defaultUrl={DEFAULT_SINGLES[s.key]}
               onUploaded={(url) => setSingleImages((prev) => ({ ...prev, [s.key]: url }))}
+              frame={singleFrames[s.key]}
+              onFrameChange={(f) => setSingleFrames((prev) => ({ ...prev, [s.key]: f }))}
             />
           ))}
         </div>
@@ -435,6 +500,8 @@ export function MediaManagerSection() {
               currentUrl={singleImages[s.key] || ""}
               defaultUrl={DEFAULT_SINGLES[s.key]}
               onUploaded={(url) => setSingleImages((prev) => ({ ...prev, [s.key]: url }))}
+              frame={singleFrames[s.key]}
+              onFrameChange={(f) => setSingleFrames((prev) => ({ ...prev, [s.key]: f }))}
             />
           ))}
         </div>
