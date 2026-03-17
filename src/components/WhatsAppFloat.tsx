@@ -31,7 +31,7 @@ const WhatsAppFloat = () => {
       rel="noopener noreferrer"
       aria-label="Chat on WhatsApp"
       className={cn(
-        "fixed bottom-24 left-6 z-50 flex items-center justify-center",
+        "fixed bottom-6 left-6 z-50 flex items-center justify-center",
         "w-11 h-11 rounded-full shadow-lg transition-all duration-300",
         "hover:scale-110 hover:shadow-xl",
         "bg-[#25D366] text-white",
