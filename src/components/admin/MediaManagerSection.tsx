@@ -436,6 +436,7 @@ export function MediaManagerSection() {
     const now = new Date().toISOString();
     const upserts = [
       ...Object.entries(singleImages).map(([key, value]) => ({ key, value, updated_at: now })),
+      ...Object.entries(singleFrames).map(([key, frame]) => ({ key: `media_frame_${key}`, value: frame, updated_at: now })),
       ...Object.entries(galleries).map(([key, imgs]) => ({ key, value: JSON.stringify(imgs), updated_at: now })),
       ...Object.entries(mediaRatios).map(([key, ratios]) => ({ key: `media_ratio_${key}`, value: JSON.stringify(ratios), updated_at: now })),
     ];
