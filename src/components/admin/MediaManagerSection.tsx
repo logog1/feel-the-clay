@@ -5,9 +5,10 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   Image as ImageIcon, Upload, X, GripVertical, Plus, Save, CheckCircle2,
-  Home, Layers, Palette, Monitor, Tablet, Smartphone, Ratio,
+  Home, Layers, Palette, Monitor, Tablet, Smartphone, Ratio, Pencil,
 } from "lucide-react";
 import { toast } from "sonner";
+import { ImageEditorDialog, getFrameClasses, DEFAULT_EDITS, type ImageEdits, type FrameStyle } from "./ImageEditorDialog";
 
 // ─── Default image imports ───
 import heroBg from "@/assets/hero-bg.jpg";
