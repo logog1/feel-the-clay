@@ -133,6 +133,11 @@ const OffersSection = () => {
                     {t("offers.popular")}
                   </span>
                 )}
+                {offer.promoLabel && (
+                  <span className="absolute top-3 end-3 z-10 bg-destructive text-destructive-foreground text-xs font-bold px-3 py-1 rounded-full shadow-md">
+                    {offer.promoLabel}
+                  </span>
+                )}
                 <div className="bg-foreground/90 backdrop-blur-sm px-4 py-3.5 flex items-center justify-between gap-2">
                   <h3 className="text-background text-sm md:text-base font-medium leading-tight truncate">
                     {offer.title}
