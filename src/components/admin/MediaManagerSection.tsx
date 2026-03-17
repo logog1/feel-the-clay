@@ -399,6 +399,8 @@ export function MediaManagerSection() {
             try {
               ratios[r.key.replace("media_ratio_", "")] = JSON.parse(r.value);
             } catch { /* ignore */ }
+          } else if (r.key.startsWith("media_frame_")) {
+            frames[r.key.replace("media_frame_", "")] = r.value as FrameStyle;
           } else if (r.key.startsWith("gallery_")) {
             try {
               const parsed = JSON.parse(r.value);
