@@ -391,6 +391,7 @@ export function MediaManagerSection() {
       const singles: Record<string, string> = {};
       const gals: Record<string, GalleryImage[]> = {};
       const ratios: Record<string, DeviceRatios> = {};
+      const frames: Record<string, FrameStyle> = {};
 
       if (data) {
         data.forEach((r: any) => {
