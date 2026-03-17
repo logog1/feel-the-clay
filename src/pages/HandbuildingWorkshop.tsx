@@ -4,6 +4,7 @@ import SEOHead from "@/components/SEOHead";
 import ProcessSection from "@/components/ProcessSection";
 import { useSiteImages } from "@/hooks/use-site-images";
 import { useSiteGallery } from "@/hooks/use-site-galleries";
+import { useWorkshopConfig } from "@/hooks/use-workshop-config";
 import workshop5 from "@/assets/workshop-5.jpg";
 import workshop6 from "@/assets/workshop-6.jpg";
 import workshop8 from "@/assets/workshop-8.jpg";
@@ -40,10 +41,12 @@ const jsonLd = {
 };
 
 const HandbuildingWorkshop = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const siteImages = useSiteImages(["image_workshop_handbuilding"]);
   const managedGallery = useSiteGallery("gallery_workshop_handbuilding");
+  const { config } = useWorkshopConfig("handbuilding");
   const heroImg = siteImages["image_workshop_handbuilding"];
+  const lang = language as "en" | "ar" | "es" | "fr";
 
   const defaultImages = [workshop5, workshop6, workshop8, workshop10];
   const galleryImages = managedGallery && managedGallery.length > 0
@@ -52,16 +55,23 @@ const HandbuildingWorkshop = () => {
   const images = heroImg ? [heroImg, ...galleryImages] : galleryImages;
 
   const workshop = {
-    title: t("hand.title"),
-    tagline: t("hand.tagline"),
-    price: t("hand.price"),
-    duration: t("hand.duration"),
-    drink: t("hand.drink"),
-    location: t("hand.location"),
-    popular: true,
-    description: [t("hand.desc1"), t("hand.desc2")],
-    highlights: [t("hand.h1"), t("hand.h2"), t("hand.h3"), t("hand.h4"), t("hand.h5"), t("hand.h6"), t("hand.h7")],
+    title: config?.title?.[lang] || t("hand.title"),
+    tagline: config?.tagline?.[lang] || t("hand.tagline"),
+    price: config?.promo_enabled && config?.promo_price ? config.promo_price : (config?.price || t("hand.price")),
+    originalPrice: config?.promo_enabled ? config?.price : undefined,
+    promoLabel: config?.promo_enabled ? config?.promo_label : undefined,
+    duration: config?.duration?.[lang] || t("hand.duration"),
+    drink: config?.drink?.[lang] || t("hand.drink"),
+    location: config?.location?.[lang] || t("hand.location"),
+    popular: config?.is_popular ?? true,
+    description: config?.descriptions?.length
+      ? config.descriptions.map((d) => d[lang] || d.en).filter(Boolean)
+      : [t("hand.desc1"), t("hand.desc2")],
+    highlights: config?.highlights?.length
+      ? config.highlights.map((h) => h[lang] || h.en).filter(Boolean)
+      : [t("hand.h1"), t("hand.h2"), t("hand.h3"), t("hand.h4"), t("hand.h5"), t("hand.h6"), t("hand.h7")],
     images,
+    unavailable: config ? !config.is_available : false,
   };
 
   return (

@@ -4,8 +4,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
-import { LogOut, CalendarDays, ShoppingCart, RefreshCw, Clock, CheckCircle2, XCircle, Package, Calendar, Plus, Trash2, Tag, ToggleLeft, ToggleRight, ChevronLeft, ChevronRight, Upload, ImagePlus, X, LayoutList, GripVertical, Eye, EyeOff, Save, AlertTriangle, Settings, Mail, Phone, Users, Shield, ShieldCheck, ShieldX, UserCheck, UserX, Zap, MapPin, DollarSign } from "lucide-react";
+import { LogOut, CalendarDays, ShoppingCart, RefreshCw, Clock, CheckCircle2, XCircle, Package, Calendar, Plus, Trash2, Tag, ToggleLeft, ToggleRight, ChevronLeft, ChevronRight, Upload, ImagePlus, X, LayoutList, GripVertical, Eye, EyeOff, Save, AlertTriangle, Settings, Mail, Phone, Users, Shield, ShieldCheck, ShieldX, UserCheck, UserX, Zap, MapPin, DollarSign, Sparkles } from "lucide-react";
 import { CitiesPricingSection } from "@/components/admin/CitiesPricingSection";
+import { WorkshopManagementSection } from "@/components/admin/WorkshopManagementSection";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import SEOHead from "@/components/SEOHead";
 import { cn } from "@/lib/utils";
@@ -469,6 +470,7 @@ const AdminDashboard = () => {
             <TabsTrigger value="sections" className="rounded-xl gap-2 data-[state=active]:bg-card"><LayoutList size={14} /> Store Sections</TabsTrigger>
             <TabsTrigger value="settings" className="rounded-xl gap-2 data-[state=active]:bg-card"><Settings size={14} /> Settings</TabsTrigger>
             <TabsTrigger value="cities" className="rounded-xl gap-2 data-[state=active]:bg-card"><MapPin size={14} /> Cities & Pricing</TabsTrigger>
+            <TabsTrigger value="workshops" className="rounded-xl gap-2 data-[state=active]:bg-card"><Sparkles size={14} /> Workshops</TabsTrigger>
             <TabsTrigger value="users" className="rounded-xl gap-2 data-[state=active]:bg-card"><Users size={14} /> Users</TabsTrigger>
           </TabsList>
 
@@ -1123,6 +1125,11 @@ const AdminDashboard = () => {
           {/* ── Cities & Pricing ── */}
           <TabsContent value="cities">
             <CitiesPricingSection />
+          </TabsContent>
+
+          {/* ── Workshops ── */}
+          <TabsContent value="workshops">
+            <WorkshopManagementSection />
           </TabsContent>
         </Tabs>
       </div>

@@ -3,6 +3,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import SEOHead from "@/components/SEOHead";
 import { useSiteImages } from "@/hooks/use-site-images";
 import { useSiteGallery } from "@/hooks/use-site-galleries";
+import { useWorkshopConfig } from "@/hooks/use-workshop-config";
 import embrHero from "@/assets/embr-hero.jpg";
 import embrGallery1 from "@/assets/embr-gallery-1.jpg";
 import embrGallery2 from "@/assets/embr-gallery-2.jpg";
@@ -30,10 +31,12 @@ const jsonLd = {
 };
 
 const EmbroideryWorkshop = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const siteImages = useSiteImages(["image_workshop_embroidery"]);
   const managedGallery = useSiteGallery("gallery_workshop_embroidery");
+  const { config } = useWorkshopConfig("embroidery");
   const heroImg = siteImages["image_workshop_embroidery"];
+  const lang = language as "en" | "ar" | "es" | "fr";
 
   const defaultImages = [embrGallery1, embrGallery2, embrGallery3, embrGallery4, embrGallery5];
   const galleryImages = managedGallery && managedGallery.length > 0
@@ -42,16 +45,23 @@ const EmbroideryWorkshop = () => {
   const images = heroImg ? [heroImg, ...galleryImages] : [embrHero, ...galleryImages];
 
   const workshop = {
-    title: t("embr.title"),
-    tagline: t("embr.tagline"),
-    price: t("embr.price"),
-    duration: t("embr.duration"),
-    drink: t("embr.drink"),
-    location: t("embr.location"),
-    description: [t("embr.desc1"), t("embr.desc2")],
-    highlights: [t("embr.h1"), t("embr.h2"), t("embr.h3"), t("embr.h4"), t("embr.h5"), t("embr.h6"), t("embr.h7")],
+    title: config?.title?.[lang] || t("embr.title"),
+    tagline: config?.tagline?.[lang] || t("embr.tagline"),
+    price: config?.promo_enabled && config?.promo_price ? config.promo_price : (config?.price || t("embr.price")),
+    originalPrice: config?.promo_enabled ? config?.price : undefined,
+    promoLabel: config?.promo_enabled ? config?.promo_label : undefined,
+    duration: config?.duration?.[lang] || t("embr.duration"),
+    drink: config?.drink?.[lang] || t("embr.drink"),
+    location: config?.location?.[lang] || t("embr.location"),
+    description: config?.descriptions?.length
+      ? config.descriptions.map((d) => d[lang] || d.en).filter(Boolean)
+      : [t("embr.desc1"), t("embr.desc2")],
+    highlights: config?.highlights?.length
+      ? config.highlights.map((h) => h[lang] || h.en).filter(Boolean)
+      : [t("embr.h1"), t("embr.h2"), t("embr.h3"), t("embr.h4"), t("embr.h5"), t("embr.h6"), t("embr.h7")],
     images,
-    unavailable: true,
+    unavailable: config ? !config.is_available : true,
+    popular: config?.is_popular || false,
   };
 
   return (
