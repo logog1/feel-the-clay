@@ -274,6 +274,14 @@ function GalleryManager({ settingKey, label, images, onChange }: {
   };
   const handleDragEnd = () => setDragIdx(null);
 
+  const [editingIdx, setEditingIdx] = useState<number | null>(null);
+
+  const updateField = (idx: number, field: keyof GalleryImage, value: string) => {
+    const updated = [...images];
+    updated[idx] = { ...updated[idx], [field]: value };
+    onChange(updated);
+  };
+
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
@@ -290,12 +298,15 @@ function GalleryManager({ settingKey, label, images, onChange }: {
             onDragEnd={handleDragEnd}
             className={`relative group rounded-xl overflow-hidden border border-border/40 bg-muted/20 transition-shadow ${dragIdx === idx ? "ring-2 ring-primary shadow-lg" : ""}`}
           >
-            <div className="aspect-square">
+            <div className={`aspect-square overflow-hidden ${getFrameClasses(img.frame || "none")}`}>
               <img src={img.url} alt={img.alt} className="w-full h-full object-cover" />
             </div>
             <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-1.5">
               <div className="flex items-center gap-1">
                 <GripVertical size={14} className="text-white/60 cursor-grab" />
+                <Button size="sm" variant="secondary" onClick={() => setEditingIdx(idx)} className="rounded-lg text-xs h-7 px-2">
+                  <Pencil size={12} />
+                </Button>
                 <Button size="sm" variant="destructive" onClick={() => remove(idx)} className="rounded-lg text-xs h-7 px-2">
                   <X size={12} />
                 </Button>
@@ -321,6 +332,26 @@ function GalleryManager({ settingKey, label, images, onChange }: {
         </button>
       </div>
       <input ref={inputRef} type="file" accept="image/*" multiple className="hidden" onChange={handleUpload} />
+
+      {editingIdx !== null && images[editingIdx] && (
+        <ImageEditorDialog
+          open={true}
+          onClose={() => setEditingIdx(null)}
+          imageUrl={images[editingIdx].url}
+          settingKey={`${settingKey}-${editingIdx}`}
+          initialEdits={{ ...DEFAULT_EDITS, frame: images[editingIdx].frame || "none" }}
+          onApply={(newUrl, appliedEdits) => {
+            const updated = [...images];
+            updated[editingIdx] = {
+              ...updated[editingIdx],
+              url: newUrl,
+              frame: appliedEdits.frame,
+            };
+            onChange(updated);
+            setEditingIdx(null);
+          }}
+        />
+      )}
     </div>
   );
 }
