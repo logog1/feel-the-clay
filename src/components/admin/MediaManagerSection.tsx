@@ -308,6 +308,7 @@ function GalleryManager({ settingKey, label, images, onChange }: {
 export function MediaManagerSection() {
   const [singleImages, setSingleImages] = useState<Record<string, string>>({});
   const [galleries, setGalleries] = useState<Record<string, GalleryImage[]>>({});
+  const [mediaRatios, setMediaRatios] = useState<Record<string, DeviceRatios>>({});
   const [loaded, setLoaded] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
