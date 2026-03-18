@@ -161,6 +161,27 @@ const SocialImpactSection = () => {
         )}
 
         <p className={cn("text-center text-muted-foreground mt-12 text-sm transition-all duration-700 delay-500", galleryVisible ? "opacity-100" : "opacity-0")}>{t("impact.tagline")}</p>
+
+        {/* Instagram Story Video */}
+        <div className={cn(
+          "mt-16 max-w-lg mx-auto transition-all duration-700",
+          galleryVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+        )}>
+          <h3 className="text-xl md:text-2xl font-semibold text-foreground text-center mb-6">Our Story</h3>
+          <div className="rounded-2xl overflow-hidden shadow-lg border border-border/40">
+            <iframe
+              src="https://www.instagram.com/reel/DV-z2XRCNbC/embed/"
+              className="w-full"
+              style={{ minHeight: 500 }}
+              frameBorder="0"
+              scrolling="no"
+              allowTransparency
+              allow="encrypted-media"
+              loading="lazy"
+              title="Terraria Story - Instagram Reel"
+            />
+          </div>
+        </div>
       </div>
     </section>
   );
