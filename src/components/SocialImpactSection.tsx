@@ -167,7 +167,7 @@ const SocialImpactSection = () => {
           "mt-16 max-w-lg mx-auto transition-all duration-700",
           galleryVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
         )}>
-          <h3 className="text-xl md:text-2xl font-semibold text-foreground text-center mb-6">{t("impact.video_title") || "Our Story"}</h3>
+          <h3 className="text-xl md:text-2xl font-semibold text-foreground text-center mb-6">Our Story</h3>
           <div className="rounded-2xl overflow-hidden shadow-lg border border-border/40">
             <iframe
               src="https://www.instagram.com/reel/DV-z2XRCNbC/embed/"
