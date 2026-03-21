@@ -316,6 +316,20 @@ export const translations = {
   "cart.order_success": { en: "Order Placed!", ar: "تم إرسال الطلب!", es: "¡Pedido enviado!", fr: "Commande envoyée !" },
   "cart.order_success_desc": { en: "We'll contact you shortly to confirm your order.", ar: "سنتواصل معك قريباً لتأكيد طلبك.", es: "Te contactaremos pronto para confirmar tu pedido.", fr: "Nous vous contacterons rapidement pour confirmer votre commande." },
   "cart.sending": { en: "Sending...", ar: "جاري الإرسال...", es: "Enviando...", fr: "Envoi en cours..." },
+
+  // B2B
+  "b2b.badge": { en: "For Organizations", ar: "للمؤسسات", es: "Para Organizaciones", fr: "Pour les Organisations" },
+  "b2b.title": { en: "Workshops for Companies & Institutions", ar: "ورشات للشركات والمؤسسات", es: "Talleres para Empresas e Instituciones", fr: "Ateliers pour Entreprises et Institutions" },
+  "b2b.subtitle": { en: "We partner with companies, institutions, and organizations to organize tailored pottery workshops and cultural experiences for their teams or beneficiaries.", ar: "نتعاون مع الشركات والمؤسسات والمنظمات لتنظيم ورشات فخار وتجارب ثقافية مخصصة لفرقهم أو مستفيديهم.", es: "Colaboramos con empresas, instituciones y organizaciones para organizar talleres de cerámica y experiencias culturales a medida para sus equipos o beneficiarios.", fr: "Nous collaborons avec des entreprises, institutions et organisations pour organiser des ateliers de poterie et des expériences culturelles sur mesure pour leurs équipes ou bénéficiaires." },
+  "b2b.feature1_title": { en: "Corporate Team Building", ar: "بناء فرق العمل", es: "Team Building Corporativo", fr: "Team Building Entreprise" },
+  "b2b.feature1_desc": { en: "Unique hands-on experiences that strengthen team bonds through creative collaboration.", ar: "تجارب عملية فريدة تعزز روابط الفريق من خلال التعاون الإبداعي.", es: "Experiencias prácticas únicas que fortalecen los lazos del equipo a través de la colaboración creativa.", fr: "Des expériences pratiques uniques qui renforcent les liens d'équipe à travers la collaboration créative." },
+  "b2b.feature2_title": { en: "Tailored Group Sessions", ar: "جلسات مخصصة للمجموعات", es: "Sesiones Grupales a Medida", fr: "Sessions de Groupe Sur Mesure" },
+  "b2b.feature2_desc": { en: "Flexible scheduling and customized programs adapted to your group size and goals.", ar: "جدولة مرنة وبرامج مخصصة تتكيف مع حجم مجموعتك وأهدافك.", es: "Horarios flexibles y programas personalizados adaptados al tamaño y objetivos de su grupo.", fr: "Planification flexible et programmes personnalisés adaptés à la taille et aux objectifs de votre groupe." },
+  "b2b.feature3_title": { en: "Cultural Experiences", ar: "تجارب ثقافية", es: "Experiencias Culturales", fr: "Expériences Culturelles" },
+  "b2b.feature3_desc": { en: "Immersive cultural activities combining traditional craftsmanship with local heritage.", ar: "أنشطة ثقافية غامرة تجمع بين الحرف التقليدية والتراث المحلي.", es: "Actividades culturales inmersivas que combinan artesanía tradicional con patrimonio local.", fr: "Activités culturelles immersives alliant artisanat traditionnel et patrimoine local." },
+  "b2b.feature4_title": { en: "CSR & Social Impact", ar: "المسؤولية الاجتماعية", es: "RSE e Impacto Social", fr: "RSE et Impact Social" },
+  "b2b.feature4_desc": { en: "Support local artisans and community development through meaningful partnerships.", ar: "ادعم الحرفيين المحليين وتنمية المجتمع من خلال شراكات هادفة.", es: "Apoye a artesanos locales y el desarrollo comunitario a través de alianzas significativas.", fr: "Soutenez les artisans locaux et le développement communautaire à travers des partenariats significatifs." },
+  "b2b.cta": { en: "Get in Touch", ar: "تواصل معنا", es: "Contáctenos", fr: "Contactez-nous" },
 } as const;
 
 export type TranslationKey = keyof typeof translations;

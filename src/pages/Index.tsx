@@ -12,6 +12,7 @@ import ContactSection from "@/components/ContactSection";
 import LanguagesSection from "@/components/LanguagesSection";
 import BookingFormSection from "@/components/BookingFormSection";
 import TrustSection from "@/components/TrustSection";
+import B2BSection from "@/components/B2BSection";
 import AnimatedSection from "@/components/AnimatedSection";
 
 import Footer from "@/components/Footer";
@@ -123,6 +124,7 @@ const Index = () => {
       <SlantUpLight />
 
       <AnimatedSection variant="scale"><TrustSection /></AnimatedSection>
+      <AnimatedSection variant="fade-up"><B2BSection /></AnimatedSection>
       <Footer />
     </main>
   );
