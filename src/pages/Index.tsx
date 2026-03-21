@@ -124,6 +124,7 @@ const Index = () => {
       <SlantUpLight />
 
       <AnimatedSection variant="scale"><TrustSection /></AnimatedSection>
+      <AnimatedSection variant="fade-up"><B2BSection /></AnimatedSection>
       <Footer />
     </main>
   );
