@@ -342,8 +342,17 @@ function GalleryManager({ settingKey, label, images, onChange }: {
           disabled={uploading}
           className="aspect-square rounded-xl border-2 border-dashed border-border/60 hover:border-primary/40 transition-colors flex flex-col items-center justify-center gap-2 text-muted-foreground hover:text-foreground"
         >
-          <Plus size={20} />
-          <span className="text-[10px]">{uploading ? "Uploading…" : "Add images"}</span>
+          {uploading ? (
+            <>
+              <div className="h-6 w-6 border-2 border-muted-foreground/30 border-t-primary rounded-full animate-spin" />
+              <span className="text-[10px]">{uploadCount.current}/{uploadCount.total}</span>
+            </>
+          ) : (
+            <>
+              <Plus size={20} />
+              <span className="text-[10px]">Add images</span>
+            </>
+          )}
         </button>
       </div>
       <input ref={inputRef} type="file" accept="image/*" multiple className="hidden" onChange={handleUpload} />
