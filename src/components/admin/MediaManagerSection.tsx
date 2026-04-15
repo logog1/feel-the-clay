@@ -1,14 +1,14 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   Image as ImageIcon, Upload, X, GripVertical, Plus, Save, CheckCircle2,
-  Home, Layers, Palette, Monitor, Tablet, Smartphone, Ratio, Pencil,
+  Home, Layers, Palette, Monitor, Tablet, Smartphone, Pencil, ChevronLeft, ChevronRight,
+  Eye, Loader2,
 } from "lucide-react";
 import { toast } from "sonner";
-import { ImageEditorDialog, getFrameClasses, DEFAULT_EDITS, type ImageEdits, type FrameStyle } from "./ImageEditorDialog";
+import { ImageEditorDialog, getFrameClasses, DEFAULT_EDITS, type FrameStyle } from "./ImageEditorDialog";
 
 // ─── Default image imports ───
 import heroBg from "@/assets/hero-bg.jpg";
@@ -48,20 +48,14 @@ import embrGallery5 from "@/assets/embr-gallery-5.jpg";
 
 type GalleryImage = { url: string; alt: string; size?: string; frame?: FrameStyle };
 
-type DeviceRatios = { mobile: string; tablet: string; desktop: string };
-
-const ASPECT_RATIOS = [
-  { value: "auto", label: "Auto" },
-  { value: "1:1", label: "1:1" },
-  { value: "4:3", label: "4:3" },
-  { value: "3:2", label: "3:2" },
-  { value: "16:9", label: "16:9" },
-  { value: "3:4", label: "3:4" },
-  { value: "2:3", label: "2:3" },
-  { value: "9:16", label: "9:16" },
+const FRAME_OPTIONS: { value: FrameStyle; label: string; emoji: string }[] = [
+  { value: "none", label: "None", emoji: "🖼" },
+  { value: "thin", label: "Thin", emoji: "▫️" },
+  { value: "thick", label: "Thick", emoji: "⬜" },
+  { value: "rounded", label: "Round", emoji: "🔘" },
+  { value: "shadow", label: "Shadow", emoji: "🌑" },
+  { value: "polaroid", label: "Polaroid", emoji: "📷" },
 ];
-
-const DEFAULT_RATIOS: DeviceRatios = { mobile: "auto", tablet: "auto", desktop: "auto" };
 
 // ─── Default values ───
 const DEFAULT_SINGLES: Record<string, string> = {
@@ -126,13 +120,13 @@ const DEFAULT_GALLERIES: Record<string, GalleryImage[]> = {
 };
 
 const HERO_SETTINGS = [
-  { key: "image_hero_bg", label: "Home Page Hero Background" },
+  { key: "image_hero_bg", label: "Home Page Hero Background", context: "hero" as const },
 ];
 
 const CARD_SETTINGS = [
-  { key: "image_workshop_handbuilding", label: "Handbuilding Card & Hero" },
-  { key: "image_workshop_pottery", label: "Pottery Card & Hero" },
-  { key: "image_workshop_embroidery", label: "Embroidery Card & Hero" },
+  { key: "image_workshop_handbuilding", label: "Handbuilding Card & Hero", context: "card" as const },
+  { key: "image_workshop_pottery", label: "Pottery Card & Hero", context: "card" as const },
+  { key: "image_workshop_embroidery", label: "Embroidery Card & Hero", context: "card" as const },
 ];
 
 const GALLERY_SETTINGS = [
@@ -149,21 +143,162 @@ const ALL_KEYS = [
   ...GALLERY_SETTINGS.map((s) => s.key),
 ];
 
-// ─── Single Image Uploader ───
-function SingleImageUploader({ settingKey, label, currentUrl, defaultUrl, onUploaded, frame, onFrameChange }: {
+// ─── Website Preview Component ───
+function WebsitePreview({ imageUrl, context, frame, device }: {
+  imageUrl: string; context: "hero" | "card"; frame: FrameStyle; device: "phone" | "desktop";
+}) {
+  const isPhone = device === "phone";
+  const w = isPhone ? 200 : 400;
+  const frameClasses = getFrameClasses(frame);
+
+  if (context === "hero") {
+    return (
+      <div className={`relative overflow-hidden rounded-xl border border-border/60 bg-[hsl(var(--background))]`} style={{ width: w, height: isPhone ? 360 : 225 }}>
+        {/* Simulated hero */}
+        <div className="absolute inset-0">
+          <img src={imageUrl} alt="Preview" className={`w-full h-full object-cover ${frameClasses}`} />
+          <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/30 to-background/80" />
+        </div>
+        {/* Simulated header */}
+        <div className="relative z-10 flex items-center justify-between px-3 py-2">
+          <div className="w-5 h-5 rounded-md bg-primary/80" />
+          {!isPhone && (
+            <div className="flex gap-2">
+              {["Home", "About", "Workshops"].map(n => (
+                <span key={n} className="text-[7px] text-foreground/70">{n}</span>
+              ))}
+            </div>
+          )}
+        </div>
+        {/* Simulated content */}
+        <div className="relative z-10 flex flex-col justify-center px-4" style={{ paddingTop: isPhone ? 80 : 40 }}>
+          <div className="space-y-1.5">
+            <div className={`font-bold text-foreground drop-shadow-sm ${isPhone ? "text-sm" : "text-lg"}`}>
+              Rethinking pottery
+            </div>
+            <div className={`font-bold text-foreground drop-shadow-sm ${isPhone ? "text-sm" : "text-lg"}`}>
+              as <span className="relative">community<span className="absolute -bottom-0.5 left-0 w-full h-0.5 bg-primary rounded-full" /></span>
+            </div>
+            <div className={`text-foreground/60 ${isPhone ? "text-[8px]" : "text-[10px]"}`}>
+              A creative, grounding experience
+            </div>
+          </div>
+        </div>
+        {/* Device label */}
+        <div className="absolute bottom-1.5 right-1.5 z-10">
+          {isPhone ? <Smartphone size={10} className="text-foreground/40" /> : <Monitor size={10} className="text-foreground/40" />}
+        </div>
+      </div>
+    );
+  }
+
+  // Card context
+  return (
+    <div className={`overflow-hidden rounded-xl border border-border/60 bg-card`} style={{ width: w }}>
+      <div className={`relative overflow-hidden ${frameClasses}`} style={{ height: isPhone ? 140 : 120 }}>
+        <img src={imageUrl} alt="Preview" className="w-full h-full object-cover" />
+      </div>
+      <div className="p-2 space-y-1">
+        <div className={`font-semibold text-foreground ${isPhone ? "text-[10px]" : "text-xs"}`}>Workshop Name</div>
+        <div className={`text-muted-foreground ${isPhone ? "text-[8px]" : "text-[9px]"}`}>Duration • Participants</div>
+        <div className="flex gap-1 mt-1">
+          <div className="h-4 px-2 rounded-md bg-primary/10 text-primary text-[8px] flex items-center">Book</div>
+        </div>
+      </div>
+      <div className="absolute bottom-1.5 right-1.5">
+        {isPhone ? <Smartphone size={10} className="text-muted-foreground/40" /> : <Monitor size={10} className="text-muted-foreground/40" />}
+      </div>
+    </div>
+  );
+}
+
+// ─── Frame Swiper ───
+function FrameSwiper({ value, onChange }: { value: FrameStyle; onChange: (f: FrameStyle) => void }) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const currentIdx = FRAME_OPTIONS.findIndex(f => f.value === value);
+
+  const scrollTo = (idx: number) => {
+    const clamped = Math.max(0, Math.min(idx, FRAME_OPTIONS.length - 1));
+    onChange(FRAME_OPTIONS[clamped].value);
+  };
+
+  return (
+    <div className="flex items-center gap-1">
+      <button onClick={() => scrollTo(currentIdx - 1)} className="p-1 rounded-lg hover:bg-muted/50 text-muted-foreground disabled:opacity-30" disabled={currentIdx <= 0}>
+        <ChevronLeft size={14} />
+      </button>
+      <div ref={containerRef} className="flex gap-1.5 overflow-x-auto scrollbar-hide snap-x snap-mandatory py-1 px-0.5" style={{ scrollBehavior: "smooth" }}>
+        {FRAME_OPTIONS.map((opt) => (
+          <button
+            key={opt.value}
+            onClick={() => onChange(opt.value)}
+            className={`flex-shrink-0 snap-center px-2.5 py-1.5 rounded-lg text-[11px] font-medium border transition-all whitespace-nowrap ${
+              value === opt.value
+                ? "border-primary bg-primary/10 text-primary shadow-sm"
+                : "border-border/40 text-muted-foreground hover:border-primary/40 hover:bg-muted/30"
+            }`}
+          >
+            {opt.emoji} {opt.label}
+          </button>
+        ))}
+      </div>
+      <button onClick={() => scrollTo(currentIdx + 1)} className="p-1 rounded-lg hover:bg-muted/50 text-muted-foreground disabled:opacity-30" disabled={currentIdx >= FRAME_OPTIONS.length - 1}>
+        <ChevronRight size={14} />
+      </button>
+    </div>
+  );
+}
+
+// ─── Drop Zone wrapper ───
+function DropZone({ onFiles, children, className }: { onFiles: (files: FileList) => void; children: React.ReactNode; className?: string }) {
+  const [dragging, setDragging] = useState(false);
+  const counter = useRef(0);
+
+  const handleDragEnter = (e: React.DragEvent) => { e.preventDefault(); counter.current++; setDragging(true); };
+  const handleDragLeave = (e: React.DragEvent) => { e.preventDefault(); counter.current--; if (counter.current === 0) setDragging(false); };
+  const handleDragOver = (e: React.DragEvent) => { e.preventDefault(); };
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    counter.current = 0;
+    setDragging(false);
+    if (e.dataTransfer.files?.length) onFiles(e.dataTransfer.files);
+  };
+
+  return (
+    <div
+      onDragEnter={handleDragEnter}
+      onDragLeave={handleDragLeave}
+      onDragOver={handleDragOver}
+      onDrop={handleDrop}
+      className={`relative ${className || ""}`}
+    >
+      {children}
+      {dragging && (
+        <div className="absolute inset-0 z-50 rounded-xl border-2 border-dashed border-primary bg-primary/10 backdrop-blur-sm flex items-center justify-center">
+          <div className="flex flex-col items-center gap-2 text-primary">
+            <Upload size={28} className="animate-bounce" />
+            <span className="text-sm font-medium">Drop image here</span>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Single Image Uploader (Redesigned) ───
+function SingleImageUploader({ settingKey, label, currentUrl, defaultUrl, onUploaded, frame, onFrameChange, context, onAutoSave }: {
   settingKey: string; label: string; currentUrl: string; defaultUrl?: string; onUploaded: (url: string) => void;
-  frame?: FrameStyle; onFrameChange?: (frame: FrameStyle) => void;
+  frame?: FrameStyle; onFrameChange?: (frame: FrameStyle) => void; context: "hero" | "card"; onAutoSave: () => void;
 }) {
   const [uploading, setUploading] = useState(false);
   const [editing, setEditing] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const displayUrl = currentUrl || defaultUrl || "";
   const isDefault = !currentUrl && !!defaultUrl;
   const currentFrame = frame || "none";
 
-  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const uploadFile = async (file: File) => {
     setUploading(true);
     toast.info(`Uploading ${file.name}…`);
     const ext = file.name.split(".").pop();
@@ -174,48 +309,113 @@ function SingleImageUploader({ settingKey, label, currentUrl, defaultUrl, onUplo
     onUploaded(urlData.publicUrl);
     toast.success("Image uploaded!");
     setUploading(false);
+    // Auto-save after upload
+    setTimeout(() => onAutoSave(), 300);
+  };
+
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    await uploadFile(file);
     if (inputRef.current) inputRef.current.value = "";
   };
 
+  const handleDrop = (files: FileList) => {
+    const file = files[0];
+    if (file && file.type.startsWith("image/")) uploadFile(file);
+    else toast.error("Please drop an image file");
+  };
+
+  const handleFrameChange = (f: FrameStyle) => {
+    onFrameChange?.(f);
+    // Auto-save frame changes
+    setTimeout(() => onAutoSave(), 300);
+  };
+
   return (
-    <div className="space-y-2">
+    <div className="space-y-3">
       <div className="flex items-center justify-between">
         <label className="text-xs text-muted-foreground font-medium">{label}</label>
-        {isDefault && <span className="text-[10px] px-2 py-0.5 rounded-full bg-muted text-muted-foreground">Default</span>}
-      </div>
-      {displayUrl ? (
-        <div className={`relative w-full aspect-video rounded-xl overflow-hidden border border-border/40 group ${getFrameClasses(currentFrame)}`}>
-          <img src={displayUrl} alt={label} className="w-full h-full object-cover" />
-          {uploading && (
-            <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center gap-2 z-10">
-              <div className="h-8 w-8 border-3 border-white/30 border-t-white rounded-full animate-spin" />
-              <span className="text-xs text-white font-medium">Uploading…</span>
-            </div>
+        <div className="flex items-center gap-1.5">
+          {isDefault && <span className="text-[10px] px-2 py-0.5 rounded-full bg-muted text-muted-foreground">Default</span>}
+          {displayUrl && (
+            <button onClick={() => setShowPreview(!showPreview)} className={`p-1 rounded-lg transition-colors ${showPreview ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground hover:bg-muted/50"}`} title="Preview on website">
+              <Eye size={14} />
+            </button>
           )}
-          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-            <Button size="sm" variant="secondary" onClick={() => setEditing(true)} className="rounded-lg text-xs">
-              <Pencil size={14} className="mr-1" /> Edit
-            </Button>
-            <Button size="sm" variant="secondary" onClick={() => inputRef.current?.click()} className="rounded-lg text-xs">
-              <Upload size={14} className="mr-1" /> Replace
-            </Button>
-            {currentUrl && (
-              <Button size="sm" variant="destructive" onClick={() => onUploaded("")} className="rounded-lg text-xs">
-                <X size={14} className="mr-1" /> {defaultUrl ? "Reset" : "Remove"}
-              </Button>
+        </div>
+      </div>
+
+      <DropZone onFiles={handleDrop}>
+        {displayUrl ? (
+          <div className={`relative w-full aspect-video rounded-xl overflow-hidden border border-border/40 group ${getFrameClasses(currentFrame)}`}>
+            <img src={displayUrl} alt={label} className="w-full h-full object-cover" />
+            {/* Upload spinner overlay */}
+            {uploading && (
+              <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center gap-2 z-10">
+                <Loader2 size={28} className="text-white animate-spin" />
+                <span className="text-xs text-white font-medium">Uploading…</span>
+              </div>
+            )}
+            {/* Hover actions */}
+            {!uploading && (
+              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                <Button size="sm" variant="secondary" onClick={() => setEditing(true)} className="rounded-lg text-xs">
+                  <Pencil size={14} className="mr-1" /> Edit
+                </Button>
+                <Button size="sm" variant="secondary" onClick={() => inputRef.current?.click()} className="rounded-lg text-xs">
+                  <Upload size={14} className="mr-1" /> Replace
+                </Button>
+                {currentUrl && (
+                  <Button size="sm" variant="destructive" onClick={() => { onUploaded(""); setTimeout(() => onAutoSave(), 300); }} className="rounded-lg text-xs">
+                    <X size={14} className="mr-1" /> {defaultUrl ? "Reset" : "Remove"}
+                  </Button>
+                )}
+              </div>
             )}
           </div>
+        ) : (
+          <button
+            onClick={() => inputRef.current?.click()}
+            disabled={uploading}
+            className="w-full aspect-video rounded-xl border-2 border-dashed border-border/60 hover:border-primary/40 transition-colors flex flex-col items-center justify-center gap-2 text-muted-foreground hover:text-foreground"
+          >
+            {uploading ? (
+              <><Loader2 size={24} className="animate-spin" /><span className="text-xs">Uploading…</span></>
+            ) : (
+              <><Upload size={24} /><span className="text-xs">Click or drag to upload</span></>
+            )}
+          </button>
+        )}
+      </DropZone>
+
+      {/* Frame Swiper */}
+      {displayUrl && (
+        <div className="space-y-1.5">
+          <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">Frame Style</span>
+          <FrameSwiper value={currentFrame} onChange={handleFrameChange} />
         </div>
-      ) : (
-        <button
-          onClick={() => inputRef.current?.click()}
-          disabled={uploading}
-          className="w-full aspect-video rounded-xl border-2 border-dashed border-border/60 hover:border-primary/40 transition-colors flex flex-col items-center justify-center gap-2 text-muted-foreground hover:text-foreground"
-        >
-          <ImageIcon size={24} />
-          <span className="text-xs">{uploading ? "Uploading…" : "Click to upload"}</span>
-        </button>
       )}
+
+      {/* Device Preview Panel */}
+      {showPreview && displayUrl && (
+        <div className="p-4 rounded-xl bg-muted/30 border border-border/30 space-y-3 animate-fade-up">
+          <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
+            <Eye size={12} /> Website Preview
+          </div>
+          <div className="flex gap-4 overflow-x-auto pb-2">
+            <div className="flex-shrink-0 space-y-1.5">
+              <div className="flex items-center gap-1 text-[10px] text-muted-foreground"><Smartphone size={10} /> Phone</div>
+              <WebsitePreview imageUrl={displayUrl} context={context} frame={currentFrame} device="phone" />
+            </div>
+            <div className="flex-shrink-0 space-y-1.5">
+              <div className="flex items-center gap-1 text-[10px] text-muted-foreground"><Monitor size={10} /> Desktop</div>
+              <WebsitePreview imageUrl={displayUrl} context={context} frame={currentFrame} device="desktop" />
+            </div>
+          </div>
+        </div>
+      )}
+
       <input ref={inputRef} type="file" accept="image/*" className="hidden" onChange={handleUpload} />
 
       {editing && displayUrl && (
@@ -228,6 +428,7 @@ function SingleImageUploader({ settingKey, label, currentUrl, defaultUrl, onUplo
           onApply={(newUrl, appliedEdits) => {
             if (newUrl !== displayUrl) onUploaded(newUrl);
             onFrameChange?.(appliedEdits.frame);
+            setTimeout(() => onAutoSave(), 300);
           }}
         />
       )}
@@ -235,41 +436,52 @@ function SingleImageUploader({ settingKey, label, currentUrl, defaultUrl, onUplo
   );
 }
 
-// ─── Gallery Manager ───
-function GalleryManager({ settingKey, label, images, onChange }: {
-  settingKey: string; label: string; images: GalleryImage[]; onChange: (imgs: GalleryImage[]) => void;
+// ─── Gallery Manager (Redesigned) ───
+function GalleryManager({ settingKey, label, images, onChange, onAutoSave }: {
+  settingKey: string; label: string; images: GalleryImage[]; onChange: (imgs: GalleryImage[]) => void; onAutoSave: () => void;
 }) {
   const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState({ current: 0, total: 0 });
   const inputRef = useRef<HTMLInputElement>(null);
   const [dragIdx, setDragIdx] = useState<number | null>(null);
+  const [editingIdx, setEditingIdx] = useState<number | null>(null);
 
-  const [uploadCount, setUploadCount] = useState({ current: 0, total: 0 });
-
-  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files?.length) return;
+  const uploadFiles = async (files: FileList) => {
     setUploading(true);
-    setUploadCount({ current: 0, total: files.length });
+    setUploadProgress({ current: 0, total: files.length });
     const newImages = [...images];
     for (let i = 0; i < files.length; i++) {
-      setUploadCount({ current: i + 1, total: files.length });
+      setUploadProgress({ current: i + 1, total: files.length });
       const file = files[i];
+      if (!file.type.startsWith("image/")) continue;
       toast.info(`Uploading ${file.name} (${i + 1}/${files.length})…`);
       const ext = file.name.split(".").pop();
       const path = `${settingKey}-${Date.now()}-${i}.${ext}`;
       const { error } = await supabase.storage.from("site-images").upload(path, file, { upsert: true });
-      if (error) { toast.error(`Failed to upload ${file.name}`); continue; }
+      if (error) { toast.error(`Failed: ${file.name}`); continue; }
       const { data: urlData } = supabase.storage.from("site-images").getPublicUrl(path);
       newImages.push({ url: urlData.publicUrl, alt: file.name.replace(/\.[^.]+$/, "") });
     }
     onChange(newImages);
     toast.success(`${files.length} image(s) uploaded!`);
     setUploading(false);
-    setUploadCount({ current: 0, total: 0 });
+    setUploadProgress({ current: 0, total: 0 });
+    setTimeout(() => onAutoSave(), 300);
+  };
+
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files?.length) return;
+    await uploadFiles(files);
     if (inputRef.current) inputRef.current.value = "";
   };
 
-  const remove = (idx: number) => onChange(images.filter((_, i) => i !== idx));
+  const handleDrop = (files: FileList) => uploadFiles(files);
+
+  const remove = (idx: number) => {
+    onChange(images.filter((_, i) => i !== idx));
+    setTimeout(() => onAutoSave(), 300);
+  };
 
   const updateAlt = (idx: number, alt: string) => {
     const updated = [...images];
@@ -287,18 +499,10 @@ function GalleryManager({ settingKey, label, images, onChange }: {
     onChange(reordered);
     setDragIdx(idx);
   };
-  const handleDragEnd = () => setDragIdx(null);
-
-  const [editingIdx, setEditingIdx] = useState<number | null>(null);
-
-  const updateField = (idx: number, field: keyof GalleryImage, value: string) => {
-    const updated = [...images];
-    updated[idx] = { ...updated[idx], [field]: value };
-    onChange(updated);
-  };
+  const handleDragEnd = () => { setDragIdx(null); };
 
   return (
-    <div className="space-y-3">
+    <DropZone onFiles={handleDrop} className="space-y-3">
       <div className="flex items-center justify-between">
         <h5 className="text-sm font-semibold text-foreground">{label}</h5>
         <span className="text-xs text-muted-foreground">{images.length} images</span>
@@ -326,6 +530,25 @@ function GalleryManager({ settingKey, label, images, onChange }: {
                   <X size={12} />
                 </Button>
               </div>
+              {/* Frame quick-switch */}
+              <div className="flex gap-0.5 mt-1">
+                {FRAME_OPTIONS.slice(0, 4).map((opt) => (
+                  <button
+                    key={opt.value}
+                    onClick={() => {
+                      const updated = [...images];
+                      updated[idx] = { ...updated[idx], frame: opt.value };
+                      onChange(updated);
+                    }}
+                    className={`w-6 h-6 rounded text-[10px] flex items-center justify-center transition-all ${
+                      (img.frame || "none") === opt.value ? "bg-primary text-primary-foreground" : "bg-white/20 text-white hover:bg-white/40"
+                    }`}
+                    title={opt.label}
+                  >
+                    {opt.emoji}
+                  </button>
+                ))}
+              </div>
             </div>
             <div className="p-1.5">
               <Input
@@ -337,6 +560,7 @@ function GalleryManager({ settingKey, label, images, onChange }: {
             </div>
           </div>
         ))}
+        {/* Add button / upload zone */}
         <button
           onClick={() => inputRef.current?.click()}
           disabled={uploading}
@@ -344,13 +568,13 @@ function GalleryManager({ settingKey, label, images, onChange }: {
         >
           {uploading ? (
             <>
-              <div className="h-6 w-6 border-2 border-muted-foreground/30 border-t-primary rounded-full animate-spin" />
-              <span className="text-[10px]">{uploadCount.current}/{uploadCount.total}</span>
+              <Loader2 size={20} className="animate-spin text-primary" />
+              <span className="text-[10px] font-medium">{uploadProgress.current}/{uploadProgress.total}</span>
             </>
           ) : (
             <>
               <Plus size={20} />
-              <span className="text-[10px]">Add images</span>
+              <span className="text-[10px]">Add / Drop</span>
             </>
           )}
         </button>
@@ -373,10 +597,11 @@ function GalleryManager({ settingKey, label, images, onChange }: {
             };
             onChange(updated);
             setEditingIdx(null);
+            setTimeout(() => onAutoSave(), 300);
           }}
         />
       )}
-    </div>
+    </DropZone>
   );
 }
 
@@ -385,52 +610,32 @@ export function MediaManagerSection() {
   const [singleImages, setSingleImages] = useState<Record<string, string>>({});
   const [singleFrames, setSingleFrames] = useState<Record<string, FrameStyle>>({});
   const [galleries, setGalleries] = useState<Record<string, GalleryImage[]>>({});
-  const [mediaRatios, setMediaRatios] = useState<Record<string, DeviceRatios>>({});
   const [loaded, setLoaded] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
+  const [lastSaved, setLastSaved] = useState<Date | null>(null);
+  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     const fetchAll = async () => {
-      // Fetch image settings
-      // Fetch all relevant keys in one go
       const allFetchKeys = [...ALL_KEYS];
-      const { data: mainData } = await supabase
-        .from("site_settings")
-        .select("key, value")
-        .in("key", allFetchKeys);
-      
-      const { data: ratioData } = await supabase
-        .from("site_settings")
-        .select("key, value")
-        .like("key", "media_ratio_%");
+      const [{ data: mainData }, { data: frameData }] = await Promise.all([
+        supabase.from("site_settings").select("key, value").in("key", allFetchKeys),
+        supabase.from("site_settings").select("key, value").like("key", "media_frame_%"),
+      ]);
 
-      const { data: frameData } = await supabase
-        .from("site_settings")
-        .select("key, value")
-        .like("key", "media_frame_%");
-      
-      const data = [...(mainData || []), ...(ratioData || []), ...(frameData || [])];
-
+      const data = [...(mainData || []), ...(frameData || [])];
       const singles: Record<string, string> = {};
       const gals: Record<string, GalleryImage[]> = {};
-      const ratios: Record<string, DeviceRatios> = {};
       const frames: Record<string, FrameStyle> = {};
 
       if (data) {
         data.forEach((r: any) => {
-          if (r.key.startsWith("media_ratio_")) {
-            try {
-              ratios[r.key.replace("media_ratio_", "")] = JSON.parse(r.value);
-            } catch { /* ignore */ }
-          } else if (r.key.startsWith("media_frame_")) {
+          if (r.key.startsWith("media_frame_")) {
             frames[r.key.replace("media_frame_", "")] = r.value as FrameStyle;
           } else if (r.key.startsWith("gallery_")) {
             try {
               const parsed = JSON.parse(r.value);
-              if (Array.isArray(parsed) && parsed.length > 0) {
-                gals[r.key] = parsed;
-              }
+              if (Array.isArray(parsed) && parsed.length > 0) gals[r.key] = parsed;
             } catch { /* use default */ }
           } else {
             if (r.value) singles[r.key] = r.value;
@@ -438,53 +643,75 @@ export function MediaManagerSection() {
         });
       }
 
-      // For galleries without saved data, populate with defaults
       for (const key of Object.keys(DEFAULT_GALLERIES)) {
-        if (!gals[key] || gals[key].length === 0) {
-          gals[key] = [...DEFAULT_GALLERIES[key]];
-        }
+        if (!gals[key] || gals[key].length === 0) gals[key] = [...DEFAULT_GALLERIES[key]];
       }
 
       setSingleImages(singles);
       setSingleFrames(frames);
       setGalleries(gals);
-      setMediaRatios(ratios);
       setLoaded(true);
     };
     fetchAll();
   }, []);
 
-  const saveAll = async () => {
+  const saveAll = useCallback(async () => {
     setSaving(true);
-    setSaved(false);
     const now = new Date().toISOString();
     const upserts = [
       ...Object.entries(singleImages).map(([key, value]) => ({ key, value, updated_at: now })),
       ...Object.entries(singleFrames).map(([key, frame]) => ({ key: `media_frame_${key}`, value: frame, updated_at: now })),
       ...Object.entries(galleries).map(([key, imgs]) => ({ key, value: JSON.stringify(imgs), updated_at: now })),
-      ...Object.entries(mediaRatios).map(([key, ratios]) => ({ key: `media_ratio_${key}`, value: JSON.stringify(ratios), updated_at: now })),
     ];
     if (upserts.length) {
       const { error } = await supabase.from("site_settings").upsert(upserts);
       if (error) { toast.error("Save failed"); setSaving(false); return; }
     }
     setSaving(false);
-    setSaved(true);
-    toast.success("All media settings saved!");
-    setTimeout(() => setSaved(false), 3000);
-  };
+    setLastSaved(new Date());
+  }, [singleImages, singleFrames, galleries]);
 
-  if (!loaded) return <div className="flex items-center justify-center h-64 text-muted-foreground">Loading media…</div>;
+  // Debounced auto-save
+  const autoSave = useCallback(() => {
+    if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
+    saveTimeoutRef.current = setTimeout(() => {
+      saveAll();
+      toast.success("Changes saved & live on website!", { duration: 2000 });
+    }, 800);
+  }, [saveAll]);
+
+  if (!loaded) return (
+    <div className="flex items-center justify-center h-64 text-muted-foreground gap-2">
+      <Loader2 size={18} className="animate-spin" /> Loading media…
+    </div>
+  );
 
   return (
     <div className="max-w-4xl space-y-8">
       {/* Header */}
       <div className="p-5 rounded-2xl bg-card border border-border/40 space-y-2">
-        <h3 className="font-bold text-foreground flex items-center gap-2">
-          <ImageIcon size={18} className="text-primary" /> Media Manager
-        </h3>
+        <div className="flex items-center justify-between">
+          <h3 className="font-bold text-foreground flex items-center gap-2">
+            <ImageIcon size={18} className="text-primary" /> Media Manager
+          </h3>
+          <div className="flex items-center gap-3">
+            {saving && (
+              <span className="text-xs text-muted-foreground flex items-center gap-1.5">
+                <Loader2 size={12} className="animate-spin" /> Saving…
+              </span>
+            )}
+            {lastSaved && !saving && (
+              <span className="text-xs text-emerald-600 flex items-center gap-1">
+                <CheckCircle2 size={12} /> Auto-saved
+              </span>
+            )}
+            <Button onClick={() => { saveAll(); toast.success("All saved!"); }} disabled={saving} size="sm" className="gap-1.5 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground">
+              <Save size={14} /> Save All
+            </Button>
+          </div>
+        </div>
         <p className="text-sm text-muted-foreground">
-          Manage all site images, hero backgrounds, workshop cards, and galleries in one place. Drag to reorder. Upload to replace defaults.
+          Upload, edit, and frame images. Changes auto-save and go live instantly. Drag & drop supported everywhere.
         </p>
       </div>
 
@@ -504,6 +731,8 @@ export function MediaManagerSection() {
               onUploaded={(url) => setSingleImages((prev) => ({ ...prev, [s.key]: url }))}
               frame={singleFrames[s.key]}
               onFrameChange={(f) => setSingleFrames((prev) => ({ ...prev, [s.key]: f }))}
+              context={s.context}
+              onAutoSave={autoSave}
             />
           ))}
         </div>
@@ -514,7 +743,7 @@ export function MediaManagerSection() {
         <h4 className="font-bold text-foreground flex items-center gap-2">
           <Palette size={16} className="text-primary" /> Workshop Card & Hero Images
         </h4>
-        <p className="text-sm text-muted-foreground">These images appear on the workshop cards (home page) and as the hero on each workshop page.</p>
+        <p className="text-sm text-muted-foreground">These images appear on workshop cards and as the hero on each workshop page.</p>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
           {CARD_SETTINGS.map((s) => (
             <SingleImageUploader
@@ -526,6 +755,8 @@ export function MediaManagerSection() {
               onUploaded={(url) => setSingleImages((prev) => ({ ...prev, [s.key]: url }))}
               frame={singleFrames[s.key]}
               onFrameChange={(f) => setSingleFrames((prev) => ({ ...prev, [s.key]: f }))}
+              context={s.context}
+              onAutoSave={autoSave}
             />
           ))}
         </div>
@@ -537,7 +768,7 @@ export function MediaManagerSection() {
           <Layers size={16} className="text-primary" /> Galleries
         </h4>
         <p className="text-sm text-muted-foreground">
-          All current images are shown below. Drag to reorder, click × to remove, or add new ones. Changes apply after saving.
+          Drag to reorder, drop to add. Frame styles apply instantly. All changes auto-save.
         </p>
         {GALLERY_SETTINGS.map((s) => (
           <div key={s.key} className="pt-4 border-t border-border/30 first:border-0 first:pt-0">
@@ -546,64 +777,11 @@ export function MediaManagerSection() {
               label={s.label}
               images={galleries[s.key] || []}
               onChange={(imgs) => setGalleries((prev) => ({ ...prev, [s.key]: imgs }))}
+              onAutoSave={autoSave}
             />
           </div>
         ))}
       </div>
-
-      {/* Media Aspect Ratios */}
-      <div className="p-6 rounded-2xl bg-card border border-primary/20 space-y-5">
-        <h4 className="font-bold text-foreground flex items-center gap-2">
-          <Ratio size={16} className="text-primary" /> Image Aspect Ratios by Device
-        </h4>
-        <p className="text-sm text-muted-foreground">
-          Control how images are cropped on different devices. "Auto" uses the image's natural ratio.
-        </p>
-        <div className="space-y-4">
-          {[...HERO_SETTINGS, ...CARD_SETTINGS].map((s) => {
-            const ratios = mediaRatios[s.key] || { ...DEFAULT_RATIOS };
-            const updateRatio = (device: keyof DeviceRatios, value: string) => {
-              setMediaRatios(prev => ({
-                ...prev,
-                [s.key]: { ...(prev[s.key] || DEFAULT_RATIOS), [device]: value },
-              }));
-            };
-            return (
-              <div key={s.key} className="p-4 rounded-xl bg-muted/20 space-y-3">
-                <span className="text-sm font-medium text-foreground">{s.label}</span>
-                <div className="grid grid-cols-3 gap-3">
-                  {([
-                    { key: "mobile" as const, icon: Smartphone, label: "Mobile" },
-                    { key: "tablet" as const, icon: Tablet, label: "Tablet" },
-                    { key: "desktop" as const, icon: Monitor, label: "Desktop" },
-                  ]).map(device => (
-                    <div key={device.key} className="space-y-1.5">
-                      <label className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                        <device.icon size={12} /> {device.label}
-                      </label>
-                      <Select value={ratios[device.key]} onValueChange={(v) => updateRatio(device.key, v)}>
-                        <SelectTrigger className="h-8 rounded-lg text-xs">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {ASPECT_RATIOS.map(r => (
-                            <SelectItem key={r.value} value={r.value}>{r.label}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Save */}
-      <Button onClick={saveAll} disabled={saving} className="gap-2 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground">
-        {saved ? <><CheckCircle2 size={16} /> Saved!</> : <><Save size={16} /> {saving ? "Saving..." : "Save All Media"}</>}
-      </Button>
     </div>
   );
 }
