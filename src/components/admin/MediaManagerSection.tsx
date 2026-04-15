@@ -165,12 +165,14 @@ function SingleImageUploader({ settingKey, label, currentUrl, defaultUrl, onUplo
     const file = e.target.files?.[0];
     if (!file) return;
     setUploading(true);
+    toast.info(`Uploading ${file.name}…`);
     const ext = file.name.split(".").pop();
     const path = `${settingKey}-${Date.now()}.${ext}`;
     const { error } = await supabase.storage.from("site-images").upload(path, file, { upsert: true });
-    if (error) { toast.error("Upload failed"); setUploading(false); return; }
+    if (error) { toast.error("Upload failed: " + error.message); setUploading(false); return; }
     const { data: urlData } = supabase.storage.from("site-images").getPublicUrl(path);
     onUploaded(urlData.publicUrl);
+    toast.success("Image uploaded!");
     setUploading(false);
     if (inputRef.current) inputRef.current.value = "";
   };
@@ -184,6 +186,12 @@ function SingleImageUploader({ settingKey, label, currentUrl, defaultUrl, onUplo
       {displayUrl ? (
         <div className={`relative w-full aspect-video rounded-xl overflow-hidden border border-border/40 group ${getFrameClasses(currentFrame)}`}>
           <img src={displayUrl} alt={label} className="w-full h-full object-cover" />
+          {uploading && (
+            <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center gap-2 z-10">
+              <div className="h-8 w-8 border-3 border-white/30 border-t-white rounded-full animate-spin" />
+              <span className="text-xs text-white font-medium">Uploading…</span>
+            </div>
+          )}
           <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
             <Button size="sm" variant="secondary" onClick={() => setEditing(true)} className="rounded-lg text-xs">
               <Pencil size={14} className="mr-1" /> Edit
@@ -235,13 +243,18 @@ function GalleryManager({ settingKey, label, images, onChange }: {
   const inputRef = useRef<HTMLInputElement>(null);
   const [dragIdx, setDragIdx] = useState<number | null>(null);
 
+  const [uploadCount, setUploadCount] = useState({ current: 0, total: 0 });
+
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files?.length) return;
     setUploading(true);
+    setUploadCount({ current: 0, total: files.length });
     const newImages = [...images];
     for (let i = 0; i < files.length; i++) {
+      setUploadCount({ current: i + 1, total: files.length });
       const file = files[i];
+      toast.info(`Uploading ${file.name} (${i + 1}/${files.length})…`);
       const ext = file.name.split(".").pop();
       const path = `${settingKey}-${Date.now()}-${i}.${ext}`;
       const { error } = await supabase.storage.from("site-images").upload(path, file, { upsert: true });
@@ -250,7 +263,9 @@ function GalleryManager({ settingKey, label, images, onChange }: {
       newImages.push({ url: urlData.publicUrl, alt: file.name.replace(/\.[^.]+$/, "") });
     }
     onChange(newImages);
+    toast.success(`${files.length} image(s) uploaded!`);
     setUploading(false);
+    setUploadCount({ current: 0, total: 0 });
     if (inputRef.current) inputRef.current.value = "";
   };
 
@@ -327,8 +342,17 @@ function GalleryManager({ settingKey, label, images, onChange }: {
           disabled={uploading}
           className="aspect-square rounded-xl border-2 border-dashed border-border/60 hover:border-primary/40 transition-colors flex flex-col items-center justify-center gap-2 text-muted-foreground hover:text-foreground"
         >
-          <Plus size={20} />
-          <span className="text-[10px]">{uploading ? "Uploading…" : "Add images"}</span>
+          {uploading ? (
+            <>
+              <div className="h-6 w-6 border-2 border-muted-foreground/30 border-t-primary rounded-full animate-spin" />
+              <span className="text-[10px]">{uploadCount.current}/{uploadCount.total}</span>
+            </>
+          ) : (
+            <>
+              <Plus size={20} />
+              <span className="text-[10px]">Add images</span>
+            </>
+          )}
         </button>
       </div>
       <input ref={inputRef} type="file" accept="image/*" multiple className="hidden" onChange={handleUpload} />
