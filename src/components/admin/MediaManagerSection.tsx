@@ -165,12 +165,14 @@ function SingleImageUploader({ settingKey, label, currentUrl, defaultUrl, onUplo
     const file = e.target.files?.[0];
     if (!file) return;
     setUploading(true);
+    toast.info(`Uploading ${file.name}…`);
     const ext = file.name.split(".").pop();
     const path = `${settingKey}-${Date.now()}.${ext}`;
     const { error } = await supabase.storage.from("site-images").upload(path, file, { upsert: true });
-    if (error) { toast.error("Upload failed"); setUploading(false); return; }
+    if (error) { toast.error("Upload failed: " + error.message); setUploading(false); return; }
     const { data: urlData } = supabase.storage.from("site-images").getPublicUrl(path);
     onUploaded(urlData.publicUrl);
+    toast.success("Image uploaded!");
     setUploading(false);
     if (inputRef.current) inputRef.current.value = "";
   };
@@ -184,6 +186,12 @@ function SingleImageUploader({ settingKey, label, currentUrl, defaultUrl, onUplo
       {displayUrl ? (
         <div className={`relative w-full aspect-video rounded-xl overflow-hidden border border-border/40 group ${getFrameClasses(currentFrame)}`}>
           <img src={displayUrl} alt={label} className="w-full h-full object-cover" />
+          {uploading && (
+            <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center gap-2 z-10">
+              <div className="h-8 w-8 border-3 border-white/30 border-t-white rounded-full animate-spin" />
+              <span className="text-xs text-white font-medium">Uploading…</span>
+            </div>
+          )}
           <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
             <Button size="sm" variant="secondary" onClick={() => setEditing(true)} className="rounded-lg text-xs">
               <Pencil size={14} className="mr-1" /> Edit
