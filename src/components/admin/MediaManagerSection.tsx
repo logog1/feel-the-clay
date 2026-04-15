@@ -243,13 +243,18 @@ function GalleryManager({ settingKey, label, images, onChange }: {
   const inputRef = useRef<HTMLInputElement>(null);
   const [dragIdx, setDragIdx] = useState<number | null>(null);
 
+  const [uploadCount, setUploadCount] = useState({ current: 0, total: 0 });
+
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files?.length) return;
     setUploading(true);
+    setUploadCount({ current: 0, total: files.length });
     const newImages = [...images];
     for (let i = 0; i < files.length; i++) {
+      setUploadCount({ current: i + 1, total: files.length });
       const file = files[i];
+      toast.info(`Uploading ${file.name} (${i + 1}/${files.length})…`);
       const ext = file.name.split(".").pop();
       const path = `${settingKey}-${Date.now()}-${i}.${ext}`;
       const { error } = await supabase.storage.from("site-images").upload(path, file, { upsert: true });
@@ -258,7 +263,9 @@ function GalleryManager({ settingKey, label, images, onChange }: {
       newImages.push({ url: urlData.publicUrl, alt: file.name.replace(/\.[^.]+$/, "") });
     }
     onChange(newImages);
+    toast.success(`${files.length} image(s) uploaded!`);
     setUploading(false);
+    setUploadCount({ current: 0, total: 0 });
     if (inputRef.current) inputRef.current.value = "";
   };
 
