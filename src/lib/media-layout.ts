@@ -9,6 +9,7 @@ export interface MediaViewportLayout {
   zoom: number;
   x: number;
   y: number;
+  ratio: number;
 }
 
 export interface MediaLayoutSettings {
@@ -36,6 +37,7 @@ export const DEFAULT_MEDIA_VIEWPORT_LAYOUT: MediaViewportLayout = {
   zoom: 1,
   x: 50,
   y: 50,
+  ratio: 16 / 9,
 };
 
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
@@ -54,6 +56,7 @@ function normalizeViewportLayout(value: unknown): MediaViewportLayout {
     zoom: clamp(typeof input.zoom === "number" ? input.zoom : 1, 1, 3),
     x: clamp(typeof input.x === "number" ? input.x : 50, 0, 100),
     y: clamp(typeof input.y === "number" ? input.y : 50, 0, 100),
+    ratio: clamp(typeof input.ratio === "number" ? input.ratio : 16 / 9, 0.7, 2.4),
   };
 }
 
@@ -86,6 +89,10 @@ export function getMediaPresentationStyle(layout?: Partial<MediaViewportLayout>)
   };
 }
 
+export function getViewportAspectRatio(layout: MediaLayoutSettings | undefined, device: MediaDevice, fallback: number) {
+  return normalizeViewportLayout(layout?.[device]).ratio || fallback;
+}
+
 export function getFrameClasses(frame: FrameStyle): string {
   switch (frame) {
     case "thin":
@@ -109,7 +116,7 @@ export function getMediaUsageConfigs(imageKey: string): MediaUsageConfig[] {
       {
         usageId: "home_hero",
         label: "Homepage Hero",
-        description: "This is the full landing page hero on the main website.",
+        description: "This is the landing page hero image on the main website.",
         previewContext: "hero",
       },
     ];
