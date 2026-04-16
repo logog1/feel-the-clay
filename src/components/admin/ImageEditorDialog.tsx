@@ -2,9 +2,9 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   Sun, Contrast, Droplets, RotateCcw, Check, Crop, Frame,
+  Smartphone, Monitor,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -123,15 +123,95 @@ export function ImageEditorDialog({ open, onClose, imageUrl, settingKey, onApply
           </DialogTitle>
         </DialogHeader>
 
-        {/* Preview */}
-        <div className="flex justify-center bg-muted/30 rounded-xl p-4">
-          <div className={`inline-block overflow-hidden rounded-xl transition-all ${getFrameClasses(edits.frame)}`}>
-            <img
-              src={imageUrl}
-              alt="Preview"
-              className="max-h-[300px] w-auto object-contain"
-              style={{ filter: filterStyle }}
-            />
+        {/* Device Previews */}
+        <div className="flex gap-4 justify-center bg-muted/30 rounded-xl p-4 overflow-x-auto">
+          {/* Phone Preview */}
+          <div className="flex-shrink-0 space-y-1.5">
+            <div className="flex items-center gap-1 text-[10px] text-muted-foreground font-medium">
+              <Smartphone size={10} /> Phone
+            </div>
+            <div className="relative overflow-hidden rounded-2xl border-2 border-border/60 bg-[hsl(var(--background))]" style={{ width: 140, height: 280 }}>
+              {/* Status bar */}
+              <div className="h-5 bg-background/80 flex items-center justify-between px-2">
+                <span className="text-[6px] text-muted-foreground">9:41</span>
+                <div className="flex gap-0.5">
+                  <div className="w-2 h-1.5 rounded-sm bg-muted-foreground/30" />
+                  <div className="w-2 h-1.5 rounded-sm bg-muted-foreground/30" />
+                </div>
+              </div>
+              {/* Hero image area */}
+              <div className="relative" style={{ height: 180 }}>
+                <div className={`w-full h-full overflow-hidden ${getFrameClasses(edits.frame)}`}>
+                  <img src={imageUrl} alt="Phone preview" className="w-full h-full object-cover" style={{ filter: filterStyle }} />
+                </div>
+                <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-transparent to-background/80" />
+                {/* Simulated nav */}
+                <div className="absolute top-1 left-2 right-2 flex items-center justify-between">
+                  <div className="w-4 h-4 rounded bg-primary/70" />
+                  <div className="w-4 h-4 rounded bg-muted/40 flex items-center justify-center">
+                    <div className="w-2.5 h-[1px] bg-foreground/50" />
+                  </div>
+                </div>
+                {/* Simulated text */}
+                <div className="absolute bottom-3 left-3 right-3 space-y-1">
+                  <div className="h-2 w-16 bg-foreground/70 rounded-sm" />
+                  <div className="h-2 w-12 bg-foreground/50 rounded-sm" />
+                  <div className="h-1 w-20 bg-foreground/30 rounded-sm mt-1" />
+                </div>
+              </div>
+              {/* Below hero content */}
+              <div className="p-2 space-y-1.5">
+                <div className="h-1.5 w-full bg-muted/60 rounded" />
+                <div className="h-1.5 w-3/4 bg-muted/40 rounded" />
+                <div className="flex gap-1 mt-2">
+                  <div className="h-3 w-8 rounded bg-primary/20" />
+                  <div className="h-3 w-8 rounded bg-muted/30" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Desktop Preview */}
+          <div className="flex-shrink-0 space-y-1.5">
+            <div className="flex items-center gap-1 text-[10px] text-muted-foreground font-medium">
+              <Monitor size={10} /> Desktop
+            </div>
+            <div className="relative overflow-hidden rounded-xl border-2 border-border/60 bg-[hsl(var(--background))]" style={{ width: 320, height: 200 }}>
+              {/* Desktop nav bar */}
+              <div className="h-6 bg-background/90 border-b border-border/30 flex items-center justify-between px-3">
+                <div className="w-4 h-4 rounded bg-primary/70" />
+                <div className="flex gap-3">
+                  {["Home", "About", "Workshops", "Blog", "Contact"].map(n => (
+                    <span key={n} className="text-[6px] text-muted-foreground">{n}</span>
+                  ))}
+                </div>
+                <div className="flex gap-1">
+                  <div className="h-3 px-1.5 rounded bg-primary/20 text-[5px] text-primary flex items-center">Store</div>
+                  <div className="h-3 px-1.5 rounded bg-primary text-[5px] text-primary-foreground flex items-center">Book</div>
+                </div>
+              </div>
+              {/* Hero section */}
+              <div className="relative" style={{ height: 145 }}>
+                <div className={`w-full h-full overflow-hidden ${getFrameClasses(edits.frame)}`}>
+                  <img src={imageUrl} alt="Desktop preview" className="w-full h-full object-cover" style={{ filter: filterStyle }} />
+                </div>
+                <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/20 to-background/70" />
+                {/* Simulated hero text */}
+                <div className="absolute bottom-4 left-6 space-y-1">
+                  <div className="text-[10px] font-bold text-foreground drop-shadow-sm">Rethinking pottery</div>
+                  <div className="text-[10px] font-bold text-foreground drop-shadow-sm">
+                    as <span className="relative">community<span className="absolute -bottom-0.5 left-0 w-full h-[2px] bg-primary rounded-full" /></span>
+                  </div>
+                  <div className="text-[6px] text-foreground/60 mt-0.5">A creative, grounding experience in Tetouan.</div>
+                </div>
+              </div>
+              {/* Below hero */}
+              <div className="px-4 py-2 flex gap-2">
+                <div className="h-2 w-16 bg-muted/50 rounded" />
+                <div className="h-2 w-12 bg-muted/30 rounded" />
+                <div className="h-2 w-20 bg-muted/40 rounded" />
+              </div>
+            </div>
           </div>
         </div>
 
