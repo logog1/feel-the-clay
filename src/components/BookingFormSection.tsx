@@ -403,6 +403,11 @@ const BookingFormSection = () => {
                 />
               </PopoverContent>
             </Popover>
+            {currentPrice && (
+              <p className="text-xs text-muted-foreground">
+                💰 {currentPrice.price} {currentPrice.currency} / person · {selectedCity?.city_name}
+              </p>
+            )}
             {errors.date && <p className="text-xs text-destructive">{errors.date}</p>}
           </div>
 
