@@ -7,11 +7,23 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { CalendarIcon, Send, CheckCircle } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { CalendarIcon, Send, CheckCircle, MapPin } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
+
+interface CityOption {
+  id: string;
+  city_name: string;
+  schedule: { day: string; time_slots: string[] }[];
+  pricing: { session_type: string; price: number; currency: string }[];
+}
+
+const DAY_TO_INDEX: Record<string, number> = {
+  Sunday: 0, Monday: 1, Tuesday: 2, Wednesday: 3, Thursday: 4, Friday: 5, Saturday: 6,
+};
 
 const bookingSchema = z.object({
   name: z.string().trim().min(1, "Required").max(100),
