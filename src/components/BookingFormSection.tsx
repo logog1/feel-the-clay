@@ -240,9 +240,37 @@ const BookingFormSection = () => {
                 <Input id="name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="rounded-xl" />
                 {errors.name && <p className="text-xs text-destructive">{errors.name}</p>}
               </div>
-              <div className="space-y-1.5">
+              <div id="city" className="space-y-1.5">
                 <Label htmlFor="city">{t("booking.city")} *</Label>
-                <Input id="city" value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} className="rounded-xl" />
+                {cities.length > 0 ? (
+                  <Select
+                    value={form.city}
+                    onValueChange={(v) => setForm({ ...form, city: v, date: undefined })}
+                  >
+                    <SelectTrigger id="city" className="rounded-xl">
+                      <SelectValue placeholder={t("booking.city")} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {cities.map((c) => (
+                        <SelectItem key={c.id} value={c.city_name}>
+                          <span className="inline-flex items-center gap-2">
+                            <MapPin className="w-3.5 h-3.5" /> {c.city_name}
+                          </span>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                ) : (
+                  <Input id="city" value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} className="rounded-xl" />
+                )}
+                {selectedCity && (
+                  <p className="text-[11px] text-muted-foreground">
+                    {selectedCity.schedule
+                      .filter((s) => s.time_slots && s.time_slots.length > 0)
+                      .map((s) => s.day)
+                      .join(" • ") || "—"}
+                  </p>
+                )}
                 {errors.city && <p className="text-xs text-destructive">{errors.city}</p>}
               </div>
               <div className="space-y-1.5">
