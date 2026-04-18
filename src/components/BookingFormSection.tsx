@@ -49,6 +49,7 @@ const BookingFormSection = () => {
   const [submitted, setSubmitted] = useState(false);
   const [availableDates, setAvailableDates] = useState<string[]>([]);
   const [blockedDates, setBlockedDates] = useState<string[]>([]);
+  const [cities, setCities] = useState<CityOption[]>([]);
 
   useEffect(() => {
     const fetchAvailability = async () => {
@@ -58,7 +59,22 @@ const BookingFormSection = () => {
         setBlockedDates(data.filter((d: any) => !d.is_available).map((d: any) => d.date));
       }
     };
+    const fetchCities = async () => {
+      const [{ data: cityData }, { data: pricingData }] = await Promise.all([
+        supabase.from("workshop_cities").select("*").eq("is_active", true).order("city_name"),
+        supabase.from("workshop_city_pricing").select("*"),
+      ]);
+      if (cityData) {
+        setCities(cityData.map((c: any) => ({
+          id: c.id,
+          city_name: c.city_name,
+          schedule: Array.isArray(c.schedule) ? c.schedule : [],
+          pricing: (pricingData || []).filter((p: any) => p.city_id === c.id),
+        })));
+      }
+    };
     fetchAvailability();
+    fetchCities();
   }, []);
 
   const isLargeGroup = form.participants >= 4;
@@ -82,6 +98,32 @@ const BookingFormSection = () => {
     Array.from({ length: 20 }, (_, i) => i + 1), []
   );
 
+  const selectedCity = useMemo(
+    () => cities.find((c) => c.city_name === form.city),
+    [cities, form.city]
+  );
+
+  const allowedWeekdays = useMemo(() => {
+    if (!selectedCity) return null;
+    const days = new Set<number>();
+    selectedCity.schedule.forEach((s) => {
+      const idx = DAY_TO_INDEX[s.day];
+      if (idx !== undefined && s.time_slots && s.time_slots.length > 0) days.add(idx);
+    });
+    return days;
+  }, [selectedCity]);
+
+  const sessionTypeKey = useMemo(() => {
+    if (isLargeGroup) return form.sessionType === "private" ? "private" : "open";
+    if (form.participants >= 2) return "group_small";
+    return "open";
+  }, [isLargeGroup, form.sessionType, form.participants]);
+
+  const currentPrice = useMemo(() => {
+    if (!selectedCity) return null;
+    return selectedCity.pricing.find((p) => p.session_type === sessionTypeKey) || null;
+  }, [selectedCity, sessionTypeKey]);
+
   const isPrivateSession = isLargeGroup && form.sessionType === "private";
 
   const isDateDisabled = (date: Date) => {
@@ -91,8 +133,13 @@ const BookingFormSection = () => {
     const dateStr = format(date, "yyyy-MM-dd");
     if (blockedDates.includes(dateStr)) return true;
     const day = date.getDay();
+    // If a city is selected with a defined schedule, restrict to those weekdays
+    if (allowedWeekdays && allowedWeekdays.size > 0) {
+      if (!allowedWeekdays.has(day)) return true;
+      return false;
+    }
     const isWeekend = day === 0 || day === 6;
-    // Only private sessions (4+) can book any day; open sessions & small groups are weekends only
+    // Fallback: only private sessions (4+) can book any day; open sessions & small groups are weekends only
     if (!isPrivateSession && !isWeekend) return true;
     return false;
   };
