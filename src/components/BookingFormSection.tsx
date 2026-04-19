@@ -183,6 +183,8 @@ const BookingFormSection = () => {
     const dateStr = form.date ? format(form.date, "PPP") : "";
 
     try {
+      const bookingId = crypto.randomUUID();
+      // 1. Existing internal notification (WhatsApp/Zapier/admin email via Resend)
       await supabase.functions.invoke("send-notification", {
         body: {
           type: "booking",
@@ -195,6 +197,46 @@ const BookingFormSection = () => {
             sessionInfo: sessionInfo.trim(),
             participants: String(form.participants),
             date: dateStr,
+            notes: form.notes || "",
+          },
+        },
+      });
+
+      // 2. Branded customer confirmation (from notify.terrariaworkshops.com)
+      await supabase.functions.invoke("send-transactional-email", {
+        body: {
+          templateName: "booking-confirmation",
+          recipientEmail: form.email,
+          idempotencyKey: `booking-confirm-${bookingId}`,
+          templateData: {
+            name: form.name,
+            workshop: workshopLabel,
+            date: dateStr,
+            participants: form.participants,
+            city: form.city,
+            sessionInfo: sessionInfo.trim(),
+          },
+        },
+      });
+
+      // 3. Branded admin notification
+      const { data: adminSetting } = await supabase
+        .from("site_settings").select("value").eq("key", "notification_email").maybeSingle();
+      const adminEmail = adminSetting?.value || "contact.terraria@gmail.com";
+      await supabase.functions.invoke("send-transactional-email", {
+        body: {
+          templateName: "booking-admin-notification",
+          recipientEmail: adminEmail,
+          idempotencyKey: `booking-admin-${bookingId}`,
+          templateData: {
+            name: form.name,
+            email: form.email,
+            phone: form.phone,
+            workshop: workshopLabel,
+            date: dateStr,
+            participants: form.participants,
+            city: form.city,
+            sessionInfo: sessionInfo.trim(),
             notes: form.notes || "",
           },
         },
