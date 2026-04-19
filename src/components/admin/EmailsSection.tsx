@@ -11,7 +11,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import {
   Mail, RefreshCw, ChevronLeft, ChevronRight, Send, Search,
-  CheckCircle2, XCircle, Clock, Ban, Filter,
+  CheckCircle2, XCircle, Clock, Ban, Filter, Paperclip, X, Upload, AtSign,
 } from "lucide-react";
 import { format, subDays } from "date-fns";
 import { toast } from "sonner";
