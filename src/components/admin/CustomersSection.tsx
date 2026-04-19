@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { RefreshCw, Download, Search, Pencil, Trash2, Wifi, WifiOff, Globe, X, CheckCircle2 } from "lucide-react";
+import { RefreshCw, Download, Search, Pencil, Trash2, Globe, X, CheckCircle2 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { format } from "date-fns";
@@ -29,7 +29,6 @@ export function CustomersSection() {
   const [editCustomer, setEditCustomer] = useState<Customer | null>(null);
   const [editDraft, setEditDraft] = useState<Partial<Customer>>({});
   const [deleteId, setDeleteId] = useState<string | null>(null);
-  const [realtimeConnected, setRealtimeConnected] = useState(true);
 
   const fetchCustomers = useCallback(async () => {
     const { data } = await supabase.from("customers").select("*").order("created_at", { ascending: false });
@@ -39,18 +38,6 @@ export function CustomersSection() {
 
   useEffect(() => {
     fetchCustomers();
-
-    // Real-time subscription
-    const channel = supabase
-      .channel("customers-realtime")
-      .on("postgres_changes", { event: "*", schema: "public", table: "customers" }, () => {
-        fetchCustomers();
-      })
-      .subscribe((status) => {
-        setRealtimeConnected(status === "SUBSCRIBED");
-      });
-
-    return () => { supabase.removeChannel(channel); };
   }, [fetchCustomers]);
 
   const handleRefresh = async () => {
@@ -123,10 +110,6 @@ export function CustomersSection() {
             <span className="text-muted-foreground">{s.label}</span>
           </div>
         ))}
-        <div className="flex items-center gap-1.5 ml-auto text-xs text-muted-foreground">
-          {realtimeConnected ? <Wifi size={14} className="text-emerald-500" /> : <WifiOff size={14} className="text-amber-500" />}
-          {realtimeConnected ? "Live" : "Reconnecting…"}
-        </div>
       </div>
 
       {/* Toolbar */}
