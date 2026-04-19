@@ -15,23 +15,26 @@ Deno.serve(async (req) => {
     const TWILIO_ACCOUNT_SID = Deno.env.get("TWILIO_ACCOUNT_SID");
     const TWILIO_AUTH_TOKEN = Deno.env.get("TWILIO_AUTH_TOKEN");
     const TWILIO_WHATSAPP_NUMBER = Deno.env.get("TWILIO_WHATSAPP_NUMBER");
+    const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
+    const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
-    const supabaseAdmin = createClient(
-      Deno.env.get("SUPABASE_URL")!,
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
-    );
+    const supabaseAdmin = createClient(SUPABASE_URL, SERVICE_KEY);
 
     // Get contacts from settings
-    const { data: settings } = await supabaseAdmin.from("site_settings").select("key, value").in("key", ["notification_email", "whatsapp_numbers"]);
+    const { data: settings } = await supabaseAdmin
+      .from("site_settings")
+      .select("key, value")
+      .in("key", ["notification_email", "whatsapp_numbers"]);
     const settingsMap: Record<string, string> = {};
     (settings || []).forEach((s: any) => { settingsMap[s.key] = s.value; });
     const toEmail = settingsMap["notification_email"] || "contact.terraria@gmail.com";
-    const whatsappNumbers = (settingsMap["whatsapp_numbers"] || "").split(",").map((s: string) => s.trim()).filter(Boolean);
+    const whatsappNumbers = (settingsMap["whatsapp_numbers"] || "")
+      .split(",").map((s: string) => s.trim()).filter(Boolean);
 
     // Find confirmed bookings for tomorrow
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
-    const tomorrowStr = tomorrow.toISOString().split("T")[0]; // YYYY-MM-DD
+    const tomorrowStr = tomorrow.toISOString().split("T")[0];
 
     const { data: bookings } = await supabaseAdmin
       .from("bookings")
@@ -48,7 +51,36 @@ Deno.serve(async (req) => {
 
     console.log(`Found ${bookings.length} bookings for ${tomorrowStr}`);
 
-    // Build reminder content
+    // ── Send branded reminder email to each customer (idempotent per booking+date) ──
+    const customerEmailResults = await Promise.allSettled(
+      bookings
+        .filter((b: any) => b.email && typeof b.email === "string" && b.email.includes("@"))
+        .map(async (b: any) => {
+          const { error } = await supabaseAdmin.functions.invoke("send-transactional-email", {
+            body: {
+              templateName: "booking-reminder",
+              recipientEmail: b.email,
+              idempotencyKey: `booking-reminder-${b.id}-${tomorrowStr}`,
+              templateData: {
+                name: b.name,
+                workshop: b.workshop,
+                date: b.booking_date,
+                participants: b.participants || 1,
+                city: b.city,
+                sessionInfo: b.session_info,
+              },
+            },
+          });
+          if (error) throw error;
+        }),
+    );
+    const customerEmailsSent = customerEmailResults.filter((r) => r.status === "fulfilled").length;
+    const customerEmailsFailed = customerEmailResults.filter((r) => r.status === "rejected").length;
+    if (customerEmailsFailed > 0) {
+      console.error(`${customerEmailsFailed} customer reminder emails failed to enqueue`);
+    }
+
+    // ── Admin recap email + WhatsApp (existing behavior) ──
     const bookingLines = bookings.map((b: any) =>
       `• ${b.name} — ${b.workshop} (${b.participants || 1} pax) ${b.session_info ? `[${b.session_info}]` : ""}`
     ).join("\n");
@@ -59,25 +91,25 @@ Deno.serve(async (req) => {
       <ul style="font-family:sans-serif;">
         ${bookings.map((b: any) => `<li><strong>${b.name}</strong> — ${b.workshop} (${b.participants || 1} participants) ${b.phone ? `📱 ${b.phone}` : ""}</li>`).join("")}
       </ul>
-      <p style="font-family:sans-serif;color:#888;font-size:12px;">Auto-reminder by Terraria Workshops</p>
+      <p style="font-family:sans-serif;color:#888;font-size:12px;">Auto-reminder by Terraria Workshops • Customer reminders sent: ${customerEmailsSent}</p>
     `;
 
-    // Send email
-    await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${RESEND_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        from: "Terraria <onboarding@resend.dev>",
-        to: [toEmail],
-        subject: `⏰ ${bookings.length} booking(s) tomorrow — ${tomorrowStr}`,
-        html: emailBody,
-      }),
-    });
+    if (RESEND_API_KEY) {
+      await fetch("https://api.resend.com/emails", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${RESEND_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          from: "Terraria <onboarding@resend.dev>",
+          to: [toEmail],
+          subject: `⏰ ${bookings.length} booking(s) tomorrow — ${tomorrowStr}`,
+          html: emailBody,
+        }),
+      });
+    }
 
-    // Send WhatsApp
     if (TWILIO_ACCOUNT_SID && TWILIO_AUTH_TOKEN && TWILIO_WHATSAPP_NUMBER) {
       const whatsappMsg = `⏰ *Booking Reminder — Tomorrow*\n\n${bookingLines}\n\n📅 ${tomorrowStr}`;
       const twilioUrl = `https://api.twilio.com/2010-04-01/Accounts/${TWILIO_ACCOUNT_SID}/Messages.json`;
@@ -102,11 +134,17 @@ Deno.serve(async (req) => {
       );
     }
 
-    console.log(`Sent ${bookings.length} booking reminders for ${tomorrowStr}`);
+    console.log(`Sent ${bookings.length} booking reminders for ${tomorrowStr} (customer emails: ${customerEmailsSent}/${bookings.length})`);
 
-    return new Response(JSON.stringify({ success: true, reminders: bookings.length }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return new Response(
+      JSON.stringify({
+        success: true,
+        bookings: bookings.length,
+        customer_emails_sent: customerEmailsSent,
+        customer_emails_failed: customerEmailsFailed,
+      }),
+      { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+    );
   } catch (error) {
     console.error("Booking reminder error:", error);
     return new Response(JSON.stringify({ error: "Failed to send reminders" }), {
