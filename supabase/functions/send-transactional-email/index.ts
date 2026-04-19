@@ -30,9 +30,10 @@ function generateToken(): string {
     .join('')
 }
 
-// Auth note: this function uses verify_jwt = true in config.toml, so Supabase's
-// gateway validates the caller's JWT (anon or service_role) before the request
-// reaches this code. No in-function auth check is needed.
+// Auth note: verify_jwt is disabled here because signed-in user access tokens
+// are ES256-signed under the current signing-keys setup and the gateway rejects
+// them before this function runs. We validate signed-in user tokens in-function
+// with getClaims(), while still allowing public anon-key calls used by booking flows.
 
 Deno.serve(async (req) => {
   // Handle CORS preflight
@@ -41,9 +42,10 @@ Deno.serve(async (req) => {
   }
 
   const supabaseUrl = Deno.env.get('SUPABASE_URL')
+  const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')
   const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
 
-  if (!supabaseUrl || !supabaseServiceKey) {
+  if (!supabaseUrl || !supabaseAnonKey || !supabaseServiceKey) {
     console.error('Missing required environment variables')
     return new Response(
       JSON.stringify({ error: 'Server configuration error' }),
@@ -52,6 +54,29 @@ Deno.serve(async (req) => {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       }
     )
+  }
+
+  const authHeader = req.headers.get('Authorization')
+  const bearerToken = authHeader?.replace(/^Bearer\s+/i, '')
+
+  // Public callers use the anon key as their bearer token. Signed-in dashboard
+  // callers send a user JWT, which we verify explicitly with auth.getClaims().
+  if (authHeader?.startsWith('Bearer ') && bearerToken && bearerToken !== supabaseAnonKey) {
+    const authClient = createClient(supabaseUrl, supabaseAnonKey, {
+      global: { headers: { Authorization: authHeader } },
+    })
+
+    const { data: claimsData, error: claimsError } = await authClient.auth.getClaims(bearerToken)
+    if (claimsError || !claimsData?.claims) {
+      console.error('JWT validation failed', { error: claimsError })
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized' }),
+        {
+          status: 401,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      )
+    }
   }
 
   // Parse request body
