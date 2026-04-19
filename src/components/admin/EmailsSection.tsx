@@ -11,7 +11,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import {
   Mail, RefreshCw, ChevronLeft, ChevronRight, Send, Search,
-  CheckCircle2, XCircle, Clock, Ban, Filter,
+  CheckCircle2, XCircle, Clock, Ban, Filter, Paperclip, X, Upload, AtSign,
 } from "lucide-react";
 import { format, subDays } from "date-fns";
 import { toast } from "sonner";
@@ -272,8 +272,10 @@ function StatCard({ label, value, tone }: { label: string; value: number; tone?:
   );
 }
 
+type AttachmentRef = { url: string; name: string; kind: "image" | "file" };
+
 function ComposeUpdate({ onSent }: { onSent: () => void }) {
-  const [source, setSource] = useState<"customers" | "bookings">("customers");
+  const [source, setSource] = useState<"customers" | "bookings" | "manual">("customers");
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(false);
@@ -283,10 +285,15 @@ function ComposeUpdate({ onSent }: { onSent: () => void }) {
   const [bookingDateFilter, setBookingDateFilter] = useState("");
   const [selected, setSelected] = useState<Set<string>>(new Set());
 
+  const [singleEmail, setSingleEmail] = useState("");
+  const [bulkEmails, setBulkEmails] = useState("");
+
   const [subject, setSubject] = useState("");
   const [intro, setIntro] = useState("");
   const [body, setBody] = useState("");
   const [signoff, setSignoff] = useState("");
+  const [attachments, setAttachments] = useState<AttachmentRef[]>([]);
+  const [uploading, setUploading] = useState(false);
   const [sending, setSending] = useState(false);
 
   useEffect(() => {
@@ -303,9 +310,7 @@ function ComposeUpdate({ onSent }: { onSent: () => void }) {
     load();
   }, []);
 
-  useEffect(() => {
-    setSelected(new Set());
-  }, [source]);
+  useEffect(() => { setSelected(new Set()); }, [source]);
 
   const cities = useMemo(() => {
     const set = new Set<string>();
@@ -337,49 +342,81 @@ function ComposeUpdate({ onSent }: { onSent: () => void }) {
     });
   }, [bookings, search, cityFilter, bookingStatusFilter, bookingDateFilter]);
 
-  const visibleRows = source === "customers" ? filteredCustomers : filteredBookings;
+  const visibleRows = source === "customers" ? filteredCustomers : source === "bookings" ? filteredBookings : [];
+
+  const isValidEmail = (e: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e.trim());
+
+  const manualEmails = useMemo(() => {
+    const all = new Map<string, string>();
+    if (singleEmail.trim() && isValidEmail(singleEmail)) {
+      const e = singleEmail.trim().toLowerCase();
+      all.set(e, e.split("@")[0]);
+    }
+    bulkEmails
+      .split(/[\s,;\n]+/)
+      .map((s) => s.trim().toLowerCase())
+      .filter((s) => s && isValidEmail(s))
+      .forEach((e) => { if (!all.has(e)) all.set(e, e.split("@")[0]); });
+    return all;
+  }, [singleEmail, bulkEmails]);
 
   const recipientsByEmail = useMemo(() => {
     const map = new Map<string, string>();
     if (source === "customers") {
       filteredCustomers.forEach((c) => {
-        if (selected.has(c.id) && c.email) {
-          if (!map.has(c.email)) map.set(c.email, c.name);
-        }
+        if (selected.has(c.id) && c.email && !map.has(c.email)) map.set(c.email, c.name);
+      });
+    } else if (source === "bookings") {
+      filteredBookings.forEach((b) => {
+        if (selected.has(b.id) && b.email && !map.has(b.email)) map.set(b.email, b.name);
       });
     } else {
-      filteredBookings.forEach((b) => {
-        if (selected.has(b.id) && b.email) {
-          if (!map.has(b.email)) map.set(b.email, b.name);
-        }
-      });
+      manualEmails.forEach((name, email) => map.set(email, name));
     }
     return map;
-  }, [source, selected, filteredCustomers, filteredBookings]);
+  }, [source, selected, filteredCustomers, filteredBookings, manualEmails]);
 
   const recipientCount = recipientsByEmail.size;
 
   const toggleAll = () => {
-    if (selected.size === visibleRows.length) {
-      setSelected(new Set());
-    } else {
-      setSelected(new Set(visibleRows.map((r) => r.id)));
+    if (selected.size === visibleRows.length) setSelected(new Set());
+    else setSelected(new Set(visibleRows.map((r) => r.id)));
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
+    setUploading(true);
+    const newAttachments: AttachmentRef[] = [];
+    for (const file of files) {
+      if (file.size > 10 * 1024 * 1024) {
+        toast.error(`${file.name} is over 10MB — skipped`);
+        continue;
+      }
+      const ext = file.name.split(".").pop() || "bin";
+      const path = `email-attachments/${crypto.randomUUID()}.${ext}`;
+      const { error: upErr } = await supabase.storage.from("site-images").upload(path, file, { upsert: false, contentType: file.type });
+      if (upErr) {
+        toast.error(`Upload failed: ${file.name}`);
+        continue;
+      }
+      const { data: urlData } = supabase.storage.from("site-images").getPublicUrl(path);
+      newAttachments.push({
+        url: urlData.publicUrl,
+        name: file.name,
+        kind: file.type.startsWith("image/") ? "image" : "file",
+      });
     }
+    setAttachments((a) => [...a, ...newAttachments]);
+    setUploading(false);
+    e.target.value = "";
   };
 
   const handleSend = async () => {
-    if (recipientCount === 0) {
-      toast.error("Pick at least one recipient");
-      return;
-    }
-    if (!subject.trim()) {
-      toast.error("Add a subject");
-      return;
-    }
-    if (!body.trim()) {
-      toast.error("Add a message body");
-      return;
-    }
+    if (recipientCount === 0) { toast.error("Pick at least one recipient"); return; }
+    if (!subject.trim()) { toast.error("Add a subject"); return; }
+    if (!body.trim()) { toast.error("Add a message body"); return; }
+
     setSending(true);
     const batchId = crypto.randomUUID().slice(0, 8);
     let ok = 0, fail = 0;
@@ -397,6 +434,7 @@ function ComposeUpdate({ onSent }: { onSent: () => void }) {
               intro: intro.trim() || undefined,
               body: body.trim(),
               signoff: signoff.trim() || undefined,
+              attachments: attachments.length ? attachments : undefined,
             },
           },
         });
@@ -412,7 +450,8 @@ function ComposeUpdate({ onSent }: { onSent: () => void }) {
     if (fail === 0) {
       toast.success(`Queued ${ok} email${ok === 1 ? "" : "s"} ✓`);
       setSubject(""); setIntro(""); setBody(""); setSignoff("");
-      setSelected(new Set());
+      setSelected(new Set()); setSingleEmail(""); setBulkEmails("");
+      setAttachments([]);
     } else {
       toast.warning(`Queued ${ok}, failed ${fail}`);
     }
@@ -425,110 +464,120 @@ function ComposeUpdate({ onSent }: { onSent: () => void }) {
         <div className="flex items-center justify-between">
           <div>
             <h3 className="font-semibold text-base">Recipients</h3>
-            <p className="text-xs text-muted-foreground">Pick people from your data</p>
+            <p className="text-xs text-muted-foreground">From your data, or type emails manually</p>
           </div>
           <Badge variant="secondary" className="rounded-full">{recipientCount} selected</Badge>
         </div>
 
         <Tabs value={source} onValueChange={(v) => setSource(v as any)}>
           <TabsList className="w-full">
-            <TabsTrigger value="customers" className="flex-1">From Customers ({customers.length})</TabsTrigger>
-            <TabsTrigger value="bookings" className="flex-1">From Bookings ({bookings.length})</TabsTrigger>
+            <TabsTrigger value="customers" className="flex-1 text-xs">Customers ({customers.length})</TabsTrigger>
+            <TabsTrigger value="bookings" className="flex-1 text-xs">Bookings ({bookings.length})</TabsTrigger>
+            <TabsTrigger value="manual" className="flex-1 text-xs gap-1"><AtSign size={12} /> Manual</TabsTrigger>
           </TabsList>
         </Tabs>
 
-        <div className="space-y-2">
-          <div className="relative">
-            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-            <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search name or email…" className="pl-9 rounded-xl" />
-          </div>
-          <div className="flex flex-wrap gap-2">
-            <Select value={cityFilter} onValueChange={setCityFilter}>
-              <SelectTrigger className="w-[160px] rounded-xl"><SelectValue placeholder="City" /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All cities</SelectItem>
-                {cities.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
-              </SelectContent>
-            </Select>
-            {source === "bookings" && (
-              <>
-                <Select value={bookingStatusFilter} onValueChange={setBookingStatusFilter}>
-                  <SelectTrigger className="w-[150px] rounded-xl"><SelectValue placeholder="Status" /></SelectTrigger>
+        {source !== "manual" ? (
+          <>
+            <div className="space-y-2">
+              <div className="relative">
+                <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search name or email…" className="pl-9 rounded-xl" />
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <Select value={cityFilter} onValueChange={setCityFilter}>
+                  <SelectTrigger className="w-[160px] rounded-xl"><SelectValue placeholder="City" /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">All statuses</SelectItem>
-                    <SelectItem value="confirmed">Confirmed</SelectItem>
-                    <SelectItem value="pending">Pending</SelectItem>
-                    <SelectItem value="cancelled">Cancelled</SelectItem>
+                    <SelectItem value="all">All cities</SelectItem>
+                    {cities.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
                   </SelectContent>
                 </Select>
-                <Input
-                  type="date"
-                  value={bookingDateFilter}
-                  onChange={(e) => setBookingDateFilter(e.target.value)}
-                  className="w-[160px] rounded-xl"
-                  placeholder="Date"
-                />
-              </>
-            )}
-          </div>
-        </div>
+                {source === "bookings" && (
+                  <>
+                    <Select value={bookingStatusFilter} onValueChange={setBookingStatusFilter}>
+                      <SelectTrigger className="w-[150px] rounded-xl"><SelectValue placeholder="Status" /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All statuses</SelectItem>
+                        <SelectItem value="confirmed">Confirmed</SelectItem>
+                        <SelectItem value="pending">Pending</SelectItem>
+                        <SelectItem value="cancelled">Cancelled</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Input type="date" value={bookingDateFilter} onChange={(e) => setBookingDateFilter(e.target.value)} className="w-[160px] rounded-xl" />
+                  </>
+                )}
+              </div>
+            </div>
 
-        <div className="border rounded-xl overflow-hidden">
-          <div className="px-3 py-2 bg-muted/40 border-b flex items-center gap-2 text-xs">
-            <Checkbox
-              checked={visibleRows.length > 0 && selected.size === visibleRows.length}
-              onCheckedChange={toggleAll}
-            />
-            <span className="font-medium">Select all visible ({visibleRows.length})</span>
+            <div className="border rounded-xl overflow-hidden">
+              <div className="px-3 py-2 bg-muted/40 border-b flex items-center gap-2 text-xs">
+                <Checkbox checked={visibleRows.length > 0 && selected.size === visibleRows.length} onCheckedChange={toggleAll} />
+                <span className="font-medium">Select all visible ({visibleRows.length})</span>
+              </div>
+              <div className="max-h-[420px] overflow-y-auto divide-y">
+                {loading && <div className="p-4 text-center text-sm text-muted-foreground">Loading…</div>}
+                {!loading && visibleRows.length === 0 && (
+                  <div className="p-4 text-center text-sm text-muted-foreground">No matches</div>
+                )}
+                {!loading && source === "customers" && filteredCustomers.map((c) => (
+                  <label key={c.id} className="flex items-center gap-3 px-3 py-2 hover:bg-muted/30 cursor-pointer">
+                    <Checkbox
+                      checked={selected.has(c.id)}
+                      onCheckedChange={() => {
+                        setSelected((s) => { const n = new Set(s); n.has(c.id) ? n.delete(c.id) : n.add(c.id); return n; });
+                      }}
+                    />
+                    <div className="flex-1 min-w-0">
+                      <div className="font-medium text-sm truncate">{c.name}</div>
+                      <div className="text-xs text-muted-foreground truncate">{c.email} {c.city && `• ${c.city}`}</div>
+                    </div>
+                  </label>
+                ))}
+                {!loading && source === "bookings" && filteredBookings.map((b) => (
+                  <label key={b.id} className="flex items-center gap-3 px-3 py-2 hover:bg-muted/30 cursor-pointer">
+                    <Checkbox
+                      checked={selected.has(b.id)}
+                      onCheckedChange={() => {
+                        setSelected((s) => { const n = new Set(s); n.has(b.id) ? n.delete(b.id) : n.add(b.id); return n; });
+                      }}
+                    />
+                    <div className="flex-1 min-w-0">
+                      <div className="font-medium text-sm truncate">{b.name} <span className="text-muted-foreground font-normal">— {b.workshop}</span></div>
+                      <div className="text-xs text-muted-foreground truncate">{b.email} • {b.booking_date || "no date"} • {b.status}</div>
+                    </div>
+                  </label>
+                ))}
+              </div>
+            </div>
+          </>
+        ) : (
+          <div className="space-y-3">
+            <div className="space-y-2">
+              <Label htmlFor="single-email" className="text-xs">Quick send (one email)</Label>
+              <Input id="single-email" type="email" value={singleEmail} onChange={(e) => setSingleEmail(e.target.value)} placeholder="someone@example.com" className="rounded-xl" />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="bulk-emails" className="text-xs">Multiple emails (comma, space, or newline separated)</Label>
+              <Textarea
+                id="bulk-emails"
+                value={bulkEmails}
+                onChange={(e) => setBulkEmails(e.target.value)}
+                placeholder={"alice@example.com\nbob@example.com, carol@example.com"}
+                rows={8}
+                className="rounded-xl font-mono text-xs"
+              />
+              <p className="text-xs text-muted-foreground">
+                {manualEmails.size} valid email{manualEmails.size === 1 ? "" : "s"} detected
+              </p>
+            </div>
+            <div className="rounded-xl border bg-muted/30 p-3 text-xs text-muted-foreground">
+              Each person gets their own email — no one sees the other recipients.
+            </div>
           </div>
-          <div className="max-h-[420px] overflow-y-auto divide-y">
-            {loading && <div className="p-4 text-center text-sm text-muted-foreground">Loading…</div>}
-            {!loading && visibleRows.length === 0 && (
-              <div className="p-4 text-center text-sm text-muted-foreground">No matches</div>
-            )}
-            {!loading && source === "customers" && filteredCustomers.map((c) => (
-              <label key={c.id} className="flex items-center gap-3 px-3 py-2 hover:bg-muted/30 cursor-pointer">
-                <Checkbox
-                  checked={selected.has(c.id)}
-                  onCheckedChange={() => {
-                    setSelected((s) => {
-                      const n = new Set(s);
-                      n.has(c.id) ? n.delete(c.id) : n.add(c.id);
-                      return n;
-                    });
-                  }}
-                />
-                <div className="flex-1 min-w-0">
-                  <div className="font-medium text-sm truncate">{c.name}</div>
-                  <div className="text-xs text-muted-foreground truncate">{c.email} {c.city && `• ${c.city}`}</div>
-                </div>
-              </label>
-            ))}
-            {!loading && source === "bookings" && filteredBookings.map((b) => (
-              <label key={b.id} className="flex items-center gap-3 px-3 py-2 hover:bg-muted/30 cursor-pointer">
-                <Checkbox
-                  checked={selected.has(b.id)}
-                  onCheckedChange={() => {
-                    setSelected((s) => {
-                      const n = new Set(s);
-                      n.has(b.id) ? n.delete(b.id) : n.add(b.id);
-                      return n;
-                    });
-                  }}
-                />
-                <div className="flex-1 min-w-0">
-                  <div className="font-medium text-sm truncate">{b.name} <span className="text-muted-foreground font-normal">— {b.workshop}</span></div>
-                  <div className="text-xs text-muted-foreground truncate">
-                    {b.email} • {b.booking_date || "no date"} • {b.status}
-                  </div>
-                </div>
-              </label>
-            ))}
-          </div>
-        </div>
+        )}
       </Card>
 
-      <Card className="p-4 space-y-3 h-fit sticky top-4">
+      <Card className="p-4 space-y-3 h-fit lg:sticky lg:top-4">
         <div>
           <h3 className="font-semibold text-base">Message</h3>
           <p className="text-xs text-muted-foreground">Operational updates only — not promotional content</p>
@@ -548,19 +597,61 @@ function ComposeUpdate({ onSent }: { onSent: () => void }) {
             id="body"
             value={body}
             onChange={(e) => setBody(e.target.value)}
-            placeholder={"Write your update here.\n\nUse blank lines to separate paragraphs."}
+            placeholder={"Write your update here.\n\nUse blank lines for paragraphs. Paste links and they'll be clickable, or use [text](https://link.com) for custom labels (great for Canva designs)."}
             rows={8}
             className="rounded-xl"
           />
+          <p className="text-xs text-muted-foreground">
+            Tip: paste a Canva share link as <code className="text-[10px] bg-muted px-1 rounded">[View design](https://canva.com/...)</code>
+          </p>
         </div>
         <div className="space-y-2">
           <Label htmlFor="signoff">Sign-off (optional)</Label>
           <Input id="signoff" value={signoff} onChange={(e) => setSignoff(e.target.value)} placeholder="Thanks for your flexibility." className="rounded-xl" />
         </div>
 
+        <div className="space-y-2">
+          <Label className="flex items-center gap-1"><Paperclip size={12} /> Attachments</Label>
+          <label className="flex items-center justify-center gap-2 border-2 border-dashed rounded-xl py-3 cursor-pointer hover:bg-muted/30 text-xs text-muted-foreground">
+            <Upload size={14} />
+            {uploading ? "Uploading…" : "Click to upload images or files (max 10MB each)"}
+            <input
+              type="file"
+              multiple
+              accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt"
+              onChange={handleFileUpload}
+              disabled={uploading}
+              className="hidden"
+            />
+          </label>
+          {attachments.length > 0 && (
+            <div className="space-y-1.5">
+              {attachments.map((a, i) => (
+                <div key={i} className="flex items-center gap-2 text-xs bg-muted/40 rounded-lg px-2 py-1.5">
+                  {a.kind === "image" ? (
+                    <img src={a.url} alt={a.name} className="w-8 h-8 object-cover rounded" />
+                  ) : (
+                    <Paperclip size={14} className="text-muted-foreground shrink-0" />
+                  )}
+                  <span className="flex-1 truncate">{a.name}</span>
+                  <button
+                    onClick={() => setAttachments((arr) => arr.filter((_, idx) => idx !== i))}
+                    className="text-muted-foreground hover:text-destructive"
+                    type="button"
+                  >
+                    <X size={14} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+          <p className="text-[11px] text-muted-foreground">
+            Images appear inline in the email. Other files become download links.
+          </p>
+        </div>
+
         <div className="rounded-xl border bg-amber-50 text-amber-900 p-3 text-xs">
-          <strong>Note:</strong> use this only for real updates (schedule change, venue change, important info).
-          Promotional broadcasts aren't supported.
+          <strong>Note:</strong> use this only for real updates (schedule change, venue change, important info). Promotional broadcasts aren't supported.
         </div>
 
         <Button onClick={handleSend} disabled={sending || recipientCount === 0} className="w-full rounded-xl gap-2">
