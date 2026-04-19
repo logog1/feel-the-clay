@@ -168,7 +168,35 @@ const AdminDashboard = () => {
 
   const updateStatus = async (table: "bookings" | "orders", id: string, status: string) => {
     const { error } = await supabase.from(table).update({ status }).eq("id", id);
-    if (!error) await fetchAll();
+    if (error) return;
+
+    // Send branded status update email for bookings (confirmed / cancelled / rescheduled)
+    if (table === "bookings" && ["confirmed", "cancelled", "rescheduled"].includes(status)) {
+      const booking = bookings.find((b) => b.id === id);
+      if (booking?.email) {
+        try {
+          await supabase.functions.invoke("send-transactional-email", {
+            body: {
+              templateName: "booking-status-update",
+              recipientEmail: booking.email,
+              idempotencyKey: `booking-status-${id}-${status}`,
+              templateData: {
+                name: booking.name,
+                workshop: booking.workshop,
+                date: booking.booking_date,
+                city: booking.city,
+                sessionInfo: booking.session_info,
+                status,
+              },
+            },
+          });
+        } catch (e) {
+          console.error("Status email failed", e);
+        }
+      }
+    }
+
+    await fetchAll();
   };
 
   const handleSetRole = async (userId: string, role: string) => {
