@@ -29,7 +29,6 @@ export function CustomersSection() {
   const [editCustomer, setEditCustomer] = useState<Customer | null>(null);
   const [editDraft, setEditDraft] = useState<Partial<Customer>>({});
   const [deleteId, setDeleteId] = useState<string | null>(null);
-  const [realtimeConnected, setRealtimeConnected] = useState(true);
 
   const fetchCustomers = useCallback(async () => {
     const { data } = await supabase.from("customers").select("*").order("created_at", { ascending: false });
@@ -39,18 +38,6 @@ export function CustomersSection() {
 
   useEffect(() => {
     fetchCustomers();
-
-    // Real-time subscription
-    const channel = supabase
-      .channel("customers-realtime")
-      .on("postgres_changes", { event: "*", schema: "public", table: "customers" }, () => {
-        fetchCustomers();
-      })
-      .subscribe((status) => {
-        setRealtimeConnected(status === "SUBSCRIBED");
-      });
-
-    return () => { supabase.removeChannel(channel); };
   }, [fetchCustomers]);
 
   const handleRefresh = async () => {
