@@ -66,7 +66,7 @@ Deno.serve(async (req) => {
       global: { headers: { Authorization: authHeader } },
     })
 
-    const { data: claimsData, error: claimsError } = await authClient.auth.getClaims(bearerToken)
+    const { data: claimsData, error: claimsError } = await authClient.auth.getClaims()
     if (claimsError || !claimsData?.claims) {
       console.error('JWT validation failed', { error: claimsError })
       return new Response(
