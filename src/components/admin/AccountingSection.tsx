@@ -84,17 +84,37 @@ export function AccountingSection() {
       toast.error("Upload failed: " + error.message);
       return null;
     }
-    const { data: urlData } = supabase.storage.from("accounting-receipts").getPublicUrl(path);
-    return urlData.publicUrl;
+    // Store the storage path (not a public URL). Bucket is private; we generate
+    // short-lived signed URLs on demand when admins click the receipt.
+    return path;
   };
 
-  const deleteAttachment = async (url: string) => {
+  const deleteAttachment = async (pathOrUrl: string) => {
     try {
-      const path = url.split("/accounting-receipts/")[1];
+      // Backwards compatible: older entries may contain a full public URL
+      const path = pathOrUrl.includes("/accounting-receipts/")
+        ? pathOrUrl.split("/accounting-receipts/")[1]
+        : pathOrUrl;
       if (path) await supabase.storage.from("accounting-receipts").remove([path]);
     } catch {
       // non-critical
     }
+  };
+
+  const openReceipt = async (pathOrUrl: string) => {
+    // Backwards compatible: handle legacy public URLs
+    const path = pathOrUrl.includes("/accounting-receipts/")
+      ? pathOrUrl.split("/accounting-receipts/")[1]
+      : pathOrUrl;
+    if (!path) return;
+    const { data, error } = await supabase.storage
+      .from("accounting-receipts")
+      .createSignedUrl(path, 60);
+    if (error || !data?.signedUrl) {
+      toast.error("Could not open receipt");
+      return;
+    }
+    window.open(data.signedUrl, "_blank", "noopener,noreferrer");
   };
 
   const addEntry = async () => {
@@ -226,9 +246,13 @@ export function AccountingSection() {
   const AttachmentBadge = ({ url, onRemove }: { url: string; onRemove?: () => void }) => (
     <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-muted/60 border border-border/40 text-xs text-muted-foreground">
       <FileText size={12} className="text-primary" />
-      <a href={url} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors flex items-center gap-0.5">
+      <button
+        type="button"
+        onClick={() => openReceipt(url)}
+        className="hover:text-primary transition-colors flex items-center gap-0.5"
+      >
         Receipt <ExternalLink size={10} />
-      </a>
+      </button>
       {onRemove && (
         <button onClick={onRemove} className="ml-1 hover:text-destructive transition-colors" title="Remove attachment">
           <X size={11} />
