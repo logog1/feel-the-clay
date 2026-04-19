@@ -110,10 +110,6 @@ export function CustomersSection() {
             <span className="text-muted-foreground">{s.label}</span>
           </div>
         ))}
-        <div className="flex items-center gap-1.5 ml-auto text-xs text-muted-foreground">
-          {realtimeConnected ? <Wifi size={14} className="text-emerald-500" /> : <WifiOff size={14} className="text-amber-500" />}
-          {realtimeConnected ? "Live" : "Reconnecting…"}
-        </div>
       </div>
 
       {/* Toolbar */}
