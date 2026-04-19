@@ -542,7 +542,7 @@ function ComposeUpdate({ onSent }: { onSent: () => void }) {
                       }}
                     />
                     <div className="flex-1 min-w-0">
-                      <div className="font-medium text-sm truncate">{b.name} <span className="text-muted-foreground font-normal">— {b.workshop}</span></div>
+                      <div className="font-medium text-sm truncate">{b.name} <span className="text-muted-foreground font-normal">• {b.workshop}</span></div>
                       <div className="text-xs text-muted-foreground truncate">{b.email} • {b.booking_date || "no date"} • {b.status}</div>
                     </div>
                   </label>
