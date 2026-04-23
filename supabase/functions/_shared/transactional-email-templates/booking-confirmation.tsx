@@ -32,7 +32,7 @@ const BookingConfirmationEmail = ({
           {name ? `Thank you, ${name}!` : 'Thank you for your booking!'}
         </Heading>
         <Text style={text}>
-          We've received your booking request and will contact you shortly to confirm your spot.
+          Your booking request is confirmed on our side. We'll reach out very soon to share more details and finalise your spot.
         </Text>
 
         <Section style={card}>
