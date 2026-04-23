@@ -34,6 +34,7 @@ const bookingSchema = z.object({
   participants: z.number().min(1).max(50),
   sessionType: z.string().optional(),
   date: z.date({ required_error: "Select a date" }),
+  timeSlot: z.string().optional(),
   notes: z.string().max(1000).optional(),
 });
 
@@ -42,7 +43,7 @@ const BookingFormSection = () => {
   const [form, setForm] = useState({
     name: "", city: "", email: "", phone: "",
     workshop: "", participants: 1, sessionType: "",
-    date: undefined as Date | undefined, notes: "",
+    date: undefined as Date | undefined, timeSlot: "", notes: "",
   });
   const [honeypot, setHoneypot] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -82,7 +83,7 @@ const BookingFormSection = () => {
   // Auto-correct participants to 4 when pottery is selected with fewer than 4
   useEffect(() => {
     if (form.workshop === "pottery" && form.participants < 4) {
-      setForm((prev) => ({ ...prev, participants: 4, sessionType: "", date: undefined }));
+      setForm((prev) => ({ ...prev, participants: 4, sessionType: "", date: undefined, timeSlot: "" }));
     }
   }, [form.workshop]);
 
@@ -112,6 +113,24 @@ const BookingFormSection = () => {
     });
     return days;
   }, [selectedCity]);
+
+  // Time slots available for the selected city + date's weekday
+  const availableTimeSlots = useMemo<string[]>(() => {
+    if (!selectedCity || !form.date) return [];
+    const dayName = Object.keys(DAY_TO_INDEX).find(
+      (k) => DAY_TO_INDEX[k] === form.date!.getDay()
+    );
+    if (!dayName) return [];
+    const entry = selectedCity.schedule.find((s) => s.day === dayName);
+    return entry?.time_slots?.filter(Boolean) || [];
+  }, [selectedCity, form.date]);
+
+  // Reset selected slot when the available list changes (city/date change)
+  useEffect(() => {
+    if (form.timeSlot && !availableTimeSlots.includes(form.timeSlot)) {
+      setForm((prev) => ({ ...prev, timeSlot: "" }));
+    }
+  }, [availableTimeSlots]);
 
   const sessionTypeKey = useMemo(() => {
     if (isLargeGroup) return form.sessionType === "private" ? "private" : "open";
@@ -150,19 +169,27 @@ const BookingFormSection = () => {
     e.preventDefault();
     if (honeypot) return; // bot detected
     const result = bookingSchema.safeParse(form);
-    if (!result.success) {
+    // Manual check: if the city/date offers time slots, one must be picked
+    const slotMissing = availableTimeSlots.length > 0 && !form.timeSlot;
+    if (!result.success || slotMissing) {
       const fieldErrors: Record<string, string> = {};
-      result.error.errors.forEach((err) => {
-        if (err.path[0]) fieldErrors[String(err.path[0])] = err.message;
-      });
+      if (!result.success) {
+        result.error.errors.forEach((err) => {
+          if (err.path[0]) fieldErrors[String(err.path[0])] = err.message;
+        });
+      }
+      if (slotMissing) fieldErrors.timeSlot = t("booking.pick_time");
       setErrors(fieldErrors);
 
       // Find the first error field and scroll to it
-      const firstErrorField = result.error.errors[0]?.path[0];
+      const firstErrorField =
+        (!result.success && result.error.errors[0]?.path[0]) ||
+        (slotMissing ? "timeSlot" : undefined);
       if (firstErrorField) {
         const fieldMap: Record<string, string> = {
           name: "name", city: "city", email: "email", phone: "phone",
           workshop: "workshop-section", date: "date-section",
+          timeSlot: "time-slot-section",
         };
         const targetId = fieldMap[String(firstErrorField)];
         if (targetId) {
@@ -179,7 +206,10 @@ const BookingFormSection = () => {
     setSending(true);
 
     const workshopLabel = workshops.find(w => w.value === form.workshop)?.label || form.workshop;
-    const sessionInfo = isLargeGroup && form.sessionType ? ` (${form.sessionType === "private" ? "Private Session" : "Open Workshop"})` : " (Open Workshop - Weekend 4PM)";
+    const baseSessionInfo = isLargeGroup && form.sessionType
+      ? ` (${form.sessionType === "private" ? "Private Session" : "Open Workshop"})`
+      : " (Open Workshop - Weekend 4PM)";
+    const sessionInfo = form.timeSlot ? `${baseSessionInfo} · ${form.timeSlot}` : baseSessionInfo;
     const dateStr = form.date ? format(form.date, "PPP") : "";
 
     const bookingId = crypto.randomUUID();
@@ -476,6 +506,37 @@ const BookingFormSection = () => {
             )}
             {errors.date && <p className="text-xs text-destructive">{errors.date}</p>}
           </div>
+
+          {/* Time Slot — appears once a date is picked and the city has slots configured */}
+          {form.date && selectedCity && (
+            <div id="time-slot-section" className="space-y-3">
+              <h3 className="text-sm font-bold uppercase tracking-widest text-cta">{t("booking.time_slot")}</h3>
+              {availableTimeSlots.length === 0 ? (
+                <p className="text-xs text-muted-foreground p-3 rounded-xl bg-muted/40 border-2 border-border/40">
+                  {t("booking.no_slots")}
+                </p>
+              ) : (
+                <div className="flex flex-wrap gap-2">
+                  {availableTimeSlots.map((slot) => (
+                    <button
+                      key={slot}
+                      type="button"
+                      onClick={() => setForm({ ...form, timeSlot: slot })}
+                      className={cn(
+                        "px-4 h-10 rounded-xl text-sm font-medium border-2 transition-all",
+                        form.timeSlot === slot
+                          ? "border-cta bg-cta text-primary-foreground"
+                          : "border-border/40 hover:border-cta/30"
+                      )}
+                    >
+                      {slot}
+                    </button>
+                  ))}
+                </div>
+              )}
+              {errors.timeSlot && <p className="text-xs text-destructive">{errors.timeSlot}</p>}
+            </div>
+          )}
 
           {/* Notes */}
           <div className="space-y-3">
