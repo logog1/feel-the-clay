@@ -194,7 +194,7 @@ Deno.serve(async (req) => {
         let emailError: any = null;
 
         if (hasEmail) {
-          const { error } = await supabaseAdmin.functions.invoke("send-transactional-email", {
+          const { error } = await supabaseInvoker.functions.invoke("send-transactional-email", {
             body: {
               templateName: "booking-reminder",
               recipientEmail: b.email,
@@ -274,7 +274,7 @@ Deno.serve(async (req) => {
 
     const adminResults = await Promise.allSettled(
       ADMIN_EMAILS.map(async (adminEmail) => {
-        const { error } = await supabaseAdmin.functions.invoke("send-transactional-email", {
+        const { error } = await supabaseInvoker.functions.invoke("send-transactional-email", {
           body: {
             templateName: "booking-admin-reminder",
             recipientEmail: adminEmail,
