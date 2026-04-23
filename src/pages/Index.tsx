@@ -99,9 +99,6 @@ const Index = () => {
       <SlantDown />
       <SlantUp />
 
-      <AnimatedSection variant="fade-left" delay={100}><ExperienceSection /></AnimatedSection>
-
-
       <AnimatedSection variant="scale"><GallerySection /></AnimatedSection>
 
       {/* Slant into sunken zone for offers + testimonials */}
