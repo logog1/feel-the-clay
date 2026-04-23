@@ -43,7 +43,7 @@ const BookingFormSection = () => {
   const [form, setForm] = useState({
     name: "", city: "", email: "", phone: "",
     workshop: "", participants: 1, sessionType: "",
-    date: undefined as Date | undefined, notes: "",
+    date: undefined as Date | undefined, timeSlot: "", notes: "",
   });
   const [honeypot, setHoneypot] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
