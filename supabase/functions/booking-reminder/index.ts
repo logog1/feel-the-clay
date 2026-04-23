@@ -79,6 +79,15 @@ Deno.serve(async (req) => {
       });
     }
 
+    if (!bookings || bookings.length === 0) {
+      console.log(`No confirmed bookings for ${targetStr}`);
+      return new Response(JSON.stringify({ success: true, reminders: 0, mode }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    console.log(`Found ${bookings.length} confirmed bookings for ${targetStr}`);
+
     // Read fallback toggle: "off" | "on_failure" | "always"
     let fallbackMode: "off" | "on_failure" | "always" = "off";
     try {
