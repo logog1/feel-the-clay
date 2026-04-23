@@ -114,6 +114,24 @@ const BookingFormSection = () => {
     return days;
   }, [selectedCity]);
 
+  // Time slots available for the selected city + date's weekday
+  const availableTimeSlots = useMemo<string[]>(() => {
+    if (!selectedCity || !form.date) return [];
+    const dayName = Object.keys(DAY_TO_INDEX).find(
+      (k) => DAY_TO_INDEX[k] === form.date!.getDay()
+    );
+    if (!dayName) return [];
+    const entry = selectedCity.schedule.find((s) => s.day === dayName);
+    return entry?.time_slots?.filter(Boolean) || [];
+  }, [selectedCity, form.date]);
+
+  // Reset selected slot when the available list changes (city/date change)
+  useEffect(() => {
+    if (form.timeSlot && !availableTimeSlots.includes(form.timeSlot)) {
+      setForm((prev) => ({ ...prev, timeSlot: "" }));
+    }
+  }, [availableTimeSlots]);
+
   const sessionTypeKey = useMemo(() => {
     if (isLargeGroup) return form.sessionType === "private" ? "private" : "open";
     if (form.participants >= 2) return "group_small";
