@@ -17,11 +17,10 @@ Deno.serve(async (req) => {
     const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabaseAdmin = createClient(SUPABASE_URL, SERVICE_KEY);
 
-    // Read mode: "evening_before" (sent the day before, ~12-18h ahead)
-    // or "morning_of" (sent the morning of, ~0-12h ahead). Default keeps
-    // legacy 24h behavior by targeting tomorrow's bookings.
-    // Override per-invocation via body { mode: "evening_before" | "morning_of" }.
-    let mode: "evening_before" | "morning_of" = "morning_of";
+    // Configured mode controls which scheduled cron is allowed to fire.
+    // - "morning_of": cron runs at 09:00 UTC, targets bookings happening today
+    // - "evening_before": cron runs at 18:00 UTC, targets bookings happening tomorrow
+    let configuredMode: "evening_before" | "morning_of" = "morning_of";
     try {
       const { data: setting } = await supabaseAdmin
         .from("site_settings")
@@ -29,25 +28,39 @@ Deno.serve(async (req) => {
         .eq("key", "booking_reminder_mode")
         .maybeSingle();
       if (setting?.value === "evening_before" || setting?.value === "morning_of") {
-        mode = setting.value;
+        configuredMode = setting.value;
       }
     } catch (_) { /* ignore, use default */ }
 
+    // The cron passes its own mode in the body. If absent, fall back to configured.
+    let invokedMode: "evening_before" | "morning_of" | null = null;
+    let force = false;
     try {
       if (req.headers.get("content-type")?.includes("application/json")) {
         const body = await req.clone().json().catch(() => null);
         if (body?.mode === "evening_before" || body?.mode === "morning_of") {
-          mode = body.mode;
+          invokedMode = body.mode;
         }
+        if (body?.force === true) force = true;
       }
     } catch (_) { /* ignore */ }
 
-    // Both modes target bookings happening "tomorrow" relative to send time.
-    // Evening-before runs ~18:00 local the day before → bookings for next day.
-    // Morning-of runs ~09:00 local the day of → still uses next-day window if
-    // scheduled the night before; if scheduled morning-of, set mode accordingly.
+    const mode = invokedMode ?? configuredMode;
+
+    // If a cron call's mode doesn't match the configured mode, skip silently.
+    // This lets both crons stay scheduled while only the active one sends.
+    if (invokedMode && invokedMode !== configuredMode && !force) {
+      console.log(`Skipping: invoked mode=${invokedMode} != configured=${configuredMode}`);
+      return new Response(
+        JSON.stringify({ success: true, skipped: true, invokedMode, configuredMode }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
+
+    // morning_of → target = today (sessions happening today)
+    // evening_before → target = tomorrow (sessions happening tomorrow)
     const target = new Date();
-    target.setDate(target.getDate() + 1);
+    if (mode === "evening_before") target.setDate(target.getDate() + 1);
     const targetStr = target.toISOString().split("T")[0];
 
     console.log(`Reminder mode: ${mode}, target date: ${targetStr}`);
