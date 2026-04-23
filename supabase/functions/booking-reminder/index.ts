@@ -67,15 +67,19 @@ Deno.serve(async (req) => {
     }
 
     if (!bookings || bookings.length === 0) {
-      console.log(`No confirmed bookings for ${tomorrowStr}`);
-      return new Response(JSON.stringify({ success: true, reminders: 0 }), {
+      console.log(`No confirmed bookings for ${targetStr}`);
+      return new Response(JSON.stringify({ success: true, reminders: 0, mode }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    console.log(`Found ${bookings.length} confirmed bookings for ${tomorrowStr}`);
+    console.log(`Found ${bookings.length} confirmed bookings for ${targetStr}`);
 
-    // 1) Customer reminders — branded, idempotent per booking + date
+    // Idempotency keys include the mode so a manual mode switch can re-send
+    // without colliding with a previous run for the same date.
+    const idemSuffix = `${targetStr}-${mode}`;
+
+    // 1) Customer reminders — branded, idempotent per booking + date + mode
     const customerResults = await Promise.allSettled(
       bookings
         .filter((b: any) => b.email && typeof b.email === "string" && b.email.includes("@"))
@@ -84,7 +88,7 @@ Deno.serve(async (req) => {
             body: {
               templateName: "booking-reminder",
               recipientEmail: b.email,
-              idempotencyKey: `booking-reminder-${b.id}-${tomorrowStr}`,
+              idempotencyKey: `booking-reminder-${b.id}-${idemSuffix}`,
               templateData: {
                 name: b.name,
                 workshop: b.workshop,
@@ -92,6 +96,7 @@ Deno.serve(async (req) => {
                 participants: b.participants || 1,
                 city: b.city,
                 sessionInfo: b.session_info,
+                mode,
               },
             },
           });
@@ -101,9 +106,10 @@ Deno.serve(async (req) => {
     const customerSent = customerResults.filter((r) => r.status === "fulfilled").length;
     const customerFailed = customerResults.filter((r) => r.status === "rejected").length;
 
-    // 2) Admin recap — one branded email per admin, idempotent per day
+    // 2) Admin recap — one branded email per admin, idempotent per day + mode
     const adminPayload = {
-      date: tomorrowStr,
+      date: targetStr,
+      mode,
       bookings: bookings.map((b: any) => ({
         name: b.name,
         workshop: b.workshop,
@@ -121,7 +127,7 @@ Deno.serve(async (req) => {
           body: {
             templateName: "booking-admin-reminder",
             recipientEmail: adminEmail,
-            idempotencyKey: `booking-admin-reminder-${tomorrowStr}-${adminEmail}`,
+            idempotencyKey: `booking-admin-reminder-${idemSuffix}-${adminEmail}`,
             templateData: adminPayload,
           },
         });
@@ -131,13 +137,14 @@ Deno.serve(async (req) => {
     const adminSent = adminResults.filter((r) => r.status === "fulfilled").length;
 
     console.log(
-      `Reminders for ${tomorrowStr}: customers ${customerSent}/${bookings.length} (failed ${customerFailed}), admins ${adminSent}/${ADMIN_EMAILS.length}`
+      `Reminders (${mode}) for ${targetStr}: customers ${customerSent}/${bookings.length} (failed ${customerFailed}), admins ${adminSent}/${ADMIN_EMAILS.length}`
     );
 
     return new Response(
       JSON.stringify({
         success: true,
-        date: tomorrowStr,
+        mode,
+        date: targetStr,
         bookings: bookings.length,
         customer_emails_sent: customerSent,
         customer_emails_failed: customerFailed,
