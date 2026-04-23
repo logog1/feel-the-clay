@@ -182,9 +182,33 @@ const BookingFormSection = () => {
     const sessionInfo = isLargeGroup && form.sessionType ? ` (${form.sessionType === "private" ? "Private Session" : "Open Workshop"})` : " (Open Workshop - Weekend 4PM)";
     const dateStr = form.date ? format(form.date, "PPP") : "";
 
+    const bookingId = crypto.randomUUID();
+    const bookingDateIso = form.date ? format(form.date, "yyyy-MM-dd") : null;
+
+    // 1. Persist booking FIRST so we never lose a reservation, even if emails fail
+    const { error: insertError } = await supabase.from("bookings").insert({
+      id: bookingId,
+      name: form.name,
+      city: form.city,
+      email: form.email,
+      phone: form.phone,
+      workshop: workshopLabel,
+      session_info: sessionInfo.trim(),
+      participants: form.participants,
+      booking_date: bookingDateIso,
+      notes: form.notes || null,
+      status: "pending",
+    });
+
+    if (insertError) {
+      console.error("Failed to save booking:", insertError);
+      setSending(false);
+      setErrors({ name: "We couldn't save your booking. Please try again or contact us directly." });
+      return;
+    }
+
     try {
-      const bookingId = crypto.randomUUID();
-      // 1. Existing internal notification (WhatsApp/Zapier/admin email via Resend)
+      // 2. Existing internal notification (WhatsApp/Zapier/admin email via Resend)
       await supabase.functions.invoke("send-notification", {
         body: {
           type: "booking",
