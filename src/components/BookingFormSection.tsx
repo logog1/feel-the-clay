@@ -83,7 +83,7 @@ const BookingFormSection = () => {
   // Auto-correct participants to 4 when pottery is selected with fewer than 4
   useEffect(() => {
     if (form.workshop === "pottery" && form.participants < 4) {
-      setForm((prev) => ({ ...prev, participants: 4, sessionType: "", date: undefined }));
+      setForm((prev) => ({ ...prev, participants: 4, sessionType: "", date: undefined, timeSlot: "" }));
     }
   }, [form.workshop]);
 
