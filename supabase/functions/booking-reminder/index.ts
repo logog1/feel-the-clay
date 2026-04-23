@@ -220,23 +220,29 @@ Deno.serve(async (req) => {
           const phone = normalizePhone(b.phone);
           if (!phone) {
             smsSkipped++;
+            await logChannel({ bookingId: b.id, channel: "whatsapp", recipient: b.phone ?? null, status: "skipped", errorMessage: "Missing or invalid phone" });
           } else if (!twilioReady) {
             smsSkipped++;
             console.warn(`Twilio not configured, skipping fallback for booking ${b.id}`);
+            await logChannel({ bookingId: b.id, channel: "whatsapp", recipient: phone, status: "skipped", errorMessage: "Twilio not configured" });
           } else {
             const text = buildReminderText(b);
             // Try WhatsApp first, fall back to SMS on failure
             try {
-              await sendTwilioMessage(phone, text, "whatsapp");
+              const r = await sendTwilioMessage(phone, text, "whatsapp");
               smsSent++;
+              await logChannel({ bookingId: b.id, channel: "whatsapp", recipient: phone, status: "sent", messageSid: r?.sid ?? null });
             } catch (waErr) {
               console.warn(`WhatsApp failed for ${b.id}, trying SMS:`, waErr);
+              await logChannel({ bookingId: b.id, channel: "whatsapp", recipient: phone, status: "failed", errorMessage: String(waErr?.message ?? waErr) });
               try {
-                await sendTwilioMessage(phone, text, "sms");
+                const r = await sendTwilioMessage(phone, text, "sms");
                 smsSent++;
+                await logChannel({ bookingId: b.id, channel: "sms", recipient: phone, status: "sent", messageSid: r?.sid ?? null });
               } catch (smsErr) {
                 smsFailed++;
                 console.error(`SMS also failed for ${b.id}:`, smsErr);
+                await logChannel({ bookingId: b.id, channel: "sms", recipient: phone, status: "failed", errorMessage: String(smsErr?.message ?? smsErr) });
               }
             }
           }
