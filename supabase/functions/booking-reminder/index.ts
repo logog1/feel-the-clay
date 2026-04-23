@@ -63,6 +63,9 @@ Deno.serve(async (req) => {
     if (mode === "evening_before") target.setDate(target.getDate() + 1);
     const targetStr = target.toISOString().split("T")[0];
 
+    // Idempotency suffix: target date + mode → ensures one send per booking per day per mode
+    const idemSuffix = `${targetStr}-${mode}`;
+
     console.log(`Reminder mode: ${mode}, target date: ${targetStr}`);
 
     const { data: bookings, error: fetchError } = await supabaseAdmin
