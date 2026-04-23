@@ -248,17 +248,21 @@ Deno.serve(async (req) => {
     const adminSent = adminResults.filter((r) => r.status === "fulfilled").length;
 
     console.log(
-      `Reminders (${mode}) for ${targetStr}: customers ${customerSent}/${bookings.length} (failed ${customerFailed}), admins ${adminSent}/${ADMIN_EMAILS.length}`
+      `Reminders (${mode}, fallback=${fallbackMode}) for ${targetStr}: customers ${customerSent}/${bookings.length} (failed ${customerFailed}), sms ${smsSent} sent / ${smsFailed} failed / ${smsSkipped} skipped, admins ${adminSent}/${ADMIN_EMAILS.length}`
     );
 
     return new Response(
       JSON.stringify({
         success: true,
         mode,
+        fallback_mode: fallbackMode,
         date: targetStr,
         bookings: bookings.length,
         customer_emails_sent: customerSent,
         customer_emails_failed: customerFailed,
+        sms_sent: smsSent,
+        sms_failed: smsFailed,
+        sms_skipped: smsSkipped,
         admin_emails_sent: adminSent,
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } },
