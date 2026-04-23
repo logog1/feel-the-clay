@@ -48,6 +48,9 @@ export function SettingsSection() {
         if (map["booking_reminder_mode"] === "evening_before" || map["booking_reminder_mode"] === "morning_of") {
           setReminderMode(map["booking_reminder_mode"]);
         }
+        if (map["booking_reminder_sms_fallback"] === "off" || map["booking_reminder_sms_fallback"] === "on_failure" || map["booking_reminder_sms_fallback"] === "always") {
+          setSmsFallback(map["booking_reminder_sms_fallback"]);
+        }
         const imgs: Record<string, string> = {};
         IMAGE_SETTINGS.forEach((s) => { if (map[s.key]) imgs[s.key] = map[s.key]; });
         setImageUrls(imgs);
