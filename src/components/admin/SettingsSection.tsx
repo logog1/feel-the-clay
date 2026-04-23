@@ -20,6 +20,7 @@ export function SettingsSection() {
   const [publicWhatsApp, setPublicWhatsApp] = useState("");
   const [publicMapUrl, setPublicMapUrl] = useState("");
   const [zapierWebhookUrl, setZapierWebhookUrl] = useState("");
+  const [reminderMode, setReminderMode] = useState<"morning_of" | "evening_before">("morning_of");
   const [imageUrls, setImageUrls] = useState<Record<string, string>>({});
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
