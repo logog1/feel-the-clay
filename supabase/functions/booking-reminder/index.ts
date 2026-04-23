@@ -15,7 +15,10 @@ Deno.serve(async (req) => {
   try {
     const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
     const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY")!;
     const supabaseAdmin = createClient(SUPABASE_URL, SERVICE_KEY);
+    // Use anon key when invoking send-transactional-email so its JWT check passes
+    const supabaseInvoker = createClient(SUPABASE_URL, ANON_KEY);
 
     // Configured mode controls which scheduled cron is allowed to fire.
     // - "morning_of": cron runs at 09:00 UTC, targets bookings happening today
