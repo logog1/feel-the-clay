@@ -119,6 +119,30 @@ export function SettingsSection() {
         <Input value={zapierWebhookUrl} onChange={(e) => setZapierWebhookUrl(e.target.value)} placeholder="https://hooks.zapier.com/hooks/catch/..." className="rounded-xl" />
       </div>
 
+      {/* Booking reminder timing */}
+      <div className="p-6 rounded-2xl bg-card border border-primary/20 space-y-4">
+        <h4 className="font-bold text-foreground flex items-center gap-2"><Bell size={16} className="text-primary" /> Booking Reminders</h4>
+        <p className="text-sm text-muted-foreground">When should automated reminders go out for tomorrow's confirmed bookings?</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <button
+            type="button"
+            onClick={() => setReminderMode("morning_of")}
+            className={`text-left p-4 rounded-xl border transition ${reminderMode === "morning_of" ? "border-primary bg-primary/5" : "border-border/40 hover:border-primary/40"}`}
+          >
+            <div className="font-semibold text-sm text-foreground">Morning of (24h before)</div>
+            <div className="text-xs text-muted-foreground mt-1">Sent the morning of each session day at ~09:00 UTC.</div>
+          </button>
+          <button
+            type="button"
+            onClick={() => setReminderMode("evening_before")}
+            className={`text-left p-4 rounded-xl border transition ${reminderMode === "evening_before" ? "border-primary bg-primary/5" : "border-border/40 hover:border-primary/40"}`}
+          >
+            <div className="font-semibold text-sm text-foreground">Evening before</div>
+            <div className="text-xs text-muted-foreground mt-1">Sent the evening before, around 18:00 UTC.</div>
+          </button>
+        </div>
+      </div>
+
       {/* Site Images */}
       <div className="p-6 rounded-2xl bg-card border border-primary/20 space-y-5">
         <h4 className="font-bold text-foreground flex items-center gap-2"><ImageIcon size={16} className="text-primary" /> Page Images</h4>
