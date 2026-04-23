@@ -507,6 +507,37 @@ const BookingFormSection = () => {
             {errors.date && <p className="text-xs text-destructive">{errors.date}</p>}
           </div>
 
+          {/* Time Slot — appears once a date is picked and the city has slots configured */}
+          {form.date && selectedCity && (
+            <div id="time-slot-section" className="space-y-3">
+              <h3 className="text-sm font-bold uppercase tracking-widest text-cta">{t("booking.time_slot")}</h3>
+              {availableTimeSlots.length === 0 ? (
+                <p className="text-xs text-muted-foreground p-3 rounded-xl bg-muted/40 border-2 border-border/40">
+                  {t("booking.no_slots")}
+                </p>
+              ) : (
+                <div className="flex flex-wrap gap-2">
+                  {availableTimeSlots.map((slot) => (
+                    <button
+                      key={slot}
+                      type="button"
+                      onClick={() => setForm({ ...form, timeSlot: slot })}
+                      className={cn(
+                        "px-4 h-10 rounded-xl text-sm font-medium border-2 transition-all",
+                        form.timeSlot === slot
+                          ? "border-cta bg-cta text-primary-foreground"
+                          : "border-border/40 hover:border-cta/30"
+                      )}
+                    >
+                      {slot}
+                    </button>
+                  ))}
+                </div>
+              )}
+              {errors.timeSlot && <p className="text-xs text-destructive">{errors.timeSlot}</p>}
+            </div>
+          )}
+
           {/* Notes */}
           <div className="space-y-3">
             <h3 className="text-sm font-bold uppercase tracking-widest text-cta">{t("booking.notes")}</h3>
