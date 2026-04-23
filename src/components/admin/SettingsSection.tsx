@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Save, CheckCircle2, Mail, Phone, Globe, Settings as SettingsIcon, ImageIcon, Zap } from "lucide-react";
+import { Save, CheckCircle2, Mail, Phone, Globe, Settings as SettingsIcon, ImageIcon, Zap, Bell } from "lucide-react";
 import { SiteImageUploader } from "./SiteImageUploader";
 
 const IMAGE_SETTINGS = [
