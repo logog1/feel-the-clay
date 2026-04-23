@@ -21,6 +21,7 @@ export function SettingsSection() {
   const [publicMapUrl, setPublicMapUrl] = useState("");
   const [zapierWebhookUrl, setZapierWebhookUrl] = useState("");
   const [reminderMode, setReminderMode] = useState<"morning_of" | "evening_before">("morning_of");
+  const [smsFallback, setSmsFallback] = useState<"off" | "on_failure" | "always">("off");
   const [imageUrls, setImageUrls] = useState<Record<string, string>>({});
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
