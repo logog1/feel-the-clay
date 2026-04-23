@@ -34,6 +34,7 @@ const bookingSchema = z.object({
   participants: z.number().min(1).max(50),
   sessionType: z.string().optional(),
   date: z.date({ required_error: "Select a date" }),
+  timeSlot: z.string().optional(),
   notes: z.string().max(1000).optional(),
 });
 
