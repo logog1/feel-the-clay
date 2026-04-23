@@ -65,6 +65,7 @@ export function SettingsSection() {
       supabase.from("site_settings").upsert({ key: "public_whatsapp", value: publicWhatsApp.trim(), updated_at: now }),
       supabase.from("site_settings").upsert({ key: "public_map_url", value: publicMapUrl.trim(), updated_at: now }),
       supabase.from("site_settings").upsert({ key: "zapier_webhook_url", value: zapierWebhookUrl.trim(), updated_at: now }),
+      supabase.from("site_settings").upsert({ key: "booking_reminder_mode", value: reminderMode, updated_at: now }),
     ]);
     setSaving(false);
     setSaved(true);
