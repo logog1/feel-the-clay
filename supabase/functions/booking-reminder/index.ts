@@ -17,16 +17,46 @@ Deno.serve(async (req) => {
     const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabaseAdmin = createClient(SUPABASE_URL, SERVICE_KEY);
 
-    // Bookings happening tomorrow (24h reminder window)
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    const tomorrowStr = tomorrow.toISOString().split("T")[0];
+    // Read mode: "evening_before" (sent the day before, ~12-18h ahead)
+    // or "morning_of" (sent the morning of, ~0-12h ahead). Default keeps
+    // legacy 24h behavior by targeting tomorrow's bookings.
+    // Override per-invocation via body { mode: "evening_before" | "morning_of" }.
+    let mode: "evening_before" | "morning_of" = "morning_of";
+    try {
+      const { data: setting } = await supabaseAdmin
+        .from("site_settings")
+        .select("value")
+        .eq("key", "booking_reminder_mode")
+        .maybeSingle();
+      if (setting?.value === "evening_before" || setting?.value === "morning_of") {
+        mode = setting.value;
+      }
+    } catch (_) { /* ignore, use default */ }
+
+    try {
+      if (req.headers.get("content-type")?.includes("application/json")) {
+        const body = await req.clone().json().catch(() => null);
+        if (body?.mode === "evening_before" || body?.mode === "morning_of") {
+          mode = body.mode;
+        }
+      }
+    } catch (_) { /* ignore */ }
+
+    // Both modes target bookings happening "tomorrow" relative to send time.
+    // Evening-before runs ~18:00 local the day before → bookings for next day.
+    // Morning-of runs ~09:00 local the day of → still uses next-day window if
+    // scheduled the night before; if scheduled morning-of, set mode accordingly.
+    const target = new Date();
+    target.setDate(target.getDate() + 1);
+    const targetStr = target.toISOString().split("T")[0];
+
+    console.log(`Reminder mode: ${mode}, target date: ${targetStr}`);
 
     const { data: bookings, error: fetchError } = await supabaseAdmin
       .from("bookings")
       .select("*")
       .eq("status", "confirmed")
-      .eq("booking_date", tomorrowStr);
+      .eq("booking_date", targetStr);
 
     if (fetchError) {
       console.error("Failed to fetch bookings:", fetchError);
