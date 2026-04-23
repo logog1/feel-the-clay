@@ -155,6 +155,34 @@ Deno.serve(async (req) => {
     let smsFailed = 0;
     let smsSkipped = 0;
 
+    async function logChannel(opts: {
+      bookingId: string;
+      channel: "whatsapp" | "sms";
+      recipient: string | null;
+      status: "sent" | "failed" | "skipped";
+      errorMessage?: string | null;
+      messageSid?: string | null;
+    }) {
+      try {
+        await supabaseAdmin.from("email_send_log").insert({
+          template_name: `booking-reminder-${opts.channel}`,
+          recipient_email: opts.recipient ?? "n/a",
+          status: opts.status,
+          error_message: opts.errorMessage ?? null,
+          message_id: `booking-reminder-${opts.channel}-${opts.bookingId}-${idemSuffix}`,
+          metadata: {
+            booking_id: opts.bookingId,
+            channel: opts.channel,
+            mode,
+            target_date: targetStr,
+            twilio_sid: opts.messageSid ?? null,
+          },
+        });
+      } catch (e) {
+        console.warn("Failed to log channel attempt", e);
+      }
+    }
+
     // 1) Customer reminders — email first, optional WhatsApp/SMS fallback
     const customerResults = await Promise.allSettled(
       bookings.map(async (b: any) => {
