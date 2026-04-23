@@ -6,6 +6,7 @@ import type { TemplateEntry } from './registry.ts'
 
 interface BookingAdminReminderProps {
   date?: string
+  mode?: 'evening_before' | 'morning_of'
   bookings?: Array<{
     name: string
     workshop: string
@@ -17,35 +18,41 @@ interface BookingAdminReminderProps {
   }>
 }
 
-const BookingAdminReminderEmail = ({ date, bookings = [] }: BookingAdminReminderProps) => (
-  <Html lang="en" dir="ltr">
-    <Head />
-    <Preview>{bookings.length} workshop booking(s) tomorrow</Preview>
-    <Body style={main}>
-      <Container style={container}>
-        <Heading style={h1}>⏰ Tomorrow's bookings</Heading>
-        <Text style={text}>
-          You have <strong>{bookings.length}</strong> confirmed booking{bookings.length === 1 ? '' : 's'} for {date || 'tomorrow'}.
-        </Text>
+const BookingAdminReminderEmail = ({ date, mode, bookings = [] }: BookingAdminReminderProps) => {
+  const isEvening = mode === 'evening_before'
+  const headline = isEvening ? '🌙 Bookings for tomorrow' : "⏰ Tomorrow's bookings"
+  const intro = isEvening
+    ? `Heads up before tonight: you have ${bookings.length} confirmed booking${bookings.length === 1 ? '' : 's'} for ${date || 'tomorrow'}.`
+    : `You have ${bookings.length} confirmed booking${bookings.length === 1 ? '' : 's'} for ${date || 'tomorrow'}.`
 
-        {bookings.map((b, i) => (
-          <Section key={i} style={card}>
-            <Text style={cardTitle}>{b.workshop}</Text>
-            <Text style={detail}><strong>Customer:</strong> {b.name}</Text>
-            {b.participants && <Text style={detail}><strong>Participants:</strong> {b.participants}</Text>}
-            {b.city && <Text style={detail}><strong>City:</strong> {b.city}</Text>}
-            {b.sessionInfo && <Text style={detail}><strong>Session:</strong> {b.sessionInfo}</Text>}
-            {b.phone && <Text style={detail}><strong>Phone:</strong> {b.phone}</Text>}
-            {b.email && <Text style={detail}><strong>Email:</strong> {b.email}</Text>}
-          </Section>
-        ))}
+  return (
+    <Html lang="en" dir="ltr">
+      <Head />
+      <Preview>{bookings.length} workshop booking(s) tomorrow</Preview>
+      <Body style={main}>
+        <Container style={container}>
+          <Heading style={h1}>{headline}</Heading>
+          <Text style={text}>{intro}</Text>
 
-        <Hr style={hr} />
-        <Text style={footer}>Auto-reminder from terrariaworkshops.com</Text>
-      </Container>
-    </Body>
-  </Html>
-)
+          {bookings.map((b, i) => (
+            <Section key={i} style={card}>
+              <Text style={cardTitle}>{b.workshop}</Text>
+              <Text style={detail}><strong>Customer:</strong> {b.name}</Text>
+              {b.participants && <Text style={detail}><strong>Participants:</strong> {b.participants}</Text>}
+              {b.city && <Text style={detail}><strong>City:</strong> {b.city}</Text>}
+              {b.sessionInfo && <Text style={detail}><strong>Session:</strong> {b.sessionInfo}</Text>}
+              {b.phone && <Text style={detail}><strong>Phone:</strong> {b.phone}</Text>}
+              {b.email && <Text style={detail}><strong>Email:</strong> {b.email}</Text>}
+            </Section>
+          ))}
+
+          <Hr style={hr} />
+          <Text style={footer}>Auto-reminder from terrariaworkshops.com</Text>
+        </Container>
+      </Body>
+    </Html>
+  )
+}
 
 export const template = {
   component: BookingAdminReminderEmail,
