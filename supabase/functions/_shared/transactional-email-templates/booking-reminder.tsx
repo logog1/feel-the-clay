@@ -13,50 +13,56 @@ interface BookingReminderProps {
   participants?: number
   city?: string
   sessionInfo?: string
+  mode?: 'evening_before' | 'morning_of'
 }
 
 const BookingReminderEmail = ({
-  name, workshop, date, participants, city, sessionInfo,
-}: BookingReminderProps) => (
-  <Html lang="en" dir="ltr">
-    <Head />
-    <Preview>Reminder: your workshop with {SITE_NAME} is tomorrow</Preview>
-    <Body style={main}>
-      <Container style={container}>
-        <Heading style={h1}>
-          {name ? `See you tomorrow, ${name}!` : 'See you tomorrow!'}
-        </Heading>
-        <Text style={text}>
-          Just a friendly reminder that your workshop with us is happening tomorrow.
-          We can't wait to welcome you and create something beautiful together.
-        </Text>
+  name, workshop, date, participants, city, sessionInfo, mode,
+}: BookingReminderProps) => {
+  const isEvening = mode === 'evening_before'
+  const greeting = isEvening
+    ? (name ? `See you tomorrow, ${name}!` : 'See you tomorrow!')
+    : (name ? `See you tomorrow, ${name}!` : 'See you tomorrow!')
+  const intro = isEvening
+    ? `Just a quick note before you head to bed: your workshop with us is happening tomorrow. We can't wait to welcome you and create something beautiful together.`
+    : `Just a friendly reminder that your workshop with us is happening tomorrow. We can't wait to welcome you and create something beautiful together.`
 
-        <Section style={card}>
-          <Text style={cardTitle}>Your workshop</Text>
-          {workshop && <Text style={detail}><strong>Workshop:</strong> {workshop}</Text>}
-          {date && <Text style={detail}><strong>Date:</strong> {date}</Text>}
-          {city && <Text style={detail}><strong>City:</strong> {city}</Text>}
-          {participants && <Text style={detail}><strong>Participants:</strong> {participants}</Text>}
-          {sessionInfo && <Text style={detail}><strong>Session:</strong> {sessionInfo}</Text>}
-        </Section>
+  return (
+    <Html lang="en" dir="ltr">
+      <Head />
+      <Preview>Reminder: your workshop with {SITE_NAME} is tomorrow</Preview>
+      <Body style={main}>
+        <Container style={container}>
+          <Heading style={h1}>{greeting}</Heading>
+          <Text style={text}>{intro}</Text>
 
-        <Text style={text}>
-          A few small tips: come in clothes you don't mind getting a little clay on,
-          and arrive 5 minutes early so we can start on time.
-        </Text>
-        <Text style={text}>
-          If anything has changed on your side, just reply to this email and we'll sort it out.
-        </Text>
+          <Section style={card}>
+            <Text style={cardTitle}>Your workshop</Text>
+            {workshop && <Text style={detail}><strong>Workshop:</strong> {workshop}</Text>}
+            {date && <Text style={detail}><strong>Date:</strong> {date}</Text>}
+            {city && <Text style={detail}><strong>City:</strong> {city}</Text>}
+            {participants && <Text style={detail}><strong>Participants:</strong> {participants}</Text>}
+            {sessionInfo && <Text style={detail}><strong>Session:</strong> {sessionInfo}</Text>}
+          </Section>
 
-        <Hr style={hr} />
-        <Text style={footer}>
-          With clay and care,<br />
-          The {SITE_NAME} team
-        </Text>
-      </Container>
-    </Body>
-  </Html>
-)
+          <Text style={text}>
+            A few small tips: come in clothes you don't mind getting a little clay on,
+            and arrive 5 minutes early so we can start on time.
+          </Text>
+          <Text style={text}>
+            If anything has changed on your side, just reply to this email and we'll sort it out.
+          </Text>
+
+          <Hr style={hr} />
+          <Text style={footer}>
+            With clay and care,<br />
+            The {SITE_NAME} team
+          </Text>
+        </Container>
+      </Body>
+    </Html>
+  )
+}
 
 export const template = {
   component: BookingReminderEmail,
