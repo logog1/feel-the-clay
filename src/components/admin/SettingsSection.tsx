@@ -33,6 +33,7 @@ export function SettingsSection() {
         "public_email", "public_whatsapp", "public_map_url",
         "zapier_webhook_url",
         "booking_reminder_mode",
+        "booking_reminder_sms_fallback",
         ...IMAGE_SETTINGS.map((s) => s.key),
       ]);
       if (data) {
