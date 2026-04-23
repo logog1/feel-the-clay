@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Save, CheckCircle2, Mail, Phone, Globe, Settings as SettingsIcon, ImageIcon, Zap } from "lucide-react";
+import { Save, CheckCircle2, Mail, Phone, Globe, Settings as SettingsIcon, ImageIcon, Zap, Bell } from "lucide-react";
 import { SiteImageUploader } from "./SiteImageUploader";
 
 const IMAGE_SETTINGS = [
@@ -20,6 +20,7 @@ export function SettingsSection() {
   const [publicWhatsApp, setPublicWhatsApp] = useState("");
   const [publicMapUrl, setPublicMapUrl] = useState("");
   const [zapierWebhookUrl, setZapierWebhookUrl] = useState("");
+  const [reminderMode, setReminderMode] = useState<"morning_of" | "evening_before">("morning_of");
   const [imageUrls, setImageUrls] = useState<Record<string, string>>({});
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -30,6 +31,7 @@ export function SettingsSection() {
         "notification_email", "whatsapp_numbers",
         "public_email", "public_whatsapp", "public_map_url",
         "zapier_webhook_url",
+        "booking_reminder_mode",
         ...IMAGE_SETTINGS.map((s) => s.key),
       ]);
       if (data) {
@@ -41,6 +43,9 @@ export function SettingsSection() {
         setPublicWhatsApp(map["public_whatsapp"] || "");
         setPublicMapUrl(map["public_map_url"] || "");
         setZapierWebhookUrl(map["zapier_webhook_url"] || "");
+        if (map["booking_reminder_mode"] === "evening_before" || map["booking_reminder_mode"] === "morning_of") {
+          setReminderMode(map["booking_reminder_mode"]);
+        }
         const imgs: Record<string, string> = {};
         IMAGE_SETTINGS.forEach((s) => { if (map[s.key]) imgs[s.key] = map[s.key]; });
         setImageUrls(imgs);
@@ -60,6 +65,7 @@ export function SettingsSection() {
       supabase.from("site_settings").upsert({ key: "public_whatsapp", value: publicWhatsApp.trim(), updated_at: now }),
       supabase.from("site_settings").upsert({ key: "public_map_url", value: publicMapUrl.trim(), updated_at: now }),
       supabase.from("site_settings").upsert({ key: "zapier_webhook_url", value: zapierWebhookUrl.trim(), updated_at: now }),
+      supabase.from("site_settings").upsert({ key: "booking_reminder_mode", value: reminderMode, updated_at: now }),
     ]);
     setSaving(false);
     setSaved(true);
@@ -111,6 +117,30 @@ export function SettingsSection() {
         <h4 className="font-bold text-foreground flex items-center gap-2"><Zap size={16} className="text-primary" /> Zapier Webhook</h4>
         <p className="text-sm text-muted-foreground">Paste your Zapier webhook URL to receive order & booking notifications via Zapier (email, Slack, etc.).</p>
         <Input value={zapierWebhookUrl} onChange={(e) => setZapierWebhookUrl(e.target.value)} placeholder="https://hooks.zapier.com/hooks/catch/..." className="rounded-xl" />
+      </div>
+
+      {/* Booking reminder timing */}
+      <div className="p-6 rounded-2xl bg-card border border-primary/20 space-y-4">
+        <h4 className="font-bold text-foreground flex items-center gap-2"><Bell size={16} className="text-primary" /> Booking Reminders</h4>
+        <p className="text-sm text-muted-foreground">When should automated reminders go out for tomorrow's confirmed bookings?</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <button
+            type="button"
+            onClick={() => setReminderMode("morning_of")}
+            className={`text-left p-4 rounded-xl border transition ${reminderMode === "morning_of" ? "border-primary bg-primary/5" : "border-border/40 hover:border-primary/40"}`}
+          >
+            <div className="font-semibold text-sm text-foreground">Morning of (24h before)</div>
+            <div className="text-xs text-muted-foreground mt-1">Sent the morning of each session day at ~09:00 UTC.</div>
+          </button>
+          <button
+            type="button"
+            onClick={() => setReminderMode("evening_before")}
+            className={`text-left p-4 rounded-xl border transition ${reminderMode === "evening_before" ? "border-primary bg-primary/5" : "border-border/40 hover:border-primary/40"}`}
+          >
+            <div className="font-semibold text-sm text-foreground">Evening before</div>
+            <div className="text-xs text-muted-foreground mt-1">Sent the evening before, around 18:00 UTC.</div>
+          </button>
+        </div>
       </div>
 
       {/* Site Images */}
