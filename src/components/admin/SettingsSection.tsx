@@ -43,6 +43,9 @@ export function SettingsSection() {
         setPublicWhatsApp(map["public_whatsapp"] || "");
         setPublicMapUrl(map["public_map_url"] || "");
         setZapierWebhookUrl(map["zapier_webhook_url"] || "");
+        if (map["booking_reminder_mode"] === "evening_before" || map["booking_reminder_mode"] === "morning_of") {
+          setReminderMode(map["booking_reminder_mode"]);
+        }
         const imgs: Record<string, string> = {};
         IMAGE_SETTINGS.forEach((s) => { if (map[s.key]) imgs[s.key] = map[s.key]; });
         setImageUrls(imgs);
