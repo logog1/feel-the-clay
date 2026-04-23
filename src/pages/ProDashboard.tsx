@@ -22,6 +22,7 @@ import { BlogSection } from "@/components/admin/BlogSection";
 import { ThemeManagerSection } from "@/components/admin/ThemeManagerSection";
 import { MediaManagerSection } from "@/components/admin/MediaManagerSection";
 import { EmailsSection } from "@/components/admin/EmailsSection";
+import { ReminderLogSection } from "@/components/admin/ReminderLogSection";
 import SEOHead from "@/components/SEOHead";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Moon, Sun } from "lucide-react";
@@ -42,6 +43,7 @@ const sectionTitles: Record<string, string> = {
   tasks: "Tasks",
   automations: "Automations",
   emails: "Emails",
+  reminders: "Reminder Log",
   media: "Media Manager",
   blog: "Blog",
   themes: "Seasonal Themes",
@@ -131,6 +133,7 @@ const ProDashboard = () => {
             {activeSection === "tasks" && <TasksSection />}
             {activeSection === "automations" && <AutomationsSection />}
             {activeSection === "emails" && <EmailsSection />}
+            {activeSection === "reminders" && <ReminderLogSection />}
             {activeSection === "media" && <MediaManagerSection />}
             {activeSection === "blog" && <BlogSection />}
             {activeSection === "themes" && <ThemeManagerSection />}
