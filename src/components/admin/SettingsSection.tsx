@@ -21,6 +21,7 @@ export function SettingsSection() {
   const [publicMapUrl, setPublicMapUrl] = useState("");
   const [zapierWebhookUrl, setZapierWebhookUrl] = useState("");
   const [reminderMode, setReminderMode] = useState<"morning_of" | "evening_before">("morning_of");
+  const [smsFallback, setSmsFallback] = useState<"off" | "on_failure" | "always">("off");
   const [imageUrls, setImageUrls] = useState<Record<string, string>>({});
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -32,6 +33,7 @@ export function SettingsSection() {
         "public_email", "public_whatsapp", "public_map_url",
         "zapier_webhook_url",
         "booking_reminder_mode",
+        "booking_reminder_sms_fallback",
         ...IMAGE_SETTINGS.map((s) => s.key),
       ]);
       if (data) {
@@ -45,6 +47,9 @@ export function SettingsSection() {
         setZapierWebhookUrl(map["zapier_webhook_url"] || "");
         if (map["booking_reminder_mode"] === "evening_before" || map["booking_reminder_mode"] === "morning_of") {
           setReminderMode(map["booking_reminder_mode"]);
+        }
+        if (map["booking_reminder_sms_fallback"] === "off" || map["booking_reminder_sms_fallback"] === "on_failure" || map["booking_reminder_sms_fallback"] === "always") {
+          setSmsFallback(map["booking_reminder_sms_fallback"]);
         }
         const imgs: Record<string, string> = {};
         IMAGE_SETTINGS.forEach((s) => { if (map[s.key]) imgs[s.key] = map[s.key]; });
@@ -66,6 +71,7 @@ export function SettingsSection() {
       supabase.from("site_settings").upsert({ key: "public_map_url", value: publicMapUrl.trim(), updated_at: now }),
       supabase.from("site_settings").upsert({ key: "zapier_webhook_url", value: zapierWebhookUrl.trim(), updated_at: now }),
       supabase.from("site_settings").upsert({ key: "booking_reminder_mode", value: reminderMode, updated_at: now }),
+      supabase.from("site_settings").upsert({ key: "booking_reminder_sms_fallback", value: smsFallback, updated_at: now }),
     ]);
     setSaving(false);
     setSaved(true);
@@ -141,6 +147,39 @@ export function SettingsSection() {
             <div className="text-xs text-muted-foreground mt-1">Sent the evening before, around 18:00 UTC.</div>
           </button>
         </div>
+      </div>
+
+      {/* WhatsApp / SMS fallback */}
+      <div className="p-6 rounded-2xl bg-card border border-primary/20 space-y-4">
+        <h4 className="font-bold text-foreground flex items-center gap-2"><Phone size={16} className="text-primary" /> WhatsApp / SMS Fallback</h4>
+        <p className="text-sm text-muted-foreground">Send reminders via WhatsApp (with SMS backup) when needed. Uses Twilio. Tries WhatsApp first, falls back to SMS automatically.</p>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <button
+            type="button"
+            onClick={() => setSmsFallback("off")}
+            className={`text-left p-4 rounded-xl border transition ${smsFallback === "off" ? "border-primary bg-primary/5" : "border-border/40 hover:border-primary/40"}`}
+          >
+            <div className="font-semibold text-sm text-foreground">Off</div>
+            <div className="text-xs text-muted-foreground mt-1">Email only.</div>
+          </button>
+          <button
+            type="button"
+            onClick={() => setSmsFallback("on_failure")}
+            className={`text-left p-4 rounded-xl border transition ${smsFallback === "on_failure" ? "border-primary bg-primary/5" : "border-border/40 hover:border-primary/40"}`}
+          >
+            <div className="font-semibold text-sm text-foreground">Only if email fails</div>
+            <div className="text-xs text-muted-foreground mt-1">Or if no email is on file.</div>
+          </button>
+          <button
+            type="button"
+            onClick={() => setSmsFallback("always")}
+            className={`text-left p-4 rounded-xl border transition ${smsFallback === "always" ? "border-primary bg-primary/5" : "border-border/40 hover:border-primary/40"}`}
+          >
+            <div className="font-semibold text-sm text-foreground">Always</div>
+            <div className="text-xs text-muted-foreground mt-1">Send both email and message.</div>
+          </button>
+        </div>
+        <p className="text-xs text-muted-foreground">Customers without a valid phone number are skipped silently.</p>
       </div>
 
       {/* Site Images */}

@@ -88,15 +88,78 @@ Deno.serve(async (req) => {
 
     console.log(`Found ${bookings.length} confirmed bookings for ${targetStr}`);
 
-    // Idempotency keys include the mode so a manual mode switch can re-send
-    // without colliding with a previous run for the same date.
-    const idemSuffix = `${targetStr}-${mode}`;
+    // Read fallback toggle: "off" | "on_failure" | "always"
+    let fallbackMode: "off" | "on_failure" | "always" = "off";
+    try {
+      const { data: setting } = await supabaseAdmin
+        .from("site_settings")
+        .select("value")
+        .eq("key", "booking_reminder_sms_fallback")
+        .maybeSingle();
+      if (setting?.value === "on_failure" || setting?.value === "always" || setting?.value === "off") {
+        fallbackMode = setting.value;
+      }
+    } catch (_) { /* ignore */ }
 
-    // 1) Customer reminders — branded, idempotent per booking + date + mode
+    const TWILIO_SID = Deno.env.get("TWILIO_ACCOUNT_SID");
+    const TWILIO_TOKEN = Deno.env.get("TWILIO_AUTH_TOKEN");
+    const TWILIO_FROM = Deno.env.get("TWILIO_WHATSAPP_NUMBER"); // e.g. "whatsapp:+14155238886"
+    const twilioReady = !!(TWILIO_SID && TWILIO_TOKEN && TWILIO_FROM);
+
+    function normalizePhone(raw?: string | null): string | null {
+      if (!raw) return null;
+      const trimmed = raw.trim().replace(/[\s\-()]/g, "");
+      if (!trimmed) return null;
+      // Already E.164
+      if (/^\+\d{8,15}$/.test(trimmed)) return trimmed;
+      // Moroccan local format starting with 0 → +212
+      if (/^0\d{9}$/.test(trimmed)) return `+212${trimmed.slice(1)}`;
+      return null;
+    }
+
+    async function sendTwilioMessage(toPhone: string, body: string, channel: "whatsapp" | "sms") {
+      if (!twilioReady) throw new Error("Twilio not configured");
+      const to = channel === "whatsapp" ? `whatsapp:${toPhone}` : toPhone;
+      const from = channel === "whatsapp"
+        ? (TWILIO_FROM!.startsWith("whatsapp:") ? TWILIO_FROM! : `whatsapp:${TWILIO_FROM}`)
+        : TWILIO_FROM!.replace(/^whatsapp:/, "");
+      const auth = btoa(`${TWILIO_SID}:${TWILIO_TOKEN}`);
+      const res = await fetch(
+        `https://api.twilio.com/2010-04-01/Accounts/${TWILIO_SID}/Messages.json`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Basic ${auth}`,
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          body: new URLSearchParams({ To: to, From: from, Body: body }),
+        },
+      );
+      const data = await res.json();
+      if (!res.ok) throw new Error(`Twilio ${channel} ${res.status}: ${JSON.stringify(data)}`);
+      return data;
+    }
+
+    function buildReminderText(b: any): string {
+      const greet = b.name ? `Hi ${b.name},` : "Hi,";
+      const when = mode === "evening_before" ? "tomorrow" : "today";
+      const session = b.session_info ? ` (${b.session_info})` : "";
+      const where = b.city ? ` in ${b.city}` : "";
+      return `${greet} a friendly reminder from Terraria Workshops: your ${b.workshop}${session}${where} is ${when} (${b.booking_date}). Wear clothes you don't mind getting clay on, and arrive 5 min early. Reply here if anything changed.`;
+    }
+
+    let smsSent = 0;
+    let smsFailed = 0;
+    let smsSkipped = 0;
+
+    // 1) Customer reminders — email first, optional WhatsApp/SMS fallback
     const customerResults = await Promise.allSettled(
-      bookings
-        .filter((b: any) => b.email && typeof b.email === "string" && b.email.includes("@"))
-        .map(async (b: any) => {
+      bookings.map(async (b: any) => {
+        const hasEmail = b.email && typeof b.email === "string" && b.email.includes("@");
+        let emailOk = false;
+        let emailError: any = null;
+
+        if (hasEmail) {
           const { error } = await supabaseAdmin.functions.invoke("send-transactional-email", {
             body: {
               templateName: "booking-reminder",
@@ -113,8 +176,43 @@ Deno.serve(async (req) => {
               },
             },
           });
-          if (error) throw error;
-        }),
+          if (error) emailError = error;
+          else emailOk = true;
+        }
+
+        // Decide whether to send WhatsApp/SMS fallback
+        const shouldFallback =
+          fallbackMode === "always" ||
+          (fallbackMode === "on_failure" && (!hasEmail || !emailOk));
+
+        if (shouldFallback) {
+          const phone = normalizePhone(b.phone);
+          if (!phone) {
+            smsSkipped++;
+          } else if (!twilioReady) {
+            smsSkipped++;
+            console.warn(`Twilio not configured, skipping fallback for booking ${b.id}`);
+          } else {
+            const text = buildReminderText(b);
+            // Try WhatsApp first, fall back to SMS on failure
+            try {
+              await sendTwilioMessage(phone, text, "whatsapp");
+              smsSent++;
+            } catch (waErr) {
+              console.warn(`WhatsApp failed for ${b.id}, trying SMS:`, waErr);
+              try {
+                await sendTwilioMessage(phone, text, "sms");
+                smsSent++;
+              } catch (smsErr) {
+                smsFailed++;
+                console.error(`SMS also failed for ${b.id}:`, smsErr);
+              }
+            }
+          }
+        }
+
+        if (hasEmail && !emailOk) throw emailError;
+      }),
     );
     const customerSent = customerResults.filter((r) => r.status === "fulfilled").length;
     const customerFailed = customerResults.filter((r) => r.status === "rejected").length;
@@ -150,17 +248,21 @@ Deno.serve(async (req) => {
     const adminSent = adminResults.filter((r) => r.status === "fulfilled").length;
 
     console.log(
-      `Reminders (${mode}) for ${targetStr}: customers ${customerSent}/${bookings.length} (failed ${customerFailed}), admins ${adminSent}/${ADMIN_EMAILS.length}`
+      `Reminders (${mode}, fallback=${fallbackMode}) for ${targetStr}: customers ${customerSent}/${bookings.length} (failed ${customerFailed}), sms ${smsSent} sent / ${smsFailed} failed / ${smsSkipped} skipped, admins ${adminSent}/${ADMIN_EMAILS.length}`
     );
 
     return new Response(
       JSON.stringify({
         success: true,
         mode,
+        fallback_mode: fallbackMode,
         date: targetStr,
         bookings: bookings.length,
         customer_emails_sent: customerSent,
         customer_emails_failed: customerFailed,
+        sms_sent: smsSent,
+        sms_failed: smsFailed,
+        sms_skipped: smsSkipped,
         admin_emails_sent: adminSent,
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } },
