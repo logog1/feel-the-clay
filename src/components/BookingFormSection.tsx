@@ -152,14 +152,13 @@ const BookingFormSection = () => {
     const dateStr = format(date, "yyyy-MM-dd");
     if (blockedDates.includes(dateStr)) return true;
     const day = date.getDay();
-    // If a city is selected with a defined schedule, restrict to those weekdays
+    const isWeekend = day === 0 || day === 6;
+    // Open workshops (open sessions & small groups) are weekends only — regardless of city schedule
+    if (!isPrivateSession && !isWeekend) return true;
+    // If a city is selected with a defined schedule, also restrict to those weekdays
     if (allowedWeekdays && allowedWeekdays.size > 0) {
       if (!allowedWeekdays.has(day)) return true;
-      return false;
     }
-    const isWeekend = day === 0 || day === 6;
-    // Fallback: only private sessions (4+) can book any day; open sessions & small groups are weekends only
-    if (!isPrivateSession && !isWeekend) return true;
     return false;
   };
 
