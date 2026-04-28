@@ -89,8 +89,8 @@ Deno.serve(async (req) => {
     const body = await req.json()
     templateName = body.templateName || body.template_name
     recipientEmail = body.recipientEmail || body.recipient_email
-    messageId = crypto.randomUUID()
     idempotencyKey = body.idempotencyKey || body.idempotency_key || messageId
+    messageId = idempotencyKey || crypto.randomUUID()
     if (body.templateData && typeof body.templateData === 'object') {
       templateData = body.templateData
     }
@@ -149,6 +149,45 @@ Deno.serve(async (req) => {
 
   // Create Supabase client with service role (bypasses RLS)
   const supabase = createClient(supabaseUrl, supabaseServiceKey)
+
+  // Idempotency guard: the booking form and the database fallback can both
+  // request the same email. Treat already queued/sent messages as success.
+  const { data: existingSend, error: existingSendError } = await supabase
+    .from('email_send_log')
+    .select('status, error_message, created_at')
+    .eq('message_id', messageId)
+    .in('status', ['pending', 'sent', 'suppressed'])
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+
+  if (existingSendError) {
+    console.warn('Idempotency lookup failed — continuing with send', {
+      error: existingSendError,
+      messageId,
+    })
+  }
+
+  if (existingSend) {
+    console.log('Skipping duplicate transactional email request', {
+      messageId,
+      templateName,
+      status: existingSend.status,
+    })
+    return new Response(
+      JSON.stringify({
+        success: existingSend.status !== 'suppressed',
+        queued: existingSend.status === 'pending',
+        duplicate: true,
+        status: existingSend.status,
+        reason: existingSend.status === 'suppressed' ? 'email_suppressed' : undefined,
+      }),
+      {
+        status: 200,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      }
+    )
+  }
 
   // 2. Check suppression list (fail-closed: if we can't verify, don't send)
   const { data: suppressed, error: suppressionError } = await supabase
