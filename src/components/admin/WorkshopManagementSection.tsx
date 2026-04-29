@@ -18,6 +18,8 @@ const WORKSHOPS: { id: WorkshopId; label: string; translationPrefix: string }[] 
   { id: "pottery", label: "Full Pottery Experience", translationPrefix: "pottery" },
   { id: "handbuilding", label: "Handbuilding Workshop", translationPrefix: "hand" },
   { id: "embroidery", label: "Embroidery Workshop", translationPrefix: "embr" },
+  { id: "zellij", label: "Zellij Workshop", translationPrefix: "zellij" },
+  { id: "carpets", label: "Carpets Workshop", translationPrefix: "carpets" },
 ];
 
 const LANGS = ["en", "ar", "es", "fr"] as const;
@@ -30,6 +32,51 @@ function getTranslation(key: string): MultiLang {
 }
 
 function buildDefaultConfig(prefix: string): WorkshopConfig {
+  const customDefaults: Record<string, WorkshopConfig> = {
+    zellij: {
+      title: { en: "Zellij Workshop", ar: "ورشة الزليج", es: "Taller de Zellij", fr: "Atelier Zellij" },
+      tagline: { en: "Discover Moroccan geometric tile craft through pattern, color, and patient handwork.", ar: "اكتشف حرفة الزليج المغربي من خلال الألوان والهندسة والعمل اليدوي.", es: "Descubre el zellij marroquí a través del patrón, el color y el trabajo manual.", fr: "Découvrez le zellij marocain à travers les motifs, la couleur et le geste artisanal." },
+      price: "Coming soon",
+      duration: { en: "Coming soon", ar: "قريبا", es: "Próximamente", fr: "Bientôt" },
+      drink: { en: "Tea included", ar: "الشاي مشمول", es: "Té incluido", fr: "Thé inclus" },
+      location: { en: "Tetouan, Morocco", ar: "تطوان، المغرب", es: "Tetuán, Marruecos", fr: "Tétouan, Maroc" },
+      descriptions: [
+        { en: "A future workshop dedicated to Moroccan zellij, geometric thinking, and decorative craft traditions.", ar: "ورشة مستقبلية مخصصة للزليج المغربي والهندسة والحرف الزخرفية.", es: "Un futuro taller dedicado al zellij marroquí, la geometría y las artes decorativas.", fr: "Un futur atelier dédié au zellij marocain, à la géométrie et aux traditions décoratives." },
+      ],
+      highlights: [
+        { en: "Pattern and color introduction", ar: "مقدمة في النقوش والألوان", es: "Introducción a patrones y colores", fr: "Introduction aux motifs et couleurs" },
+        { en: "Local craft context", ar: "سياق الحرفة المحلية", es: "Contexto artesanal local", fr: "Contexte artisanal local" },
+      ],
+      is_available: false,
+      is_popular: false,
+      promo_enabled: false,
+      promo_label: "",
+      promo_price: "",
+    },
+    carpets: {
+      title: { en: "Carpets Workshop", ar: "ورشة الزرابي", es: "Taller de Alfombras", fr: "Atelier Tapis" },
+      tagline: { en: "A future weaving experience around Moroccan rugs, textures, symbols, and artisan stories.", ar: "تجربة نسج مستقبلية حول الزرابي المغربية والرموز وحكايات الحرفيين.", es: "Una futura experiencia de tejido sobre alfombras marroquíes, texturas y símbolos.", fr: "Une future expérience de tissage autour des tapis marocains, textures et symboles." },
+      price: "Coming soon",
+      duration: { en: "Coming soon", ar: "قريبا", es: "Próximamente", fr: "Bientôt" },
+      drink: { en: "Tea included", ar: "الشاي مشمول", es: "Té incluido", fr: "Thé inclus" },
+      location: { en: "Tetouan, Morocco", ar: "تطوان، المغرب", es: "Tetuán, Marruecos", fr: "Tétouan, Maroc" },
+      descriptions: [
+        { en: "A future textile workshop centered on Moroccan carpets, Amazigh motifs, and the rhythm of handmade weaving.", ar: "ورشة نسيج مستقبلية حول الزرابي المغربية والزخارف الأمازيغية وإيقاع النسج اليدوي.", es: "Un futuro taller textil sobre alfombras marroquíes, motivos amazigh y tejido manual.", fr: "Un futur atelier textile autour des tapis marocains, motifs amazighs et du tissage à la main." },
+      ],
+      highlights: [
+        { en: "Textile symbols and materials", ar: "رموز ومواد النسيج", es: "Símbolos y materiales textiles", fr: "Symboles et matières textiles" },
+        { en: "Artisan storytelling", ar: "حكايات الحرفيين", es: "Historias de artesanos", fr: "Récits d’artisanes" },
+      ],
+      is_available: false,
+      is_popular: false,
+      promo_enabled: false,
+      promo_label: "",
+      promo_price: "",
+    },
+  };
+
+  if (customDefaults[prefix]) return customDefaults[prefix];
+
   const descKeys = [`${prefix}.desc1`, `${prefix}.desc2`];
   const highlightKeys: string[] = [];
   for (let i = 1; i <= 7; i++) {
@@ -97,6 +144,8 @@ export function WorkshopManagementSection() {
     pottery: buildDefaultConfig("pottery"),
     handbuilding: buildDefaultConfig("hand"),
     embroidery: buildDefaultConfig("embr"),
+    zellij: buildDefaultConfig("zellij"),
+    carpets: buildDefaultConfig("carpets"),
   });
   const [expanded, setExpanded] = useState<WorkshopId | null>(null);
   const [saving, setSaving] = useState<WorkshopId | null>(null);
