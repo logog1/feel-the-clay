@@ -50,17 +50,7 @@ const defaultRow3 = [
 
 type ImageItem = { src: string; alt: string };
 
-const uniqueImages = (images: ImageItem[]) => {
-  const seen = new Set<string>();
-  return images.filter((image) => {
-    const key = image.src.trim();
-    if (!key || seen.has(key)) return false;
-    seen.add(key);
-    return true;
-  });
-};
-
-const GalleryRow = ({ images, animationClass, imageWidth, loop = true }: { images: ImageItem[]; animationClass: string; imageWidth: string; loop?: boolean }) => {
+const GalleryRow = ({ images, animationClass, imageWidth }: { images: ImageItem[]; animationClass: string; imageWidth: string }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const rowRef = useRef<HTMLDivElement>(null);
   const isDragging = useRef(false);
@@ -77,12 +67,12 @@ const GalleryRow = ({ images, animationClass, imageWidth, loop = true }: { image
   const handleMouseMove = (e: React.MouseEvent) => { if (!isDragging.current || !containerRef.current) return; e.preventDefault(); containerRef.current.scrollLeft = scrollLeft.current + (startX.current - e.pageX) * 1.5; };
   const handleMouseUp = () => { isDragging.current = false; resumeAnimation(); };
 
-  const rowImages = loop ? [...images, ...images] : images;
+  const doubled = [...images, ...images];
 
   return (
     <div ref={containerRef} className="overflow-hidden cursor-grab active:cursor-grabbing" onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd} onMouseDown={handleMouseDown} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp}>
-      <div ref={rowRef} className={`flex gap-3 md:gap-4 w-max ${loop ? animationClass : ""}`}>
-        {rowImages.map((image, index) => (
+      <div ref={rowRef} className={`flex gap-3 md:gap-4 w-max ${animationClass}`}>
+        {doubled.map((image, index) => (
           <div key={index} className={`flex-shrink-0 ${imageWidth} aspect-[4/3] overflow-hidden rounded-xl bg-secondary/20`}>
             <img src={image.src} alt={image.alt} className="w-full h-full object-cover hover:scale-105 transition-transform duration-500 pointer-events-none" loading="lazy" draggable={false} />
           </div>
@@ -100,7 +90,7 @@ const GallerySection = () => {
   // If managed images exist, split them into 3 rows
   let row1: ImageItem[], row2: ImageItem[], row3: ImageItem[];
   if (managed && managed.length > 0) {
-    const items = uniqueImages(managed.map((m) => ({ src: m.url, alt: m.alt })));
+    const items = managed.map((m) => ({ src: m.url, alt: m.alt }));
     const third = Math.ceil(items.length / 3);
     row1 = items.slice(0, third);
     row2 = items.slice(third, third * 2);
@@ -117,9 +107,9 @@ const GallerySection = () => {
         <h2 className="text-xl md:text-2xl font-medium text-center">{t("gallery.title")}</h2>
       </div>
       <div className="space-y-3 md:space-y-4 will-change-transform" style={{ transform: `translateY(${offset}px)` }}>
-        <GalleryRow images={row1} animationClass="animate-scroll-left" imageWidth="w-48 md:w-72" loop={!managed} />
-        <GalleryRow images={row2} animationClass="animate-scroll-right" imageWidth="w-56 md:w-80" loop={!managed} />
-        {row3.length > 0 && <GalleryRow images={row3} animationClass="animate-scroll-left-slow" imageWidth="w-44 md:w-64" loop={!managed} />}
+        <GalleryRow images={row1} animationClass="animate-scroll-left" imageWidth="w-48 md:w-72" />
+        <GalleryRow images={row2} animationClass="animate-scroll-right" imageWidth="w-56 md:w-80" />
+        {row3.length > 0 && <GalleryRow images={row3} animationClass="animate-scroll-left-slow" imageWidth="w-44 md:w-64" />}
       </div>
     </section>
   );
