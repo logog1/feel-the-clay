@@ -9,12 +9,16 @@ import handbuildingHero from "@/assets/handbuilding-hero.jpg";
 import embrHero from "@/assets/embr-hero.jpg";
 import potteryGirls from "@/assets/pottery-girls.jpg";
 import tetouanCity from "@/assets/tetouan-city.jpg";
+import workshopTools from "@/assets/workshop-tools.jpg";
+import rugDiamond from "@/assets/product-rug-diamond.png";
 
 // Fallback images per workshop type
 const fallbackImages: Record<string, string> = {
   pottery: potteryGirls,
   handbuilding: handbuildingHero,
   embroidery: embrHero,
+  zellij: workshopTools,
+  carpets: rugDiamond,
 };
 
 type OfferCard = {
@@ -39,6 +43,8 @@ const OffersSection = () => {
   const handConfig = configs.handbuilding;
   const potteryConfig = configs.pottery;
   const embrConfig = configs.embroidery;
+  const zellijConfig = configs.zellij;
+  const carpetsConfig = configs.carpets;
 
   const offers: OfferCard[] = [
     {
@@ -77,6 +83,22 @@ const OffersSection = () => {
       price: "Price on request",
       exclusive: true,
     },
+    {
+      title: zellijConfig?.title?.[lang] || "Zellij Workshop",
+      image: fallbackImages.zellij,
+      link: "/workshop/zellij",
+      unavailable: zellijConfig ? !zellijConfig.is_available : true,
+      promoLabel: zellijConfig?.promo_enabled ? zellijConfig.promo_label : undefined,
+      price: zellijConfig?.promo_enabled && zellijConfig?.promo_price ? zellijConfig.promo_price : (zellijConfig?.price || "Coming soon"),
+    },
+    {
+      title: carpetsConfig?.title?.[lang] || "Carpets Workshop",
+      image: fallbackImages.carpets,
+      link: "/workshop/carpets",
+      unavailable: carpetsConfig ? !carpetsConfig.is_available : true,
+      promoLabel: carpetsConfig?.promo_enabled ? carpetsConfig.promo_label : undefined,
+      price: carpetsConfig?.promo_enabled && carpetsConfig?.promo_price ? carpetsConfig.promo_price : (carpetsConfig?.price || "Coming soon"),
+    },
   ];
 
   return (
@@ -87,7 +109,7 @@ const OffersSection = () => {
           <div className="w-8 h-px bg-cta mx-auto mt-4" />
         </div>
 
-        <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory md:grid md:grid-cols-4 md:overflow-visible md:pb-0 md:gap-5">
+        <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory md:grid md:grid-cols-3 lg:grid-cols-6 md:overflow-visible md:pb-0 md:gap-5">
           {offers.map((offer, index) => (
             <div
               key={offer.title}
@@ -98,7 +120,7 @@ const OffersSection = () => {
               )}
               style={{ transitionDelay: `${(index + 1) * 150}ms` }}
             >
-              <Link to={offer.link} className="group relative block">
+              <div className="group relative block">
                 <div className="aspect-[4/3] overflow-hidden relative">
                   <img
                     src={offer.image}
@@ -108,8 +130,8 @@ const OffersSection = () => {
                   />
                   {offer.unavailable && (
                     <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="rotate-[-25deg] border-4 border-destructive/80 rounded-lg px-4 py-2 bg-background/10 backdrop-blur-[2px]">
-                        <span className="text-destructive font-black text-lg md:text-xl tracking-[0.2em] uppercase drop-shadow-lg">Coming Soon</span>
+                      <div className="rotate-[-25deg] border-4 border-cta/85 rounded-lg px-4 py-2 bg-background/80 backdrop-blur-[2px] shadow-lg shadow-cta/10">
+                        <span className="text-terracotta font-black text-lg md:text-xl tracking-[0.2em] uppercase drop-shadow-sm">Coming Soon</span>
                       </div>
                     </div>
                   )}
@@ -124,7 +146,7 @@ const OffersSection = () => {
                     {offer.promoLabel}
                   </span>
                 )}
-              </Link>
+              </div>
 
               <div className="p-4 mt-auto space-y-4">
                 <div className="space-y-1">
@@ -132,15 +154,25 @@ const OffersSection = () => {
                   <h3 className="text-base md:text-lg font-semibold leading-tight">{offer.title}</h3>
                   <p className={cn("text-sm font-medium", offer.exclusive ? "text-background/75" : "text-muted-foreground")}>{offer.price}</p>
                 </div>
-                <Link
-                  to={offer.link}
+                {offer.unavailable ? (
+                  <button
+                    type="button"
+                    disabled
+                    className="flex w-full items-center justify-center text-sm font-semibold py-2.5 rounded-full bg-muted text-muted-foreground cursor-not-allowed"
+                  >
+                    Coming Soon
+                  </button>
+                ) : (
+                  <Link
+                    to={offer.link}
                   className={cn(
                     "flex w-full items-center justify-center gap-2 text-sm font-semibold py-2.5 rounded-full transition-all duration-300 active:scale-95 shadow-md",
                     offer.exclusive ? "bg-background text-foreground hover:bg-background/90" : "bg-cta text-primary-foreground hover:bg-cta-hover shadow-cta/20"
                   )}
-                >
-                  {offer.exclusive ? t("offers.learn_more") : t("offers.book_now")}
-                </Link>
+                  >
+                    {offer.exclusive ? t("offers.learn_more") : t("offers.book_now")}
+                  </Link>
+                )}
               </div>
             </div>
           ))}
