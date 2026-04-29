@@ -1,16 +1,14 @@
 import { Link } from "react-router-dom";
-import { ArrowRight, ShoppingBag, Star, Clock, Infinity, Package, Coffee, Heart, Users, Ban } from "lucide-react";
+import { ArrowRight, ShoppingBag } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useScrollAnimation } from "@/hooks/use-scroll-animation";
 import { cn } from "@/lib/utils";
-import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { useSiteImages } from "@/hooks/use-site-images";
 import { useWorkshopConfigs } from "@/hooks/use-workshop-config";
-import workshop2 from "@/assets/workshop-2.jpg";
 import handbuildingHero from "@/assets/handbuilding-hero.jpg";
 import embrHero from "@/assets/embr-hero.jpg";
 import potteryGirls from "@/assets/pottery-girls.jpg";
+import tetouanCity from "@/assets/tetouan-city.jpg";
 
 // Fallback images per workshop type
 const fallbackImages: Record<string, string> = {
@@ -22,46 +20,9 @@ const fallbackImages: Record<string, string> = {
 const OffersSection = () => {
   const { t, language } = useLanguage();
   const { ref, isVisible } = useScrollAnimation(0.1);
-  const [productImages, setProductImages] = useState<Record<string, string>>({});
   const siteImages = useSiteImages(["image_workshop_handbuilding", "image_workshop_pottery", "image_workshop_embroidery"]);
   const { configs } = useWorkshopConfigs();
   const lang = language as "en" | "ar" | "es" | "fr";
-
-  // Fetch first product image per relevant category from the DB
-  useEffect(() => {
-    const fetchImages = async () => {
-      const { data } = await supabase
-        .from("products")
-        .select("category, images")
-        .in("category", ["terraria", "artisan", "traveler"])
-        .order("created_at", { ascending: true });
-
-      if (!data) return;
-
-      const map: Record<string, string> = {};
-      for (const prod of data) {
-        const raw = prod.images;
-        const imgs: string[] = Array.isArray(raw)
-          ? raw.map(String)
-          : JSON.parse(typeof raw === "string" ? raw : "[]");
-        const url = imgs.find((u) => typeof u === "string" && u.startsWith("http"));
-        if (url && !map[prod.category]) {
-          map[prod.category] = url;
-        }
-      }
-      setProductImages(map);
-    };
-    fetchImages();
-  }, []);
-
-  const details = [
-    { icon: Clock, label: t("details.3h") },
-    { icon: Infinity, label: t("details.unlimited") },
-    { icon: Package, label: t("details.materials") },
-    { icon: Coffee, label: t("details.drink") },
-    { icon: Heart, label: t("details.beginner") },
-    { icon: Users, label: t("details.group") },
-  ];
 
   const handConfig = configs.handbuilding;
   const potteryConfig = configs.pottery;
@@ -75,6 +36,7 @@ const OffersSection = () => {
       popular: handConfig?.is_popular ?? true,
       unavailable: handConfig ? !handConfig.is_available : false,
       promoLabel: handConfig?.promo_enabled ? handConfig.promo_label : undefined,
+      price: handConfig?.promo_enabled && handConfig?.promo_price ? handConfig.promo_price : (handConfig?.price || t("hand.price")),
     },
     {
       title: potteryConfig?.title?.[lang] || t("offers.pottery"),
@@ -83,6 +45,7 @@ const OffersSection = () => {
       popular: potteryConfig?.is_popular || false,
       unavailable: potteryConfig ? !potteryConfig.is_available : false,
       promoLabel: potteryConfig?.promo_enabled ? potteryConfig.promo_label : undefined,
+      price: potteryConfig?.promo_enabled && potteryConfig?.promo_price ? potteryConfig.promo_price : (potteryConfig?.price || t("pottery.price")),
     },
     {
       title: embrConfig?.title?.[lang] || t("offers.embroidery"),
@@ -90,6 +53,17 @@ const OffersSection = () => {
       link: "/workshop/embroidery",
       unavailable: embrConfig ? !embrConfig.is_available : true,
       promoLabel: embrConfig?.promo_enabled ? embrConfig.promo_label : undefined,
+      price: embrConfig?.promo_enabled && embrConfig?.promo_price ? embrConfig.promo_price : (embrConfig?.price || t("embr.price")),
+    },
+    {
+      title: "EXODAYA",
+      subtitle: "Art & Culture Residency",
+      image: tetouanCity,
+      link: "/exodaya",
+      unavailable: false,
+      promoLabel: "Exclusive",
+      price: "Price on request",
+      exclusive: true,
     },
   ];
 
@@ -101,12 +75,13 @@ const OffersSection = () => {
           <div className="w-8 h-px bg-cta mx-auto mt-4" />
         </div>
 
-        <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory md:grid md:grid-cols-3 md:overflow-visible md:pb-0 md:gap-5">
+        <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory md:grid md:grid-cols-4 md:overflow-visible md:pb-0 md:gap-5">
           {offers.map((offer, index) => (
             <div
               key={offer.title}
               className={cn(
-                "flex-shrink-0 w-[68vw] sm:w-[50vw] md:w-auto snap-start rounded-2xl overflow-hidden bg-card border border-border/40 hover:shadow-2xl hover:-translate-y-1 transition-all duration-500 flex flex-col",
+                "flex-shrink-0 w-[68vw] sm:w-[46vw] md:w-auto snap-start overflow-hidden border border-border/40 hover:shadow-xl hover:-translate-y-1 transition-all duration-500 flex flex-col",
+                offer.exclusive ? "rounded-2xl bg-foreground text-background" : "rounded-2xl bg-card text-card-foreground",
                 isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
               )}
               style={{ transitionDelay: `${(index + 1) * 150}ms` }}
@@ -116,7 +91,7 @@ const OffersSection = () => {
                   <img
                     src={offer.image}
                     alt={offer.title}
-                    className={cn("w-full h-full object-contain transition-transform duration-700", offer.unavailable ? "grayscale-[40%]" : "group-hover:scale-110")}
+                    className={cn("w-full h-full transition-transform duration-700", offer.exclusive ? "object-cover opacity-85" : "object-contain", offer.unavailable ? "grayscale-[40%]" : "group-hover:scale-105")}
                     loading="lazy"
                   />
                   {offer.unavailable && (
@@ -128,44 +103,32 @@ const OffersSection = () => {
                   )}
                 </div>
                 {offer.popular && (
-                  <span className="absolute top-3 start-3 z-10 bg-cta text-primary-foreground text-xs font-semibold px-3 py-1 rounded-full shadow-md flex items-center gap-1">
-                    <Star className="w-3 h-3 fill-current" />
+                  <span className="absolute top-3 start-3 z-10 bg-cta text-primary-foreground text-xs font-semibold px-3 py-1 rounded-full shadow-md">
                     {t("offers.popular")}
                   </span>
                 )}
                 {offer.promoLabel && (
-                  <span className="absolute top-3 end-3 z-10 bg-destructive text-destructive-foreground text-xs font-bold px-3 py-1 rounded-full shadow-md">
+                  <span className={cn("absolute top-3 end-3 z-10 text-xs font-bold px-3 py-1 rounded-full shadow-md", offer.exclusive ? "bg-background text-foreground" : "bg-destructive text-destructive-foreground")}>
                     {offer.promoLabel}
                   </span>
                 )}
-                <div className="bg-foreground/90 backdrop-blur-sm px-4 py-3.5 flex items-center justify-between gap-2">
-                  <h3 className="text-background text-sm md:text-base font-medium leading-tight truncate">
-                    {offer.title}
-                  </h3>
-                  <span className="flex-shrink-0 inline-flex items-center gap-1 text-xs font-semibold text-cta group-hover:gap-2 transition-all duration-300">
-                    {t("offers.learn_more")}
-                    <ArrowRight size={14} className="group-hover:translate-x-0.5 transition-transform" />
-                  </span>
-                </div>
               </Link>
 
-              <div className="grid grid-cols-3 gap-px bg-border/20 p-3">
-                {details.map((detail, i) => (
-                  <div key={i} className="flex flex-col items-center gap-1.5 py-2 px-1">
-                    <div className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-cta/10 flex items-center justify-center">
-                      <detail.icon className="w-3.5 h-3.5 md:w-4 md:h-4 text-cta" />
-                    </div>
-                    <span className="text-[9px] md:text-xs text-foreground/60 text-center leading-tight font-medium">{detail.label}</span>
-                  </div>
-                ))}
-              </div>
-
-              <div className="px-3 pb-3 pt-1 mt-auto">
+              <div className="p-4 mt-auto space-y-4">
+                <div className="space-y-1">
+                  {offer.subtitle && <p className="text-xs uppercase tracking-[0.18em] opacity-70">{offer.subtitle}</p>}
+                  <h3 className="text-base md:text-lg font-semibold leading-tight">{offer.title}</h3>
+                  <p className={cn("text-sm font-medium", offer.exclusive ? "text-background/75" : "text-muted-foreground")}>{offer.price}</p>
+                </div>
                 <Link
                   to={offer.link}
-                  className="block w-full text-center bg-cta text-primary-foreground text-sm font-semibold py-2.5 rounded-full hover:bg-cta-hover transition-all duration-300 active:scale-95 shadow-md shadow-cta/20"
+                  className={cn(
+                    "flex w-full items-center justify-center gap-2 text-sm font-semibold py-2.5 rounded-full transition-all duration-300 active:scale-95 shadow-md",
+                    offer.exclusive ? "bg-background text-foreground hover:bg-background/90" : "bg-cta text-primary-foreground hover:bg-cta-hover shadow-cta/20"
+                  )}
                 >
-                  {t("offers.book_now")}
+                  {offer.exclusive ? t("offers.learn_more") : t("offers.book_now")}
+                  <ArrowRight size={14} />
                 </Link>
               </div>
             </div>
