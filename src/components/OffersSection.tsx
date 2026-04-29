@@ -140,7 +140,6 @@ const OffersSection = () => {
                   )}
                 >
                   {offer.exclusive ? t("offers.learn_more") : t("offers.book_now")}
-                  <ArrowRight size={14} />
                 </Link>
               </div>
             </div>
