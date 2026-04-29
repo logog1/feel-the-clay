@@ -24,9 +24,9 @@ export interface WorkshopConfig {
   promo_price: string;
 }
 
-export type WorkshopId = "pottery" | "handbuilding" | "embroidery";
+export type WorkshopId = "pottery" | "handbuilding" | "embroidery" | "zellij" | "carpets";
 
-const WORKSHOP_KEYS: WorkshopId[] = ["pottery", "handbuilding", "embroidery"];
+const WORKSHOP_KEYS: WorkshopId[] = ["pottery", "handbuilding", "embroidery", "zellij", "carpets"];
 
 export function emptyMultiLang(): MultiLang {
   return { en: "", ar: "", es: "", fr: "" };
@@ -37,6 +37,8 @@ export function useWorkshopConfigs() {
     pottery: null,
     handbuilding: null,
     embroidery: null,
+    zellij: null,
+    carpets: null,
   });
   const [loading, setLoading] = useState(true);
 
@@ -52,6 +54,8 @@ export function useWorkshopConfigs() {
       pottery: null,
       handbuilding: null,
       embroidery: null,
+      zellij: null,
+      carpets: null,
     };
 
     if (data) {
