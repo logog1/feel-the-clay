@@ -17,6 +17,18 @@ const fallbackImages: Record<string, string> = {
   embroidery: embrHero,
 };
 
+type OfferCard = {
+  title: string;
+  subtitle?: string;
+  image: string;
+  link: string;
+  popular?: boolean;
+  unavailable: boolean;
+  promoLabel?: string;
+  price: string;
+  exclusive?: boolean;
+};
+
 const OffersSection = () => {
   const { t, language } = useLanguage();
   const { ref, isVisible } = useScrollAnimation(0.1);
@@ -28,7 +40,7 @@ const OffersSection = () => {
   const potteryConfig = configs.pottery;
   const embrConfig = configs.embroidery;
 
-  const offers = [
+  const offers: OfferCard[] = [
     {
       title: handConfig?.title?.[lang] || t("offers.handbuilding"),
       image: siteImages["image_workshop_handbuilding"] || fallbackImages.handbuilding,
