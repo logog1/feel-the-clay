@@ -354,7 +354,7 @@ export function WorkshopManagementSection() {
                         {config.is_available ? <ToggleRight size={24} className="text-emerald-500" /> : <ToggleLeft size={24} className="text-muted-foreground" />}
                       </button>
                       <span className="text-sm text-foreground font-medium">
-                        {config.is_available ? "Available" : <><Ban size={14} className="inline text-destructive mr-1" /> Coming Soon</>}
+                        {config.is_available ? "Available" : <><Ban size={14} className="inline text-cta mr-1" /> Coming Soon</>}
                       </span>
                     </div>
                   </div>
