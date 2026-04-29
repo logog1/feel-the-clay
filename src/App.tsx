@@ -27,6 +27,7 @@ import AboutUs from "./pages/AboutUs";
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
 import Unsubscribe from "./pages/Unsubscribe";
+import Exodaya from "./pages/Exodaya";
 
 const queryClient = new QueryClient();
 
@@ -56,6 +57,7 @@ const App = () => {
               <Route path="/admin" element={<AdminDashboard />} />
               <Route path="/admin/pro" element={<ProDashboard />} />
               <Route path="/about" element={<AboutUs />} />
+              <Route path="/exodaya" element={<Exodaya />} />
               <Route path="/blog" element={<Blog />} />
               <Route path="/blog/:slug" element={<BlogPost />} />
               <Route path="/privacy" element={<PrivacyPolicy />} />
