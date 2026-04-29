@@ -28,6 +28,8 @@ import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
 import Unsubscribe from "./pages/Unsubscribe";
 import Exodaya from "./pages/Exodaya";
+import ZellijWorkshop from "./pages/ZellijWorkshop";
+import CarpetsWorkshop from "./pages/CarpetsWorkshop";
 
 const queryClient = new QueryClient();
 
@@ -51,6 +53,8 @@ const App = () => {
               <Route path="/workshop/pottery-experience" element={<PotteryExperience />} />
               <Route path="/workshop/handbuilding" element={<HandbuildingWorkshop />} />
               <Route path="/workshop/embroidery" element={<EmbroideryWorkshop />} />
+              <Route path="/workshop/zellij" element={<ZellijWorkshop />} />
+              <Route path="/workshop/carpets" element={<CarpetsWorkshop />} />
               <Route path="/store" element={<Store />} />
               <Route path="/cart" element={<Cart />} />
               <Route path="/admin/login" element={<AdminLogin />} />
