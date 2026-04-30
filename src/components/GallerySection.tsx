@@ -67,16 +67,21 @@ const GalleryRow = ({ images, animationClass, imageWidth }: { images: ImageItem[
   const handleMouseMove = (e: React.MouseEvent) => { if (!isDragging.current || !containerRef.current) return; e.preventDefault(); containerRef.current.scrollLeft = scrollLeft.current + (startX.current - e.pageX) * 1.5; };
   const handleMouseUp = () => { isDragging.current = false; resumeAnimation(); };
 
-  const doubled = [...images, ...images];
+  const renderGroup = (keyPrefix: string, ariaHidden: boolean) => (
+    <div className="flex gap-3 md:gap-4 flex-shrink-0" aria-hidden={ariaHidden}>
+      {images.map((image, index) => (
+        <div key={`${keyPrefix}-${index}`} className={`flex-shrink-0 ${imageWidth} aspect-[4/3] overflow-hidden rounded-xl bg-secondary/20`}>
+          <img src={image.src} alt={image.alt} className="w-full h-full object-cover hover:scale-105 transition-transform duration-500 pointer-events-none" loading="lazy" draggable={false} />
+        </div>
+      ))}
+    </div>
+  );
 
   return (
     <div ref={containerRef} className="overflow-hidden cursor-grab active:cursor-grabbing" onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd} onMouseDown={handleMouseDown} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp}>
       <div ref={rowRef} className={`flex gap-3 md:gap-4 w-max ${animationClass}`}>
-        {doubled.map((image, index) => (
-          <div key={index} className={`flex-shrink-0 ${imageWidth} aspect-[4/3] overflow-hidden rounded-xl bg-secondary/20`}>
-            <img src={image.src} alt={image.alt} className="w-full h-full object-cover hover:scale-105 transition-transform duration-500 pointer-events-none" loading="lazy" draggable={false} />
-          </div>
-        ))}
+        {renderGroup("a", false)}
+        {renderGroup("b", true)}
       </div>
     </div>
   );
