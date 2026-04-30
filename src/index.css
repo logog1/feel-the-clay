@@ -272,24 +272,38 @@
 
   @keyframes scrollLeft {
     0% { transform: translateX(0); }
-    100% { transform: translateX(-50%); }
+    100% { transform: translateX(calc(-50% - var(--gallery-gap, 0.75rem) / 2)); }
   }
 
   @keyframes scrollRight {
-    0% { transform: translateX(-50%); }
+    0% { transform: translateX(calc(-50% - var(--gallery-gap, 0.75rem) / 2)); }
     100% { transform: translateX(0); }
   }
 
   .animate-scroll-left {
-    animation: scrollLeft 18s linear infinite;
+    --gallery-gap: 0.75rem;
+    animation: scrollLeft 40s linear infinite;
+    will-change: transform;
   }
 
   .animate-scroll-right {
-    animation: scrollRight 15s linear infinite;
+    --gallery-gap: 0.75rem;
+    animation: scrollRight 45s linear infinite;
+    will-change: transform;
   }
 
   .animate-scroll-left-slow {
-    animation: scrollLeft 22s linear infinite;
+    --gallery-gap: 0.75rem;
+    animation: scrollLeft 55s linear infinite;
+    will-change: transform;
+  }
+
+  @media (min-width: 768px) {
+    .animate-scroll-left,
+    .animate-scroll-right,
+    .animate-scroll-left-slow {
+      --gallery-gap: 1rem;
+    }
   }
 
   .scrollbar-hide {
