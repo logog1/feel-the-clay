@@ -72,8 +72,13 @@ function assertUnique(label: string, tags: ReturnType<typeof collectTags>) {
 }
 
 async function renderHelmet(node: React.ReactElement): Promise<string> {
-  render(createElement(HelmetProvider, null, node));
-  // Helmet flushes to document.head asynchronously.
+  currentContainer = document.createElement("div");
+  document.body.appendChild(currentContainer);
+  currentRoot = createRoot(currentContainer);
+  await act(async () => {
+    currentRoot!.render(createElement(HelmetProvider, null, node));
+  });
+  // Helmet flushes to document.head on a microtask.
   await new Promise((r) => setTimeout(r, 0));
   return document.head.innerHTML;
 }
