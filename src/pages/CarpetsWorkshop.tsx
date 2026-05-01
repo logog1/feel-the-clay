@@ -60,6 +60,7 @@ const CarpetsWorkshop = () => {
         title="Carpets Workshop in Tétouan"
         description="Coming soon: a Moroccan carpets workshop in Tétouan focused on weaving, Amazigh motifs, textures, and artisan stories."
         path="/workshop/carpets"
+        jsonLd={jsonLd}
       />
       <WorkshopPageLayout workshop={workshop} currentPath="/workshop/carpets" />
     </>
