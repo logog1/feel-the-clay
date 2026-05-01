@@ -60,6 +60,7 @@ const ZellijWorkshop = () => {
         title="Zellij Workshop in Tétouan"
         description="Coming soon: a Moroccan zellij workshop in Tétouan focused on pattern, color, geometry, and local craft culture."
         path="/workshop/zellij"
+        jsonLd={jsonLd}
       />
       <WorkshopPageLayout workshop={workshop} currentPath="/workshop/zellij" />
     </>
