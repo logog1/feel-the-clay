@@ -35,6 +35,10 @@ const WorkshopPageLayout = ({ workshop, currentPath }: { workshop: Workshop; cur
   const { t } = useLanguage();
   const navigate = useNavigate();
   const [showAllPhotos, setShowAllPhotos] = useState(false);
+  const whatsappLink = useWhatsAppLink();
+
+  // Derive a slug from the route (e.g. "/workshop/pottery-experience" -> "pottery-experience")
+  const slug = (currentPath || "").replace(/^\/workshop\//, "").replace(/^\//, "") || "default";
 
   const handleBooking = () => {
     navigate("/");
@@ -42,6 +46,12 @@ const WorkshopPageLayout = ({ workshop, currentPath }: { workshop: Workshop; cur
       document.getElementById("booking")?.scrollIntoView({ behavior: "smooth" });
     }, 300);
   };
+
+  const whatsappHref = buildWhatsAppUrl(
+    whatsappLink,
+    `Hi! I'd like to book the ${workshop.title} workshop. Could you share availability and details?`,
+  );
+
   const previewImages = workshop.images.slice(0, 2);
   const remainingImages = workshop.images.slice(2);
 
