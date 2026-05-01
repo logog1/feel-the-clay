@@ -3,6 +3,7 @@ import { ArrowRight, ShoppingBag } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useScrollAnimation } from "@/hooks/use-scroll-animation";
 import { cn } from "@/lib/utils";
+import BookOnWhatsApp from "@/components/BookOnWhatsApp";
 import { useSiteImages } from "@/hooks/use-site-images";
 import { useWorkshopConfigs } from "@/hooks/use-workshop-config";
 import handbuildingHero from "@/assets/handbuilding-hero.jpg";
@@ -163,15 +164,25 @@ const OffersSection = () => {
                     Coming Soon
                   </button>
                 ) : (
-                  <Link
-                    to={offer.link}
-                  className={cn(
-                    "flex w-full items-center justify-center gap-2 text-sm font-semibold py-2.5 rounded-full transition-all duration-300 active:scale-95 shadow-md",
-                    offer.exclusive ? "bg-background text-foreground hover:bg-background/90" : "bg-cta text-primary-foreground hover:bg-cta-hover shadow-cta/20"
-                  )}
-                  >
-                    {offer.exclusive ? t("offers.learn_more") : t("offers.book_now")}
-                  </Link>
+                  <div className="space-y-2">
+                    <Link
+                      to={offer.link}
+                      className={cn(
+                        "flex w-full items-center justify-center gap-2 text-sm font-semibold py-2.5 rounded-full transition-all duration-300 active:scale-95 shadow-md",
+                        offer.exclusive ? "bg-background text-foreground hover:bg-background/90" : "bg-cta text-primary-foreground hover:bg-cta-hover shadow-cta/20"
+                      )}
+                    >
+                      {offer.exclusive ? t("offers.learn_more") : t("offers.book_now")}
+                    </Link>
+                    {!offer.exclusive && (
+                      <BookOnWhatsApp
+                        workshopName={offer.title}
+                        variant="ghost"
+                        fullWidth
+                        label={t("offers.whatsapp_book")}
+                      />
+                    )}
+                  </div>
                 )}
               </div>
             </div>

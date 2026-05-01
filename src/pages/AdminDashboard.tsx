@@ -108,6 +108,11 @@ const AdminDashboard = () => {
   const [publicMapUrl, setPublicMapUrl] = useState("");
   const [savingContacts, setSavingContacts] = useState(false);
   const [contactsSaved, setContactsSaved] = useState(false);
+  const [bookingEmbeds, setBookingEmbeds] = useState<Record<string, string>>({
+    default: "", "pottery-experience": "", handbuilding: "", embroidery: "",
+  });
+  const [savingEmbeds, setSavingEmbeds] = useState(false);
+  const [embedsSaved, setEmbedsSaved] = useState(false);
 
   // User management
   const [managedUsers, setManagedUsers] = useState<ManagedUser[]>([]);
@@ -148,7 +153,10 @@ const AdminDashboard = () => {
     setSectionDrafts(drafts);
 
     // Load contacts
-    const { data: settingsData } = await supabase.from("site_settings").select("key, value").in("key", ["notification_email", "whatsapp_numbers", "public_email", "public_whatsapp", "public_map_url"]);
+    const { data: settingsData } = await supabase.from("site_settings").select("key, value").in("key", [
+      "notification_email", "whatsapp_numbers", "public_email", "public_whatsapp", "public_map_url",
+      "booking_embed_default", "booking_embed_pottery-experience", "booking_embed_handbuilding", "booking_embed_embroidery",
+    ]);
     if (settingsData) {
       const map: Record<string, string> = {};
       settingsData.forEach((r: any) => { map[r.key] = r.value; });
@@ -157,6 +165,12 @@ const AdminDashboard = () => {
       setPublicEmail(map["public_email"] || "");
       setPublicWhatsApp(map["public_whatsapp"] || "");
       setPublicMapUrl(map["public_map_url"] || "");
+      setBookingEmbeds({
+        default: map["booking_embed_default"] || "",
+        "pottery-experience": map["booking_embed_pottery-experience"] || "",
+        handbuilding: map["booking_embed_handbuilding"] || "",
+        embroidery: map["booking_embed_embroidery"] || "",
+      });
     }
 
     // Load users
@@ -437,6 +451,24 @@ const AdminDashboard = () => {
     setSavingContacts(false);
     setContactsSaved(true);
     setTimeout(() => setContactsSaved(false), 3000);
+  };
+
+  const saveBookingEmbeds = async () => {
+    setSavingEmbeds(true);
+    setEmbedsSaved(false);
+    const now = new Date().toISOString();
+    await Promise.all(
+      Object.entries(bookingEmbeds).map(([slug, value]) =>
+        supabase.from("site_settings").upsert({
+          key: `booking_embed_${slug}`,
+          value: (value || "").trim(),
+          updated_at: now,
+        }),
+      ),
+    );
+    setSavingEmbeds(false);
+    setEmbedsSaved(true);
+    setTimeout(() => setEmbedsSaved(false), 3000);
   };
 
   if (!authed) return null;

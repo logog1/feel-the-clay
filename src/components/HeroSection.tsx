@@ -1,9 +1,10 @@
 import heroBg from "@/assets/hero-bg.jpg";
 import tetouanCity from "@/assets/tetouan-city.jpg";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Calendar } from "lucide-react";
 import { useSiteImages } from "@/hooks/use-site-images";
 import { useParallax } from "@/hooks/use-parallax";
+import BookOnWhatsApp from "@/components/BookOnWhatsApp";
 
 const HeroSection = () => {
   const { t } = useLanguage();
@@ -38,6 +39,21 @@ const HeroSection = () => {
           <p className="text-base md:text-xl text-foreground/80 font-light max-w-sm drop-shadow-sm leading-relaxed">
             {t("hero.subtitle")}
           </p>
+
+          {/* Primary CTAs — visible above the fold so visitors always have a way to book */}
+          <div className="flex flex-wrap items-center gap-3 pt-2">
+            <a
+              href="#offers"
+              onClick={(e) => {
+                e.preventDefault();
+                document.querySelector("#offers")?.scrollIntoView({ behavior: "smooth" });
+              }}
+              className="inline-flex items-center justify-center gap-2 bg-cta text-primary-foreground hover:bg-cta-hover font-semibold rounded-full px-5 py-3 text-sm shadow-lg shadow-cta/25 transition-all duration-300 active:scale-95"
+            >
+              <Calendar size={16} /> {t("hero.book_now")}
+            </a>
+            <BookOnWhatsApp variant="primary" label={t("hero.book_whatsapp")} />
+          </div>
         </div>
 
         {/* Tetouan city highlight */}
