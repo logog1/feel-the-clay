@@ -3,6 +3,7 @@ import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
 import { VitePWA } from "vite-plugin-pwa";
+import PrerenderSPAPlugin from "vite-plugin-prerender";
 
 export default defineConfig(({ mode }) => ({
   server: {
@@ -55,6 +56,37 @@ export default defineConfig(({ mode }) => ({
           { src: "/logo.png", sizes: "192x192", type: "image/png" },
           { src: "/logo.png", sizes: "512x512", type: "image/png", purpose: "any maskable" },
         ],
+      },
+    }),
+    mode === "production" && PrerenderSPAPlugin({
+      staticDir: path.resolve(__dirname, "dist"),
+      routes: [
+        "/",
+        "/about",
+        "/store",
+        "/blog",
+        "/exodaya",
+        "/workshop/pottery-experience",
+        "/workshop/handbuilding",
+        "/workshop/embroidery",
+        "/workshop/zellij",
+        "/workshop/carpets",
+        "/privacy",
+        "/legal",
+      ],
+      postProcess(renderedRoute: any) {
+        // Strip injected admin/cart/auth state, keep meta + content for crawlers
+        renderedRoute.html = renderedRoute.html
+          .replace(/<script (.*?)>/g, '<script $1 defer>')
+          .replace(/<noscript>(.*?)<\/noscript>/g, '');
+        return renderedRoute;
+      },
+      renderer: '@prerenderer/renderer-puppeteer',
+      rendererOptions: {
+        renderAfterDocumentEvent: 'render-event',
+        headless: 'new',
+        maxConcurrentRoutes: 4,
+        timeout: 30000,
       },
     }),
   ].filter(Boolean),
