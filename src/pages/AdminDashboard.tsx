@@ -453,6 +453,24 @@ const AdminDashboard = () => {
     setTimeout(() => setContactsSaved(false), 3000);
   };
 
+  const saveBookingEmbeds = async () => {
+    setSavingEmbeds(true);
+    setEmbedsSaved(false);
+    const now = new Date().toISOString();
+    await Promise.all(
+      Object.entries(bookingEmbeds).map(([slug, value]) =>
+        supabase.from("site_settings").upsert({
+          key: `booking_embed_${slug}`,
+          value: (value || "").trim(),
+          updated_at: now,
+        }),
+      ),
+    );
+    setSavingEmbeds(false);
+    setEmbedsSaved(true);
+    setTimeout(() => setEmbedsSaved(false), 3000);
+  };
+
   if (!authed) return null;
 
   return (
