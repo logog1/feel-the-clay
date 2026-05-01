@@ -6,7 +6,7 @@
  * `dist/` (when a production build exists) and applies the same checks.
  */
 import { describe, it, expect, afterEach } from "vitest";
-import { render, cleanup, waitFor } from "@testing-library/react";
+import { render, cleanup } from "@testing-library/react";
 import { HelmetProvider } from "react-helmet-async";
 import { createElement } from "react";
 import { readFileSync, existsSync, readdirSync, statSync } from "node:fs";
