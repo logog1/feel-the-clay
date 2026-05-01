@@ -44,6 +44,7 @@ Deno.serve(async (req) => {
   const supabaseUrl = Deno.env.get('SUPABASE_URL')
   const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')
   const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
+  const supabasePublishableKey = Deno.env.get('SUPABASE_PUBLISHABLE_KEY')
 
   if (!supabaseUrl || !supabaseAnonKey || !supabaseServiceKey) {
     console.error('Missing required environment variables')
@@ -59,9 +60,13 @@ Deno.serve(async (req) => {
   const authHeader = req.headers.get('Authorization')
   const bearerToken = authHeader?.replace(/^Bearer\s+/i, '')
 
-  // Public callers use the anon key as their bearer token. Signed-in dashboard
-  // callers send a user JWT, which we verify explicitly with auth.getClaims().
-  if (authHeader?.startsWith('Bearer ') && bearerToken && bearerToken !== supabaseAnonKey) {
+  const publicBearerTokens = new Set(
+    [supabaseAnonKey, supabasePublishableKey].filter(Boolean)
+  )
+
+  // Public callers use the anon/publishable key as their bearer token. Signed-in
+  // dashboard callers send a user JWT, which we verify explicitly with auth.getClaims().
+  if (authHeader?.startsWith('Bearer ') && bearerToken && !publicBearerTokens.has(bearerToken)) {
     const authClient = createClient(supabaseUrl, supabaseAnonKey, {
       global: { headers: { Authorization: authHeader } },
     })
