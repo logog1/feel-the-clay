@@ -3,7 +3,7 @@ import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
 import { VitePWA } from "vite-plugin-pwa";
-import PrerenderSPAPlugin from "vite-plugin-prerender";
+import Prerender from "@prerenderer/rollup-plugin";
 
 export default defineConfig(({ mode }) => ({
   server: {
@@ -58,8 +58,7 @@ export default defineConfig(({ mode }) => ({
         ],
       },
     }),
-    mode === "production" && PrerenderSPAPlugin({
-      staticDir: path.resolve(__dirname, "dist"),
+    mode === "production" && Prerender({
       routes: [
         "/",
         "/about",
@@ -74,19 +73,12 @@ export default defineConfig(({ mode }) => ({
         "/privacy",
         "/legal",
       ],
-      postProcess(renderedRoute: any) {
-        // Strip injected admin/cart/auth state, keep meta + content for crawlers
-        renderedRoute.html = renderedRoute.html
-          .replace(/<script (.*?)>/g, '<script $1 defer>')
-          .replace(/<noscript>(.*?)<\/noscript>/g, '');
-        return renderedRoute;
-      },
-      renderer: '@prerenderer/renderer-puppeteer',
+      renderer: "@prerenderer/renderer-puppeteer",
       rendererOptions: {
-        renderAfterDocumentEvent: 'render-event',
-        headless: 'new',
+        renderAfterDocumentEvent: "render-event",
         maxConcurrentRoutes: 4,
         timeout: 30000,
+        headless: true,
       },
     }),
   ].filter(Boolean),
