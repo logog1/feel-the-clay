@@ -5,13 +5,15 @@
  * Open Graph / Twitter meta tags. Also scans any prerendered HTML files in
  * `dist/` (when a production build exists) and applies the same checks.
  */
-import { describe, it, expect } from "vitest";
-import { renderToStaticMarkup } from "react-dom/server";
+import { describe, it, expect, afterEach } from "vitest";
+import { render, cleanup, waitFor } from "@testing-library/react";
 import { HelmetProvider } from "react-helmet-async";
 import { createElement } from "react";
 import { readFileSync, existsSync, readdirSync, statSync } from "node:fs";
 import { join, resolve } from "node:path";
 import SEOHead from "@/components/SEOHead";
+
+afterEach(() => cleanup());
 
 const OG_KEYS = [
   "og:title",
