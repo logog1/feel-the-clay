@@ -24,7 +24,7 @@ const AboutUs = () => {
     <main className="min-h-screen">
       <SEOHead
         title="About Us"
-        description="Discover the story behind Terraria — a social initiative bridging tourism with tradition in Tétouan, Morocco. Empowering local artisans through craft workshops."
+        description="Discover the story behind Terraria, a social initiative bridging tourism with tradition in Tétouan, Morocco. Empowering local artisans through craft workshops."
         path="/about"
         jsonLd={jsonLd}
       />

@@ -90,7 +90,7 @@ const HandbuildingWorkshop = () => {
   return (
     <>
       <SEOHead
-        title="Handbuilding Pottery Workshop in Tétouan"
+        title="Handbuilding Pottery Workshop, Tétouan"
         description="Clay handbuilding workshop for all levels in Tétouan, Morocco. Shape pottery by hand with traditional techniques. All materials and tea included."
         path="/workshop/handbuilding"
         jsonLd={jsonLd}

@@ -82,7 +82,7 @@ const EmbroideryWorkshop = () => {
   return (
     <>
       <SEOHead
-        title="Traditional Embroidery Workshop in Tétouan"
+        title="Moroccan Embroidery Workshop, Tétouan"
         description="Learn traditional Moroccan embroidery techniques in Tétouan. Hands-on craft workshop with local artisans. All materials included."
         path="/workshop/embroidery"
         jsonLd={jsonLd}

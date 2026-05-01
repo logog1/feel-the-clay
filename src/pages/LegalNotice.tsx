@@ -7,7 +7,7 @@ const LegalNotice = () => {
     <main className="min-h-screen bg-background">
       <SEOHead
         title="Legal Notice"
-        description="Legal notice (mentions légales) for Terraria Workshops."
+        description="Legal notice and mentions légales for Terraria Workshops, the social initiative running pottery and craft workshops in Tétouan, Morocco."
         path="/legal"
       />
       <Header />
