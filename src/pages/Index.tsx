@@ -23,12 +23,45 @@ import { SeasonalThemeOverlay } from "@/components/SeasonalTheme";
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "LocalBusiness",
+  "@id": "https://www.terrariaworkshops.com/#localbusiness",
   name: "Terraria Workshops",
-  description: "Hands-on pottery workshops in Tétouan, Morocco. Wheel throwing, hand-building, all materials included.",
+  description: "Hands-on pottery workshops in Tétouan, Morocco. Wheel throwing, handbuilding, embroidery, zellij and weaving with local artisans. All materials and mint tea included.",
   url: "https://www.terrariaworkshops.com",
-  address: { "@type": "PostalAddress", addressLocality: "Tétouan", addressCountry: "MA" },
-  priceRange: "$$",
-  sameAs: ["https://www.instagram.com/terraria_workshops"],
+  image: "https://www.terrariaworkshops.com/og.jpg",
+  logo: "https://www.terrariaworkshops.com/logo.png",
+  priceRange: "MAD 100–500",
+  currenciesAccepted: "MAD",
+  paymentAccepted: "Cash, Card on site",
+  address: {
+    "@type": "PostalAddress",
+    addressLocality: "Tétouan",
+    addressRegion: "Tanger-Tétouan-Al Hoceïma",
+    addressCountry: "MA",
+  },
+  areaServed: { "@type": "City", name: "Tétouan" },
+  knowsLanguage: ["en", "fr", "es", "ar"],
+  openingHoursSpecification: [{
+    "@type": "OpeningHoursSpecification",
+    dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+    opens: "10:00",
+    closes: "19:00",
+  }],
+  parentOrganization: { "@id": "https://www.terrariaworkshops.com/#organization" },
+  sameAs: [
+    "https://www.instagram.com/terraria_workshops",
+    "https://www.tiktok.com/@terraria_workshops",
+  ],
+  hasOfferCatalog: {
+    "@type": "OfferCatalog",
+    name: "Workshops",
+    itemListElement: [
+      { "@type": "Offer", itemOffered: { "@type": "Course", name: "Pottery Wheel Workshop", url: "https://www.terrariaworkshops.com/workshop/pottery-experience" } },
+      { "@type": "Offer", itemOffered: { "@type": "Course", name: "Handbuilding Pottery Workshop", url: "https://www.terrariaworkshops.com/workshop/handbuilding" } },
+      { "@type": "Offer", itemOffered: { "@type": "Course", name: "Traditional Embroidery Workshop", url: "https://www.terrariaworkshops.com/workshop/embroidery" } },
+      { "@type": "Offer", itemOffered: { "@type": "Course", name: "Zellij Workshop", url: "https://www.terrariaworkshops.com/workshop/zellij" } },
+      { "@type": "Offer", itemOffered: { "@type": "Course", name: "Carpets Workshop", url: "https://www.terrariaworkshops.com/workshop/carpets" } },
+    ],
+  },
 };
 
 /** Angled band separator — goes into a darker warm zone */
