@@ -172,12 +172,17 @@ const WorkshopPageLayout = ({ workshop, currentPath }: { workshop: Workshop; cur
             </div>
           )}
 
+          {/* Optional online booking widget (FareHarbor / Bokun). Renders only if admin set it. */}
+          {!workshop.unavailable && (
+            <BookingEmbed workshopSlug={slug} className="pt-2" />
+          )}
+
           <div className="flex flex-col sm:flex-row gap-4 pt-4">
             <Button variant="cta" size="lg" onClick={handleBooking} disabled={workshop.unavailable} className="flex-1 text-base py-6 shadow-xl shadow-cta/20 disabled:opacity-60 disabled:cursor-not-allowed">
               {workshop.unavailable ? "Coming Soon" : t("workshop.reserve")}
             </Button>
             <Button variant="ctaOutline" size="lg" asChild className="flex-1 py-6 border-2">
-              <a href="https://wa.me/message/SBUBJACPVCNGM1" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
+              <a href={whatsappHref} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
                 <WhatsAppIcon /> {t("workshop.message")}
               </a>
             </Button>
