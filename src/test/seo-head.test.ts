@@ -14,6 +14,9 @@ import { readFileSync, existsSync, readdirSync, statSync } from "node:fs";
 import { join, resolve } from "node:path";
 import SEOHead from "@/components/SEOHead";
 
+// Silence "not configured to support act(...)" warning.
+(globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
+
 let currentRoot: Root | null = null;
 let currentContainer: HTMLDivElement | null = null;
 
