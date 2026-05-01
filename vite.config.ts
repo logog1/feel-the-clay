@@ -3,6 +3,7 @@ import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
 import { VitePWA } from "vite-plugin-pwa";
+import Prerender from "@prerenderer/rollup-plugin";
 
 export default defineConfig(({ mode }) => ({
   server: {
@@ -55,6 +56,29 @@ export default defineConfig(({ mode }) => ({
           { src: "/logo.png", sizes: "192x192", type: "image/png" },
           { src: "/logo.png", sizes: "512x512", type: "image/png", purpose: "any maskable" },
         ],
+      },
+    }),
+    mode === "production" && Prerender({
+      routes: [
+        "/",
+        "/about",
+        "/store",
+        "/blog",
+        "/exodaya",
+        "/workshop/pottery-experience",
+        "/workshop/handbuilding",
+        "/workshop/embroidery",
+        "/workshop/zellij",
+        "/workshop/carpets",
+        "/privacy",
+        "/legal",
+      ],
+      renderer: "@prerenderer/renderer-puppeteer",
+      rendererOptions: {
+        renderAfterDocumentEvent: "render-event",
+        maxConcurrentRoutes: 4,
+        timeout: 30000,
+        headless: true,
       },
     }),
   ].filter(Boolean),
