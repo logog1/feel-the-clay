@@ -56,19 +56,11 @@ function assertUnique(label: string, tags: ReturnType<typeof collectTags>) {
   }
 }
 
-async function renderHelmet(node: React.ReactElement) {
-  const helmetContext: { helmet?: any } = {};
-  renderToStaticMarkup(
-    createElement(HelmetProvider, { context: helmetContext }, node),
-  );
-  // Helmet emits its tags via the context after render.
-  const h = helmetContext.helmet!;
-  return [
-    h.title.toString(),
-    h.meta.toString(),
-    h.link.toString(),
-    h.script.toString(),
-  ].join("\n");
+async function renderHelmet(node: React.ReactElement): Promise<string> {
+  render(createElement(HelmetProvider, null, node));
+  // Helmet flushes to document.head asynchronously.
+  await new Promise((r) => setTimeout(r, 0));
+  return document.head.innerHTML;
 }
 
 describe("SEOHead tag uniqueness", () => {
