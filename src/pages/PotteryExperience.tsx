@@ -17,26 +17,39 @@ const jsonLd = {
   description: "Hands-on pottery wheel throwing workshop for beginners and creatives in Tétouan, Morocco. All materials and tea included.",
   provider: {
     "@type": "Organization",
+    "@id": "https://www.terrariaworkshops.com/#organization",
     name: "Terraria Workshops",
     url: "https://www.terrariaworkshops.com",
+    sameAs: ["https://www.instagram.com/terraria_workshops"],
   },
   url: "https://www.terrariaworkshops.com/workshop/pottery-experience",
+  inLanguage: ["en", "fr", "es", "ar"],
+  educationalLevel: "Beginner",
+  teaches: "Pottery wheel throwing, centering clay, shaping a bowl or cup",
   courseMode: "onsite",
   location: {
     "@type": "Place",
     name: "Terraria Workshops",
-    address: { "@type": "PostalAddress", addressLocality: "Tétouan", addressCountry: "MA" },
+    address: { "@type": "PostalAddress", addressLocality: "Tétouan", addressRegion: "Tanger-Tétouan-Al Hoceïma", addressCountry: "MA" },
   },
   offers: {
     "@type": "Offer",
     price: "150",
     priceCurrency: "MAD",
     availability: "https://schema.org/InStock",
+    url: "https://www.terrariaworkshops.com/workshop/pottery-experience",
+    category: "Workshop",
   },
   hasCourseInstance: {
     "@type": "CourseInstance",
     courseMode: "onsite",
     courseWorkload: "PT2H",
+    inLanguage: ["en", "fr", "es", "ar"],
+    location: {
+      "@type": "Place",
+      name: "Terraria Workshops",
+      address: { "@type": "PostalAddress", addressLocality: "Tétouan", addressCountry: "MA" },
+    },
   },
 };
 

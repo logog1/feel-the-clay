@@ -18,15 +18,30 @@ const jsonLd = {
   description: "Learn traditional Moroccan embroidery techniques in Tétouan. Hands-on craft workshop with local artisans. All materials included.",
   provider: {
     "@type": "Organization",
+    "@id": "https://www.terrariaworkshops.com/#organization",
     name: "Terraria Workshops",
     url: "https://www.terrariaworkshops.com",
+    sameAs: ["https://www.instagram.com/terraria_workshops"],
   },
   url: "https://www.terrariaworkshops.com/workshop/embroidery",
+  inLanguage: ["en", "fr", "es", "ar"],
+  educationalLevel: "Beginner",
+  teaches: "Traditional Moroccan embroidery stitches and motifs",
   courseMode: "onsite",
   location: {
     "@type": "Place",
     name: "Terraria Workshops",
-    address: { "@type": "PostalAddress", addressLocality: "Tétouan", addressCountry: "MA" },
+    address: { "@type": "PostalAddress", addressLocality: "Tétouan", addressRegion: "Tanger-Tétouan-Al Hoceïma", addressCountry: "MA" },
+  },
+  hasCourseInstance: {
+    "@type": "CourseInstance",
+    courseMode: "onsite",
+    inLanguage: ["en", "fr", "es", "ar"],
+    location: {
+      "@type": "Place",
+      name: "Terraria Workshops",
+      address: { "@type": "PostalAddress", addressLocality: "Tétouan", addressCountry: "MA" },
+    },
   },
 };
 

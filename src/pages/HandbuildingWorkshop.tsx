@@ -17,26 +17,39 @@ const jsonLd = {
   description: "Clay handbuilding workshop for all levels in Tétouan, Morocco. Shape pottery by hand with traditional techniques. All materials and tea included.",
   provider: {
     "@type": "Organization",
+    "@id": "https://www.terrariaworkshops.com/#organization",
     name: "Terraria Workshops",
     url: "https://www.terrariaworkshops.com",
+    sameAs: ["https://www.instagram.com/terraria_workshops"],
   },
   url: "https://www.terrariaworkshops.com/workshop/handbuilding",
+  inLanguage: ["en", "fr", "es", "ar"],
+  educationalLevel: "Beginner",
+  teaches: "Clay handbuilding, pinch pots, coil and slab techniques",
   courseMode: "onsite",
   location: {
     "@type": "Place",
     name: "Terraria Workshops",
-    address: { "@type": "PostalAddress", addressLocality: "Tétouan", addressCountry: "MA" },
+    address: { "@type": "PostalAddress", addressLocality: "Tétouan", addressRegion: "Tanger-Tétouan-Al Hoceïma", addressCountry: "MA" },
   },
   offers: {
     "@type": "Offer",
     price: "100",
     priceCurrency: "MAD",
     availability: "https://schema.org/InStock",
+    url: "https://www.terrariaworkshops.com/workshop/handbuilding",
+    category: "Workshop",
   },
   hasCourseInstance: {
     "@type": "CourseInstance",
     courseMode: "onsite",
     courseWorkload: "PT1H30M",
+    inLanguage: ["en", "fr", "es", "ar"],
+    location: {
+      "@type": "Place",
+      name: "Terraria Workshops",
+      address: { "@type": "PostalAddress", addressLocality: "Tétouan", addressCountry: "MA" },
+    },
   },
 };
 

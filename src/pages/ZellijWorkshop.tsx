@@ -6,6 +6,29 @@ import workshopTools from "@/assets/workshop-tools.jpg";
 import workshop1 from "@/assets/workshop-1.jpg";
 import workshop13 from "@/assets/workshop-13.jpg";
 
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Course",
+  name: "Zellij Workshop in Tétouan",
+  description: "Moroccan zellij workshop in Tétouan focused on geometric patterns, color, and traditional tile craft.",
+  provider: {
+    "@type": "Organization",
+    "@id": "https://www.terrariaworkshops.com/#organization",
+    name: "Terraria Workshops",
+    url: "https://www.terrariaworkshops.com",
+  },
+  url: "https://www.terrariaworkshops.com/workshop/zellij",
+  inLanguage: ["en", "fr", "es", "ar"],
+  teaches: "Moroccan zellij geometric patterns and decorative tile craft",
+  courseMode: "onsite",
+  location: {
+    "@type": "Place",
+    name: "Terraria Workshops",
+    address: { "@type": "PostalAddress", addressLocality: "Tétouan", addressCountry: "MA" },
+  },
+  hasCourseInstance: { "@type": "CourseInstance", courseMode: "onsite", inLanguage: ["en", "fr", "es", "ar"] },
+};
+
 const ZellijWorkshop = () => {
   const { language } = useLanguage();
   const { config } = useWorkshopConfig("zellij");
@@ -37,6 +60,7 @@ const ZellijWorkshop = () => {
         title="Zellij Workshop in Tétouan"
         description="Coming soon: a Moroccan zellij workshop in Tétouan focused on pattern, color, geometry, and local craft culture."
         path="/workshop/zellij"
+        jsonLd={jsonLd}
       />
       <WorkshopPageLayout workshop={workshop} currentPath="/workshop/zellij" />
     </>

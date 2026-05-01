@@ -6,6 +6,29 @@ import rugDiamond from "@/assets/product-rug-diamond.png";
 import rugGeometric from "@/assets/product-rug-geometric.png";
 import rugBlueWhite from "@/assets/product-rug-blue-white.png";
 
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Course",
+  name: "Carpets & Weaving Workshop in Tétouan",
+  description: "Moroccan carpets workshop in Tétouan focused on weaving, Amazigh motifs, textures, and artisan stories.",
+  provider: {
+    "@type": "Organization",
+    "@id": "https://www.terrariaworkshops.com/#organization",
+    name: "Terraria Workshops",
+    url: "https://www.terrariaworkshops.com",
+  },
+  url: "https://www.terrariaworkshops.com/workshop/carpets",
+  inLanguage: ["en", "fr", "es", "ar"],
+  teaches: "Moroccan weaving techniques, Amazigh symbols, textile craft",
+  courseMode: "onsite",
+  location: {
+    "@type": "Place",
+    name: "Terraria Workshops",
+    address: { "@type": "PostalAddress", addressLocality: "Tétouan", addressCountry: "MA" },
+  },
+  hasCourseInstance: { "@type": "CourseInstance", courseMode: "onsite", inLanguage: ["en", "fr", "es", "ar"] },
+};
+
 const CarpetsWorkshop = () => {
   const { language } = useLanguage();
   const { config } = useWorkshopConfig("carpets");
@@ -37,6 +60,7 @@ const CarpetsWorkshop = () => {
         title="Carpets Workshop in Tétouan"
         description="Coming soon: a Moroccan carpets workshop in Tétouan focused on weaving, Amazigh motifs, textures, and artisan stories."
         path="/workshop/carpets"
+        jsonLd={jsonLd}
       />
       <WorkshopPageLayout workshop={workshop} currentPath="/workshop/carpets" />
     </>
