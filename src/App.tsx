@@ -20,6 +20,7 @@ import Store from "./pages/Store";
 import Cart from "./pages/Cart";
 import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
+import BookingsDelivery from "./pages/BookingsDelivery";
 import ProDashboard from "./pages/ProDashboard";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import LegalNotice from "./pages/LegalNotice";
@@ -59,6 +60,7 @@ const App = () => {
               <Route path="/cart" element={<Cart />} />
               <Route path="/admin/login" element={<AdminLogin />} />
               <Route path="/admin" element={<AdminDashboard />} />
+              <Route path="/admin/delivery" element={<BookingsDelivery />} />
               <Route path="/admin/pro" element={<ProDashboard />} />
               <Route path="/about" element={<AboutUs />} />
               <Route path="/exodaya" element={<Exodaya />} />

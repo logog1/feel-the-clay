@@ -476,6 +476,42 @@ export type Database = {
         }
         Relationships: []
       }
+      notification_log: {
+        Row: {
+          booking_id: string | null
+          channel: string
+          created_at: string
+          error_message: string | null
+          id: string
+          idempotency_key: string | null
+          payload: Json | null
+          recipient: string
+          status: string
+        }
+        Insert: {
+          booking_id?: string | null
+          channel: string
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          idempotency_key?: string | null
+          payload?: Json | null
+          recipient: string
+          status: string
+        }
+        Update: {
+          booking_id?: string | null
+          channel?: string
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          idempotency_key?: string | null
+          payload?: Json | null
+          recipient?: string
+          status?: string
+        }
+        Relationships: []
+      }
       orders: {
         Row: {
           created_at: string

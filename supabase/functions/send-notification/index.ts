@@ -320,6 +320,34 @@ Deno.serve(async (req) => {
 
     console.log("WhatsApp summary:", JSON.stringify(whatsappSummary));
 
+    // Persist WhatsApp delivery results so the admin Delivery page can show them.
+    try {
+      const bookingId = (data as any).bookingId || (data as any).booking_id || null;
+      const idemKey = (data as any).idempotencyKey || (data as any).idempotency_key || null;
+      const rows = whatsappSummary.map((s) => {
+        const res: any = s.result || {};
+        const httpStatus = res.status;
+        const body = res.body || {};
+        const twilioErr = body?.error_message || body?.message || res.error;
+        const ok = typeof httpStatus === "number" && httpStatus >= 200 && httpStatus < 300 && !body?.error_code;
+        return {
+          channel: "whatsapp",
+          recipient: s.to,
+          status: ok ? "sent" : "failed",
+          error_message: ok ? null : (twilioErr ? String(twilioErr) : `HTTP ${httpStatus ?? "?"}`),
+          booking_id: bookingId,
+          idempotency_key: idemKey,
+          payload: res,
+        };
+      });
+      if (rows.length > 0) {
+        const { error: logErr } = await supabaseAdmin.from("notification_log").insert(rows);
+        if (logErr) console.error("notification_log insert failed:", logErr.message);
+      }
+    } catch (logErr) {
+      console.error("notification_log persistence error:", String(logErr));
+    }
+
     // Send to Zapier webhook if configured
     let zapierResult: any = null;
     if (contacts.zapierWebhookUrl) {
