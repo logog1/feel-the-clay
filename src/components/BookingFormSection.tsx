@@ -278,24 +278,6 @@ const BookingFormSection = () => {
       );
 
       await Promise.allSettled([customerPromise, ...adminPromises]);
-
-      await supabase.functions.invoke("send-notification", {
-        body: {
-          type: "booking",
-          data: {
-            skipPersist: true,
-            name: form.name,
-            city: form.city,
-            email: form.email,
-            phone: form.phone,
-            workshop: workshopLabel,
-            sessionInfo: sessionInfo.trim(),
-            participants: form.participants,
-            date: bookingDateIso || dateStr,
-            notes: form.notes || "",
-          },
-        },
-      });
     } catch (err) {
       console.error(err);
     }
