@@ -130,6 +130,9 @@ export const translations = {
   "offers.tap": { en: "Tap for more info →", ar: "← اضغط لمزيد من المعلومات", es: "Toca para más info →", fr: "Appuyez pour plus d'infos →" },
   "offers.learn_more": { en: "Learn More", ar: "اعرف أكثر", es: "Saber más", fr: "En savoir plus" },
   "offers.book_now": { en: "Book Now", ar: "احجز الآن", es: "Reservar ahora", fr: "Réserver maintenant" },
+  "offers.whatsapp_book": { en: "Or book on WhatsApp", ar: "أو احجز عبر واتساب", es: "O reserva por WhatsApp", fr: "Ou réservez sur WhatsApp" },
+  "hero.book_whatsapp": { en: "Book on WhatsApp", ar: "احجز عبر واتساب", es: "Reserva por WhatsApp", fr: "Réserver sur WhatsApp" },
+  "hero.book_now": { en: "Book a workshop", ar: "احجز ورشة", es: "Reservar un taller", fr: "Réserver un atelier" },
   "offers.store": { en: "Visit our Store", ar: "زيارة متجرنا", es: "Visita nuestra Tienda", fr: "Visitez notre Boutique" },
 
   // Testimonials
