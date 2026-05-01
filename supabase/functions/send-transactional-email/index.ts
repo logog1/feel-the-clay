@@ -64,9 +64,34 @@ Deno.serve(async (req) => {
     [supabaseAnonKey, supabasePublishableKey].filter(Boolean)
   )
 
+  // Decode JWT payload (no verification) to detect anon-role tokens issued by
+  // either the legacy or current signing key. Public booking flows always use
+  // an anon-role token, so we treat any anon-role JWT as a public caller.
+  function isAnonRoleJwt(token: string): boolean {
+    try {
+      const parts = token.split('.')
+      if (parts.length !== 3) return false
+      const payload = JSON.parse(
+        atob(parts[1].replace(/-/g, '+').replace(/_/g, '/'))
+      )
+      return payload?.role === 'anon'
+    } catch {
+      return false
+    }
+  }
+
+  // Publishable keys (sb_publishable_...) are not JWTs but are also public.
+  const isPublishableKey = !!bearerToken && bearerToken.startsWith('sb_publishable_')
+
   // Public callers use the anon/publishable key as their bearer token. Signed-in
   // dashboard callers send a user JWT, which we verify explicitly with auth.getClaims().
-  if (authHeader?.startsWith('Bearer ') && bearerToken && !publicBearerTokens.has(bearerToken)) {
+  if (
+    authHeader?.startsWith('Bearer ') &&
+    bearerToken &&
+    !publicBearerTokens.has(bearerToken) &&
+    !isPublishableKey &&
+    !isAnonRoleJwt(bearerToken)
+  ) {
     const authClient = createClient(supabaseUrl, supabaseAnonKey, {
       global: { headers: { Authorization: authHeader } },
     })
