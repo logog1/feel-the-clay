@@ -287,6 +287,7 @@ const BookingsDelivery = () => {
       <SEOHead
         title="Bookings Delivery Status | Terraria Admin"
         description="Track email and WhatsApp delivery for bookings"
+        path="/admin/delivery"
       />
 
       <header className="border-b bg-card">
