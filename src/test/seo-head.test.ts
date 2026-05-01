@@ -79,7 +79,7 @@ async function renderHelmet(node: React.ReactElement): Promise<string> {
     currentRoot!.render(createElement(HelmetProvider, null, node));
   });
   // Helmet flushes to document.head on a microtask.
-  await new Promise((r) => setTimeout(r, 0));
+  await new Promise((r) => setTimeout(r, 50));
   return document.head.innerHTML;
 }
 
