@@ -162,11 +162,13 @@ Deno.serve(async (req) => {
         );
       }
 
-      await supabaseAdmin.from("bookings").insert({
-        name, city: city || null, email: email || null, phone: phone || null,
-        workshop, session_info: sessionInfo || null, participants,
-        booking_date: date || null, notes: notes || null,
-      });
+      if (data.skipPersist !== true) {
+        await supabaseAdmin.from("bookings").insert({
+          name, city: city || null, email: email || null, phone: phone || null,
+          workshop, session_info: sessionInfo || null, participants,
+          booking_date: date || null, notes: notes || null,
+        });
+      }
 
       emailSubject = `🏺 New Booking: ${workshop} — ${name}`;
       emailBody = `
