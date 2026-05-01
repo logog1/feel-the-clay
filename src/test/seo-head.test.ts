@@ -6,14 +6,29 @@
  * `dist/` (when a production build exists) and applies the same checks.
  */
 import { describe, it, expect, afterEach } from "vitest";
-import { render, cleanup } from "@testing-library/react";
+import { createRoot, type Root } from "react-dom/client";
+import { act } from "react-dom/test-utils";
 import { HelmetProvider } from "react-helmet-async";
 import { createElement } from "react";
 import { readFileSync, existsSync, readdirSync, statSync } from "node:fs";
 import { join, resolve } from "node:path";
 import SEOHead from "@/components/SEOHead";
 
-afterEach(() => cleanup());
+let currentRoot: Root | null = null;
+let currentContainer: HTMLDivElement | null = null;
+
+afterEach(() => {
+  if (currentRoot) {
+    act(() => currentRoot!.unmount());
+    currentRoot = null;
+  }
+  if (currentContainer) {
+    currentContainer.remove();
+    currentContainer = null;
+  }
+  // Clear any helmet-managed tags between tests.
+  document.head.querySelectorAll("[data-rh]").forEach((el) => el.remove());
+});
 
 const OG_KEYS = [
   "og:title",
