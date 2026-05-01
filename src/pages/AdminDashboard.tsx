@@ -453,6 +453,9 @@ const AdminDashboard = () => {
             <p className="text-xs text-muted-foreground">{bookings.length} bookings · {orders.length} orders · {products.length} products</p>
           </div>
           <div className="flex items-center gap-3">
+            <Button variant="outline" size="sm" onClick={() => navigate("/admin/delivery")} className="gap-2 rounded-xl">
+              <Mail size={14} /> Delivery
+            </Button>
             <Button size="sm" onClick={() => navigate("/admin/pro")} className="gap-2 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground">
               <Zap size={14} /> Pro Dashboard
             </Button>
