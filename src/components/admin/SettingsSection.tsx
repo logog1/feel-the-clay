@@ -11,6 +11,8 @@ const IMAGE_SETTINGS = [
   { key: "image_workshop_handbuilding", label: "Handbuilding Workshop Card & Hero" },
   { key: "image_workshop_pottery", label: "Pottery Workshop Card & Hero" },
   { key: "image_workshop_embroidery", label: "Embroidery Workshop Card & Hero" },
+  { key: "image_workshop_zellij", label: "Zellij Workshop Card & Hero" },
+  { key: "image_workshop_carpets", label: "Carpets Workshop Card & Hero" },
 ];
 
 export function SettingsSection() {
