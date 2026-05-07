@@ -2,6 +2,8 @@ import WorkshopPageLayout from "@/components/WorkshopPageLayout";
 import SEOHead from "@/components/SEOHead";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useWorkshopConfig } from "@/hooks/use-workshop-config";
+import { useSiteImages } from "@/hooks/use-site-images";
+import { useSiteGallery } from "@/hooks/use-site-galleries";
 import workshopTools from "@/assets/workshop-tools.jpg";
 import workshop1 from "@/assets/workshop-1.jpg";
 import workshop13 from "@/assets/workshop-13.jpg";
@@ -32,7 +34,16 @@ const jsonLd = {
 const ZellijWorkshop = () => {
   const { language } = useLanguage();
   const { config } = useWorkshopConfig("zellij");
+  const siteImages = useSiteImages(["image_workshop_zellij"]);
+  const managedGallery = useSiteGallery("gallery_workshop_zellij");
+  const heroImg = siteImages["image_workshop_zellij"];
   const lang = language as "en" | "ar" | "es" | "fr";
+
+  const defaultImages = [workshopTools, workshop1, workshop13];
+  const galleryImages = managedGallery && managedGallery.length > 0
+    ? managedGallery.map((g) => g.url)
+    : defaultImages;
+  const images = heroImg ? [heroImg, ...galleryImages] : galleryImages;
 
   const workshop = {
     title: config?.title?.[lang] || "Zellij Workshop",
@@ -49,7 +60,7 @@ const ZellijWorkshop = () => {
     highlights: config?.highlights?.length
       ? config.highlights.map((h) => h[lang] || h.en).filter(Boolean)
       : ["Pattern and color introduction", "Local craft context"],
-    images: [workshopTools, workshop1, workshop13],
+    images,
     unavailable: config ? !config.is_available : true,
     popular: config?.is_popular || false,
   };

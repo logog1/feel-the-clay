@@ -2,6 +2,8 @@ import WorkshopPageLayout from "@/components/WorkshopPageLayout";
 import SEOHead from "@/components/SEOHead";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useWorkshopConfig } from "@/hooks/use-workshop-config";
+import { useSiteImages } from "@/hooks/use-site-images";
+import { useSiteGallery } from "@/hooks/use-site-galleries";
 import rugDiamond from "@/assets/product-rug-diamond.png";
 import rugGeometric from "@/assets/product-rug-geometric.png";
 import rugBlueWhite from "@/assets/product-rug-blue-white.png";
@@ -32,7 +34,16 @@ const jsonLd = {
 const CarpetsWorkshop = () => {
   const { language } = useLanguage();
   const { config } = useWorkshopConfig("carpets");
+  const siteImages = useSiteImages(["image_workshop_carpets"]);
+  const managedGallery = useSiteGallery("gallery_workshop_carpets");
+  const heroImg = siteImages["image_workshop_carpets"];
   const lang = language as "en" | "ar" | "es" | "fr";
+
+  const defaultImages = [rugDiamond, rugGeometric, rugBlueWhite];
+  const galleryImages = managedGallery && managedGallery.length > 0
+    ? managedGallery.map((g) => g.url)
+    : defaultImages;
+  const images = heroImg ? [heroImg, ...galleryImages] : galleryImages;
 
   const workshop = {
     title: config?.title?.[lang] || "Carpets Workshop",
@@ -49,7 +60,7 @@ const CarpetsWorkshop = () => {
     highlights: config?.highlights?.length
       ? config.highlights.map((h) => h[lang] || h.en).filter(Boolean)
       : ["Textile symbols and materials", "Artisan storytelling"],
-    images: [rugDiamond, rugGeometric, rugBlueWhite],
+    images,
     unavailable: config ? !config.is_available : true,
     popular: config?.is_popular || false,
   };

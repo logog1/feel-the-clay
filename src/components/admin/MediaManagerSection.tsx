@@ -46,6 +46,12 @@ import embrGallery3 from "@/assets/embr-gallery-3.jpg";
 import embrGallery4 from "@/assets/embr-gallery-4.jpg";
 import embrGallery5 from "@/assets/embr-gallery-5.jpg";
 
+// Zellij + Carpets defaults (placeholder imagery from existing assets)
+import workshopTools from "@/assets/workshop-tools.jpg";
+import rugDiamond from "@/assets/product-rug-diamond.png";
+import rugGeometric from "@/assets/product-rug-geometric.png";
+import rugBlueWhite from "@/assets/product-rug-blue-white.png";
+
 type GalleryImage = { url: string; alt: string; size?: string; frame?: FrameStyle };
 
 const FRAME_OPTIONS: { value: FrameStyle; label: string; emoji: string }[] = [
@@ -63,6 +69,8 @@ const DEFAULT_SINGLES: Record<string, string> = {
   image_workshop_handbuilding: handbuildingHero,
   image_workshop_pottery: potteryGirls,
   image_workshop_embroidery: embrHero,
+  image_workshop_zellij: workshopTools,
+  image_workshop_carpets: rugDiamond,
 };
 
 const DEFAULT_GALLERIES: Record<string, GalleryImage[]> = {
@@ -117,6 +125,16 @@ const DEFAULT_GALLERIES: Record<string, GalleryImage[]> = {
     { url: embrGallery4, alt: "Embroidery session 4" },
     { url: embrGallery5, alt: "Embroidery session 5" },
   ],
+  gallery_workshop_zellij: [
+    { url: workshopTools, alt: "Zellij craft tools" },
+    { url: workshop1, alt: "Pattern work" },
+    { url: workshop13, alt: "Geometric craft" },
+  ],
+  gallery_workshop_carpets: [
+    { url: rugDiamond, alt: "Diamond pattern rug" },
+    { url: rugGeometric, alt: "Geometric pattern rug" },
+    { url: rugBlueWhite, alt: "Blue and white rug" },
+  ],
 };
 
 const HERO_SETTINGS = [
@@ -127,6 +145,8 @@ const CARD_SETTINGS = [
   { key: "image_workshop_handbuilding", label: "Handbuilding Card & Hero", context: "card" as const },
   { key: "image_workshop_pottery", label: "Pottery Card & Hero", context: "card" as const },
   { key: "image_workshop_embroidery", label: "Embroidery Card & Hero", context: "card" as const },
+  { key: "image_workshop_zellij", label: "Zellij Card & Hero", context: "card" as const },
+  { key: "image_workshop_carpets", label: "Carpets Card & Hero", context: "card" as const },
 ];
 
 const GALLERY_SETTINGS = [
@@ -135,6 +155,8 @@ const GALLERY_SETTINGS = [
   { key: "gallery_workshop_handbuilding", label: "Handbuilding Workshop Gallery" },
   { key: "gallery_workshop_pottery", label: "Pottery Workshop Gallery" },
   { key: "gallery_workshop_embroidery", label: "Embroidery Workshop Gallery" },
+  { key: "gallery_workshop_zellij", label: "Zellij Workshop Gallery" },
+  { key: "gallery_workshop_carpets", label: "Carpets Workshop Gallery" },
 ];
 
 const ALL_KEYS = [
