@@ -2,6 +2,8 @@ import WorkshopPageLayout from "@/components/WorkshopPageLayout";
 import SEOHead from "@/components/SEOHead";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useWorkshopConfig } from "@/hooks/use-workshop-config";
+import { useSiteImages } from "@/hooks/use-site-images";
+import { useSiteGallery } from "@/hooks/use-site-galleries";
 import rugDiamond from "@/assets/product-rug-diamond.png";
 import rugGeometric from "@/assets/product-rug-geometric.png";
 import rugBlueWhite from "@/assets/product-rug-blue-white.png";
