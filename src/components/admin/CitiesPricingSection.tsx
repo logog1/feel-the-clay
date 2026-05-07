@@ -63,7 +63,7 @@ export function CitiesPricingSection() {
 
   // New city form
   const [newCityName, setNewCityName] = useState("");
-  const [newCityWorkshop, setNewCityWorkshop] = useState("all");
+  const [newCityWorkshops, setNewCityWorkshops] = useState<string[]>(["all"]);
 
   const fetchData = async () => {
     setLoading(true);
