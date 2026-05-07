@@ -14,7 +14,7 @@ interface InventoryItem {
 
 const CATEGORIES = ["clay", "glaze", "tools", "packaging", "fabric", "thread", "dye", "general"];
 const STATUSES = ["in_stock", "low_stock", "out_of_stock", "lost_cracked"];
-const WORKSHOPS = ["Pottery Experience", "Handbuilding", "Embroidery"];
+const WORKSHOPS = ["Pottery Experience", "Handbuilding", "Embroidery", "Zellij", "Carpets"];
 
 const statusStyles: Record<string, string> = {
   in_stock: "bg-emerald-100 text-emerald-800 border-emerald-200",
