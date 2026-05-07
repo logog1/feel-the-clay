@@ -20,6 +20,7 @@ const WORKSHOPS: { id: WorkshopId; label: string; translationPrefix: string }[] 
   { id: "embroidery", label: "Embroidery Workshop", translationPrefix: "embr" },
   { id: "zellij", label: "Zellij Workshop", translationPrefix: "zellij" },
   { id: "carpets", label: "Carpets Workshop", translationPrefix: "carpets" },
+  { id: "gardening", label: "Gardening Workshop", translationPrefix: "gardening" },
 ];
 
 const LANGS = ["en", "ar", "es", "fr"] as const;
@@ -68,6 +69,30 @@ function buildDefaultConfig(prefix: string): WorkshopConfig {
         { en: "Artisan storytelling", ar: "حكايات الحرفيين", es: "Historias de artesanos", fr: "Récits d’artisanes" },
       ],
       is_available: false,
+      is_popular: false,
+      promo_enabled: false,
+      promo_label: "",
+      promo_price: "",
+    },
+    gardening: {
+      title: { en: "Paint a Pot & Plant Workshop", ar: "ورشة طلاء الأصص والزراعة", es: "Taller de Pintar Maceta y Plantar", fr: "Atelier Peindre un Pot et Planter" },
+      tagline: { en: "Paint your own terracotta pot, plant a small companion, and leave with a care guide for life at home.", ar: "اطلِ أصيصك الفخاري، ازرع نبتتك الصغيرة، وعد إلى البيت بدليل العناية بها.", es: "Pinta tu propia maceta de terracota, planta tu compañera verde y llévate una guía de cuidados.", fr: "Peignez votre pot en terre cuite, plantez une petite compagne et repartez avec un guide d’entretien." },
+      price: "150 DH",
+      duration: { en: "About 2 hours", ar: "حوالي ساعتين", es: "Unas 2 horas", fr: "Environ 2 heures" },
+      drink: { en: "Mint tea included", ar: "شاي بالنعناع مشمول", es: "Té con menta incluido", fr: "Thé à la menthe inclus" },
+      location: { en: "Tetouan, Morocco", ar: "تطوان، المغرب", es: "Tetuán, Marruecos", fr: "Tétouan, Maroc" },
+      descriptions: [
+        { en: "A creative gardening workshop where you decorate your own handmade terracotta pot with paints inspired by Moroccan motifs.", ar: "ورشة بستنة إبداعية تزيّن فيها أصيصك الفخاري المصنوع يدويا بألوان مستوحاة من الزخارف المغربية.", es: "Un taller creativo de jardinería donde decoras tu propia maceta de terracota con pinturas inspiradas en motivos marroquíes.", fr: "Un atelier créatif de jardinage où vous décorez votre propre pot en terre cuite avec des peintures inspirées des motifs marocains." },
+        { en: "Then choose a small plant or succulent suited to your home, plant it in your pot, and walk away with a personalized care guide.", ar: "ثم تختار نبتة صغيرة أو نبتة عصارية تناسب بيتك، وتزرعها في أصيصك، وتغادر بدليل عناية شخصي.", es: "Luego eliges una pequeña planta o suculenta para tu hogar, la plantas en tu maceta y te llevas una guía de cuidados personalizada.", fr: "Choisissez ensuite une petite plante ou succulente adaptée à votre intérieur, plantez-la dans votre pot et repartez avec un guide d’entretien personnalisé." },
+      ],
+      highlights: [
+        { en: "Hand-painted terracotta pot to keep", ar: "أصيص فخاري مرسوم يدويا تحتفظ به", es: "Maceta de terracota pintada a mano", fr: "Pot en terre cuite peint à la main" },
+        { en: "One small plant or succulent", ar: "نبتة صغيرة أو نبتة عصارية", es: "Una pequeña planta o suculenta", fr: "Une petite plante ou succulente" },
+        { en: "Soil, paints, brushes and tools provided", ar: "تربة وألوان وفراشي وأدوات", es: "Tierra, pinturas, pinceles y herramientas", fr: "Terre, peintures, pinceaux et outils fournis" },
+        { en: "Personalized plant care guide to take home", ar: "دليل عناية شخصي لأخذه معك", es: "Guía personalizada de cuidados para llevar", fr: "Guide d’entretien personnalisé à emporter" },
+        { en: "Mint tea and a relaxed creative atmosphere", ar: "شاي بالنعناع وأجواء إبداعية مريحة", es: "Té con menta y ambiente creativo y relajado", fr: "Thé à la menthe et ambiance créative détendue" },
+      ],
+      is_available: true,
       is_popular: false,
       promo_enabled: false,
       promo_label: "",
@@ -146,6 +171,7 @@ export function WorkshopManagementSection() {
     embroidery: buildDefaultConfig("embr"),
     zellij: buildDefaultConfig("zellij"),
     carpets: buildDefaultConfig("carpets"),
+    gardening: buildDefaultConfig("gardening"),
   });
   const [expanded, setExpanded] = useState<WorkshopId | null>(null);
   const [saving, setSaving] = useState<WorkshopId | null>(null);

@@ -70,6 +70,7 @@ export default defineConfig(({ mode }) => ({
         "/workshop/embroidery",
         "/workshop/zellij",
         "/workshop/carpets",
+        "/workshop/gardening",
         "/privacy",
         "/legal",
       ],

@@ -12,6 +12,7 @@ import potteryGirls from "@/assets/pottery-girls.jpg";
 import tetouanCity from "@/assets/tetouan-city.jpg";
 import workshopTools from "@/assets/workshop-tools.jpg";
 import rugDiamond from "@/assets/product-rug-diamond.png";
+import gardeningHero from "@/assets/gardening-workshop.jpg";
 
 // Fallback images per workshop type
 const fallbackImages: Record<string, string> = {
@@ -20,6 +21,7 @@ const fallbackImages: Record<string, string> = {
   embroidery: embrHero,
   zellij: workshopTools,
   carpets: rugDiamond,
+  gardening: gardeningHero,
 };
 
 type OfferCard = {
@@ -46,6 +48,7 @@ const OffersSection = () => {
   const embrConfig = configs.embroidery;
   const zellijConfig = configs.zellij;
   const carpetsConfig = configs.carpets;
+  const gardeningConfig = configs.gardening;
 
   const offers: OfferCard[] = [
     {
@@ -99,6 +102,15 @@ const OffersSection = () => {
       unavailable: carpetsConfig ? !carpetsConfig.is_available : true,
       promoLabel: carpetsConfig?.promo_enabled ? carpetsConfig.promo_label : undefined,
       price: carpetsConfig?.promo_enabled && carpetsConfig?.promo_price ? carpetsConfig.promo_price : (carpetsConfig?.price || "Coming soon"),
+    },
+    {
+      title: gardeningConfig?.title?.[lang] || "Paint a Pot & Plant",
+      subtitle: "Gardening",
+      image: fallbackImages.gardening,
+      link: "/workshop/gardening",
+      unavailable: gardeningConfig ? !gardeningConfig.is_available : false,
+      promoLabel: gardeningConfig?.promo_enabled ? gardeningConfig.promo_label : undefined,
+      price: gardeningConfig?.promo_enabled && gardeningConfig?.promo_price ? gardeningConfig.promo_price : (gardeningConfig?.price || "150 DH"),
     },
   ];
 

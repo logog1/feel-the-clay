@@ -11,6 +11,7 @@ const GALLERY_KEYS = [
   "gallery_workshop_embroidery",
   "gallery_workshop_zellij",
   "gallery_workshop_carpets",
+  "gallery_workshop_gardening",
 ] as const;
 
 export type GalleryKey = (typeof GALLERY_KEYS)[number];

@@ -60,6 +60,7 @@ const jsonLd = {
       { "@type": "Offer", itemOffered: { "@type": "Course", name: "Traditional Embroidery Workshop", url: "https://www.terrariaworkshops.com/workshop/embroidery" } },
       { "@type": "Offer", itemOffered: { "@type": "Course", name: "Zellij Workshop", url: "https://www.terrariaworkshops.com/workshop/zellij" } },
       { "@type": "Offer", itemOffered: { "@type": "Course", name: "Carpets Workshop", url: "https://www.terrariaworkshops.com/workshop/carpets" } },
+      { "@type": "Offer", itemOffered: { "@type": "Course", name: "Paint a Pot & Plant Gardening Workshop", url: "https://www.terrariaworkshops.com/workshop/gardening" } },
     ],
   },
 };
