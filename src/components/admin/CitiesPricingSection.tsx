@@ -2,10 +2,11 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   MapPin, Plus, Trash2, Save, CheckCircle2, Clock, DollarSign,
-  ToggleLeft, ToggleRight, ChevronDown, ChevronUp, Calendar,
+  ToggleLeft, ToggleRight, ChevronDown, ChevronUp, Calendar, Check,
 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
