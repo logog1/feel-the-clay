@@ -2,6 +2,8 @@ import WorkshopPageLayout from "@/components/WorkshopPageLayout";
 import SEOHead from "@/components/SEOHead";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useWorkshopConfig } from "@/hooks/use-workshop-config";
+import { useSiteImages } from "@/hooks/use-site-images";
+import { useSiteGallery } from "@/hooks/use-site-galleries";
 import workshopTools from "@/assets/workshop-tools.jpg";
 import workshop1 from "@/assets/workshop-1.jpg";
 import workshop13 from "@/assets/workshop-13.jpg";
