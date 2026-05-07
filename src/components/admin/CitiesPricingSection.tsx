@@ -84,36 +84,39 @@ export function CitiesPricingSection() {
   useEffect(() => { fetchData(); }, []);
 
   const addCity = async () => {
-    if (!newCityName.trim()) return;
+    if (!newCityName.trim() || newCityWorkshops.length === 0) return;
     setSaving(true);
     const defaultSchedule: DaySchedule[] = DAYS.filter(d => d === "Saturday" || d === "Sunday").map(d => ({
       day: d,
       time_slots: [...DEFAULT_TIME_SLOTS],
     }));
 
-    const { data, error } = await supabase.from("workshop_cities").insert({
-      city_name: newCityName.trim(),
-      workshop: newCityWorkshop,
-      schedule: defaultSchedule as any,
-    }).select().single();
+    let lastId: string | null = null;
+    for (const workshop of newCityWorkshops) {
+      const { data, error } = await supabase.from("workshop_cities").insert({
+        city_name: newCityName.trim(),
+        workshop,
+        schedule: defaultSchedule as any,
+      }).select().single();
 
-    if (error) { toast.error("Failed to add city"); setSaving(false); return; }
+      if (error) { toast.error(`Failed to add ${workshop}`); continue; }
+      lastId = data.id;
 
-    // Add default pricing for all session types
-    const pricingInserts = SESSION_TYPES.map(st => ({
-      city_id: data.id,
-      session_type: st.value,
-      price: st.value === "open" ? 200 : st.value === "private" ? 350 : st.value === "group_small" ? 250 : 200,
-      currency: "MAD",
-    }));
-    await supabase.from("workshop_city_pricing").insert(pricingInserts);
+      const pricingInserts = SESSION_TYPES.map(st => ({
+        city_id: data.id,
+        session_type: st.value,
+        price: st.value === "open" ? 200 : st.value === "private" ? 350 : st.value === "group_small" ? 250 : 200,
+        currency: "MAD",
+      }));
+      await supabase.from("workshop_city_pricing").insert(pricingInserts);
+    }
 
     setNewCityName("");
-    setNewCityWorkshop("all");
+    setNewCityWorkshops(["all"]);
     toast.success(`${newCityName} added!`);
     await fetchData();
     setSaving(false);
-    setExpandedCity(data.id);
+    if (lastId) setExpandedCity(lastId);
   };
 
   const toggleActive = async (city: WorkshopCity) => {
