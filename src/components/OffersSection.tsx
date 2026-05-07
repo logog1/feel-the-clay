@@ -96,7 +96,7 @@ const OffersSection = () => {
     },
     {
       title: zellijConfig?.title?.[lang] || "Zellij Workshop",
-      image: fallbackImages.zellij,
+      image: siteImages["image_workshop_zellij"] || fallbackImages.zellij,
       link: "/workshop/zellij",
       unavailable: zellijConfig ? !zellijConfig.is_available : true,
       promoLabel: zellijConfig?.promo_enabled ? zellijConfig.promo_label : undefined,
@@ -104,7 +104,7 @@ const OffersSection = () => {
     },
     {
       title: carpetsConfig?.title?.[lang] || "Carpets Workshop",
-      image: fallbackImages.carpets,
+      image: siteImages["image_workshop_carpets"] || fallbackImages.carpets,
       link: "/workshop/carpets",
       unavailable: carpetsConfig ? !carpetsConfig.is_available : true,
       promoLabel: carpetsConfig?.promo_enabled ? carpetsConfig.promo_label : undefined,
@@ -113,7 +113,7 @@ const OffersSection = () => {
     {
       title: gardeningConfig?.title?.[lang] || "Paint a Pot & Plant",
       subtitle: "Gardening",
-      image: fallbackImages.gardening,
+      image: siteImages["image_workshop_gardening"] || fallbackImages.gardening,
       link: "/workshop/gardening",
       unavailable: gardeningConfig ? !gardeningConfig.is_available : false,
       promoLabel: gardeningConfig?.promo_enabled ? gardeningConfig.promo_label : undefined,
