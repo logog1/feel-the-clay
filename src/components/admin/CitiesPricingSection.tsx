@@ -206,16 +206,42 @@ export function CitiesPricingSection() {
             onChange={(e) => setNewCityName(e.target.value)}
             className="rounded-xl flex-1"
           />
-          <Select value={newCityWorkshop} onValueChange={setNewCityWorkshop}>
-            <SelectTrigger className="rounded-xl w-full sm:w-48">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {WORKSHOPS.map(w => (
-                <SelectItem key={w.value} value={w.value}>{w.label}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="outline" className="rounded-xl w-full sm:w-56 justify-between font-normal">
+                <span className="truncate">
+                  {newCityWorkshops.length === 0
+                    ? "Select workshops"
+                    : newCityWorkshops.length === 1
+                      ? WORKSHOPS.find(w => w.value === newCityWorkshops[0])?.label
+                      : `${newCityWorkshops.length} workshops selected`}
+                </span>
+                <ChevronDown size={14} className="opacity-60" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-56 p-2 rounded-xl" align="start">
+              {WORKSHOPS.map(w => {
+                const checked = newCityWorkshops.includes(w.value);
+                return (
+                  <label key={w.value} className="flex items-center gap-2 px-2 py-1.5 rounded-lg cursor-pointer hover:bg-muted/50">
+                    <Checkbox
+                      checked={checked}
+                      onCheckedChange={(c) => {
+                        setNewCityWorkshops(prev => {
+                          if (c) {
+                            if (w.value === "all") return ["all"];
+                            return [...prev.filter(v => v !== "all"), w.value];
+                          }
+                          return prev.filter(v => v !== w.value);
+                        });
+                      }}
+                    />
+                    <span className="text-sm">{w.label}</span>
+                  </label>
+                );
+              })}
+            </PopoverContent>
+          </Popover>
           <Button onClick={addCity} disabled={saving || !newCityName.trim()} className="rounded-xl gap-2 bg-cta hover:bg-cta/90 text-primary-foreground">
             <Plus size={14} /> Add City
           </Button>
