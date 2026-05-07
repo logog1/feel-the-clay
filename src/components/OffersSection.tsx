@@ -39,7 +39,14 @@ type OfferCard = {
 const OffersSection = () => {
   const { t, language } = useLanguage();
   const { ref, isVisible } = useScrollAnimation(0.1);
-  const siteImages = useSiteImages(["image_workshop_handbuilding", "image_workshop_pottery", "image_workshop_embroidery"]);
+  const siteImages = useSiteImages([
+    "image_workshop_handbuilding",
+    "image_workshop_pottery",
+    "image_workshop_embroidery",
+    "image_workshop_zellij",
+    "image_workshop_carpets",
+    "image_workshop_gardening",
+  ]);
   const { configs } = useWorkshopConfigs();
   const lang = language as "en" | "ar" | "es" | "fr";
 
