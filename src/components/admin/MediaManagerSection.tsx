@@ -46,6 +46,12 @@ import embrGallery3 from "@/assets/embr-gallery-3.jpg";
 import embrGallery4 from "@/assets/embr-gallery-4.jpg";
 import embrGallery5 from "@/assets/embr-gallery-5.jpg";
 
+// Zellij + Carpets defaults (placeholder imagery from existing assets)
+import workshopTools from "@/assets/workshop-tools.jpg";
+import rugDiamond from "@/assets/product-rug-diamond.png";
+import rugGeometric from "@/assets/product-rug-geometric.png";
+import rugBlueWhite from "@/assets/product-rug-blue-white.png";
+
 type GalleryImage = { url: string; alt: string; size?: string; frame?: FrameStyle };
 
 const FRAME_OPTIONS: { value: FrameStyle; label: string; emoji: string }[] = [
