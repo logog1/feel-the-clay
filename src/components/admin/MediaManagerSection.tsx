@@ -51,6 +51,7 @@ import workshopTools from "@/assets/workshop-tools.jpg";
 import rugDiamond from "@/assets/product-rug-diamond.png";
 import rugGeometric from "@/assets/product-rug-geometric.png";
 import rugBlueWhite from "@/assets/product-rug-blue-white.png";
+import gardeningHero from "@/assets/gardening-workshop.jpg";
 
 type GalleryImage = { url: string; alt: string; size?: string; frame?: FrameStyle };
 
@@ -71,6 +72,7 @@ const DEFAULT_SINGLES: Record<string, string> = {
   image_workshop_embroidery: embrHero,
   image_workshop_zellij: workshopTools,
   image_workshop_carpets: rugDiamond,
+  image_workshop_gardening: gardeningHero,
 };
 
 const DEFAULT_GALLERIES: Record<string, GalleryImage[]> = {
@@ -135,6 +137,9 @@ const DEFAULT_GALLERIES: Record<string, GalleryImage[]> = {
     { url: rugGeometric, alt: "Geometric pattern rug" },
     { url: rugBlueWhite, alt: "Blue and white rug" },
   ],
+  gallery_workshop_gardening: [
+    { url: gardeningHero, alt: "Painted terracotta pot with succulents" },
+  ],
 };
 
 const HERO_SETTINGS = [
@@ -147,6 +152,7 @@ const CARD_SETTINGS = [
   { key: "image_workshop_embroidery", label: "Embroidery Card & Hero", context: "card" as const },
   { key: "image_workshop_zellij", label: "Zellij Card & Hero", context: "card" as const },
   { key: "image_workshop_carpets", label: "Carpets Card & Hero", context: "card" as const },
+  { key: "image_workshop_gardening", label: "Gardening Card & Hero", context: "card" as const },
 ];
 
 const GALLERY_SETTINGS = [
@@ -157,6 +163,7 @@ const GALLERY_SETTINGS = [
   { key: "gallery_workshop_embroidery", label: "Embroidery Workshop Gallery" },
   { key: "gallery_workshop_zellij", label: "Zellij Workshop Gallery" },
   { key: "gallery_workshop_carpets", label: "Carpets Workshop Gallery" },
+  { key: "gallery_workshop_gardening", label: "Gardening Workshop Gallery" },
 ];
 
 const ALL_KEYS = [
