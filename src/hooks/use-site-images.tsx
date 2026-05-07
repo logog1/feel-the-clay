@@ -8,6 +8,7 @@ const IMAGE_KEYS = [
   "image_workshop_embroidery",
   "image_workshop_zellij",
   "image_workshop_carpets",
+  "image_workshop_gardening",
 ] as const;
 
 export type SiteImageKey = (typeof IMAGE_KEYS)[number];

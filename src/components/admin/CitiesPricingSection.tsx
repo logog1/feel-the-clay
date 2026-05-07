@@ -39,6 +39,7 @@ const WORKSHOPS = [
   { value: "embroidery", label: "Embroidery" },
   { value: "zellij", label: "Zellij" },
   { value: "carpets", label: "Carpets" },
+  { value: "gardening", label: "Gardening" },
 ];
 
 const SESSION_TYPES = [
