@@ -65,6 +65,17 @@ const StatusBadge = ({ status }: { status: string }) => (
   </span>
 );
 
+// Inline helper that loads current value and renders the uploader
+const WorkshopCardImageField = ({ settingKey, label }: { settingKey: string; label: string }) => {
+  const [url, setUrl] = useState<string>("");
+  useEffect(() => {
+    supabase.from("site_settings").select("value").eq("key", settingKey).maybeSingle().then(({ data }) => {
+      setUrl((data?.value as string) || "");
+    });
+  }, [settingKey]);
+  return <SiteImageUploader settingKey={settingKey} label={label} currentUrl={url} onUploaded={setUrl} />;
+};
+
 // ── Main Component ─────────────────────────────────────────────────────────
 const AdminDashboard = () => {
   const navigate = useNavigate();
