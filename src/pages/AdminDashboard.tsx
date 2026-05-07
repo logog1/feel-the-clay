@@ -1106,6 +1106,23 @@ const AdminDashboard = () => {
                 </div>
               </div>
 
+              <div className="p-6 rounded-3xl bg-card border-2 border-border/40 space-y-5">
+                <h3 className="font-bold text-foreground flex items-center gap-2"><ImagePlus size={18} className="text-cta" /> Workshop Card Images</h3>
+                <p className="text-sm text-muted-foreground">These images appear on the homepage workshop cards and as the hero on each workshop page.</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {[
+                    { key: "image_workshop_handbuilding", label: "Handbuilding" },
+                    { key: "image_workshop_pottery", label: "Pottery" },
+                    { key: "image_workshop_embroidery", label: "Embroidery" },
+                    { key: "image_workshop_zellij", label: "Zellij" },
+                    { key: "image_workshop_carpets", label: "Carpets" },
+                    { key: "image_workshop_gardening", label: "Gardening (Paint a Pot)" },
+                  ].map((w) => (
+                    <WorkshopCardImageField key={w.key} settingKey={w.key} label={w.label} />
+                  ))}
+                </div>
+              </div>
+
               <Button
                 onClick={saveContacts}
                 disabled={savingContacts}
