@@ -37,6 +37,8 @@ const WORKSHOPS = [
   { value: "pottery", label: "Pottery Experience" },
   { value: "handbuilding", label: "Handbuilding" },
   { value: "embroidery", label: "Embroidery" },
+  { value: "zellij", label: "Zellij" },
+  { value: "carpets", label: "Carpets" },
 ];
 
 const SESSION_TYPES = [
