@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { LogOut, CalendarDays, ShoppingCart, RefreshCw, Clock, CheckCircle2, XCircle, Package, Calendar, Plus, Trash2, Tag, ToggleLeft, ToggleRight, ChevronLeft, ChevronRight, Upload, ImagePlus, X, LayoutList, GripVertical, Eye, EyeOff, Save, AlertTriangle, Settings, Mail, Phone, Users, Shield, ShieldCheck, ShieldX, UserCheck, UserX, Zap, MapPin, DollarSign, Sparkles } from "lucide-react";
 import { CitiesPricingSection } from "@/components/admin/CitiesPricingSection";
 import { WorkshopManagementSection } from "@/components/admin/WorkshopManagementSection";
+import { SiteImageUploader } from "@/components/admin/SiteImageUploader";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import SEOHead from "@/components/SEOHead";
 import { cn } from "@/lib/utils";
@@ -63,6 +64,17 @@ const StatusBadge = ({ status }: { status: string }) => (
     {status.charAt(0).toUpperCase() + status.slice(1)}
   </span>
 );
+
+// Inline helper that loads current value and renders the uploader
+const WorkshopCardImageField = ({ settingKey, label }: { settingKey: string; label: string }) => {
+  const [url, setUrl] = useState<string>("");
+  useEffect(() => {
+    supabase.from("site_settings").select("value").eq("key", settingKey).maybeSingle().then(({ data }) => {
+      setUrl((data?.value as string) || "");
+    });
+  }, [settingKey]);
+  return <SiteImageUploader settingKey={settingKey} label={label} currentUrl={url} onUploaded={setUrl} />;
+};
 
 // ── Main Component ─────────────────────────────────────────────────────────
 const AdminDashboard = () => {
@@ -1103,6 +1115,23 @@ const AdminDashboard = () => {
                     <label className="text-xs font-medium text-muted-foreground">Google Maps Embed URL</label>
                     <Input value={publicMapUrl} onChange={(e) => setPublicMapUrl(e.target.value)} placeholder="https://www.google.com/maps/embed?pb=..." className="rounded-xl" />
                   </div>
+                </div>
+              </div>
+
+              <div className="p-6 rounded-3xl bg-card border-2 border-border/40 space-y-5">
+                <h3 className="font-bold text-foreground flex items-center gap-2"><ImagePlus size={18} className="text-cta" /> Workshop Card Images</h3>
+                <p className="text-sm text-muted-foreground">These images appear on the homepage workshop cards and as the hero on each workshop page.</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {[
+                    { key: "image_workshop_handbuilding", label: "Handbuilding" },
+                    { key: "image_workshop_pottery", label: "Pottery" },
+                    { key: "image_workshop_embroidery", label: "Embroidery" },
+                    { key: "image_workshop_zellij", label: "Zellij" },
+                    { key: "image_workshop_carpets", label: "Carpets" },
+                    { key: "image_workshop_gardening", label: "Gardening (Paint a Pot)" },
+                  ].map((w) => (
+                    <WorkshopCardImageField key={w.key} settingKey={w.key} label={w.label} />
+                  ))}
                 </div>
               </div>
 
