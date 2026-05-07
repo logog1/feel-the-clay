@@ -60,7 +60,7 @@ const ZellijWorkshop = () => {
     highlights: config?.highlights?.length
       ? config.highlights.map((h) => h[lang] || h.en).filter(Boolean)
       : ["Pattern and color introduction", "Local craft context"],
-    images: [workshopTools, workshop1, workshop13],
+    images,
     unavailable: config ? !config.is_available : true,
     popular: config?.is_popular || false,
   };
