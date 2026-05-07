@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { LogOut, CalendarDays, ShoppingCart, RefreshCw, Clock, CheckCircle2, XCircle, Package, Calendar, Plus, Trash2, Tag, ToggleLeft, ToggleRight, ChevronLeft, ChevronRight, Upload, ImagePlus, X, LayoutList, GripVertical, Eye, EyeOff, Save, AlertTriangle, Settings, Mail, Phone, Users, Shield, ShieldCheck, ShieldX, UserCheck, UserX, Zap, MapPin, DollarSign, Sparkles } from "lucide-react";
 import { CitiesPricingSection } from "@/components/admin/CitiesPricingSection";
 import { WorkshopManagementSection } from "@/components/admin/WorkshopManagementSection";
+import { SiteImageUploader } from "@/components/admin/SiteImageUploader";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import SEOHead from "@/components/SEOHead";
 import { cn } from "@/lib/utils";
