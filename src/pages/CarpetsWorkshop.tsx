@@ -60,7 +60,7 @@ const CarpetsWorkshop = () => {
     highlights: config?.highlights?.length
       ? config.highlights.map((h) => h[lang] || h.en).filter(Boolean)
       : ["Textile symbols and materials", "Artisan storytelling"],
-    images: [rugDiamond, rugGeometric, rugBlueWhite],
+    images,
     unavailable: config ? !config.is_available : true,
     popular: config?.is_popular || false,
   };
