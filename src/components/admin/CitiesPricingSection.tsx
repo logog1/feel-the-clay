@@ -2,10 +2,11 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   MapPin, Plus, Trash2, Save, CheckCircle2, Clock, DollarSign,
-  ToggleLeft, ToggleRight, ChevronDown, ChevronUp, Calendar,
+  ToggleLeft, ToggleRight, ChevronDown, ChevronUp, Calendar, Check,
 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -62,7 +63,7 @@ export function CitiesPricingSection() {
 
   // New city form
   const [newCityName, setNewCityName] = useState("");
-  const [newCityWorkshop, setNewCityWorkshop] = useState("all");
+  const [newCityWorkshops, setNewCityWorkshops] = useState<string[]>(["all"]);
 
   const fetchData = async () => {
     setLoading(true);
@@ -83,36 +84,39 @@ export function CitiesPricingSection() {
   useEffect(() => { fetchData(); }, []);
 
   const addCity = async () => {
-    if (!newCityName.trim()) return;
+    if (!newCityName.trim() || newCityWorkshops.length === 0) return;
     setSaving(true);
     const defaultSchedule: DaySchedule[] = DAYS.filter(d => d === "Saturday" || d === "Sunday").map(d => ({
       day: d,
       time_slots: [...DEFAULT_TIME_SLOTS],
     }));
 
-    const { data, error } = await supabase.from("workshop_cities").insert({
-      city_name: newCityName.trim(),
-      workshop: newCityWorkshop,
-      schedule: defaultSchedule as any,
-    }).select().single();
+    let lastId: string | null = null;
+    for (const workshop of newCityWorkshops) {
+      const { data, error } = await supabase.from("workshop_cities").insert({
+        city_name: newCityName.trim(),
+        workshop,
+        schedule: defaultSchedule as any,
+      }).select().single();
 
-    if (error) { toast.error("Failed to add city"); setSaving(false); return; }
+      if (error) { toast.error(`Failed to add ${workshop}`); continue; }
+      lastId = data.id;
 
-    // Add default pricing for all session types
-    const pricingInserts = SESSION_TYPES.map(st => ({
-      city_id: data.id,
-      session_type: st.value,
-      price: st.value === "open" ? 200 : st.value === "private" ? 350 : st.value === "group_small" ? 250 : 200,
-      currency: "MAD",
-    }));
-    await supabase.from("workshop_city_pricing").insert(pricingInserts);
+      const pricingInserts = SESSION_TYPES.map(st => ({
+        city_id: data.id,
+        session_type: st.value,
+        price: st.value === "open" ? 200 : st.value === "private" ? 350 : st.value === "group_small" ? 250 : 200,
+        currency: "MAD",
+      }));
+      await supabase.from("workshop_city_pricing").insert(pricingInserts);
+    }
 
     setNewCityName("");
-    setNewCityWorkshop("all");
+    setNewCityWorkshops(["all"]);
     toast.success(`${newCityName} added!`);
     await fetchData();
     setSaving(false);
-    setExpandedCity(data.id);
+    if (lastId) setExpandedCity(lastId);
   };
 
   const toggleActive = async (city: WorkshopCity) => {
@@ -202,16 +206,42 @@ export function CitiesPricingSection() {
             onChange={(e) => setNewCityName(e.target.value)}
             className="rounded-xl flex-1"
           />
-          <Select value={newCityWorkshop} onValueChange={setNewCityWorkshop}>
-            <SelectTrigger className="rounded-xl w-full sm:w-48">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {WORKSHOPS.map(w => (
-                <SelectItem key={w.value} value={w.value}>{w.label}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="outline" className="rounded-xl w-full sm:w-56 justify-between font-normal">
+                <span className="truncate">
+                  {newCityWorkshops.length === 0
+                    ? "Select workshops"
+                    : newCityWorkshops.length === 1
+                      ? WORKSHOPS.find(w => w.value === newCityWorkshops[0])?.label
+                      : `${newCityWorkshops.length} workshops selected`}
+                </span>
+                <ChevronDown size={14} className="opacity-60" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-56 p-2 rounded-xl" align="start">
+              {WORKSHOPS.map(w => {
+                const checked = newCityWorkshops.includes(w.value);
+                return (
+                  <label key={w.value} className="flex items-center gap-2 px-2 py-1.5 rounded-lg cursor-pointer hover:bg-muted/50">
+                    <Checkbox
+                      checked={checked}
+                      onCheckedChange={(c) => {
+                        setNewCityWorkshops(prev => {
+                          if (c) {
+                            if (w.value === "all") return ["all"];
+                            return [...prev.filter(v => v !== "all"), w.value];
+                          }
+                          return prev.filter(v => v !== w.value);
+                        });
+                      }}
+                    />
+                    <span className="text-sm">{w.label}</span>
+                  </label>
+                );
+              })}
+            </PopoverContent>
+          </Popover>
           <Button onClick={addCity} disabled={saving || !newCityName.trim()} className="rounded-xl gap-2 bg-cta hover:bg-cta/90 text-primary-foreground">
             <Plus size={14} /> Add City
           </Button>
