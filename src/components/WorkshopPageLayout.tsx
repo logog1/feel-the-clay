@@ -25,10 +25,13 @@ interface Workshop {
 }
 
 
-const otherWorkshopsData = [
+const otherWorkshopsData: { titleKey?: any; label?: string; link: string }[] = [
   { titleKey: "offers.pottery" as const, link: "/workshop/pottery-experience" },
   { titleKey: "offers.handbuilding" as const, link: "/workshop/handbuilding" },
   { titleKey: "offers.embroidery" as const, link: "/workshop/embroidery" },
+  { label: "Zellij Workshop", link: "/workshop/zellij" },
+  { label: "Carpets Workshop", link: "/workshop/carpets" },
+  { label: "Paint a Pot & Plant", link: "/workshop/gardening" },
 ];
 
 const WorkshopPageLayout = ({ workshop, currentPath }: { workshop: Workshop; currentPath: string }) => {
@@ -197,7 +200,7 @@ const WorkshopPageLayout = ({ workshop, currentPath }: { workshop: Workshop; cur
               .filter((w) => w.link !== currentPath)
               .map((w) => (
                 <Link key={w.link} to={w.link} className="p-5 rounded-2xl bg-card border-2 border-border/40 hover:border-cta/30 transition-all duration-300 text-sm font-bold hover:shadow-lg hover:scale-[1.02] text-foreground flex items-center justify-between">
-                  {t(w.titleKey)}
+                  {w.titleKey ? t(w.titleKey) : w.label}
                   <ArrowLeft size={14} className="rotate-180 text-cta" />
                 </Link>
               ))}
