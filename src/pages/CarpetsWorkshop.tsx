@@ -34,7 +34,16 @@ const jsonLd = {
 const CarpetsWorkshop = () => {
   const { language } = useLanguage();
   const { config } = useWorkshopConfig("carpets");
+  const siteImages = useSiteImages(["image_workshop_carpets"]);
+  const managedGallery = useSiteGallery("gallery_workshop_carpets");
+  const heroImg = siteImages["image_workshop_carpets"];
   const lang = language as "en" | "ar" | "es" | "fr";
+
+  const defaultImages = [rugDiamond, rugGeometric, rugBlueWhite];
+  const galleryImages = managedGallery && managedGallery.length > 0
+    ? managedGallery.map((g) => g.url)
+    : defaultImages;
+  const images = heroImg ? [heroImg, ...galleryImages] : galleryImages;
 
   const workshop = {
     title: config?.title?.[lang] || "Carpets Workshop",
