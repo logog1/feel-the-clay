@@ -302,6 +302,14 @@ export function WorkshopManagementSection() {
             {/* Expanded */}
             {isExpanded && (
               <div className="border-t border-border/30 p-5 space-y-6">
+                {/* Card Image */}
+                <div className="space-y-3">
+                  <h5 className="text-sm font-semibold text-foreground flex items-center gap-2">
+                    <Sparkles size={14} className="text-cta" /> Homepage Card Image
+                  </h5>
+                  <WorkshopCardImageField workshopId={ws.id} />
+                </div>
+
                 {/* Basic Info */}
                 <div className="space-y-4">
                   <h5 className="text-sm font-semibold text-foreground flex items-center gap-2">
