@@ -204,21 +204,37 @@ export function WorkshopManagementSection() {
     setConfigs((prev) => ({ ...prev, [id]: { ...prev[id], ...partial } }));
   };
 
-  const saveConfig = async (id: WorkshopId) => {
-    setSaving(id);
+  const persistConfig = async (id: WorkshopId, cfg: WorkshopConfig) => {
     const key = `workshop_config_${id}`;
-    const value = JSON.stringify(configs[id]);
-
-    const { error } = await supabase
+    const value = JSON.stringify(cfg);
+    return supabase
       .from("site_settings")
       .upsert({ key, value, updated_at: new Date().toISOString() }, { onConflict: "key" });
+  };
 
+  const saveConfig = async (id: WorkshopId) => {
+    setSaving(id);
+    const { error } = await persistConfig(id, configs[id]!);
     if (error) {
       toast.error("Failed to save workshop config");
     } else {
       toast.success(`${WORKSHOPS.find((w) => w.id === id)?.label} saved!`);
     }
     setSaving(null);
+  };
+
+  const toggleAvailability = async (id: WorkshopId) => {
+    const current = configs[id];
+    if (!current) return;
+    const next = { ...current, is_available: !current.is_available };
+    setConfigs((prev) => ({ ...prev, [id]: next }));
+    const { error } = await persistConfig(id, next);
+    if (error) {
+      toast.error("Failed to update availability");
+      setConfigs((prev) => ({ ...prev, [id]: current }));
+    } else {
+      toast.success(`${WORKSHOPS.find((w) => w.id === id)?.label}: ${next.is_available ? "Available" : "Coming Soon"}`);
+    }
   };
 
   if (loading) {
