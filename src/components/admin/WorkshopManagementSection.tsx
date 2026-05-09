@@ -392,7 +392,7 @@ export function WorkshopManagementSection() {
                       </span>
                     </div>
                     <div className="flex items-center gap-3 p-3 rounded-xl bg-muted/20">
-                      <button onClick={() => updateConfig(ws.id, { is_available: !config.is_available })}>
+                      <button onClick={() => toggleAvailability(ws.id)}>
                         {config.is_available ? <ToggleRight size={24} className="text-emerald-500" /> : <ToggleLeft size={24} className="text-muted-foreground" />}
                       </button>
                       <span className="text-sm text-foreground font-medium">
