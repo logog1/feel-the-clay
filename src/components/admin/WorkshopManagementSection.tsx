@@ -204,21 +204,37 @@ export function WorkshopManagementSection() {
     setConfigs((prev) => ({ ...prev, [id]: { ...prev[id], ...partial } }));
   };
 
-  const saveConfig = async (id: WorkshopId) => {
-    setSaving(id);
+  const persistConfig = async (id: WorkshopId, cfg: WorkshopConfig) => {
     const key = `workshop_config_${id}`;
-    const value = JSON.stringify(configs[id]);
-
-    const { error } = await supabase
+    const value = JSON.stringify(cfg);
+    return supabase
       .from("site_settings")
       .upsert({ key, value, updated_at: new Date().toISOString() }, { onConflict: "key" });
+  };
 
+  const saveConfig = async (id: WorkshopId) => {
+    setSaving(id);
+    const { error } = await persistConfig(id, configs[id]!);
     if (error) {
       toast.error("Failed to save workshop config");
     } else {
       toast.success(`${WORKSHOPS.find((w) => w.id === id)?.label} saved!`);
     }
     setSaving(null);
+  };
+
+  const toggleAvailability = async (id: WorkshopId) => {
+    const current = configs[id];
+    if (!current) return;
+    const next = { ...current, is_available: !current.is_available };
+    setConfigs((prev) => ({ ...prev, [id]: next }));
+    const { error } = await persistConfig(id, next);
+    if (error) {
+      toast.error("Failed to update availability");
+      setConfigs((prev) => ({ ...prev, [id]: current }));
+    } else {
+      toast.success(`${WORKSHOPS.find((w) => w.id === id)?.label}: ${next.is_available ? "Available" : "Coming Soon"}`);
+    }
   };
 
   if (loading) {
@@ -255,7 +271,7 @@ export function WorkshopManagementSection() {
               </div>
               <div className="flex items-center gap-2">
                 <button
-                  onClick={(e) => { e.stopPropagation(); updateConfig(ws.id, { is_available: !config.is_available }); }}
+                  onClick={(e) => { e.stopPropagation(); toggleAvailability(ws.id); }}
                   className="text-muted-foreground hover:text-foreground transition-colors"
                   title={config.is_available ? "Mark unavailable" : "Mark available"}
                 >
@@ -376,7 +392,7 @@ export function WorkshopManagementSection() {
                       </span>
                     </div>
                     <div className="flex items-center gap-3 p-3 rounded-xl bg-muted/20">
-                      <button onClick={() => updateConfig(ws.id, { is_available: !config.is_available })}>
+                      <button onClick={() => toggleAvailability(ws.id)}>
                         {config.is_available ? <ToggleRight size={24} className="text-emerald-500" /> : <ToggleLeft size={24} className="text-muted-foreground" />}
                       </button>
                       <span className="text-sm text-foreground font-medium">
