@@ -13,6 +13,24 @@ import { cn } from "@/lib/utils";
 import type { WorkshopConfig, WorkshopId, MultiLang } from "@/hooks/use-workshop-config";
 import { emptyMultiLang } from "@/hooks/use-workshop-config";
 import { translations } from "@/i18n/translations";
+import { SiteImageUploader } from "./SiteImageUploader";
+
+function WorkshopCardImageField({ workshopId }: { workshopId: WorkshopId }) {
+  const settingKey = `image_workshop_${workshopId}`;
+  const [url, setUrl] = useState<string>("");
+  useEffect(() => {
+    supabase.from("site_settings").select("value").eq("key", settingKey).maybeSingle()
+      .then(({ data }) => setUrl((data?.value as string) || ""));
+  }, [settingKey]);
+  return (
+    <SiteImageUploader
+      settingKey={settingKey}
+      label="Card image (homepage)"
+      currentUrl={url}
+      onUploaded={setUrl}
+    />
+  );
+}
 
 const WORKSHOPS: { id: WorkshopId; label: string; translationPrefix: string }[] = [
   { id: "pottery", label: "Full Pottery Experience", translationPrefix: "pottery" },
