@@ -271,7 +271,7 @@ export function WorkshopManagementSection() {
               </div>
               <div className="flex items-center gap-2">
                 <button
-                  onClick={(e) => { e.stopPropagation(); updateConfig(ws.id, { is_available: !config.is_available }); }}
+                  onClick={(e) => { e.stopPropagation(); toggleAvailability(ws.id); }}
                   className="text-muted-foreground hover:text-foreground transition-colors"
                   title={config.is_available ? "Mark unavailable" : "Mark available"}
                 >
