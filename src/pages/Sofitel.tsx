@@ -272,7 +272,7 @@ function DayChip({ label, active, onClick }: { label: string; active: boolean; o
   );
 }
 
-function ExperienceCard({ exp, index, onBook }: { exp: Experience; index: number; onBook: () => void }) {
+function ExperienceCard({ exp, index, remaining, onBook }: { exp: Experience; index: number; remaining: number; onBook: () => void }) {
   const date = parseISO(exp.scheduled_at);
   return (
     <article
