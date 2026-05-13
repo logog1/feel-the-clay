@@ -55,12 +55,22 @@ export default function Sofitel() {
   const [activeDay, setActiveDay] = useState<string | null>(null);
   const [selected, setSelected] = useState<Experience | null>(null);
   const [confirmation, setConfirmation] = useState<{ name: string; experience: string } | null>(null);
+  const [taken, setTaken] = useState<Record<string, number>>({});
 
   useEffect(() => {
     document.documentElement.style.setProperty("--sofitel-bg", PALETTE.bg);
     document.body.style.background = PALETTE.bg;
     return () => { document.body.style.background = ""; };
   }, []);
+
+  const refreshAvailability = async () => {
+    const { data } = await supabase.rpc("get_sofitel_availability");
+    if (data) {
+      const map: Record<string, number> = {};
+      (data as any[]).forEach((r) => { map[r.experience_id] = r.taken; });
+      setTaken(map);
+    }
+  };
 
   useEffect(() => {
     (async () => {
@@ -73,6 +83,9 @@ export default function Sofitel() {
       setItems((data as Experience[]) || []);
       setLoading(false);
     })();
+    refreshAvailability();
+    const interval = setInterval(refreshAvailability, 20000);
+    return () => clearInterval(interval);
   }, []);
 
   const days = useMemo(() => {
