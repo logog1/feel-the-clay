@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { supabase } from "@/integrations/supabase/client";
-import { format, isSameDay, parseISO } from "date-fns";
+import { format, parseISO } from "date-fns";
 import {
   Clock, MapPin, Users, Sparkles, ArrowRight, X, Check, Loader2,
   Waves, Sun, Heart, Palette, Compass, Leaf,
