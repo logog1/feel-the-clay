@@ -356,10 +356,12 @@ function Meta({ icon: Icon, children }: { icon: any; children: React.ReactNode }
 
 function BookingSheet({
   experience,
+  remaining,
   onClose,
   onConfirmed,
 }: {
   experience: Experience;
+  remaining: number;
   onClose: () => void;
   onConfirmed: (name: string) => void;
 }) {
