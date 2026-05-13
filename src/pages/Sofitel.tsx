@@ -356,6 +356,30 @@ function Meta({ icon: Icon, children }: { icon: any; children: React.ReactNode }
   );
 }
 
+function SpotsBadge({ remaining, capacity }: { remaining: number; capacity: number }) {
+  const ratio = capacity > 0 ? remaining / capacity : 0;
+  const full = remaining === 0;
+  const low = !full && ratio <= 0.3;
+  const bg = full ? "#0E1418" : low ? "#E6C36B" : "#FFFFFFCC";
+  const color = full ? "#FFFFFF" : "#0E1418";
+  const label = full ? "Fully booked" : low ? `Only ${remaining} left` : `${remaining} spots`;
+  return (
+    <span
+      className={cn(
+        "text-[10px] uppercase tracking-[0.2em] px-2.5 py-1 rounded-full backdrop-blur-md inline-flex items-center gap-1.5",
+        low && !full && "animate-pulse"
+      )}
+      style={{ background: bg, color }}
+    >
+      <span
+        className="w-1.5 h-1.5 rounded-full"
+        style={{ background: full ? "#FFFFFF" : low ? "#0E1418" : "#5B8AA6" }}
+      />
+      {label}
+    </span>
+  );
+}
+
 function BookingSheet({
   experience,
   remaining,
