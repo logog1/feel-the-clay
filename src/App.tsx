@@ -65,6 +65,7 @@ const App = () => {
               <Route path="/sofitel" element={<Sofitel />} />
               <Route path="/sofitel/hotel" element={<SofitelHotel />} />
               <Route path="/sofitel/admin" element={<SofitelAdmin />} />
+              <Route path="/sofitel/qr" element={<SofitelQR />} />
               <Route path="/store" element={<Store />} />
               <Route path="/cart" element={<Cart />} />
               <Route path="/admin/login" element={<AdminLogin />} />
