@@ -186,6 +186,7 @@ function Dashboard({ email }: { email: string }) {
   const [activeDay, setActiveDay] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [bookingTarget, setBookingTarget] = useState<Experience | null>(null);
+  const [view, setView] = useState<"program" | "availability" | "requests">("program");
 
   const load = async () => {
     const [{ data: exp }, { data: bk }] = await Promise.all([
