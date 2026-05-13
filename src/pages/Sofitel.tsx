@@ -235,10 +235,12 @@ export default function Sofitel() {
       {selected && (
         <BookingSheet
           experience={selected}
+          remaining={Math.max(0, selected.capacity - (taken[selected.id] || 0))}
           onClose={() => setSelected(null)}
           onConfirmed={(name) => {
             setConfirmation({ name, experience: selected.title });
             setSelected(null);
+            refreshAvailability();
           }}
         />
       )}
