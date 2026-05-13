@@ -55,12 +55,22 @@ export default function Sofitel() {
   const [activeDay, setActiveDay] = useState<string | null>(null);
   const [selected, setSelected] = useState<Experience | null>(null);
   const [confirmation, setConfirmation] = useState<{ name: string; experience: string } | null>(null);
+  const [taken, setTaken] = useState<Record<string, number>>({});
 
   useEffect(() => {
     document.documentElement.style.setProperty("--sofitel-bg", PALETTE.bg);
     document.body.style.background = PALETTE.bg;
     return () => { document.body.style.background = ""; };
   }, []);
+
+  const refreshAvailability = async () => {
+    const { data } = await supabase.rpc("get_sofitel_availability");
+    if (data) {
+      const map: Record<string, number> = {};
+      (data as any[]).forEach((r) => { map[r.experience_id] = r.taken; });
+      setTaken(map);
+    }
+  };
 
   useEffect(() => {
     (async () => {
@@ -73,6 +83,9 @@ export default function Sofitel() {
       setItems((data as Experience[]) || []);
       setLoading(false);
     })();
+    refreshAvailability();
+    const interval = setInterval(refreshAvailability, 20000);
+    return () => clearInterval(interval);
   }, []);
 
   const days = useMemo(() => {
@@ -196,6 +209,7 @@ export default function Sofitel() {
                 key={exp.id}
                 exp={exp}
                 index={idx}
+                remaining={Math.max(0, exp.capacity - (taken[exp.id] || 0))}
                 onBook={() => setSelected(exp)}
               />
             ))}
@@ -221,10 +235,12 @@ export default function Sofitel() {
       {selected && (
         <BookingSheet
           experience={selected}
+          remaining={Math.max(0, selected.capacity - (taken[selected.id] || 0))}
           onClose={() => setSelected(null)}
           onConfirmed={(name) => {
             setConfirmation({ name, experience: selected.title });
             setSelected(null);
+            refreshAvailability();
           }}
         />
       )}
@@ -256,7 +272,7 @@ function DayChip({ label, active, onClick }: { label: string; active: boolean; o
   );
 }
 
-function ExperienceCard({ exp, index, onBook }: { exp: Experience; index: number; onBook: () => void }) {
+function ExperienceCard({ exp, index, remaining, onBook }: { exp: Experience; index: number; remaining: number; onBook: () => void }) {
   const date = parseISO(exp.scheduled_at);
   return (
     <article
@@ -278,13 +294,14 @@ function ExperienceCard({ exp, index, onBook }: { exp: Experience; index: number
           className="absolute inset-0"
           style={{ background: "linear-gradient(180deg, transparent 40%, rgba(14,20,24,0.85) 100%)" }}
         />
-        <div className="absolute top-4 left-4 flex gap-2">
+        <div className="absolute top-4 left-4 right-4 flex gap-2 items-start justify-between">
           <span
             className="text-[10px] uppercase tracking-[0.2em] px-2.5 py-1 rounded-full backdrop-blur-md"
             style={{ background: "#FFFFFFCC", color: PALETTE.ink }}
           >
             {exp.category === "in-hotel" ? "In-hotel" : exp.category === "outdoor" ? "Outdoor" : "Cultural"}
           </span>
+          <SpotsBadge remaining={remaining} capacity={exp.capacity} />
         </div>
         <div className="absolute bottom-0 left-0 right-0 p-5 text-white">
           {exp.subtitle && (
@@ -303,7 +320,7 @@ function ExperienceCard({ exp, index, onBook }: { exp: Experience; index: number
 
         <div className="flex flex-wrap gap-3 text-xs" style={{ color: PALETTE.blueDeep }}>
           <Meta icon={Clock}>{format(date, "EEE d MMM · HH:mm")}</Meta>
-          <Meta icon={Users}>{exp.capacity} spots</Meta>
+          <Meta icon={Users}>{remaining} of {exp.capacity} left</Meta>
           {exp.location && <Meta icon={MapPin}>{exp.location}</Meta>}
         </div>
 
@@ -317,11 +334,12 @@ function ExperienceCard({ exp, index, onBook }: { exp: Experience; index: number
           </div>
           <button
             onClick={onBook}
-            className="group/btn inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-xs font-medium uppercase tracking-[0.18em] transition-all duration-300 hover:gap-3"
+            disabled={remaining === 0}
+            className="group/btn inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-xs font-medium uppercase tracking-[0.18em] transition-all duration-300 hover:gap-3 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:gap-2"
             style={{ background: PALETTE.ink, color: PALETTE.bg }}
           >
-            Reserve
-            <ArrowRight size={14} className="transition-transform group-hover/btn:translate-x-0.5" />
+            {remaining === 0 ? "Fully booked" : "Reserve"}
+            {remaining > 0 && <ArrowRight size={14} className="transition-transform group-hover/btn:translate-x-0.5" />}
           </button>
         </div>
       </div>
@@ -338,12 +356,38 @@ function Meta({ icon: Icon, children }: { icon: any; children: React.ReactNode }
   );
 }
 
+function SpotsBadge({ remaining, capacity }: { remaining: number; capacity: number }) {
+  const ratio = capacity > 0 ? remaining / capacity : 0;
+  const full = remaining === 0;
+  const low = !full && ratio <= 0.3;
+  const bg = full ? "#0E1418" : low ? "#E6C36B" : "#FFFFFFCC";
+  const color = full ? "#FFFFFF" : "#0E1418";
+  const label = full ? "Fully booked" : low ? `Only ${remaining} left` : `${remaining} spots`;
+  return (
+    <span
+      className={cn(
+        "text-[10px] uppercase tracking-[0.2em] px-2.5 py-1 rounded-full backdrop-blur-md inline-flex items-center gap-1.5",
+        low && !full && "animate-pulse"
+      )}
+      style={{ background: bg, color }}
+    >
+      <span
+        className="w-1.5 h-1.5 rounded-full"
+        style={{ background: full ? "#FFFFFF" : low ? "#0E1418" : "#5B8AA6" }}
+      />
+      {label}
+    </span>
+  );
+}
+
 function BookingSheet({
   experience,
+  remaining,
   onClose,
   onConfirmed,
 }: {
   experience: Experience;
+  remaining: number;
   onClose: () => void;
   onConfirmed: (name: string) => void;
 }) {
@@ -359,6 +403,10 @@ function BookingSheet({
     e.preventDefault();
     if (!name.trim() || !room.trim()) {
       toast.error("Name and room number are required");
+      return;
+    }
+    if (participants > remaining) {
+      toast.error(`Only ${remaining} ${remaining === 1 ? "spot" : "spots"} left`);
       return;
     }
     setSubmitting(true);
@@ -420,8 +468,8 @@ function BookingSheet({
             <div>
               <label className="text-[10px] uppercase tracking-[0.25em] opacity-60">Guests</label>
               <div className="mt-2 flex items-center gap-3">
-                <Stepper value={participants} onChange={setParticipants} max={experience.capacity} />
-                <span className="text-sm opacity-60">max {experience.capacity}</span>
+                <Stepper value={participants} onChange={setParticipants} max={Math.max(1, remaining)} />
+                <span className="text-sm opacity-60">{remaining} {remaining === 1 ? "spot" : "spots"} left</span>
               </div>
             </div>
           </div>

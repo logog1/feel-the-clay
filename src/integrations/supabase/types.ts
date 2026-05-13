@@ -938,6 +938,13 @@ export type Database = {
         Returns: number
       }
       get_my_profile_type: { Args: never; Returns: string }
+      get_sofitel_availability: {
+        Args: never
+        Returns: {
+          experience_id: string
+          taken: number
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
