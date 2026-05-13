@@ -209,6 +209,7 @@ export default function Sofitel() {
                 key={exp.id}
                 exp={exp}
                 index={idx}
+                remaining={Math.max(0, exp.capacity - (taken[exp.id] || 0))}
                 onBook={() => setSelected(exp)}
               />
             ))}
