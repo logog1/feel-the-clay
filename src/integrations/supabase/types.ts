@@ -736,6 +736,57 @@ export type Database = {
         }
         Relationships: []
       }
+      sofitel_group_requests: {
+        Row: {
+          contact_email: string | null
+          contact_name: string
+          contact_phone: string | null
+          created_at: string
+          experience_type: string | null
+          group_size: number
+          id: string
+          notes: string | null
+          preferred_date: string
+          preferred_time: string | null
+          room_number: string | null
+          source: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          contact_email?: string | null
+          contact_name: string
+          contact_phone?: string | null
+          created_at?: string
+          experience_type?: string | null
+          group_size?: number
+          id?: string
+          notes?: string | null
+          preferred_date: string
+          preferred_time?: string | null
+          room_number?: string | null
+          source?: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          contact_email?: string | null
+          contact_name?: string
+          contact_phone?: string | null
+          created_at?: string
+          experience_type?: string | null
+          group_size?: number
+          id?: string
+          notes?: string | null
+          preferred_date?: string
+          preferred_time?: string | null
+          room_number?: string | null
+          source?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       store_sections: {
         Row: {
           description_ar: string
@@ -943,6 +994,16 @@ export type Database = {
         Returns: {
           experience_id: string
           taken: number
+        }[]
+      }
+      get_terraria_availability: {
+        Args: { _days?: number }
+        Returns: {
+          bookings_count: number
+          day: string
+          is_blocked: boolean
+          sofitel_sessions: number
+          status: string
         }[]
       }
       has_role: {
