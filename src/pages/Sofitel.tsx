@@ -405,6 +405,10 @@ function BookingSheet({
       toast.error("Name and room number are required");
       return;
     }
+    if (participants > remaining) {
+      toast.error(`Only ${remaining} ${remaining === 1 ? "spot" : "spots"} left`);
+      return;
+    }
     setSubmitting(true);
     const { error } = await supabase.from("sofitel_bookings").insert({
       experience_id: experience.id,
