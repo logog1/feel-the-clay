@@ -250,58 +250,99 @@ function Dashboard({ email }: { email: string }) {
         </button>
       </div>
 
-      {/* KPIs */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mt-8">
-        <Kpi label="Upcoming sessions" value={upcomingCount} icon={Calendar} />
-        <Kpi label="Spots booked" value={totalSpotsBooked} icon={Users} />
-        <Kpi label="Full sessions" value={fullCount} icon={Check} />
-        <Kpi label="Total experiences" value={experiences.length} icon={Clock} />
+      {/* View tabs */}
+      <div className="mt-7 flex gap-1 border-b" style={{ borderColor: PALETTE.line }}>
+        {([
+          ["program", "Weekly Program"],
+          ["availability", "Group Availability"],
+          ["requests", "Group Requests"],
+        ] as const).map(([id, label]) => (
+          <button
+            key={id}
+            onClick={() => setView(id)}
+            className="px-4 py-2.5 text-xs uppercase tracking-[0.2em] border-b-2 transition-colors"
+            style={{
+              borderColor: view === id ? PALETTE.blueDeep : "transparent",
+              color: view === id ? PALETTE.blueDeep : PALETTE.ink,
+              opacity: view === id ? 1 : 0.55,
+            }}
+          >
+            {label}
+          </button>
+        ))}
       </div>
 
-      {/* Filters */}
-      <div className="mt-8 flex flex-col sm:flex-row gap-3 sm:items-center">
-        <div className="flex gap-2 overflow-x-auto scrollbar-hide flex-1">
-          <DayChip label="All days" active={!activeDay} onClick={() => setActiveDay(null)} />
-          {days.map(([key, date]) => (
-            <DayChip
-              key={key}
-              label={format(date, "EEE d MMM")}
-              active={activeDay === key}
-              onClick={() => setActiveDay(activeDay === key ? null : key)}
-            />
-          ))}
-        </div>
-        <div className="relative">
-          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 opacity-50" />
-          <input
-            placeholder="Search experiences"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="pl-9 pr-4 py-2 rounded-full text-sm bg-white outline-none w-full sm:w-64"
-            style={{ border: `1px solid ${PALETTE.line}` }}
-          />
-        </div>
-      </div>
+      {view === "program" && (
+        <>
+          {/* KPIs */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mt-6">
+            <Kpi label="Upcoming sessions" value={upcomingCount} icon={Calendar} />
+            <Kpi label="Spots booked" value={totalSpotsBooked} icon={Users} />
+            <Kpi label="Full sessions" value={fullCount} icon={Check} />
+            <Kpi label="Total experiences" value={experiences.length} icon={Clock} />
+          </div>
 
-      {/* Sessions */}
-      {loading ? (
-        <div className="flex items-center justify-center py-32">
-          <Loader2 className="animate-spin" style={{ color: PALETTE.blueDeep }} />
-        </div>
-      ) : (
-        <div className="mt-6 space-y-3">
-          {filtered.map((exp) => (
-            <SessionRow
-              key={exp.id}
-              exp={exp}
-              booked={bookedFor(exp.id)}
-              bookings={bookings.filter((b) => b.experience_id === exp.id)}
-              onBook={() => setBookingTarget(exp)}
-            />
-          ))}
-          {filtered.length === 0 && (
-            <p className="text-center py-16 opacity-60 text-sm">No sessions match your filters.</p>
+          {/* Filters */}
+          <div className="mt-6 flex flex-col sm:flex-row gap-3 sm:items-center">
+            <div className="flex gap-2 overflow-x-auto scrollbar-hide flex-1">
+              <DayChip label="All days" active={!activeDay} onClick={() => setActiveDay(null)} />
+              {days.map(([key, date]) => (
+                <DayChip
+                  key={key}
+                  label={format(date, "EEE d MMM")}
+                  active={activeDay === key}
+                  onClick={() => setActiveDay(activeDay === key ? null : key)}
+                />
+              ))}
+            </div>
+            <div className="relative">
+              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 opacity-50" />
+              <input
+                placeholder="Search experiences"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="pl-9 pr-4 py-2 rounded-full text-sm bg-white outline-none w-full sm:w-64"
+                style={{ border: `1px solid ${PALETTE.line}` }}
+              />
+            </div>
+          </div>
+
+          {/* Sessions */}
+          {loading ? (
+            <div className="flex items-center justify-center py-32">
+              <Loader2 className="animate-spin" style={{ color: PALETTE.blueDeep }} />
+            </div>
+          ) : (
+            <div className="mt-6 space-y-3">
+              {filtered.map((exp) => (
+                <SessionRow
+                  key={exp.id}
+                  exp={exp}
+                  booked={bookedFor(exp.id)}
+                  bookings={bookings.filter((b) => b.experience_id === exp.id)}
+                  onBook={() => setBookingTarget(exp)}
+                />
+              ))}
+              {filtered.length === 0 && (
+                <p className="text-center py-16 opacity-60 text-sm">No sessions match your filters.</p>
+              )}
+            </div>
           )}
+        </>
+      )}
+
+      {view === "availability" && (
+        <div className="mt-6">
+          <AvailabilityCalendar variant="concierge" />
+          <p className="mt-4 text-xs opacity-60 max-w-2xl">
+            Live capacity from Terraria's master schedule. Tap any open day to send a custom group enquiry — it lands in the Terraria team's dashboard immediately.
+          </p>
+        </div>
+      )}
+
+      {view === "requests" && (
+        <div className="mt-6">
+          <GroupRequestsList />
         </div>
       )}
 
