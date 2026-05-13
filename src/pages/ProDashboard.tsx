@@ -23,6 +23,7 @@ import { ThemeManagerSection } from "@/components/admin/ThemeManagerSection";
 import { MediaManagerSection } from "@/components/admin/MediaManagerSection";
 import { EmailsSection } from "@/components/admin/EmailsSection";
 import { ReminderLogSection } from "@/components/admin/ReminderLogSection";
+import { SofitelSection } from "@/components/admin/SofitelSection";
 import SEOHead from "@/components/SEOHead";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Moon, Sun } from "lucide-react";
