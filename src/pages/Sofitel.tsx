@@ -294,13 +294,14 @@ function ExperienceCard({ exp, index, remaining, onBook }: { exp: Experience; in
           className="absolute inset-0"
           style={{ background: "linear-gradient(180deg, transparent 40%, rgba(14,20,24,0.85) 100%)" }}
         />
-        <div className="absolute top-4 left-4 flex gap-2">
+        <div className="absolute top-4 left-4 right-4 flex gap-2 items-start justify-between">
           <span
             className="text-[10px] uppercase tracking-[0.2em] px-2.5 py-1 rounded-full backdrop-blur-md"
             style={{ background: "#FFFFFFCC", color: PALETTE.ink }}
           >
             {exp.category === "in-hotel" ? "In-hotel" : exp.category === "outdoor" ? "Outdoor" : "Cultural"}
           </span>
+          <SpotsBadge remaining={remaining} capacity={exp.capacity} />
         </div>
         <div className="absolute bottom-0 left-0 right-0 p-5 text-white">
           {exp.subtitle && (
@@ -319,7 +320,7 @@ function ExperienceCard({ exp, index, remaining, onBook }: { exp: Experience; in
 
         <div className="flex flex-wrap gap-3 text-xs" style={{ color: PALETTE.blueDeep }}>
           <Meta icon={Clock}>{format(date, "EEE d MMM · HH:mm")}</Meta>
-          <Meta icon={Users}>{exp.capacity} spots</Meta>
+          <Meta icon={Users}>{remaining} of {exp.capacity} left</Meta>
           {exp.location && <Meta icon={MapPin}>{exp.location}</Meta>}
         </div>
 
@@ -333,11 +334,12 @@ function ExperienceCard({ exp, index, remaining, onBook }: { exp: Experience; in
           </div>
           <button
             onClick={onBook}
-            className="group/btn inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-xs font-medium uppercase tracking-[0.18em] transition-all duration-300 hover:gap-3"
+            disabled={remaining === 0}
+            className="group/btn inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-xs font-medium uppercase tracking-[0.18em] transition-all duration-300 hover:gap-3 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:gap-2"
             style={{ background: PALETTE.ink, color: PALETTE.bg }}
           >
-            Reserve
-            <ArrowRight size={14} className="transition-transform group-hover/btn:translate-x-0.5" />
+            {remaining === 0 ? "Fully booked" : "Reserve"}
+            {remaining > 0 && <ArrowRight size={14} className="transition-transform group-hover/btn:translate-x-0.5" />}
           </button>
         </div>
       </div>
