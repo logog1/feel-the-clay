@@ -620,6 +620,122 @@ export type Database = {
         }
         Relationships: []
       }
+      sofitel_bookings: {
+        Row: {
+          created_at: string
+          experience_id: string
+          guest_email: string | null
+          guest_name: string
+          guest_phone: string | null
+          id: string
+          notes: string | null
+          participants: number
+          room_number: string
+          source: string
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          experience_id: string
+          guest_email?: string | null
+          guest_name: string
+          guest_phone?: string | null
+          id?: string
+          notes?: string | null
+          participants?: number
+          room_number: string
+          source?: string
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          experience_id?: string
+          guest_email?: string | null
+          guest_name?: string
+          guest_phone?: string | null
+          id?: string
+          notes?: string | null
+          participants?: number
+          room_number?: string
+          source?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sofitel_bookings_experience_id_fkey"
+            columns: ["experience_id"]
+            isOneToOne: false
+            referencedRelation: "sofitel_experiences"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sofitel_experiences: {
+        Row: {
+          audience: string
+          capacity: number
+          category: string
+          cover_image: string | null
+          created_at: string
+          currency: string
+          description: string
+          difficulty: string
+          duration_minutes: number
+          id: string
+          is_active: boolean
+          location: string | null
+          price_per_person: number
+          scheduled_at: string
+          slug: string
+          sort_order: number
+          subtitle: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          audience?: string
+          capacity?: number
+          category?: string
+          cover_image?: string | null
+          created_at?: string
+          currency?: string
+          description?: string
+          difficulty?: string
+          duration_minutes?: number
+          id?: string
+          is_active?: boolean
+          location?: string | null
+          price_per_person?: number
+          scheduled_at: string
+          slug: string
+          sort_order?: number
+          subtitle?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          audience?: string
+          capacity?: number
+          category?: string
+          cover_image?: string | null
+          created_at?: string
+          currency?: string
+          description?: string
+          difficulty?: string
+          duration_minutes?: number
+          id?: string
+          is_active?: boolean
+          location?: string | null
+          price_per_person?: number
+          scheduled_at?: string
+          slug?: string
+          sort_order?: number
+          subtitle?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       store_sections: {
         Row: {
           description_ar: string
