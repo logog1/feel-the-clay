@@ -468,8 +468,8 @@ function BookingSheet({
             <div>
               <label className="text-[10px] uppercase tracking-[0.25em] opacity-60">Guests</label>
               <div className="mt-2 flex items-center gap-3">
-                <Stepper value={participants} onChange={setParticipants} max={experience.capacity} />
-                <span className="text-sm opacity-60">max {experience.capacity}</span>
+                <Stepper value={participants} onChange={setParticipants} max={Math.max(1, remaining)} />
+                <span className="text-sm opacity-60">{remaining} {remaining === 1 ? "spot" : "spots"} left</span>
               </div>
             </div>
           </div>
