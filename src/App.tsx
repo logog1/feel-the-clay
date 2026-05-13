@@ -34,6 +34,7 @@ import CarpetsWorkshop from "./pages/CarpetsWorkshop";
 import GardeningWorkshop from "./pages/GardeningWorkshop";
 import Sofitel from "./pages/Sofitel";
 import SofitelHotel from "./pages/SofitelHotel";
+import SofitelAdmin from "./pages/SofitelAdmin";
 
 const queryClient = new QueryClient();
 
