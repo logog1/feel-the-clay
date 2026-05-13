@@ -23,6 +23,7 @@ import { ThemeManagerSection } from "@/components/admin/ThemeManagerSection";
 import { MediaManagerSection } from "@/components/admin/MediaManagerSection";
 import { EmailsSection } from "@/components/admin/EmailsSection";
 import { ReminderLogSection } from "@/components/admin/ReminderLogSection";
+import { SofitelSection } from "@/components/admin/SofitelSection";
 import SEOHead from "@/components/SEOHead";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Moon, Sun } from "lucide-react";
@@ -30,6 +31,7 @@ import { ArrowLeft, Moon, Sun } from "lucide-react";
 const sectionTitles: Record<string, string> = {
   overview: "Overview",
   workshops: "Workshops",
+  sofitel: "Sofitel × Terraria",
   workflow: "Workflow",
   sales: "Sales & Orders",
   customers: "Customers",
@@ -120,6 +122,7 @@ const ProDashboard = () => {
           <main className="flex-1 p-4 md:p-6 overflow-auto">
             {activeSection === "overview" && <OverviewSection />}
             {activeSection === "workshops" && <WorkshopsSection />}
+            {activeSection === "sofitel" && <SofitelSection />}
             {activeSection === "workflow" && <WorkflowSection />}
             {activeSection === "sales" && <SalesSection />}
             {activeSection === "customers" && <CustomersSection />}

@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { AvailabilityCalendar, GroupRequestsList } from "@/components/sofitel/AvailabilityCalendar";
 
 type Experience = {
   id: string;
@@ -153,7 +154,7 @@ function NotAuthorized() {
 }
 
 function Console({ session }: { session: any }) {
-  const [tab, setTab] = useState<"experiences" | "bookings">("experiences");
+  const [tab, setTab] = useState<"experiences" | "bookings" | "availability" | "requests">("experiences");
   return (
     <div>
       <header className="sticky top-0 z-40 backdrop-blur" style={{ background: "rgba(251,250,246,0.85)", borderBottom: `1px solid ${PALETTE.line}` }}>
@@ -169,20 +170,23 @@ function Console({ session }: { session: any }) {
             </button>
           </div>
         </div>
-        <div className="max-w-6xl mx-auto px-4 flex gap-1">
-          {(["experiences", "bookings"] as const).map((t) => (
+        <div className="max-w-6xl mx-auto px-4 flex gap-1 overflow-x-auto">
+          {(["experiences", "bookings", "availability", "requests"] as const).map((t) => (
             <button key={t} onClick={() => setTab(t)}
-              className={cn("px-4 py-2 text-sm capitalize border-b-2 transition-colors",
+              className={cn("px-4 py-2 text-sm capitalize border-b-2 transition-colors whitespace-nowrap",
                 tab === t ? "" : "border-transparent opacity-60 hover:opacity-100")}
               style={tab === t ? { borderColor: PALETTE.blueDeep, color: PALETTE.blueDeep } : { borderColor: "transparent" }}>
-              {t}
+              {t === "requests" ? "Group requests" : t}
             </button>
           ))}
         </div>
       </header>
 
       <main className="max-w-6xl mx-auto px-4 py-6">
-        {tab === "experiences" ? <ExperiencesTab /> : <BookingsTab />}
+        {tab === "experiences" && <ExperiencesTab />}
+        {tab === "bookings" && <BookingsTab />}
+        {tab === "availability" && <AvailabilityCalendar variant="admin" />}
+        {tab === "requests" && <GroupRequestsList />}
       </main>
     </div>
   );
