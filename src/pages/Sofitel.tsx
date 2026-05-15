@@ -235,18 +235,41 @@ export default function Sofitel() {
         ) : filtered.length === 0 ? (
           <p className="text-center py-24 opacity-60">No experiences match these filters.</p>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-            {filtered.map((exp, idx) => (
-              <div key={exp.id} className="h-full">
-                <ExperienceCard
-                  exp={exp}
-                  index={idx}
-                  remaining={Math.max(0, exp.capacity - (taken[exp.id] || 0))}
-                  onBook={() => setSelected(exp)}
-                />
-              </div>
-            ))}
-          </div>
+          <>
+            {/* Mobile: swipeable horizontal rail */}
+            <div className="sm:hidden -mx-5 px-5 flex gap-3 overflow-x-auto snap-x snap-mandatory scrollbar-hide pb-2">
+              {filtered.map((exp, idx) => (
+                <div key={exp.id} className="snap-start shrink-0 w-[78%]">
+                  <ExperienceCard
+                    exp={exp}
+                    index={idx}
+                    remaining={Math.max(0, exp.capacity - (taken[exp.id] || 0))}
+                    onBook={() => setSelected(exp)}
+                  />
+                </div>
+              ))}
+              <div className="shrink-0 w-2" aria-hidden />
+            </div>
+            {filtered.length > 1 && (
+              <p className="sm:hidden mt-2 text-center text-[10px] uppercase tracking-[0.3em] opacity-50">
+                Swipe to explore →
+              </p>
+            )}
+
+            {/* Tablet/desktop: grid */}
+            <div className="hidden sm:grid grid-cols-2 lg:grid-cols-3 gap-6">
+              {filtered.map((exp, idx) => (
+                <div key={exp.id} className="h-full">
+                  <ExperienceCard
+                    exp={exp}
+                    index={idx}
+                    remaining={Math.max(0, exp.capacity - (taken[exp.id] || 0))}
+                    onBook={() => setSelected(exp)}
+                  />
+                </div>
+              ))}
+            </div>
+          </>
         )}
       </main>
 
