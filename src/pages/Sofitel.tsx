@@ -875,12 +875,12 @@ function BookingSheet({
           style={{ borderColor: PALETTE.line, background: PALETTE.bg, paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 1rem)" }}
         >
           <div className="min-w-0">
-            <p className="text-[10px] uppercase tracking-[0.25em] opacity-50">Total</p>
+            <p className="text-[10px] uppercase tracking-[0.25em] opacity-50">{t("total")}</p>
             <p className="text-xl sm:text-2xl font-light leading-tight whitespace-nowrap" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
               {experience.price_per_person > 0 ? (
                 <>{total} <span className="text-xs opacity-70">{experience.currency}</span></>
               ) : (
-                <span style={{ fontStyle: "italic" }}>On request</span>
+                <span style={{ fontStyle: "italic" }}>{t("on_request")}</span>
               )}
             </p>
           </div>
@@ -892,7 +892,7 @@ function BookingSheet({
                 className="px-4 py-3 rounded-full text-[11px] uppercase tracking-[0.2em]"
                 style={{ border: `1px solid ${PALETTE.line}`, color: PALETTE.ink }}
               >
-                Edit
+                {t("edit")}
               </button>
             )}
             <button
@@ -905,9 +905,9 @@ function BookingSheet({
               {submitting ? (
                 <Loader2 size={14} className="animate-spin" />
               ) : step === 1 ? (
-                <>Continue <ArrowRight size={13} /></>
+                <>{t("continue")} <ArrowRight size={13} /></>
               ) : (
-                <><Check size={14} /> Confirm</>
+                <><Check size={14} /> {t("confirm")}</>
               )}
             </button>
           </div>
