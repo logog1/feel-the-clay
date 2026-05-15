@@ -158,26 +158,26 @@ export default function Sofitel() {
             background: `radial-gradient(120% 80% at 80% 0%, ${PALETTE.sandSoft} 0%, transparent 60%), linear-gradient(180deg, ${PALETTE.bg} 0%, ${PALETTE.bg} 100%)`,
           }}
         />
-        <div className="relative max-w-6xl mx-auto px-5 pt-10 pb-12 sm:pt-16 sm:pb-20">
-          <div className="flex items-center gap-3 text-[11px] tracking-[0.32em] uppercase opacity-70">
+        <div className="relative max-w-6xl mx-auto px-5 pt-8 pb-8 sm:pt-16 sm:pb-20">
+          <div className="flex items-center gap-2 sm:gap-3 text-[9px] sm:text-[11px] tracking-[0.28em] sm:tracking-[0.32em] uppercase opacity-70 flex-wrap">
             <span style={{ color: PALETTE.blueDeep }}>Terraria Workshop</span>
             <span style={{ color: PALETTE.sand }}>×</span>
             <span style={{ color: PALETTE.blueDeep }}>Sofitel Tamuda Bay</span>
           </div>
           <h1
-            className="mt-6 text-4xl sm:text-6xl md:text-7xl leading-[1.05] font-light"
+            className="mt-4 sm:mt-6 text-[34px] sm:text-6xl md:text-7xl leading-[1.05] font-light"
             style={{ fontFamily: "'Cormorant Garamond', serif", color: PALETTE.ink }}
           >
             Curated creative<br />
             <span style={{ fontStyle: "italic", color: PALETTE.blueDeep }}>experiences</span> by the sea.
           </h1>
-          <p className="mt-5 max-w-xl text-base sm:text-lg opacity-75 leading-relaxed">
+          <p className="mt-4 sm:mt-5 max-w-xl text-[14px] sm:text-lg opacity-75 leading-relaxed">
             A weekly program of artisan workshops and cultural escapes, crafted for guests
             of Sofitel Tamuda Bay. Discover authentic Morocco, one ritual at a time.
           </p>
 
-          <div className="mt-8 flex items-center gap-3 text-xs uppercase tracking-[0.2em]">
-            <span className="h-px w-10" style={{ background: PALETTE.sand }} />
+          <div className="mt-6 sm:mt-8 flex items-center gap-3 text-[10px] sm:text-xs uppercase tracking-[0.2em]">
+            <span className="h-px w-8 sm:w-10" style={{ background: PALETTE.sand }} />
             <span style={{ color: PALETTE.blueDeep }}>This week's program</span>
           </div>
         </div>
