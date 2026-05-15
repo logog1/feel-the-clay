@@ -235,9 +235,9 @@ export default function Sofitel() {
         ) : filtered.length === 0 ? (
           <p className="text-center py-24 opacity-60">No experiences match these filters.</p>
         ) : (
-          <div className="columns-1 sm:columns-2 lg:columns-3 gap-6 [column-fill:_balance]">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {filtered.map((exp, idx) => (
-              <div key={exp.id} className="mb-6 break-inside-avoid">
+              <div key={exp.id} className="h-full">
                 <ExperienceCard
                   exp={exp}
                   index={idx}
