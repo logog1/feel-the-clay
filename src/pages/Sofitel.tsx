@@ -395,7 +395,7 @@ export default function Sofitel() {
                 }}
               >
                 <f.icon size={13} strokeWidth={1.5} />
-                {f.label}
+                {t(f.labelKey)}
               </button>
             );
           })}
