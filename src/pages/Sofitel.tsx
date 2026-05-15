@@ -409,7 +409,7 @@ export default function Sofitel() {
             <Loader2 className="animate-spin" style={{ color: PALETTE.blueDeep }} />
           </div>
         ) : filtered.length === 0 ? (
-          <p className="text-center py-24 opacity-60">No experiences match these filters.</p>
+          <p className="text-center py-24 opacity-60">{t("empty")}</p>
         ) : (
           <>
             {/* Mobile: swipeable horizontal rail */}
