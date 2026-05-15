@@ -91,11 +91,17 @@ export default function Sofitel() {
   const [selected, setSelected] = useState<Experience | null>(null);
   const [confirmation, setConfirmation] = useState<{ name: string; experience: string } | null>(null);
   const [taken, setTaken] = useState<Record<string, number>>({});
+  const [scrollY, setScrollY] = useState(0);
 
   useEffect(() => {
     document.documentElement.style.setProperty("--sofitel-bg", PALETTE.bg);
     document.body.style.background = PALETTE.bg;
-    return () => { document.body.style.background = ""; };
+    const onScroll = () => setScrollY(window.scrollY);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      document.body.style.background = "";
+      window.removeEventListener("scroll", onScroll);
+    };
   }, []);
 
   const refreshAvailability = async () => {
