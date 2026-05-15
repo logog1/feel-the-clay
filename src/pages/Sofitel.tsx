@@ -1,13 +1,18 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { Helmet } from "react-helmet-async";
 import { supabase } from "@/integrations/supabase/client";
 import { format, parseISO } from "date-fns";
+import { fr as frLocale, es as esLocale, ar as arLocale, enUS } from "date-fns/locale";
 import {
   Clock, MapPin, Users, Sparkles, ArrowRight, X, Check, Loader2,
   Waves, Sun, Heart, Palette, Compass, Leaf, ChevronDown, Star,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { useLanguage } from "@/i18n/LanguageContext";
+import type { Language } from "@/i18n/translations";
+import { SOFITEL_STRINGS, type SofitelKey } from "@/i18n/sofitel-strings";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 import {
   ZelligeDivider,
   ZelligeInlineSeparator,
