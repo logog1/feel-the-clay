@@ -309,7 +309,7 @@ export default function Sofitel() {
           className="absolute bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-1.5 text-white/80"
           style={{ opacity: Math.max(0, 1 - scrollY / 200) }}
         >
-          <span className="text-[9px] uppercase tracking-[0.4em]">Scroll</span>
+          <span className="text-[9px] uppercase tracking-[0.4em]">{t("scroll")}</span>
           <ChevronDown size={16} className="animate-bounce" strokeWidth={1.5} />
         </div>
       </header>
