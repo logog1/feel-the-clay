@@ -276,30 +276,48 @@ export default function Sofitel() {
         </div>
       </header>
 
-      {/* Marquee ornament strip */}
+      {/* Marquee ornament strip with zellige glyphs */}
       <div className="relative overflow-hidden border-y" style={{ borderColor: PALETTE.line, background: PALETTE.bg }}>
-        <div className="flex gap-10 py-3 whitespace-nowrap animate-[marquee_40s_linear_infinite] will-change-transform">
+        <ZelligeTileBand
+          className="absolute inset-x-0 top-1/2 -translate-y-1/2 pointer-events-none"
+          color={PALETTE.sand}
+          density={24}
+        />
+        <div className="relative flex gap-10 py-3 whitespace-nowrap animate-[marquee_40s_linear_infinite] will-change-transform">
           {Array.from({ length: 2 }).map((_, copy) => (
             <div key={copy} className="flex items-center gap-10 shrink-0">
               {[
-                "Pottery", "✦", "Zellige", "✧", "Cooking", "✦", "Weaving", "✧",
-                "Painting", "✦", "Garden", "✧", "Cooperative", "✦", "Sunset rituals", "✧",
-              ].map((t, i) => (
-                <span
-                  key={`${copy}-${i}`}
-                  className="text-[11px] uppercase tracking-[0.32em] inline-flex items-center gap-2"
-                  style={{
-                    color: t.length === 1 ? PALETTE.sand : PALETTE.blueDeep,
-                    fontFamily: t.length === 1 ? "'Cormorant Garamond', serif" : undefined,
-                    fontSize: t.length === 1 ? 16 : undefined,
-                  }}
-                >
-                  {t}
-                </span>
-              ))}
+                "Pottery", "star", "Zellige", "diamond", "Cooking", "sparkle", "Weaving", "star",
+                "Painting", "diamond", "Garden", "sparkle", "Cooperative", "star", "Sunset rituals", "diamond",
+              ].map((t, i) => {
+                const isGlyph = t === "star" || t === "diamond" || t === "sparkle";
+                if (isGlyph) {
+                  const Glyph = t === "star" ? ZelligeStar : t === "diamond" ? ZelligeDiamond : ZelligeSparkle;
+                  return <Glyph key={`${copy}-${i}`} size={14} style={{ color: PALETTE.sand }} />;
+                }
+                return (
+                  <span
+                    key={`${copy}-${i}`}
+                    className="text-[11px] uppercase tracking-[0.32em]"
+                    style={{ color: PALETTE.blueDeep }}
+                  >
+                    {t}
+                  </span>
+                );
+              })}
             </div>
           ))}
         </div>
+      </div>
+
+      {/* Section divider — into the program */}
+      <div className="max-w-6xl mx-auto px-5 pt-10 sm:pt-14" style={{ color: PALETTE.sand }}>
+        <ZelligeDivider symbol="star" lineColor={PALETTE.line} />
+        <p className="mt-4 text-center text-[10px] sm:text-[11px] uppercase tracking-[0.36em]" style={{ color: PALETTE.blueDeep }}>
+          <ZelligeInlineSeparator className="mr-2" color={PALETTE.sand} />
+          The week ahead
+          <ZelligeInlineSeparator className="ml-2" color={PALETTE.sand} />
+        </p>
       </div>
 
       {/* DAYS RAIL */}
