@@ -9,6 +9,38 @@ import {
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
+import imgPotteryHandbuilding from "@/assets/sofitel/pottery-handbuilding.jpg";
+import imgCanvasPainting from "@/assets/sofitel/canvas-painting.jpg";
+import imgZellijMosaic from "@/assets/sofitel/zellij-mosaic.jpg";
+import imgCeramicPainting from "@/assets/sofitel/ceramic-painting.jpg";
+import imgRugWeaving from "@/assets/sofitel/rug-weaving.jpg";
+import imgGardenPlant from "@/assets/sofitel/garden-plant.jpg";
+import imgPotteryCooperative from "@/assets/sofitel/pottery-cooperative.jpg";
+import imgCookingFamily from "@/assets/sofitel/cooking-family.jpg";
+
+const SLUG_IMAGES: Record<string, string> = {
+  "pottery-handbuilding": imgPotteryHandbuilding,
+  "canvas-painting": imgCanvasPainting,
+  "zellij-mosaic": imgZellijMosaic,
+  "ceramic-painting": imgCeramicPainting,
+  "moroccan-rug-weaving": imgRugWeaving,
+  "garden-plant-experience": imgGardenPlant,
+  "pottery-cooperative": imgPotteryCooperative,
+  "cooking-local-family": imgCookingFamily,
+};
+
+// Pinterest-style varied card heights for masonry rhythm
+const SLUG_HEIGHTS: Record<string, string> = {
+  "pottery-handbuilding": "aspect-[4/5]",
+  "canvas-painting": "aspect-[3/4]",
+  "zellij-mosaic": "aspect-[4/5]",
+  "ceramic-painting": "aspect-[3/4]",
+  "moroccan-rug-weaving": "aspect-[4/6]",
+  "garden-plant-experience": "aspect-[3/4]",
+  "pottery-cooperative": "aspect-[4/5]",
+  "cooking-local-family": "aspect-[3/4]",
+};
+
 type Experience = {
   id: string;
   slug: string;
