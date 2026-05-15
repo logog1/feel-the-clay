@@ -311,7 +311,7 @@ function ExperienceCard({ exp, index, remaining, onBook }: { exp: Experience; in
   const localImg = SLUG_IMAGES[exp.slug];
   return (
     <article
-      className="group relative overflow-hidden rounded-[28px] bg-white animate-fade-in transition-all duration-500 hover:-translate-y-1.5 h-full flex flex-col"
+      className="group relative overflow-hidden rounded-3xl sm:rounded-[28px] bg-white animate-fade-in transition-all duration-500 sm:hover:-translate-y-1.5 h-full flex flex-col"
       style={{
         border: `1px solid ${PALETTE.line}`,
         animationDelay: `${index * 70}ms`,
@@ -319,6 +319,7 @@ function ExperienceCard({ exp, index, remaining, onBook }: { exp: Experience; in
         boxShadow: "0 1px 0 rgba(14,20,24,0.04), 0 24px 48px -28px rgba(46,81,104,0.18)",
       }}
       onMouseMove={(e) => {
+        if (window.matchMedia("(hover: none)").matches) return;
         const t = e.currentTarget as HTMLElement;
         const r = t.getBoundingClientRect();
         const x = ((e.clientX - r.left) / r.width - 0.5) * 6;
