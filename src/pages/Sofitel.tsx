@@ -1,13 +1,16 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { supabase } from "@/integrations/supabase/client";
 import { format, parseISO } from "date-fns";
 import {
   Clock, MapPin, Users, Sparkles, ArrowRight, X, Check, Loader2,
-  Waves, Sun, Heart, Palette, Compass, Leaf,
+  Waves, Sun, Heart, Palette, Compass, Leaf, ChevronDown, Star,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+
+import imgHeroWallpaper from "@/assets/sofitel/hero-wallpaper.jpg";
+import imgSofitelLogo from "@/assets/sofitel/sofitel-logo.png";
 
 import imgPotteryHandbuilding from "@/assets/sofitel/pottery-handbuilding.jpg";
 import imgCanvasPainting from "@/assets/sofitel/canvas-painting.jpg";
