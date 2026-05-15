@@ -637,7 +637,7 @@ function ExperienceCard({ exp, index, remaining, onBook }: { exp: Experience; in
               className="absolute inset-0 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-500"
               style={{ background: `linear-gradient(135deg, ${PALETTE.blueDeep}, ${PALETTE.ink})` }}
             />
-            <span className="relative">{remaining === 0 ? "Booked" : "Reserve"}</span>
+            <span className="relative">{remaining === 0 ? t("booked") : t("reserve")}</span>
             {remaining > 0 && <ArrowRight size={13} className="relative transition-transform group-hover/btn:translate-x-1" />}
           </button>
         </div>
