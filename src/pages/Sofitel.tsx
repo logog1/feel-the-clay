@@ -232,6 +232,9 @@ export default function Sofitel() {
         )}
       </main>
 
+      {/* CTA */}
+      <CollectionCta />
+
       {/* FOOTER */}
       <footer className="border-t" style={{ borderColor: PALETTE.line }}>
         <div className="max-w-6xl mx-auto px-5 py-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
