@@ -167,44 +167,139 @@ export default function Sofitel() {
             background: `radial-gradient(120% 80% at 80% 0%, ${PALETTE.sandSoft} 0%, transparent 60%), linear-gradient(180deg, ${PALETTE.bg} 0%, ${PALETTE.bg} 100%)`,
           }}
         />
-        <div className="relative max-w-6xl mx-auto px-5 pt-8 pb-8 sm:pt-16 sm:pb-20">
-          <div className="flex items-center gap-2 sm:gap-3 text-[9px] sm:text-[11px] tracking-[0.28em] sm:tracking-[0.32em] uppercase opacity-70 flex-wrap">
-            <span style={{ color: PALETTE.blueDeep }}>Terraria Workshop</span>
-            <span style={{ color: PALETTE.sand }}>×</span>
-            <span style={{ color: PALETTE.blueDeep }}>Sofitel Tamuda Bay</span>
+      {/* HERO — cinematic wallpaper */}
+      <header className="relative overflow-hidden h-[88vh] sm:h-[92vh] min-h-[560px] flex items-end">
+        {/* Parallax wallpaper */}
+        <div
+          className="absolute inset-0 will-change-transform"
+          style={{
+            transform: `translate3d(0, ${scrollY * 0.35}px, 0) scale(${1 + scrollY * 0.0003})`,
+            transition: "transform 60ms linear",
+          }}
+        >
+          <img
+            src={imgHeroWallpaper}
+            alt="Sofitel Tamuda Bay terrace at golden hour"
+            className="w-full h-[110%] object-cover"
+            fetchPriority="high"
+            width={1920}
+            height={1280}
+          />
+        </div>
+
+        {/* Cinematic gradient + grain */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background:
+              `linear-gradient(180deg, rgba(14,20,24,0.45) 0%, rgba(14,20,24,0.05) 35%, rgba(14,20,24,0.15) 60%, ${PALETTE.bg} 100%)`,
+          }}
+        />
+        <div
+          className="absolute inset-0 pointer-events-none opacity-[0.08] mix-blend-overlay"
+          style={{
+            backgroundImage:
+              "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.7'/></svg>\")",
+          }}
+        />
+
+        {/* Floating zellige stars */}
+        <ZelligeOrnament className="hidden sm:block absolute top-24 right-10 w-28 opacity-60 animate-[fade-in_1.2s_ease-out]" style={{ transform: `translateY(${scrollY * -0.2}px) rotate(${scrollY * 0.05}deg)` }} />
+        <ZelligeOrnament className="absolute -bottom-8 -left-6 w-40 sm:w-56 opacity-30" style={{ transform: `translateY(${scrollY * -0.1}px) rotate(${scrollY * -0.04}deg)` }} />
+
+        {/* Top co-branding bar */}
+        <div className="absolute top-0 left-0 right-0 z-10">
+          <div className="max-w-6xl mx-auto px-5 pt-5 sm:pt-7 flex items-center justify-between">
+            <span
+              className="text-[10px] sm:text-[11px] tracking-[0.32em] uppercase font-medium"
+              style={{ color: "#FFFFFF", textShadow: "0 1px 12px rgba(0,0,0,0.4)" }}
+            >
+              Terraria · Tamuda Bay
+            </span>
+            <div className="hidden sm:flex items-center gap-1.5 text-[10px] tracking-[0.28em] uppercase" style={{ color: "#FFFFFF", textShadow: "0 1px 12px rgba(0,0,0,0.4)" }}>
+              <Star size={10} strokeWidth={1.5} fill="#E6C36B" stroke="#E6C36B" />
+              <Star size={10} strokeWidth={1.5} fill="#E6C36B" stroke="#E6C36B" />
+              <Star size={10} strokeWidth={1.5} fill="#E6C36B" stroke="#E6C36B" />
+              <Star size={10} strokeWidth={1.5} fill="#E6C36B" stroke="#E6C36B" />
+              <Star size={10} strokeWidth={1.5} fill="#E6C36B" stroke="#E6C36B" />
+              <span className="ml-2 opacity-80">Luxury Resort</span>
+            </div>
           </div>
+        </div>
+
+        {/* Main content (parallax inverse) */}
+        <div
+          className="relative z-10 max-w-6xl mx-auto px-5 pb-12 sm:pb-20 w-full"
+          style={{ transform: `translateY(${scrollY * -0.15}px)`, opacity: Math.max(0, 1 - scrollY / 600) }}
+        >
+          {/* Co-branding lockup */}
+          <div className="mb-6 sm:mb-8 inline-flex items-center gap-3 sm:gap-4 px-4 sm:px-5 py-2.5 sm:py-3 rounded-full backdrop-blur-md animate-[fade-in_0.9s_ease-out]"
+            style={{ background: "rgba(255,255,255,0.85)", border: "1px solid rgba(255,255,255,0.5)" }}
+          >
+            <span className="text-[10px] sm:text-[11px] tracking-[0.28em] uppercase" style={{ color: PALETTE.blueDeep }}>
+              Terraria
+            </span>
+            <span className="text-base" style={{ color: PALETTE.sand, fontFamily: "'Cormorant Garamond', serif", fontStyle: "italic" }}>×</span>
+            <img src={imgSofitelLogo} alt="Sofitel" className="h-5 sm:h-6 w-auto" loading="eager" />
+          </div>
+
           <h1
-            className="mt-4 sm:mt-6 text-[34px] sm:text-6xl md:text-7xl leading-[1.05] font-light"
-            style={{ fontFamily: "'Cormorant Garamond', serif", color: PALETTE.ink }}
+            className="text-[40px] sm:text-7xl md:text-[88px] leading-[0.98] font-light text-white animate-[fade-in_1s_ease-out]"
+            style={{ fontFamily: "'Cormorant Garamond', serif", textShadow: "0 2px 30px rgba(14,20,24,0.4)" }}
           >
             Curated creative<br />
-            <span style={{ fontStyle: "italic", color: PALETTE.blueDeep }}>experiences</span> by the sea.
+            <span style={{ fontStyle: "italic", color: "#F1E2BE" }}>experiences</span>
+            <br className="sm:hidden" /> <span className="opacity-90">by the sea.</span>
           </h1>
-          <p className="mt-4 sm:mt-5 max-w-xl text-[14px] sm:text-lg opacity-75 leading-relaxed">
-            A weekly program of artisan workshops and cultural escapes, crafted for guests
-            of Sofitel Tamuda Bay. Discover authentic Morocco, one ritual at a time.
+
+          <p className="mt-5 sm:mt-7 max-w-xl text-[14px] sm:text-lg leading-relaxed text-white/85 animate-[fade-in_1.2s_ease-out]">
+            A weekly program of artisan workshops and cultural escapes,
+            crafted for the guests of Sofitel Tamuda Bay.
           </p>
 
-          <div className="mt-6 sm:mt-8 flex items-center gap-3 text-[10px] sm:text-xs uppercase tracking-[0.2em]">
-            <span className="h-px w-8 sm:w-10" style={{ background: PALETTE.sand }} />
-            <span style={{ color: PALETTE.blueDeep }}>This week's program</span>
+          <div className="mt-7 sm:mt-10 flex items-center gap-3 text-[10px] sm:text-xs uppercase tracking-[0.3em] text-white/90">
+            <span className="h-px w-8 sm:w-12" style={{ background: PALETTE.sand }} />
+            <span>This week's program</span>
+            <span className="h-px flex-1 max-w-[80px]" style={{ background: "rgba(255,255,255,0.25)" }} />
           </div>
+        </div>
+
+        {/* Scroll cue */}
+        <div
+          className="absolute bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-1.5 text-white/80"
+          style={{ opacity: Math.max(0, 1 - scrollY / 200) }}
+        >
+          <span className="text-[9px] uppercase tracking-[0.4em]">Scroll</span>
+          <ChevronDown size={16} className="animate-bounce" strokeWidth={1.5} />
         </div>
       </header>
 
-      {/* DAYS RAIL */}
-      {days.length > 0 && (
-        <div className="sticky top-0 z-20 backdrop-blur-md" style={{ background: `${PALETTE.bg}E6`, borderBottom: `1px solid ${PALETTE.line}` }}>
-          <div className="max-w-6xl mx-auto px-5 py-3 flex gap-2 overflow-x-auto scrollbar-hide">
-            <DayChip label="All days" active={!activeDay} onClick={() => setActiveDay(null)} />
-            {days.map(({ key, date }) => (
-              <DayChip
-                key={key}
-                label={format(date, "EEE d")}
-                active={activeDay === key}
-                onClick={() => setActiveDay(key === activeDay ? null : key)}
-              />
-            ))}
+      {/* Marquee ornament strip */}
+      <div className="relative overflow-hidden border-y" style={{ borderColor: PALETTE.line, background: PALETTE.bg }}>
+        <div className="flex gap-10 py-3 whitespace-nowrap animate-[marquee_40s_linear_infinite] will-change-transform">
+          {Array.from({ length: 2 }).map((_, copy) => (
+            <div key={copy} className="flex items-center gap-10 shrink-0">
+              {[
+                "Pottery", "✦", "Zellige", "✧", "Cooking", "✦", "Weaving", "✧",
+                "Painting", "✦", "Garden", "✧", "Cooperative", "✦", "Sunset rituals", "✧",
+              ].map((t, i) => (
+                <span
+                  key={`${copy}-${i}`}
+                  className="text-[11px] uppercase tracking-[0.32em] inline-flex items-center gap-2"
+                  style={{
+                    color: t.length === 1 ? PALETTE.sand : PALETTE.blueDeep,
+                    fontFamily: t.length === 1 ? "'Cormorant Garamond', serif" : undefined,
+                    fontSize: t.length === 1 ? 16 : undefined,
+                  }}
+                >
+                  {t}
+                </span>
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
+
           </div>
         </div>
       )}
