@@ -822,9 +822,9 @@ function BookingSheet({
 
         {/* Step indicator */}
         <div className="flex items-center gap-2 px-5 sm:px-8 pt-4">
-          <StepDot active={step >= 1} label="Details" done={step > 1} />
+          <StepDot active={step >= 1} label={t("step_details")} done={step > 1} stepNumber={1} />
           <span className="flex-1 h-px" style={{ background: PALETTE.line }} />
-          <StepDot active={step >= 2} label="Confirm" />
+          <StepDot active={step >= 2} label={t("step_confirm")} stepNumber={2} />
         </div>
 
         {/* Body (scrollable) */}
