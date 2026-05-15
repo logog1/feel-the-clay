@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { CollectionSections, CollectionCta } from "@/components/sofitel/CollectionSections";
 
 type Experience = {
   id: string;
