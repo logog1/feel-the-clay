@@ -165,7 +165,7 @@ export default function Sofitel() {
         .select("*")
         .eq("is_active", true)
         .order("scheduled_at", { ascending: true });
-      if (error) toast.error("Could not load the program");
+      if (error) toast.error(t("err_load"));
       setItems((data as Experience[]) || []);
       setLoading(false);
     })();
