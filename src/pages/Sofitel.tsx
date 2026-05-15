@@ -8,7 +8,6 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-import { CollectionSections, CollectionCta } from "@/components/sofitel/CollectionSections";
 
 type Experience = {
   id: string;
@@ -152,20 +151,6 @@ export default function Sofitel() {
         </div>
       </header>
 
-      {/* PRESENTATION COLLECTION SECTIONS */}
-      <CollectionSections />
-
-      {/* THIS WEEK'S LIVE PROGRAM */}
-      <div className="max-w-6xl mx-auto px-5 pt-16" style={{ borderTop: `1px solid ${PALETTE.line}` }}>
-        <p className="text-[11px] tracking-[0.32em] uppercase mb-4" style={{ color: PALETTE.blueDeep }}>
-          Live booking
-        </p>
-        <h2 className="text-3xl sm:text-4xl md:text-5xl leading-[1.1] font-light" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
-          This week's program
-        </h2>
-        <p className="mt-3 max-w-xl opacity-75">Reserve your spot in seconds — instant digital confirmation.</p>
-      </div>
-
       {/* DAYS RAIL */}
       {days.length > 0 && (
         <div className="sticky top-0 z-20 backdrop-blur-md" style={{ background: `${PALETTE.bg}E6`, borderBottom: `1px solid ${PALETTE.line}` }}>
@@ -231,9 +216,6 @@ export default function Sofitel() {
           </div>
         )}
       </main>
-
-      {/* CTA */}
-      <CollectionCta />
 
       {/* FOOTER */}
       <footer className="border-t" style={{ borderColor: PALETTE.line }}>
