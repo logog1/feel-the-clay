@@ -801,7 +801,7 @@ function BookingSheet({
                   border: `1px solid ${fullyBooked ? PALETTE.ink : low ? PALETTE.sand : PALETTE.line}`,
                 }}
               >
-                {fullyBooked ? "Fully booked" : low ? `Only ${remaining} left` : `${remaining} spots available`}
+                {fullyBooked ? t("fully_booked") : low ? t("only_n_left", { n: remaining }) : t("n_spots_available", { n: remaining })}
               </span>
               {experience.location && (
                 <span className="opacity-60 inline-flex items-center gap-1">
@@ -812,7 +812,7 @@ function BookingSheet({
           </div>
           <button
             onClick={onClose}
-            aria-label="Close"
+            aria-label={t("close")}
             className="w-9 h-9 rounded-full flex items-center justify-center shrink-0"
             style={{ background: PALETTE.line, color: PALETTE.ink }}
           >
