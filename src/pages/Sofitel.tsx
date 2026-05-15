@@ -513,9 +513,12 @@ function DayChip({ label, active, onClick }: { label: string; active: boolean; o
 }
 
 function ExperienceCard({ exp, index, remaining, onBook }: { exp: Experience; index: number; remaining: number; onBook: () => void }) {
+  const { t, fmtDate } = useT();
   const date = parseISO(exp.scheduled_at);
   const aspect = "aspect-[4/5]";
   const localImg = SLUG_IMAGES[exp.slug];
+  const categoryLabel =
+    exp.category === "in-hotel" ? t("f_in_hotel") : exp.category === "outdoor" ? t("f_outdoor") : t("f_cultural");
   return (
     <article
       className="group relative overflow-hidden rounded-3xl sm:rounded-[28px] bg-white animate-fade-in transition-all duration-500 sm:hover:-translate-y-1.5 h-full flex flex-col"
