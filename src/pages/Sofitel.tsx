@@ -528,7 +528,7 @@ function BookingSheet({
         </button>
 
         <div className="aspect-[16/10] overflow-hidden rounded-t-3xl">
-          <img src={experience.cover_image || ""} alt={experience.title} className="w-full h-full object-cover" />
+          <img src={SLUG_IMAGES[experience.slug] || experience.cover_image || ""} alt={experience.title} className="w-full h-full object-cover" />
         </div>
 
         <form onSubmit={submit} className="p-6 sm:p-8 space-y-5">
