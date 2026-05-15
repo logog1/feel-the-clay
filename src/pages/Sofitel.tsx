@@ -253,7 +253,7 @@ export default function Sofitel() {
               className="text-[10px] sm:text-[11px] tracking-[0.32em] uppercase font-medium"
               style={{ color: "#FFFFFF", textShadow: "0 1px 12px rgba(0,0,0,0.4)" }}
             >
-              Terraria · Tamuda Bay
+              {t("brand_topline")}
             </span>
             <div className="hidden sm:flex items-center gap-1.5 text-[10px] tracking-[0.28em] uppercase" style={{ color: "#FFFFFF", textShadow: "0 1px 12px rgba(0,0,0,0.4)" }}>
               <Star size={10} strokeWidth={1.5} fill="#E6C36B" stroke="#E6C36B" />
