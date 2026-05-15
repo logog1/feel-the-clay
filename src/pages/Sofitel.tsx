@@ -307,72 +307,127 @@ function DayChip({ label, active, onClick }: { label: string; active: boolean; o
 
 function ExperienceCard({ exp, index, remaining, onBook }: { exp: Experience; index: number; remaining: number; onBook: () => void }) {
   const date = parseISO(exp.scheduled_at);
+  const aspect = SLUG_HEIGHTS[exp.slug] || "aspect-[4/5]";
+  const localImg = SLUG_IMAGES[exp.slug];
   return (
     <article
-      className="group relative overflow-hidden rounded-3xl bg-white animate-fade-in"
+      className="group relative overflow-hidden rounded-[28px] bg-white animate-fade-in transition-all duration-500 hover:-translate-y-1.5"
       style={{
         border: `1px solid ${PALETTE.line}`,
-        animationDelay: `${index * 60}ms`,
+        animationDelay: `${index * 70}ms`,
         animationFillMode: "backwards",
+        boxShadow: "0 1px 0 rgba(14,20,24,0.04), 0 24px 48px -28px rgba(46,81,104,0.18)",
+      }}
+      onMouseMove={(e) => {
+        const t = e.currentTarget as HTMLElement;
+        const r = t.getBoundingClientRect();
+        const x = ((e.clientX - r.left) / r.width - 0.5) * 6;
+        const y = ((e.clientY - r.top) / r.height - 0.5) * -6;
+        t.style.transform = `translateY(-6px) rotateX(${y}deg) rotateY(${x}deg)`;
+      }}
+      onMouseLeave={(e) => {
+        (e.currentTarget as HTMLElement).style.transform = "";
       }}
     >
-      <div className="relative aspect-[4/5] overflow-hidden">
+      {/* Decorative corner ornament */}
+      <svg
+        className="absolute top-3 right-3 z-10 opacity-0 group-hover:opacity-70 transition-opacity duration-500 pointer-events-none"
+        width="36" height="36" viewBox="0 0 36 36" fill="none"
+      >
+        <circle cx="18" cy="18" r="2" fill={PALETTE.sand} />
+        <path d="M18 4 L18 12 M18 24 L18 32 M4 18 L12 18 M24 18 L32 18" stroke={PALETTE.sand} strokeWidth="0.8" strokeLinecap="round" />
+        <circle cx="18" cy="18" r="14" stroke={PALETTE.sand} strokeWidth="0.6" strokeDasharray="2 3" />
+      </svg>
+
+      <div className={cn("relative overflow-hidden", aspect)}>
         <img
-          src={exp.cover_image || "https://images.unsplash.com/photo-1505691938895-1758d7feb511?w=1200"}
+          src={localImg || exp.cover_image || "https://images.unsplash.com/photo-1505691938895-1758d7feb511?w=1200"}
           alt={exp.title}
           loading="lazy"
-          className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1200ms] group-hover:scale-[1.04]"
+          width={1024}
+          height={1280}
+          className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1400ms] ease-out group-hover:scale-[1.07]"
         />
+        {/* Soft warm vignette */}
+        <div
+          className="absolute inset-0 mix-blend-multiply opacity-0 group-hover:opacity-100 transition-opacity duration-700"
+          style={{ background: `radial-gradient(120% 80% at 50% 100%, ${PALETTE.sandSoft}55 0%, transparent 60%)` }}
+        />
+        {/* Bottom gradient for legibility */}
         <div
           className="absolute inset-0"
-          style={{ background: "linear-gradient(180deg, transparent 40%, rgba(14,20,24,0.85) 100%)" }}
+          style={{ background: "linear-gradient(180deg, transparent 30%, rgba(14,20,24,0.55) 75%, rgba(14,20,24,0.92) 100%)" }}
         />
+        {/* Grain overlay */}
+        <div
+          className="absolute inset-0 opacity-[0.08] mix-blend-overlay pointer-events-none"
+          style={{ backgroundImage: "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.6'/></svg>\")" }}
+        />
+
         <div className="absolute top-4 left-4 right-4 flex gap-2 items-start justify-between">
           <span
-            className="text-[10px] uppercase tracking-[0.2em] px-2.5 py-1 rounded-full backdrop-blur-md"
-            style={{ background: "#FFFFFFCC", color: PALETTE.ink }}
+            className="text-[10px] uppercase tracking-[0.22em] px-3 py-1.5 rounded-full backdrop-blur-md inline-flex items-center gap-1.5 transition-transform duration-500 group-hover:-translate-y-0.5"
+            style={{ background: "#FFFFFFE6", color: PALETTE.ink, boxShadow: "0 4px 12px rgba(14,20,24,0.08)" }}
           >
+            <span className="w-1 h-1 rounded-full" style={{ background: PALETTE.sand }} />
             {exp.category === "in-hotel" ? "In-hotel" : exp.category === "outdoor" ? "Outdoor" : "Cultural"}
           </span>
           <SpotsBadge remaining={remaining} capacity={exp.capacity} />
         </div>
+
         <div className="absolute bottom-0 left-0 right-0 p-5 text-white">
           {exp.subtitle && (
-            <p className="text-[11px] uppercase tracking-[0.25em] opacity-80 mb-1">{exp.subtitle}</p>
+            <p className="text-[10px] uppercase tracking-[0.32em] opacity-90 mb-2 inline-flex items-center gap-2">
+              <span className="h-px w-6" style={{ background: PALETTE.sand }} />
+              <span style={{ color: PALETTE.sand }}>{exp.subtitle}</span>
+            </p>
           )}
-          <h3 className="text-2xl leading-tight" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+          <h3
+            className="text-[28px] leading-[1.05] transition-transform duration-500 group-hover:translate-x-1"
+            style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 400 }}
+          >
             {exp.title}
           </h3>
         </div>
       </div>
 
-      <div className="p-5 space-y-4">
-        <p className="text-sm leading-relaxed" style={{ color: PALETTE.ink, opacity: 0.75 }}>
+      <div className="p-5 space-y-4 relative">
+        <p className="text-[13.5px] leading-relaxed" style={{ color: PALETTE.ink, opacity: 0.78 }}>
           {exp.description}
         </p>
 
-        <div className="flex flex-wrap gap-3 text-xs" style={{ color: PALETTE.blueDeep }}>
+        <div className="flex flex-wrap gap-x-3 gap-y-1.5 text-[11px]" style={{ color: PALETTE.blueDeep }}>
           <Meta icon={Clock}>{format(date, "EEE d MMM · HH:mm")}</Meta>
-          <Meta icon={Users}>{remaining} of {exp.capacity} left</Meta>
+          <Meta icon={Users}>{remaining} of {exp.capacity}</Meta>
           {exp.location && <Meta icon={MapPin}>{exp.location}</Meta>}
         </div>
 
         <div className="flex items-end justify-between pt-3 border-t" style={{ borderColor: PALETTE.line }}>
           <div>
-            <p className="text-[10px] uppercase tracking-[0.2em] opacity-50">From</p>
-            <p className="text-xl font-light" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
-              {exp.price_per_person} {exp.currency}
-              <span className="text-[11px] opacity-60 ml-1">/ guest</span>
+            <p className="text-[10px] uppercase tracking-[0.22em] opacity-50">From</p>
+            <p className="text-[22px] font-light leading-tight" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+              {exp.price_per_person > 0 ? (
+                <>
+                  {exp.price_per_person} <span className="text-[12px] opacity-70">{exp.currency}</span>
+                  <span className="text-[11px] opacity-60 ml-1">/ guest</span>
+                </>
+              ) : (
+                <span style={{ fontStyle: "italic" }}>On request</span>
+              )}
             </p>
           </div>
           <button
             onClick={onBook}
             disabled={remaining === 0}
-            className="group/btn inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-xs font-medium uppercase tracking-[0.18em] transition-all duration-300 hover:gap-3 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:gap-2"
+            className="group/btn relative inline-flex items-center gap-2 px-5 py-3 rounded-full text-[10.5px] font-medium uppercase tracking-[0.22em] overflow-hidden transition-all duration-300 hover:gap-3 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:gap-2"
             style={{ background: PALETTE.ink, color: PALETTE.bg }}
           >
-            {remaining === 0 ? "Fully booked" : "Reserve"}
-            {remaining > 0 && <ArrowRight size={14} className="transition-transform group-hover/btn:translate-x-0.5" />}
+            <span
+              className="absolute inset-0 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-500"
+              style={{ background: `linear-gradient(135deg, ${PALETTE.blueDeep}, ${PALETTE.ink})` }}
+            />
+            <span className="relative">{remaining === 0 ? "Fully booked" : "Reserve"}</span>
+            {remaining > 0 && <ArrowRight size={13} className="relative transition-transform group-hover/btn:translate-x-1" />}
           </button>
         </div>
       </div>
