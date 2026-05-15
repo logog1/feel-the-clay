@@ -608,8 +608,8 @@ function ExperienceCard({ exp, index, remaining, onBook }: { exp: Experience; in
         </p>
 
         <div className="flex flex-wrap gap-x-3 gap-y-1.5 text-[11px]" style={{ color: PALETTE.blueDeep }}>
-          <Meta icon={Clock}>{format(date, "EEE d MMM · HH:mm")}</Meta>
-          <Meta icon={Users}>{remaining} of {exp.capacity}</Meta>
+          <Meta icon={Clock}>{fmtDate(date, "EEE d MMM · HH:mm")}</Meta>
+          <Meta icon={Users}>{t("remaining_of", { n: remaining, c: exp.capacity })}</Meta>
           {exp.location && <Meta icon={MapPin}>{exp.location}</Meta>}
         </div>
 
