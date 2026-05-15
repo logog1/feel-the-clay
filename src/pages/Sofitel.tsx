@@ -981,6 +981,10 @@ function Stepper({ value, onChange, max }: { value: number; onChange: (v: number
 }
 
 function ConfirmationOverlay({ name, experience, onClose }: { name: string; experience: string; onClose: () => void }) {
+  const { t } = useT();
+  // Build the confirmation body with the experience name highlighted in <em>.
+  const bodyTemplate = t("confirm_body", { exp: "__EXP__" });
+  const [bodyBefore, bodyAfter] = bodyTemplate.split("__EXP__");
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center animate-fade-in p-5" style={{ background: "#0E1418F2" }}>
       <div className="max-w-md text-center text-white animate-scale-in">
@@ -990,20 +994,19 @@ function ConfirmationOverlay({ name, experience, onClose }: { name: string; expe
         >
           <Check size={28} strokeWidth={1.5} />
         </div>
-        <p className="text-[11px] uppercase tracking-[0.32em]" style={{ color: PALETTE.sand }}>Reservation received</p>
+        <p className="text-[11px] uppercase tracking-[0.32em]" style={{ color: PALETTE.sand }}>{t("reservation_received")}</p>
         <h2 className="mt-4 text-4xl leading-tight" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
-          Merci, {name}.
+          {t("merci", { name })}
         </h2>
         <p className="mt-4 opacity-80 leading-relaxed">
-          Your seat at <em>{experience}</em> is being prepared. Our concierge will deliver
-          a printed confirmation to your room shortly.
+          {bodyBefore}<em>{experience}</em>{bodyAfter}
         </p>
         <button
           onClick={onClose}
           className="mt-8 inline-flex items-center gap-2 px-6 py-3 rounded-full text-xs font-medium uppercase tracking-[0.2em]"
           style={{ background: PALETTE.bg, color: PALETTE.ink }}
         >
-          Continue browsing
+          {t("continue_browsing")}
           <ArrowRight size={14} />
         </button>
       </div>
