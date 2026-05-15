@@ -853,17 +853,17 @@ function BookingSheet({
             </div>
           ) : (
             <div className="space-y-4">
-              <p className="text-[10px] uppercase tracking-[0.25em] opacity-60">Review your reservation</p>
+              <p className="text-[10px] uppercase tracking-[0.25em] opacity-60">{t("review_title")}</p>
               <div className="rounded-2xl p-4 space-y-2.5" style={{ background: "#FFFFFF", border: `1px solid ${PALETTE.line}` }}>
-                <ReviewRow label="Guest" value={name} />
-                <ReviewRow label="Room" value={room} />
-                {phone && <ReviewRow label="Phone" value={phone} />}
-                <ReviewRow label="Guests" value={String(participants)} />
-                <ReviewRow label="When" value={format(date, "EEE d MMM · HH:mm")} />
-                {experience.location && <ReviewRow label="Where" value={experience.location} />}
+                <ReviewRow label={t("r_guest")} value={name} />
+                <ReviewRow label={t("r_room")} value={room} />
+                {phone && <ReviewRow label={t("r_phone")} value={phone} />}
+                <ReviewRow label={t("r_guests")} value={String(participants)} />
+                <ReviewRow label={t("r_when")} value={fmtDate(date, "EEE d MMM · HH:mm")} />
+                {experience.location && <ReviewRow label={t("r_where")} value={experience.location} />}
               </div>
               <p className="text-[11px] opacity-60 leading-relaxed text-center">
-                A printed confirmation will be delivered to your room.
+                {t("printed_note")}
               </p>
             </div>
           )}
