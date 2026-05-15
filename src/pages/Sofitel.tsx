@@ -75,15 +75,45 @@ type Experience = {
   scheduled_at: string;
 };
 
-const FILTERS = [
-  { id: "all", label: "All", icon: Sparkles },
-  { id: "in-hotel", label: "In-hotel", icon: Waves },
-  { id: "outdoor", label: "Outdoor", icon: Compass },
-  { id: "cultural", label: "Cultural", icon: Leaf },
-  { id: "couples", label: "Couples", icon: Heart },
-  { id: "family", label: "Family", icon: Sun },
-  { id: "adults", label: "Adults", icon: Palette },
+const FILTERS: { id: string; labelKey: SofitelKey; icon: any }[] = [
+  { id: "all", labelKey: "f_all", icon: Sparkles },
+  { id: "in-hotel", labelKey: "f_in_hotel", icon: Waves },
+  { id: "outdoor", labelKey: "f_outdoor", icon: Compass },
+  { id: "cultural", labelKey: "f_cultural", icon: Leaf },
+  { id: "couples", labelKey: "f_couples", icon: Heart },
+  { id: "family", labelKey: "f_family", icon: Sun },
+  { id: "adults", labelKey: "f_adults", icon: Palette },
 ];
+
+const DATE_LOCALES: Record<Language, Locale> = {
+  en: enUS,
+  fr: frLocale,
+  es: esLocale,
+  ar: arLocale,
+};
+
+function tStr(key: SofitelKey, lang: Language, vars?: Record<string, string | number>): string {
+  let s = (SOFITEL_STRINGS[key] as Record<Language, string>)[lang] || SOFITEL_STRINGS[key].en;
+  if (vars) for (const [k, v] of Object.entries(vars)) s = s.replace(`{${k}}`, String(v));
+  return s;
+}
+
+function useT() {
+  const { language } = useLanguage();
+  const t = useCallback(
+    (key: SofitelKey, vars?: Record<string, string | number>) => tStr(key, language, vars),
+    [language]
+  );
+  const fmtDate = useCallback(
+    (d: Date, pattern: string) => format(d, pattern, { locale: DATE_LOCALES[language] }),
+    [language]
+  );
+  const spotsLabel = useCallback(
+    (n: number) => tStr(n === 1 ? "spots_one" : "spots_other", language),
+    [language]
+  );
+  return { t, fmtDate, spotsLabel, language };
+}
 
 // Local luxury palette: beach blue, sand yellow, off-white, soft black
 const PALETTE = {
