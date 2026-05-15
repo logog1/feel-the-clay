@@ -325,12 +325,13 @@ export default function Sofitel() {
           {Array.from({ length: 2 }).map((_, copy) => (
             <div key={copy} className="flex items-center gap-10 shrink-0">
               {[
-                "Pottery", "star", "Zellige", "diamond", "Cooking", "sparkle", "Weaving", "star",
-                "Painting", "diamond", "Garden", "sparkle", "Cooperative", "star", "Sunset rituals", "diamond",
-              ].map((t, i) => {
-                const isGlyph = t === "star" || t === "diamond" || t === "sparkle";
-                if (isGlyph) {
-                  const Glyph = t === "star" ? ZelligeStar : t === "diamond" ? ZelligeDiamond : ZelligeSparkle;
+                { k: "m_pottery" }, { g: "star" }, { k: "m_zellige" }, { g: "diamond" },
+                { k: "m_cooking" }, { g: "sparkle" }, { k: "m_weaving" }, { g: "star" },
+                { k: "m_painting" }, { g: "diamond" }, { k: "m_garden" }, { g: "sparkle" },
+                { k: "m_cooperative" }, { g: "star" }, { k: "m_sunset" }, { g: "diamond" },
+              ].map((item, i) => {
+                if ("g" in item) {
+                  const Glyph = item.g === "star" ? ZelligeStar : item.g === "diamond" ? ZelligeDiamond : ZelligeSparkle;
                   return <Glyph key={`${copy}-${i}`} size={14} style={{ color: PALETTE.sand }} />;
                 }
                 return (
@@ -339,7 +340,7 @@ export default function Sofitel() {
                     className="text-[11px] uppercase tracking-[0.32em]"
                     style={{ color: PALETTE.blueDeep }}
                   >
-                    {t}
+                    {t(item.k as SofitelKey)}
                   </span>
                 );
               })}
@@ -353,7 +354,7 @@ export default function Sofitel() {
         <ZelligeDivider symbol="star" lineColor={PALETTE.line} />
         <p className="mt-4 text-center text-[10px] sm:text-[11px] uppercase tracking-[0.36em]" style={{ color: PALETTE.blueDeep }}>
           <ZelligeInlineSeparator className="mr-2" color={PALETTE.sand} />
-          The week ahead
+          {t("week_ahead")}
           <ZelligeInlineSeparator className="ml-2" color={PALETTE.sand} />
         </p>
       </div>
