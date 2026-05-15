@@ -930,3 +930,26 @@ function ConfirmationOverlay({ name, experience, onClose }: { name: string; expe
     </div>
   );
 }
+
+function ZelligeOrnament({ className, style }: { className?: string; style?: React.CSSProperties }) {
+  return (
+    <svg
+      className={className}
+      style={style}
+      viewBox="0 0 200 200"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden
+    >
+      <g stroke="#E6C36B" strokeWidth="0.8" fill="none" opacity="0.9">
+        {/* 8-point Moroccan star */}
+        <path d="M100 10 L118 60 L170 50 L138 92 L190 110 L138 128 L170 170 L118 160 L100 210 L82 160 L30 170 L62 128 L10 110 L62 92 L30 50 L82 60 Z" />
+        <circle cx="100" cy="110" r="42" />
+        <circle cx="100" cy="110" r="28" strokeDasharray="2 4" />
+        <circle cx="100" cy="110" r="6" fill="#E6C36B" />
+        {/* Inner cross */}
+        <path d="M100 70 L100 150 M60 110 L140 110" />
+      </g>
+    </svg>
+  );
+}
