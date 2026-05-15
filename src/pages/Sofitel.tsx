@@ -831,24 +831,24 @@ function BookingSheet({
         <div className="flex-1 overflow-y-auto px-5 sm:px-8 py-5 space-y-5">
           {step === 1 ? (
             <div className="space-y-4">
-              <Field label="Full name" value={name} onChange={setName} placeholder="Jane Doe" autoFocus />
+              <Field label={t("full_name")} value={name} onChange={setName} placeholder="Jane Doe" autoFocus />
               <div className="grid grid-cols-2 gap-3">
-                <Field label="Room number" value={room} onChange={setRoom} placeholder="412" inputMode="numeric" />
-                <Field label="Phone (optional)" value={phone} onChange={setPhone} placeholder="+212 ..." inputMode="tel" />
+                <Field label={t("room_number")} value={room} onChange={setRoom} placeholder="412" inputMode="numeric" />
+                <Field label={t("phone_optional")} value={phone} onChange={setPhone} placeholder="+212 ..." inputMode="tel" />
               </div>
 
               <div>
-                <label className="text-[10px] uppercase tracking-[0.25em] opacity-60">Number of guests</label>
+                <label className="text-[10px] uppercase tracking-[0.25em] opacity-60">{t("num_guests")}</label>
                 <div className="mt-2 flex items-center justify-between gap-3 p-2 rounded-2xl" style={{ background: "#FFFFFF", border: `1px solid ${PALETTE.line}` }}>
                   <Stepper value={participants} onChange={setParticipants} max={Math.max(1, remaining)} />
                   <span className="text-xs opacity-60 pr-2">
-                    {remaining} {remaining === 1 ? "spot" : "spots"} left
+                    {remaining} {spotsLabel(remaining)}
                   </span>
                 </div>
               </div>
 
               <p className="text-[11px] opacity-50 leading-relaxed">
-                Charges will appear on your Sofitel folio. Free cancellation up to 12h before.
+                {t("charges_note")}
               </p>
             </div>
           ) : (
