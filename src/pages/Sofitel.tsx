@@ -194,12 +194,14 @@ export default function Sofitel() {
 
   return (
     <div
+      dir={dir}
       className="min-h-screen"
       style={{ background: PALETTE.bg, color: PALETTE.ink, fontFamily: "'Inter', system-ui, sans-serif" }}
     >
       <Helmet>
-        <title>Terraria x Sofitel Tamuda Bay | Curated Creative Experiences</title>
-        <meta name="description" content="Discover authentic creative Morocco at Sofitel Tamuda Bay. Pottery, zellige, sunset art, and artisan visits curated by Terraria Workshop." />
+        <html lang={language} />
+        <title>{t("meta_title")}</title>
+        <meta name="description" content={t("meta_desc")} />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
       </Helmet>
