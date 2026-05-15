@@ -8,6 +8,14 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import {
+  ZelligeDivider,
+  ZelligeInlineSeparator,
+  ZelligeTileBand,
+  ZelligeStar,
+  ZelligeDiamond,
+  ZelligeSparkle,
+} from "@/components/sofitel/ZelligeSymbols";
 
 import imgHeroWallpaper from "@/assets/sofitel/hero-wallpaper.jpg";
 import imgSofitelLogo from "@/assets/sofitel/sofitel-logo.png";
