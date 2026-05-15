@@ -489,6 +489,7 @@ export default function Sofitel() {
           experience={confirmation.experience}
           onClose={() => setConfirmation(null)}
         />
+      )}
 
       <LanguageSwitcher />
     </div>
