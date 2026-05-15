@@ -261,7 +261,7 @@ export default function Sofitel() {
               <Star size={10} strokeWidth={1.5} fill="#E6C36B" stroke="#E6C36B" />
               <Star size={10} strokeWidth={1.5} fill="#E6C36B" stroke="#E6C36B" />
               <Star size={10} strokeWidth={1.5} fill="#E6C36B" stroke="#E6C36B" />
-              <span className="ml-2 opacity-80">Luxury Resort</span>
+              <span className="ml-2 opacity-80">{t("luxury_resort")}</span>
             </div>
           </div>
         </div>
