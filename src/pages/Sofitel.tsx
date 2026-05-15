@@ -8,6 +8,14 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import {
+  ZelligeDivider,
+  ZelligeInlineSeparator,
+  ZelligeTileBand,
+  ZelligeStar,
+  ZelligeDiamond,
+  ZelligeSparkle,
+} from "@/components/sofitel/ZelligeSymbols";
 
 import imgHeroWallpaper from "@/assets/sofitel/hero-wallpaper.jpg";
 import imgSofitelLogo from "@/assets/sofitel/sofitel-logo.png";
@@ -251,7 +259,9 @@ export default function Sofitel() {
 
           <div className="mt-7 sm:mt-10 flex items-center gap-3 text-[10px] sm:text-xs uppercase tracking-[0.3em] text-white/90">
             <span className="h-px w-8 sm:w-12" style={{ background: PALETTE.sand }} />
+            <ZelligeStar size={14} style={{ color: PALETTE.sand }} />
             <span>This week's program</span>
+            <ZelligeStar size={14} style={{ color: PALETTE.sand }} />
             <span className="h-px flex-1 max-w-[80px]" style={{ background: "rgba(255,255,255,0.25)" }} />
           </div>
         </div>
@@ -266,30 +276,48 @@ export default function Sofitel() {
         </div>
       </header>
 
-      {/* Marquee ornament strip */}
+      {/* Marquee ornament strip with zellige glyphs */}
       <div className="relative overflow-hidden border-y" style={{ borderColor: PALETTE.line, background: PALETTE.bg }}>
-        <div className="flex gap-10 py-3 whitespace-nowrap animate-[marquee_40s_linear_infinite] will-change-transform">
+        <ZelligeTileBand
+          className="absolute inset-x-0 top-1/2 -translate-y-1/2 pointer-events-none"
+          color={PALETTE.sand}
+          density={24}
+        />
+        <div className="relative flex gap-10 py-3 whitespace-nowrap animate-[marquee_40s_linear_infinite] will-change-transform">
           {Array.from({ length: 2 }).map((_, copy) => (
             <div key={copy} className="flex items-center gap-10 shrink-0">
               {[
-                "Pottery", "✦", "Zellige", "✧", "Cooking", "✦", "Weaving", "✧",
-                "Painting", "✦", "Garden", "✧", "Cooperative", "✦", "Sunset rituals", "✧",
-              ].map((t, i) => (
-                <span
-                  key={`${copy}-${i}`}
-                  className="text-[11px] uppercase tracking-[0.32em] inline-flex items-center gap-2"
-                  style={{
-                    color: t.length === 1 ? PALETTE.sand : PALETTE.blueDeep,
-                    fontFamily: t.length === 1 ? "'Cormorant Garamond', serif" : undefined,
-                    fontSize: t.length === 1 ? 16 : undefined,
-                  }}
-                >
-                  {t}
-                </span>
-              ))}
+                "Pottery", "star", "Zellige", "diamond", "Cooking", "sparkle", "Weaving", "star",
+                "Painting", "diamond", "Garden", "sparkle", "Cooperative", "star", "Sunset rituals", "diamond",
+              ].map((t, i) => {
+                const isGlyph = t === "star" || t === "diamond" || t === "sparkle";
+                if (isGlyph) {
+                  const Glyph = t === "star" ? ZelligeStar : t === "diamond" ? ZelligeDiamond : ZelligeSparkle;
+                  return <Glyph key={`${copy}-${i}`} size={14} style={{ color: PALETTE.sand }} />;
+                }
+                return (
+                  <span
+                    key={`${copy}-${i}`}
+                    className="text-[11px] uppercase tracking-[0.32em]"
+                    style={{ color: PALETTE.blueDeep }}
+                  >
+                    {t}
+                  </span>
+                );
+              })}
             </div>
           ))}
         </div>
+      </div>
+
+      {/* Section divider — into the program */}
+      <div className="max-w-6xl mx-auto px-5 pt-10 sm:pt-14" style={{ color: PALETTE.sand }}>
+        <ZelligeDivider symbol="star" lineColor={PALETTE.line} />
+        <p className="mt-4 text-center text-[10px] sm:text-[11px] uppercase tracking-[0.36em]" style={{ color: PALETTE.blueDeep }}>
+          <ZelligeInlineSeparator className="mr-2" color={PALETTE.sand} />
+          The week ahead
+          <ZelligeInlineSeparator className="ml-2" color={PALETTE.sand} />
+        </p>
       </div>
 
       {/* DAYS RAIL */}
@@ -384,15 +412,21 @@ export default function Sofitel() {
 
       {/* FOOTER */}
       <footer className="border-t" style={{ borderColor: PALETTE.line }}>
-        <div className="max-w-6xl mx-auto px-5 py-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="max-w-6xl mx-auto px-5 pt-10">
+          <ZelligeDivider symbol="rosette" lineColor={PALETTE.line} symbolColor={PALETTE.sand} />
+        </div>
+        <div className="max-w-6xl mx-auto px-5 py-8 sm:py-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
-            <p className="text-[11px] tracking-[0.32em] uppercase" style={{ color: PALETTE.blueDeep }}>
+            <p className="text-[11px] tracking-[0.32em] uppercase inline-flex items-center gap-2" style={{ color: PALETTE.blueDeep }}>
+              <ZelligeStar size={12} style={{ color: PALETTE.sand }} />
               Terraria × Sofitel Tamuda Bay
             </p>
             <p className="mt-2 text-xs opacity-60">Curated by Terraria Workshop · Tetouan, Morocco</p>
           </div>
-          <p className="text-xs opacity-50" style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: "italic" }}>
+          <p className="text-xs opacity-60 inline-flex items-center gap-2" style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: "italic" }}>
+            <ZelligeDiamond size={10} style={{ color: PALETTE.sand }} />
             "Discover authentic creative Morocco."
+            <ZelligeDiamond size={10} style={{ color: PALETTE.sand }} />
           </p>
         </div>
       </footer>
