@@ -292,6 +292,19 @@ export default function Sofitel() {
         </div>
       </div>
 
+      {/* DAYS RAIL */}
+      {days.length > 0 && (
+        <div className="sticky top-0 z-20 backdrop-blur-md" style={{ background: `${PALETTE.bg}E6`, borderBottom: `1px solid ${PALETTE.line}` }}>
+          <div className="max-w-6xl mx-auto px-5 py-3 flex gap-2 overflow-x-auto scrollbar-hide">
+            <DayChip label="All days" active={!activeDay} onClick={() => setActiveDay(null)} />
+            {days.map(({ key, date }) => (
+              <DayChip
+                key={key}
+                label={format(date, "EEE d")}
+                active={activeDay === key}
+                onClick={() => setActiveDay(key === activeDay ? null : key)}
+              />
+            ))}
           </div>
         </div>
       )}
