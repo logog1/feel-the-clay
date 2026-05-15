@@ -917,7 +917,7 @@ function BookingSheet({
   );
 }
 
-function StepDot({ active, label, done }: { active: boolean; label: string; done?: boolean }) {
+function StepDot({ active, label, done, stepNumber }: { active: boolean; label: string; done?: boolean; stepNumber: number }) {
   return (
     <div className="inline-flex items-center gap-2">
       <span
@@ -928,7 +928,7 @@ function StepDot({ active, label, done }: { active: boolean; label: string; done
           border: `1px solid ${active ? PALETTE.ink : PALETTE.line}`,
         }}
       >
-        {done ? <Check size={10} /> : label === "Details" ? "1" : "2"}
+        {done ? <Check size={10} /> : stepNumber}
       </span>
       <span className="text-[10px] uppercase tracking-[0.22em]" style={{ color: active ? PALETTE.ink : "#9aa0a6" }}>{label}</span>
     </div>
