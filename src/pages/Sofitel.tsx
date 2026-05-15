@@ -581,7 +581,7 @@ function ExperienceCard({ exp, index, remaining, onBook }: { exp: Experience; in
             style={{ background: "#FFFFFFE6", color: PALETTE.ink, boxShadow: "0 4px 12px rgba(14,20,24,0.08)" }}
           >
             <span className="w-1 h-1 rounded-full" style={{ background: PALETTE.sand }} />
-            {exp.category === "in-hotel" ? "In-hotel" : exp.category === "outdoor" ? "Outdoor" : "Cultural"}
+            {categoryLabel}
           </span>
           <SpotsBadge remaining={remaining} capacity={exp.capacity} />
         </div>
