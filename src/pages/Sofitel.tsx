@@ -286,14 +286,13 @@ export default function Sofitel() {
             className="text-[40px] sm:text-7xl md:text-[88px] leading-[0.98] font-light text-white animate-[fade-in_1s_ease-out]"
             style={{ fontFamily: "'Cormorant Garamond', serif", textShadow: "0 2px 30px rgba(14,20,24,0.4)" }}
           >
-            Curated creative<br />
-            <span style={{ fontStyle: "italic", color: "#F1E2BE" }}>experiences</span>
-            <br className="sm:hidden" /> <span className="opacity-90">by the sea.</span>
+            {t("hero_title_1")}<br />
+            <span style={{ fontStyle: "italic", color: "#F1E2BE" }}>{t("hero_title_2")}</span>
+            <br className="sm:hidden" /> <span className="opacity-90">{t("hero_title_3")}</span>
           </h1>
 
           <p className="mt-5 sm:mt-7 max-w-xl text-[14px] sm:text-lg leading-relaxed text-white/85 animate-[fade-in_1.2s_ease-out]">
-            A weekly program of artisan workshops and cultural escapes,
-            crafted for the guests of Sofitel Tamuda Bay.
+            {t("hero_subtitle")}
           </p>
 
           <div className="mt-7 sm:mt-10 flex items-center gap-3 text-[10px] sm:text-xs uppercase tracking-[0.3em] text-white/90">
