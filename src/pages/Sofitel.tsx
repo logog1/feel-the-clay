@@ -787,7 +787,7 @@ function BookingSheet({
           />
           <div className="min-w-0 flex-1">
             <p className="text-[10px] uppercase tracking-[0.25em]" style={{ color: PALETTE.blueDeep }}>
-              {format(date, "EEE d MMM · HH:mm")}
+              {fmtDate(date, "EEE d MMM · HH:mm")}
             </p>
             <h2 className="mt-1 text-xl sm:text-2xl leading-tight truncate" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
               {experience.title}
