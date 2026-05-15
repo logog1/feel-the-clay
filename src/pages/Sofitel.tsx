@@ -298,7 +298,7 @@ export default function Sofitel() {
           <div className="mt-7 sm:mt-10 flex items-center gap-3 text-[10px] sm:text-xs uppercase tracking-[0.3em] text-white/90">
             <span className="h-px w-8 sm:w-12" style={{ background: PALETTE.sand }} />
             <ZelligeStar size={14} style={{ color: PALETTE.sand }} />
-            <span>This week's program</span>
+            <span>{t("this_week")}</span>
             <ZelligeStar size={14} style={{ color: PALETTE.sand }} />
             <span className="h-px flex-1 max-w-[80px]" style={{ background: "rgba(255,255,255,0.25)" }} />
           </div>
