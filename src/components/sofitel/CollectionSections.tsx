@@ -178,7 +178,7 @@ const OUTSIDE = [
 function OutsideSection() {
   return (
     <section className="max-w-6xl mx-auto px-5 py-16 sm:py-24" style={{ borderTop: `1px solid ${P.line}` }}>
-      <SectionHeader kicker="Off-property" title="Cooperative and cultural immersions in the heart of Tétouan" />
+      <SectionHeader kicker="Beyond the resort" title="Cultural immersions in the heart of Tetouan" sub="Step out with a small group and meet the artisans, families and gardens behind the craft." />
       <div className="grid md:grid-cols-3 gap-4">
         {OUTSIDE.map((o) => (
           <article key={o.name} className="rounded-3xl bg-white p-7" style={{ border: `1px solid ${P.line}` }}>
