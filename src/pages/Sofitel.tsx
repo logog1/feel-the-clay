@@ -127,6 +127,8 @@ const PALETTE = {
 };
 
 export default function Sofitel() {
+  const { t, fmtDate, spotsLabel, language } = useT();
+  const dir: "ltr" | "rtl" = language === "ar" ? "rtl" : "ltr";
   const [items, setItems] = useState<Experience[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("all");
