@@ -158,26 +158,26 @@ export default function Sofitel() {
             background: `radial-gradient(120% 80% at 80% 0%, ${PALETTE.sandSoft} 0%, transparent 60%), linear-gradient(180deg, ${PALETTE.bg} 0%, ${PALETTE.bg} 100%)`,
           }}
         />
-        <div className="relative max-w-6xl mx-auto px-5 pt-10 pb-12 sm:pt-16 sm:pb-20">
-          <div className="flex items-center gap-3 text-[11px] tracking-[0.32em] uppercase opacity-70">
+        <div className="relative max-w-6xl mx-auto px-5 pt-8 pb-8 sm:pt-16 sm:pb-20">
+          <div className="flex items-center gap-2 sm:gap-3 text-[9px] sm:text-[11px] tracking-[0.28em] sm:tracking-[0.32em] uppercase opacity-70 flex-wrap">
             <span style={{ color: PALETTE.blueDeep }}>Terraria Workshop</span>
             <span style={{ color: PALETTE.sand }}>×</span>
             <span style={{ color: PALETTE.blueDeep }}>Sofitel Tamuda Bay</span>
           </div>
           <h1
-            className="mt-6 text-4xl sm:text-6xl md:text-7xl leading-[1.05] font-light"
+            className="mt-4 sm:mt-6 text-[34px] sm:text-6xl md:text-7xl leading-[1.05] font-light"
             style={{ fontFamily: "'Cormorant Garamond', serif", color: PALETTE.ink }}
           >
             Curated creative<br />
             <span style={{ fontStyle: "italic", color: PALETTE.blueDeep }}>experiences</span> by the sea.
           </h1>
-          <p className="mt-5 max-w-xl text-base sm:text-lg opacity-75 leading-relaxed">
+          <p className="mt-4 sm:mt-5 max-w-xl text-[14px] sm:text-lg opacity-75 leading-relaxed">
             A weekly program of artisan workshops and cultural escapes, crafted for guests
             of Sofitel Tamuda Bay. Discover authentic Morocco, one ritual at a time.
           </p>
 
-          <div className="mt-8 flex items-center gap-3 text-xs uppercase tracking-[0.2em]">
-            <span className="h-px w-10" style={{ background: PALETTE.sand }} />
+          <div className="mt-6 sm:mt-8 flex items-center gap-3 text-[10px] sm:text-xs uppercase tracking-[0.2em]">
+            <span className="h-px w-8 sm:w-10" style={{ background: PALETTE.sand }} />
             <span style={{ color: PALETTE.blueDeep }}>This week's program</span>
           </div>
         </div>
@@ -235,7 +235,7 @@ export default function Sofitel() {
         ) : filtered.length === 0 ? (
           <p className="text-center py-24 opacity-60">No experiences match these filters.</p>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {filtered.map((exp, idx) => (
               <div key={exp.id} className="h-full">
                 <ExperienceCard
@@ -311,7 +311,7 @@ function ExperienceCard({ exp, index, remaining, onBook }: { exp: Experience; in
   const localImg = SLUG_IMAGES[exp.slug];
   return (
     <article
-      className="group relative overflow-hidden rounded-[28px] bg-white animate-fade-in transition-all duration-500 hover:-translate-y-1.5 h-full flex flex-col"
+      className="group relative overflow-hidden rounded-3xl sm:rounded-[28px] bg-white animate-fade-in transition-all duration-500 sm:hover:-translate-y-1.5 h-full flex flex-col"
       style={{
         border: `1px solid ${PALETTE.line}`,
         animationDelay: `${index * 70}ms`,
@@ -319,6 +319,7 @@ function ExperienceCard({ exp, index, remaining, onBook }: { exp: Experience; in
         boxShadow: "0 1px 0 rgba(14,20,24,0.04), 0 24px 48px -28px rgba(46,81,104,0.18)",
       }}
       onMouseMove={(e) => {
+        if (window.matchMedia("(hover: none)").matches) return;
         const t = e.currentTarget as HTMLElement;
         const r = t.getBoundingClientRect();
         const x = ((e.clientX - r.left) / r.width - 0.5) * 6;
@@ -375,15 +376,15 @@ function ExperienceCard({ exp, index, remaining, onBook }: { exp: Experience; in
           <SpotsBadge remaining={remaining} capacity={exp.capacity} />
         </div>
 
-        <div className="absolute bottom-0 left-0 right-0 p-5 text-white">
+        <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-5 text-white">
           {exp.subtitle && (
-            <p className="text-[10px] uppercase tracking-[0.32em] opacity-90 mb-2 inline-flex items-center gap-2">
+            <p className="text-[10px] uppercase tracking-[0.32em] opacity-90 mb-1.5 sm:mb-2 inline-flex items-center gap-2">
               <span className="h-px w-6" style={{ background: PALETTE.sand }} />
               <span style={{ color: PALETTE.sand }}>{exp.subtitle}</span>
             </p>
           )}
           <h3
-            className="text-[28px] leading-[1.05] transition-transform duration-500 group-hover:translate-x-1"
+            className="text-[22px] sm:text-[28px] leading-[1.05] transition-transform duration-500 group-hover:translate-x-1"
             style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 400 }}
           >
             {exp.title}
@@ -391,8 +392,8 @@ function ExperienceCard({ exp, index, remaining, onBook }: { exp: Experience; in
         </div>
       </div>
 
-      <div className="p-5 space-y-4 relative">
-        <p className="text-[13.5px] leading-relaxed" style={{ color: PALETTE.ink, opacity: 0.78 }}>
+      <div className="p-4 sm:p-5 space-y-3 sm:space-y-4 relative">
+        <p className="text-[13px] sm:text-[13.5px] leading-relaxed line-clamp-3 sm:line-clamp-none" style={{ color: PALETTE.ink, opacity: 0.78 }}>
           {exp.description}
         </p>
 
@@ -402,10 +403,10 @@ function ExperienceCard({ exp, index, remaining, onBook }: { exp: Experience; in
           {exp.location && <Meta icon={MapPin}>{exp.location}</Meta>}
         </div>
 
-        <div className="flex items-end justify-between pt-3 border-t" style={{ borderColor: PALETTE.line }}>
-          <div>
+        <div className="flex items-end justify-between gap-3 pt-3 border-t" style={{ borderColor: PALETTE.line }}>
+          <div className="min-w-0">
             <p className="text-[10px] uppercase tracking-[0.22em] opacity-50">From</p>
-            <p className="text-[22px] font-light leading-tight" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+            <p className="text-[20px] sm:text-[22px] font-light leading-tight whitespace-nowrap" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
               {exp.price_per_person > 0 ? (
                 <>
                   {exp.price_per_person} <span className="text-[12px] opacity-70">{exp.currency}</span>
@@ -419,14 +420,14 @@ function ExperienceCard({ exp, index, remaining, onBook }: { exp: Experience; in
           <button
             onClick={onBook}
             disabled={remaining === 0}
-            className="group/btn relative inline-flex items-center gap-2 px-5 py-3 rounded-full text-[10.5px] font-medium uppercase tracking-[0.22em] overflow-hidden transition-all duration-300 hover:gap-3 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:gap-2"
+            className="group/btn relative inline-flex items-center gap-1.5 sm:gap-2 px-4 sm:px-5 py-2.5 sm:py-3 rounded-full text-[10px] sm:text-[10.5px] font-medium uppercase tracking-[0.18em] sm:tracking-[0.22em] overflow-hidden transition-all duration-300 hover:gap-3 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:gap-2 shrink-0"
             style={{ background: PALETTE.ink, color: PALETTE.bg }}
           >
             <span
               className="absolute inset-0 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-500"
               style={{ background: `linear-gradient(135deg, ${PALETTE.blueDeep}, ${PALETTE.ink})` }}
             />
-            <span className="relative">{remaining === 0 ? "Fully booked" : "Reserve"}</span>
+            <span className="relative">{remaining === 0 ? "Booked" : "Reserve"}</span>
             {remaining > 0 && <ArrowRight size={13} className="relative transition-transform group-hover/btn:translate-x-1" />}
           </button>
         </div>
