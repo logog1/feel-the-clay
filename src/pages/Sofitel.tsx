@@ -728,11 +728,11 @@ function BookingSheet({
 
   const goToReview = () => {
     if (!name.trim() || !room.trim()) {
-      toast.error("Name and room number are required");
+      toast.error(t("err_required"));
       return;
     }
     if (participants > remaining) {
-      toast.error(`Only ${remaining} ${remaining === 1 ? "spot" : "spots"} left`);
+      toast.error(t("err_only_n", { n: remaining, label: spotsLabel(remaining) }));
       return;
     }
     setStep(2);
