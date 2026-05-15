@@ -615,15 +615,15 @@ function ExperienceCard({ exp, index, remaining, onBook }: { exp: Experience; in
 
         <div className="flex items-end justify-between gap-3 pt-3 border-t" style={{ borderColor: PALETTE.line }}>
           <div className="min-w-0">
-            <p className="text-[10px] uppercase tracking-[0.22em] opacity-50">From</p>
+            <p className="text-[10px] uppercase tracking-[0.22em] opacity-50">{t("from")}</p>
             <p className="text-[20px] sm:text-[22px] font-light leading-tight whitespace-nowrap" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
               {exp.price_per_person > 0 ? (
                 <>
                   {exp.price_per_person} <span className="text-[12px] opacity-70">{exp.currency}</span>
-                  <span className="text-[11px] opacity-60 ml-1">/ guest</span>
+                  <span className="text-[11px] opacity-60 ml-1">{t("per_guest")}</span>
                 </>
               ) : (
-                <span style={{ fontStyle: "italic" }}>On request</span>
+                <span style={{ fontStyle: "italic" }}>{t("on_request")}</span>
               )}
             </p>
           </div>
