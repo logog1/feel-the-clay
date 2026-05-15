@@ -159,14 +159,6 @@ export default function Sofitel() {
         <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
       </Helmet>
 
-      {/* HERO */}
-      <header className="relative overflow-hidden">
-        <div
-          className="absolute inset-0"
-          style={{
-            background: `radial-gradient(120% 80% at 80% 0%, ${PALETTE.sandSoft} 0%, transparent 60%), linear-gradient(180deg, ${PALETTE.bg} 0%, ${PALETTE.bg} 100%)`,
-          }}
-        />
       {/* HERO — cinematic wallpaper */}
       <header className="relative overflow-hidden h-[88vh] sm:h-[92vh] min-h-[560px] flex items-end">
         {/* Parallax wallpaper */}
