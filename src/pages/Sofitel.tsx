@@ -503,6 +503,7 @@ function BookingSheet({
   onClose: () => void;
   onConfirmed: (name: string) => void;
 }) {
+  const [step, setStep] = useState<1 | 2>(1);
   const [name, setName] = useState("");
   const [room, setRoom] = useState("");
   const [participants, setParticipants] = useState(1);
@@ -510,9 +511,33 @@ function BookingSheet({
   const [submitting, setSubmitting] = useState(false);
 
   const total = experience.price_per_person * participants;
+  const date = parseISO(experience.scheduled_at);
+  const fullyBooked = remaining === 0;
+  const low = !fullyBooked && remaining <= 3;
 
-  const submit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  // Lock body scroll while open
+  useEffect(() => {
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = prev; };
+  }, []);
+
+  // Swipe-down to close (mobile)
+  const [dragY, setDragY] = useState(0);
+  const startYRef = useState<{ y: number | null }>({ y: null })[0];
+  const onTouchStart = (e: React.TouchEvent) => { startYRef.y = e.touches[0].clientY; };
+  const onTouchMove = (e: React.TouchEvent) => {
+    if (startYRef.y == null) return;
+    const dy = e.touches[0].clientY - startYRef.y;
+    if (dy > 0) setDragY(dy);
+  };
+  const onTouchEnd = () => {
+    if (dragY > 120) onClose();
+    setDragY(0);
+    startYRef.y = null;
+  };
+
+  const goToReview = () => {
     if (!name.trim() || !room.trim()) {
       toast.error("Name and room number are required");
       return;
@@ -521,6 +546,10 @@ function BookingSheet({
       toast.error(`Only ${remaining} ${remaining === 1 ? "spot" : "spots"} left`);
       return;
     }
+    setStep(2);
+  };
+
+  const submit = async () => {
     setSubmitting(true);
     const { error } = await supabase.from("sofitel_bookings").insert({
       experience_id: experience.id,
@@ -538,82 +567,200 @@ function BookingSheet({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center animate-fade-in" style={{ background: "#0E1418CC" }}>
+    <div
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center animate-fade-in"
+      style={{ background: "#0E1418CC" }}
+      onClick={onClose}
+    >
       <div
-        className="relative w-full sm:max-w-lg max-h-[92vh] overflow-y-auto rounded-t-3xl sm:rounded-3xl animate-slide-in-right sm:animate-scale-in"
-        style={{ background: PALETTE.bg }}
+        onClick={(e) => e.stopPropagation()}
+        onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
+        onTouchEnd={onTouchEnd}
+        className="relative w-full sm:max-w-lg max-h-[94vh] flex flex-col rounded-t-3xl sm:rounded-3xl overflow-hidden animate-slide-in-right sm:animate-scale-in shadow-2xl"
+        style={{
+          background: PALETTE.bg,
+          transform: dragY ? `translateY(${dragY}px)` : undefined,
+          transition: dragY ? "none" : "transform 250ms ease",
+        }}
       >
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 z-10 w-9 h-9 rounded-full flex items-center justify-center"
-          style={{ background: PALETTE.line, color: PALETTE.ink }}
-        >
-          <X size={16} />
-        </button>
-
-        <div className="aspect-[16/10] overflow-hidden rounded-t-3xl">
-          <img src={SLUG_IMAGES[experience.slug] || experience.cover_image || ""} alt={experience.title} className="w-full h-full object-cover" />
+        {/* Drag handle (mobile) */}
+        <div className="sm:hidden flex justify-center pt-2.5 pb-1">
+          <span className="block w-10 h-1.5 rounded-full" style={{ background: PALETTE.line }} />
         </div>
 
-        <form onSubmit={submit} className="p-6 sm:p-8 space-y-5">
-          <div>
-            <p className="text-[11px] uppercase tracking-[0.25em]" style={{ color: PALETTE.blueDeep }}>
-              {format(parseISO(experience.scheduled_at), "EEEE d MMMM · HH:mm")}
+        {/* Header */}
+        <div className="relative px-5 sm:px-8 pt-3 sm:pt-6 pb-4 flex items-start gap-3 border-b" style={{ borderColor: PALETTE.line }}>
+          <img
+            src={SLUG_IMAGES[experience.slug] || experience.cover_image || ""}
+            alt={experience.title}
+            className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl object-cover shrink-0"
+          />
+          <div className="min-w-0 flex-1">
+            <p className="text-[10px] uppercase tracking-[0.25em]" style={{ color: PALETTE.blueDeep }}>
+              {format(date, "EEE d MMM · HH:mm")}
             </p>
-            <h2 className="mt-2 text-3xl leading-tight" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+            <h2 className="mt-1 text-xl sm:text-2xl leading-tight truncate" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
               {experience.title}
             </h2>
-            {experience.location && (
-              <p className="mt-2 text-sm opacity-70 inline-flex items-center gap-1.5">
-                <MapPin size={13} /> {experience.location}
-              </p>
-            )}
-          </div>
-
-          <div className="grid gap-3">
-            <Field label="Full name" value={name} onChange={setName} placeholder="Jane Doe" />
-            <div className="grid grid-cols-2 gap-3">
-              <Field label="Room number" value={room} onChange={setRoom} placeholder="412" />
-              <Field label="Phone (optional)" value={phone} onChange={setPhone} placeholder="+212 ..." />
+            <div className="mt-1.5 flex flex-wrap gap-1.5 items-center text-[10.5px]">
+              <span
+                className="px-2 py-0.5 rounded-full font-medium"
+                style={{
+                  background: fullyBooked ? PALETTE.ink : low ? PALETTE.sand : "#FFFFFF",
+                  color: fullyBooked ? PALETTE.bg : PALETTE.ink,
+                  border: `1px solid ${fullyBooked ? PALETTE.ink : low ? PALETTE.sand : PALETTE.line}`,
+                }}
+              >
+                {fullyBooked ? "Fully booked" : low ? `Only ${remaining} left` : `${remaining} spots available`}
+              </span>
+              {experience.location && (
+                <span className="opacity-60 inline-flex items-center gap-1">
+                  <MapPin size={11} /> {experience.location}
+                </span>
+              )}
             </div>
+          </div>
+          <button
+            onClick={onClose}
+            aria-label="Close"
+            className="w-9 h-9 rounded-full flex items-center justify-center shrink-0"
+            style={{ background: PALETTE.line, color: PALETTE.ink }}
+          >
+            <X size={16} />
+          </button>
+        </div>
 
-            <div>
-              <label className="text-[10px] uppercase tracking-[0.25em] opacity-60">Guests</label>
-              <div className="mt-2 flex items-center gap-3">
-                <Stepper value={participants} onChange={setParticipants} max={Math.max(1, remaining)} />
-                <span className="text-sm opacity-60">{remaining} {remaining === 1 ? "spot" : "spots"} left</span>
+        {/* Step indicator */}
+        <div className="flex items-center gap-2 px-5 sm:px-8 pt-4">
+          <StepDot active={step >= 1} label="Details" done={step > 1} />
+          <span className="flex-1 h-px" style={{ background: PALETTE.line }} />
+          <StepDot active={step >= 2} label="Confirm" />
+        </div>
+
+        {/* Body (scrollable) */}
+        <div className="flex-1 overflow-y-auto px-5 sm:px-8 py-5 space-y-5">
+          {step === 1 ? (
+            <div className="space-y-4">
+              <Field label="Full name" value={name} onChange={setName} placeholder="Jane Doe" autoFocus />
+              <div className="grid grid-cols-2 gap-3">
+                <Field label="Room number" value={room} onChange={setRoom} placeholder="412" inputMode="numeric" />
+                <Field label="Phone (optional)" value={phone} onChange={setPhone} placeholder="+212 ..." inputMode="tel" />
               </div>
-            </div>
-          </div>
 
-          <div className="flex items-end justify-between pt-4 border-t" style={{ borderColor: PALETTE.line }}>
-            <div>
-              <p className="text-[10px] uppercase tracking-[0.25em] opacity-50">Total</p>
-              <p className="text-2xl font-light" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
-                {total} {experience.currency}
+              <div>
+                <label className="text-[10px] uppercase tracking-[0.25em] opacity-60">Number of guests</label>
+                <div className="mt-2 flex items-center justify-between gap-3 p-2 rounded-2xl" style={{ background: "#FFFFFF", border: `1px solid ${PALETTE.line}` }}>
+                  <Stepper value={participants} onChange={setParticipants} max={Math.max(1, remaining)} />
+                  <span className="text-xs opacity-60 pr-2">
+                    {remaining} {remaining === 1 ? "spot" : "spots"} left
+                  </span>
+                </div>
+              </div>
+
+              <p className="text-[11px] opacity-50 leading-relaxed">
+                Charges will appear on your Sofitel folio. Free cancellation up to 12h before.
               </p>
             </div>
+          ) : (
+            <div className="space-y-4">
+              <p className="text-[10px] uppercase tracking-[0.25em] opacity-60">Review your reservation</p>
+              <div className="rounded-2xl p-4 space-y-2.5" style={{ background: "#FFFFFF", border: `1px solid ${PALETTE.line}` }}>
+                <ReviewRow label="Guest" value={name} />
+                <ReviewRow label="Room" value={room} />
+                {phone && <ReviewRow label="Phone" value={phone} />}
+                <ReviewRow label="Guests" value={String(participants)} />
+                <ReviewRow label="When" value={format(date, "EEE d MMM · HH:mm")} />
+                {experience.location && <ReviewRow label="Where" value={experience.location} />}
+              </div>
+              <p className="text-[11px] opacity-60 leading-relaxed text-center">
+                A printed confirmation will be delivered to your room.
+              </p>
+            </div>
+          )}
+        </div>
+
+        {/* Sticky footer */}
+        <div
+          className="px-5 sm:px-8 py-4 border-t flex items-center justify-between gap-3"
+          style={{ borderColor: PALETTE.line, background: PALETTE.bg, paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 1rem)" }}
+        >
+          <div className="min-w-0">
+            <p className="text-[10px] uppercase tracking-[0.25em] opacity-50">Total</p>
+            <p className="text-xl sm:text-2xl font-light leading-tight whitespace-nowrap" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+              {experience.price_per_person > 0 ? (
+                <>{total} <span className="text-xs opacity-70">{experience.currency}</span></>
+              ) : (
+                <span style={{ fontStyle: "italic" }}>On request</span>
+              )}
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            {step === 2 && (
+              <button
+                type="button"
+                onClick={() => setStep(1)}
+                className="px-4 py-3 rounded-full text-[11px] uppercase tracking-[0.2em]"
+                style={{ border: `1px solid ${PALETTE.line}`, color: PALETTE.ink }}
+              >
+                Edit
+              </button>
+            )}
             <button
-              type="submit"
-              disabled={submitting}
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-xs font-medium uppercase tracking-[0.2em] disabled:opacity-50"
+              type="button"
+              onClick={step === 1 ? goToReview : submit}
+              disabled={submitting || fullyBooked}
+              className="inline-flex items-center gap-2 px-5 sm:px-6 py-3 rounded-full text-[11px] font-medium uppercase tracking-[0.2em] disabled:opacity-50"
               style={{ background: PALETTE.ink, color: PALETTE.bg }}
             >
-              {submitting ? <Loader2 size={14} className="animate-spin" /> : <Check size={14} />}
-              Confirm reservation
+              {submitting ? (
+                <Loader2 size={14} className="animate-spin" />
+              ) : step === 1 ? (
+                <>Continue <ArrowRight size={13} /></>
+              ) : (
+                <><Check size={14} /> Confirm</>
+              )}
             </button>
           </div>
-
-          <p className="text-[11px] opacity-50 text-center">
-            Charges will appear on your Sofitel folio. Cancellation up to 12h before.
-          </p>
-        </form>
+        </div>
       </div>
     </div>
   );
 }
 
-function Field({ label, value, onChange, placeholder }: { label: string; value: string; onChange: (v: string) => void; placeholder?: string }) {
+function StepDot({ active, label, done }: { active: boolean; label: string; done?: boolean }) {
+  return (
+    <div className="inline-flex items-center gap-2">
+      <span
+        className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-medium transition-all"
+        style={{
+          background: active ? PALETTE.ink : "transparent",
+          color: active ? PALETTE.bg : PALETTE.ink,
+          border: `1px solid ${active ? PALETTE.ink : PALETTE.line}`,
+        }}
+      >
+        {done ? <Check size={10} /> : label === "Details" ? "1" : "2"}
+      </span>
+      <span className="text-[10px] uppercase tracking-[0.22em]" style={{ color: active ? PALETTE.ink : "#9aa0a6" }}>{label}</span>
+    </div>
+  );
+}
+
+function ReviewRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex items-baseline justify-between gap-3 text-sm">
+      <span className="text-[11px] uppercase tracking-[0.22em] opacity-60">{label}</span>
+      <span className="font-medium text-right truncate">{value}</span>
+    </div>
+  );
+}
+
+function Field({
+  label, value, onChange, placeholder, inputMode, autoFocus,
+}: {
+  label: string; value: string; onChange: (v: string) => void; placeholder?: string;
+  inputMode?: "text" | "numeric" | "tel" | "email"; autoFocus?: boolean;
+}) {
   return (
     <label className="block">
       <span className="text-[10px] uppercase tracking-[0.25em] opacity-60">{label}</span>
@@ -621,8 +768,14 @@ function Field({ label, value, onChange, placeholder }: { label: string; value: 
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="mt-1 w-full bg-transparent border-b py-2 text-base outline-none transition-colors focus:border-current"
-        style={{ borderColor: PALETTE.line, color: PALETTE.ink }}
+        inputMode={inputMode}
+        autoFocus={autoFocus}
+        className="mt-1.5 w-full rounded-xl px-4 py-3 text-base outline-none transition-colors focus:ring-2"
+        style={{
+          background: "#FFFFFF",
+          border: `1px solid ${PALETTE.line}`,
+          color: PALETTE.ink,
+        }}
       />
     </label>
   );
@@ -630,10 +783,10 @@ function Field({ label, value, onChange, placeholder }: { label: string; value: 
 
 function Stepper({ value, onChange, max }: { value: number; onChange: (v: number) => void; max: number }) {
   return (
-    <div className="inline-flex items-center rounded-full" style={{ border: `1px solid ${PALETTE.line}` }}>
-      <button type="button" onClick={() => onChange(Math.max(1, value - 1))} className="w-9 h-9 text-lg">−</button>
-      <span className="w-8 text-center text-sm font-medium">{value}</span>
-      <button type="button" onClick={() => onChange(Math.min(max, value + 1))} className="w-9 h-9 text-lg">+</button>
+    <div className="inline-flex items-center rounded-full" style={{ border: `1px solid ${PALETTE.line}`, background: PALETTE.bg }}>
+      <button type="button" aria-label="Decrease" onClick={() => onChange(Math.max(1, value - 1))} className="w-10 h-10 text-lg active:scale-95 transition">−</button>
+      <span className="w-8 text-center text-base font-medium tabular-nums">{value}</span>
+      <button type="button" aria-label="Increase" onClick={() => onChange(Math.min(max, value + 1))} className="w-10 h-10 text-lg active:scale-95 transition">+</button>
     </div>
   );
 }
