@@ -749,7 +749,7 @@ function BookingSheet({
     });
     setSubmitting(false);
     if (error) {
-      toast.error("Could not submit your reservation");
+      toast.error(t("err_submit"));
       return;
     }
     onConfirmed(name.trim());
