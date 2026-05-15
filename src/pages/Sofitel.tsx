@@ -1,13 +1,18 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { Helmet } from "react-helmet-async";
 import { supabase } from "@/integrations/supabase/client";
 import { format, parseISO } from "date-fns";
+import { fr as frLocale, es as esLocale, ar as arLocale, enUS } from "date-fns/locale";
 import {
   Clock, MapPin, Users, Sparkles, ArrowRight, X, Check, Loader2,
   Waves, Sun, Heart, Palette, Compass, Leaf, ChevronDown, Star,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { useLanguage } from "@/i18n/LanguageContext";
+import type { Language } from "@/i18n/translations";
+import { SOFITEL_STRINGS, type SofitelKey } from "@/i18n/sofitel-strings";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 import {
   ZelligeDivider,
   ZelligeInlineSeparator,
@@ -70,15 +75,45 @@ type Experience = {
   scheduled_at: string;
 };
 
-const FILTERS = [
-  { id: "all", label: "All", icon: Sparkles },
-  { id: "in-hotel", label: "In-hotel", icon: Waves },
-  { id: "outdoor", label: "Outdoor", icon: Compass },
-  { id: "cultural", label: "Cultural", icon: Leaf },
-  { id: "couples", label: "Couples", icon: Heart },
-  { id: "family", label: "Family", icon: Sun },
-  { id: "adults", label: "Adults", icon: Palette },
+const FILTERS: { id: string; labelKey: SofitelKey; icon: any }[] = [
+  { id: "all", labelKey: "f_all", icon: Sparkles },
+  { id: "in-hotel", labelKey: "f_in_hotel", icon: Waves },
+  { id: "outdoor", labelKey: "f_outdoor", icon: Compass },
+  { id: "cultural", labelKey: "f_cultural", icon: Leaf },
+  { id: "couples", labelKey: "f_couples", icon: Heart },
+  { id: "family", labelKey: "f_family", icon: Sun },
+  { id: "adults", labelKey: "f_adults", icon: Palette },
 ];
+
+const DATE_LOCALES: Record<Language, typeof enUS> = {
+  en: enUS,
+  fr: frLocale,
+  es: esLocale,
+  ar: arLocale,
+};
+
+function tStr(key: SofitelKey, lang: Language, vars?: Record<string, string | number>): string {
+  let s = (SOFITEL_STRINGS[key] as Record<Language, string>)[lang] || SOFITEL_STRINGS[key].en;
+  if (vars) for (const [k, v] of Object.entries(vars)) s = s.replace(`{${k}}`, String(v));
+  return s;
+}
+
+function useT() {
+  const { language } = useLanguage();
+  const t = useCallback(
+    (key: SofitelKey, vars?: Record<string, string | number>) => tStr(key, language, vars),
+    [language]
+  );
+  const fmtDate = useCallback(
+    (d: Date, pattern: string) => format(d, pattern, { locale: DATE_LOCALES[language] }),
+    [language]
+  );
+  const spotsLabel = useCallback(
+    (n: number) => tStr(n === 1 ? "spots_one" : "spots_other", language),
+    [language]
+  );
+  return { t, fmtDate, spotsLabel, language };
+}
 
 // Local luxury palette: beach blue, sand yellow, off-white, soft black
 const PALETTE = {
@@ -92,6 +127,8 @@ const PALETTE = {
 };
 
 export default function Sofitel() {
+  const { t, fmtDate, spotsLabel, language } = useT();
+  const dir: "ltr" | "rtl" = language === "ar" ? "rtl" : "ltr";
   const [items, setItems] = useState<Experience[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("all");
@@ -128,7 +165,7 @@ export default function Sofitel() {
         .select("*")
         .eq("is_active", true)
         .order("scheduled_at", { ascending: true });
-      if (error) toast.error("Could not load the program");
+      if (error) toast.error(t("err_load"));
       setItems((data as Experience[]) || []);
       setLoading(false);
     })();
@@ -157,12 +194,14 @@ export default function Sofitel() {
 
   return (
     <div
+      dir={dir}
       className="min-h-screen"
       style={{ background: PALETTE.bg, color: PALETTE.ink, fontFamily: "'Inter', system-ui, sans-serif" }}
     >
       <Helmet>
-        <title>Terraria x Sofitel Tamuda Bay | Curated Creative Experiences</title>
-        <meta name="description" content="Discover authentic creative Morocco at Sofitel Tamuda Bay. Pottery, zellige, sunset art, and artisan visits curated by Terraria Workshop." />
+        <html lang={language} />
+        <title>{t("meta_title")}</title>
+        <meta name="description" content={t("meta_desc")} />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
       </Helmet>
@@ -214,7 +253,7 @@ export default function Sofitel() {
               className="text-[10px] sm:text-[11px] tracking-[0.32em] uppercase font-medium"
               style={{ color: "#FFFFFF", textShadow: "0 1px 12px rgba(0,0,0,0.4)" }}
             >
-              Terraria · Tamuda Bay
+              {t("brand_topline")}
             </span>
             <div className="hidden sm:flex items-center gap-1.5 text-[10px] tracking-[0.28em] uppercase" style={{ color: "#FFFFFF", textShadow: "0 1px 12px rgba(0,0,0,0.4)" }}>
               <Star size={10} strokeWidth={1.5} fill="#E6C36B" stroke="#E6C36B" />
@@ -222,7 +261,7 @@ export default function Sofitel() {
               <Star size={10} strokeWidth={1.5} fill="#E6C36B" stroke="#E6C36B" />
               <Star size={10} strokeWidth={1.5} fill="#E6C36B" stroke="#E6C36B" />
               <Star size={10} strokeWidth={1.5} fill="#E6C36B" stroke="#E6C36B" />
-              <span className="ml-2 opacity-80">Luxury Resort</span>
+              <span className="ml-2 opacity-80">{t("luxury_resort")}</span>
             </div>
           </div>
         </div>
@@ -247,20 +286,19 @@ export default function Sofitel() {
             className="text-[40px] sm:text-7xl md:text-[88px] leading-[0.98] font-light text-white animate-[fade-in_1s_ease-out]"
             style={{ fontFamily: "'Cormorant Garamond', serif", textShadow: "0 2px 30px rgba(14,20,24,0.4)" }}
           >
-            Curated creative<br />
-            <span style={{ fontStyle: "italic", color: "#F1E2BE" }}>experiences</span>
-            <br className="sm:hidden" /> <span className="opacity-90">by the sea.</span>
+            {t("hero_title_1")}<br />
+            <span style={{ fontStyle: "italic", color: "#F1E2BE" }}>{t("hero_title_2")}</span>
+            <br className="sm:hidden" /> <span className="opacity-90">{t("hero_title_3")}</span>
           </h1>
 
           <p className="mt-5 sm:mt-7 max-w-xl text-[14px] sm:text-lg leading-relaxed text-white/85 animate-[fade-in_1.2s_ease-out]">
-            A weekly program of artisan workshops and cultural escapes,
-            crafted for the guests of Sofitel Tamuda Bay.
+            {t("hero_subtitle")}
           </p>
 
           <div className="mt-7 sm:mt-10 flex items-center gap-3 text-[10px] sm:text-xs uppercase tracking-[0.3em] text-white/90">
             <span className="h-px w-8 sm:w-12" style={{ background: PALETTE.sand }} />
             <ZelligeStar size={14} style={{ color: PALETTE.sand }} />
-            <span>This week's program</span>
+            <span>{t("this_week")}</span>
             <ZelligeStar size={14} style={{ color: PALETTE.sand }} />
             <span className="h-px flex-1 max-w-[80px]" style={{ background: "rgba(255,255,255,0.25)" }} />
           </div>
@@ -271,7 +309,7 @@ export default function Sofitel() {
           className="absolute bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-1.5 text-white/80"
           style={{ opacity: Math.max(0, 1 - scrollY / 200) }}
         >
-          <span className="text-[9px] uppercase tracking-[0.4em]">Scroll</span>
+          <span className="text-[9px] uppercase tracking-[0.4em]">{t("scroll")}</span>
           <ChevronDown size={16} className="animate-bounce" strokeWidth={1.5} />
         </div>
       </header>
@@ -287,12 +325,13 @@ export default function Sofitel() {
           {Array.from({ length: 2 }).map((_, copy) => (
             <div key={copy} className="flex items-center gap-10 shrink-0">
               {[
-                "Pottery", "star", "Zellige", "diamond", "Cooking", "sparkle", "Weaving", "star",
-                "Painting", "diamond", "Garden", "sparkle", "Cooperative", "star", "Sunset rituals", "diamond",
-              ].map((t, i) => {
-                const isGlyph = t === "star" || t === "diamond" || t === "sparkle";
-                if (isGlyph) {
-                  const Glyph = t === "star" ? ZelligeStar : t === "diamond" ? ZelligeDiamond : ZelligeSparkle;
+                { k: "m_pottery" }, { g: "star" }, { k: "m_zellige" }, { g: "diamond" },
+                { k: "m_cooking" }, { g: "sparkle" }, { k: "m_weaving" }, { g: "star" },
+                { k: "m_painting" }, { g: "diamond" }, { k: "m_garden" }, { g: "sparkle" },
+                { k: "m_cooperative" }, { g: "star" }, { k: "m_sunset" }, { g: "diamond" },
+              ].map((item, i) => {
+                if ("g" in item) {
+                  const Glyph = item.g === "star" ? ZelligeStar : item.g === "diamond" ? ZelligeDiamond : ZelligeSparkle;
                   return <Glyph key={`${copy}-${i}`} size={14} style={{ color: PALETTE.sand }} />;
                 }
                 return (
@@ -301,7 +340,7 @@ export default function Sofitel() {
                     className="text-[11px] uppercase tracking-[0.32em]"
                     style={{ color: PALETTE.blueDeep }}
                   >
-                    {t}
+                    {t(item.k as SofitelKey)}
                   </span>
                 );
               })}
@@ -315,7 +354,7 @@ export default function Sofitel() {
         <ZelligeDivider symbol="star" lineColor={PALETTE.line} />
         <p className="mt-4 text-center text-[10px] sm:text-[11px] uppercase tracking-[0.36em]" style={{ color: PALETTE.blueDeep }}>
           <ZelligeInlineSeparator className="mr-2" color={PALETTE.sand} />
-          The week ahead
+          {t("week_ahead")}
           <ZelligeInlineSeparator className="ml-2" color={PALETTE.sand} />
         </p>
       </div>
@@ -324,11 +363,11 @@ export default function Sofitel() {
       {days.length > 0 && (
         <div className="sticky top-0 z-20 backdrop-blur-md" style={{ background: `${PALETTE.bg}E6`, borderBottom: `1px solid ${PALETTE.line}` }}>
           <div className="max-w-6xl mx-auto px-5 py-3 flex gap-2 overflow-x-auto scrollbar-hide">
-            <DayChip label="All days" active={!activeDay} onClick={() => setActiveDay(null)} />
+            <DayChip label={t("all_days")} active={!activeDay} onClick={() => setActiveDay(null)} />
             {days.map(({ key, date }) => (
               <DayChip
                 key={key}
-                label={format(date, "EEE d")}
+                label={fmtDate(date, "EEE d")}
                 active={activeDay === key}
                 onClick={() => setActiveDay(key === activeDay ? null : key)}
               />
@@ -356,7 +395,7 @@ export default function Sofitel() {
                 }}
               >
                 <f.icon size={13} strokeWidth={1.5} />
-                {f.label}
+                {t(f.labelKey)}
               </button>
             );
           })}
@@ -370,7 +409,7 @@ export default function Sofitel() {
             <Loader2 className="animate-spin" style={{ color: PALETTE.blueDeep }} />
           </div>
         ) : filtered.length === 0 ? (
-          <p className="text-center py-24 opacity-60">No experiences match these filters.</p>
+          <p className="text-center py-24 opacity-60">{t("empty")}</p>
         ) : (
           <>
             {/* Mobile: swipeable horizontal rail */}
@@ -389,7 +428,7 @@ export default function Sofitel() {
             </div>
             {filtered.length > 1 && (
               <p className="sm:hidden mt-2 text-center text-[10px] uppercase tracking-[0.3em] opacity-50">
-                Swipe to explore →
+                {t("swipe_explore")}
               </p>
             )}
 
@@ -421,11 +460,11 @@ export default function Sofitel() {
               <ZelligeStar size={12} style={{ color: PALETTE.sand }} />
               Terraria × Sofitel Tamuda Bay
             </p>
-            <p className="mt-2 text-xs opacity-60">Curated by Terraria Workshop · Tetouan, Morocco</p>
+            <p className="mt-2 text-xs opacity-60">{t("footer_curated")}</p>
           </div>
           <p className="text-xs opacity-60 inline-flex items-center gap-2" style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: "italic" }}>
             <ZelligeDiamond size={10} style={{ color: PALETTE.sand }} />
-            "Discover authentic creative Morocco."
+            "{t("footer_quote")}"
             <ZelligeDiamond size={10} style={{ color: PALETTE.sand }} />
           </p>
         </div>
@@ -451,6 +490,8 @@ export default function Sofitel() {
           onClose={() => setConfirmation(null)}
         />
       )}
+
+      <LanguageSwitcher />
     </div>
   );
 }
@@ -472,9 +513,12 @@ function DayChip({ label, active, onClick }: { label: string; active: boolean; o
 }
 
 function ExperienceCard({ exp, index, remaining, onBook }: { exp: Experience; index: number; remaining: number; onBook: () => void }) {
+  const { t, fmtDate } = useT();
   const date = parseISO(exp.scheduled_at);
   const aspect = "aspect-[4/5]";
   const localImg = SLUG_IMAGES[exp.slug];
+  const categoryLabel =
+    exp.category === "in-hotel" ? t("f_in_hotel") : exp.category === "outdoor" ? t("f_outdoor") : t("f_cultural");
   return (
     <article
       className="group relative overflow-hidden rounded-3xl sm:rounded-[28px] bg-white animate-fade-in transition-all duration-500 sm:hover:-translate-y-1.5 h-full flex flex-col"
@@ -537,7 +581,7 @@ function ExperienceCard({ exp, index, remaining, onBook }: { exp: Experience; in
             style={{ background: "#FFFFFFE6", color: PALETTE.ink, boxShadow: "0 4px 12px rgba(14,20,24,0.08)" }}
           >
             <span className="w-1 h-1 rounded-full" style={{ background: PALETTE.sand }} />
-            {exp.category === "in-hotel" ? "In-hotel" : exp.category === "outdoor" ? "Outdoor" : "Cultural"}
+            {categoryLabel}
           </span>
           <SpotsBadge remaining={remaining} capacity={exp.capacity} />
         </div>
@@ -564,22 +608,22 @@ function ExperienceCard({ exp, index, remaining, onBook }: { exp: Experience; in
         </p>
 
         <div className="flex flex-wrap gap-x-3 gap-y-1.5 text-[11px]" style={{ color: PALETTE.blueDeep }}>
-          <Meta icon={Clock}>{format(date, "EEE d MMM · HH:mm")}</Meta>
-          <Meta icon={Users}>{remaining} of {exp.capacity}</Meta>
+          <Meta icon={Clock}>{fmtDate(date, "EEE d MMM · HH:mm")}</Meta>
+          <Meta icon={Users}>{t("remaining_of", { n: remaining, c: exp.capacity })}</Meta>
           {exp.location && <Meta icon={MapPin}>{exp.location}</Meta>}
         </div>
 
         <div className="flex items-end justify-between gap-3 pt-3 border-t" style={{ borderColor: PALETTE.line }}>
           <div className="min-w-0">
-            <p className="text-[10px] uppercase tracking-[0.22em] opacity-50">From</p>
+            <p className="text-[10px] uppercase tracking-[0.22em] opacity-50">{t("from")}</p>
             <p className="text-[20px] sm:text-[22px] font-light leading-tight whitespace-nowrap" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
               {exp.price_per_person > 0 ? (
                 <>
                   {exp.price_per_person} <span className="text-[12px] opacity-70">{exp.currency}</span>
-                  <span className="text-[11px] opacity-60 ml-1">/ guest</span>
+                  <span className="text-[11px] opacity-60 ml-1">{t("per_guest")}</span>
                 </>
               ) : (
-                <span style={{ fontStyle: "italic" }}>On request</span>
+                <span style={{ fontStyle: "italic" }}>{t("on_request")}</span>
               )}
             </p>
           </div>
@@ -593,7 +637,7 @@ function ExperienceCard({ exp, index, remaining, onBook }: { exp: Experience; in
               className="absolute inset-0 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-500"
               style={{ background: `linear-gradient(135deg, ${PALETTE.blueDeep}, ${PALETTE.ink})` }}
             />
-            <span className="relative">{remaining === 0 ? "Booked" : "Reserve"}</span>
+            <span className="relative">{remaining === 0 ? t("booked") : t("reserve")}</span>
             {remaining > 0 && <ArrowRight size={13} className="relative transition-transform group-hover/btn:translate-x-1" />}
           </button>
         </div>
@@ -612,12 +656,13 @@ function Meta({ icon: Icon, children }: { icon: any; children: React.ReactNode }
 }
 
 function SpotsBadge({ remaining, capacity }: { remaining: number; capacity: number }) {
+  const { t } = useT();
   const ratio = capacity > 0 ? remaining / capacity : 0;
   const full = remaining === 0;
   const low = !full && ratio <= 0.3;
   const bg = full ? "#0E1418" : low ? "#E6C36B" : "#FFFFFFCC";
   const color = full ? "#FFFFFF" : "#0E1418";
-  const label = full ? "Fully booked" : low ? `Only ${remaining} left` : `${remaining} spots`;
+  const label = full ? t("fully_booked") : low ? t("only_n_left", { n: remaining }) : t("n_spots", { n: remaining });
   return (
     <span
       className={cn(
@@ -646,6 +691,7 @@ function BookingSheet({
   onClose: () => void;
   onConfirmed: (name: string) => void;
 }) {
+  const { t, fmtDate, spotsLabel } = useT();
   const [step, setStep] = useState<1 | 2>(1);
   const [name, setName] = useState("");
   const [room, setRoom] = useState("");
@@ -682,11 +728,11 @@ function BookingSheet({
 
   const goToReview = () => {
     if (!name.trim() || !room.trim()) {
-      toast.error("Name and room number are required");
+      toast.error(t("err_required"));
       return;
     }
     if (participants > remaining) {
-      toast.error(`Only ${remaining} ${remaining === 1 ? "spot" : "spots"} left`);
+      toast.error(t("err_only_n", { n: remaining, label: spotsLabel(remaining) }));
       return;
     }
     setStep(2);
@@ -703,7 +749,7 @@ function BookingSheet({
     });
     setSubmitting(false);
     if (error) {
-      toast.error("Could not submit your reservation");
+      toast.error(t("err_submit"));
       return;
     }
     onConfirmed(name.trim());
@@ -741,7 +787,7 @@ function BookingSheet({
           />
           <div className="min-w-0 flex-1">
             <p className="text-[10px] uppercase tracking-[0.25em]" style={{ color: PALETTE.blueDeep }}>
-              {format(date, "EEE d MMM · HH:mm")}
+              {fmtDate(date, "EEE d MMM · HH:mm")}
             </p>
             <h2 className="mt-1 text-xl sm:text-2xl leading-tight truncate" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
               {experience.title}
@@ -755,7 +801,7 @@ function BookingSheet({
                   border: `1px solid ${fullyBooked ? PALETTE.ink : low ? PALETTE.sand : PALETTE.line}`,
                 }}
               >
-                {fullyBooked ? "Fully booked" : low ? `Only ${remaining} left` : `${remaining} spots available`}
+                {fullyBooked ? t("fully_booked") : low ? t("only_n_left", { n: remaining }) : t("n_spots_available", { n: remaining })}
               </span>
               {experience.location && (
                 <span className="opacity-60 inline-flex items-center gap-1">
@@ -766,7 +812,7 @@ function BookingSheet({
           </div>
           <button
             onClick={onClose}
-            aria-label="Close"
+            aria-label={t("close")}
             className="w-9 h-9 rounded-full flex items-center justify-center shrink-0"
             style={{ background: PALETTE.line, color: PALETTE.ink }}
           >
@@ -776,48 +822,48 @@ function BookingSheet({
 
         {/* Step indicator */}
         <div className="flex items-center gap-2 px-5 sm:px-8 pt-4">
-          <StepDot active={step >= 1} label="Details" done={step > 1} />
+          <StepDot active={step >= 1} label={t("step_details")} done={step > 1} stepNumber={1} />
           <span className="flex-1 h-px" style={{ background: PALETTE.line }} />
-          <StepDot active={step >= 2} label="Confirm" />
+          <StepDot active={step >= 2} label={t("step_confirm")} stepNumber={2} />
         </div>
 
         {/* Body (scrollable) */}
         <div className="flex-1 overflow-y-auto px-5 sm:px-8 py-5 space-y-5">
           {step === 1 ? (
             <div className="space-y-4">
-              <Field label="Full name" value={name} onChange={setName} placeholder="Jane Doe" autoFocus />
+              <Field label={t("full_name")} value={name} onChange={setName} placeholder="Jane Doe" autoFocus />
               <div className="grid grid-cols-2 gap-3">
-                <Field label="Room number" value={room} onChange={setRoom} placeholder="412" inputMode="numeric" />
-                <Field label="Phone (optional)" value={phone} onChange={setPhone} placeholder="+212 ..." inputMode="tel" />
+                <Field label={t("room_number")} value={room} onChange={setRoom} placeholder="412" inputMode="numeric" />
+                <Field label={t("phone_optional")} value={phone} onChange={setPhone} placeholder="+212 ..." inputMode="tel" />
               </div>
 
               <div>
-                <label className="text-[10px] uppercase tracking-[0.25em] opacity-60">Number of guests</label>
+                <label className="text-[10px] uppercase tracking-[0.25em] opacity-60">{t("num_guests")}</label>
                 <div className="mt-2 flex items-center justify-between gap-3 p-2 rounded-2xl" style={{ background: "#FFFFFF", border: `1px solid ${PALETTE.line}` }}>
                   <Stepper value={participants} onChange={setParticipants} max={Math.max(1, remaining)} />
                   <span className="text-xs opacity-60 pr-2">
-                    {remaining} {remaining === 1 ? "spot" : "spots"} left
+                    {remaining} {spotsLabel(remaining)}
                   </span>
                 </div>
               </div>
 
               <p className="text-[11px] opacity-50 leading-relaxed">
-                Charges will appear on your Sofitel folio. Free cancellation up to 12h before.
+                {t("charges_note")}
               </p>
             </div>
           ) : (
             <div className="space-y-4">
-              <p className="text-[10px] uppercase tracking-[0.25em] opacity-60">Review your reservation</p>
+              <p className="text-[10px] uppercase tracking-[0.25em] opacity-60">{t("review_title")}</p>
               <div className="rounded-2xl p-4 space-y-2.5" style={{ background: "#FFFFFF", border: `1px solid ${PALETTE.line}` }}>
-                <ReviewRow label="Guest" value={name} />
-                <ReviewRow label="Room" value={room} />
-                {phone && <ReviewRow label="Phone" value={phone} />}
-                <ReviewRow label="Guests" value={String(participants)} />
-                <ReviewRow label="When" value={format(date, "EEE d MMM · HH:mm")} />
-                {experience.location && <ReviewRow label="Where" value={experience.location} />}
+                <ReviewRow label={t("r_guest")} value={name} />
+                <ReviewRow label={t("r_room")} value={room} />
+                {phone && <ReviewRow label={t("r_phone")} value={phone} />}
+                <ReviewRow label={t("r_guests")} value={String(participants)} />
+                <ReviewRow label={t("r_when")} value={fmtDate(date, "EEE d MMM · HH:mm")} />
+                {experience.location && <ReviewRow label={t("r_where")} value={experience.location} />}
               </div>
               <p className="text-[11px] opacity-60 leading-relaxed text-center">
-                A printed confirmation will be delivered to your room.
+                {t("printed_note")}
               </p>
             </div>
           )}
@@ -829,12 +875,12 @@ function BookingSheet({
           style={{ borderColor: PALETTE.line, background: PALETTE.bg, paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 1rem)" }}
         >
           <div className="min-w-0">
-            <p className="text-[10px] uppercase tracking-[0.25em] opacity-50">Total</p>
+            <p className="text-[10px] uppercase tracking-[0.25em] opacity-50">{t("total")}</p>
             <p className="text-xl sm:text-2xl font-light leading-tight whitespace-nowrap" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
               {experience.price_per_person > 0 ? (
                 <>{total} <span className="text-xs opacity-70">{experience.currency}</span></>
               ) : (
-                <span style={{ fontStyle: "italic" }}>On request</span>
+                <span style={{ fontStyle: "italic" }}>{t("on_request")}</span>
               )}
             </p>
           </div>
@@ -846,7 +892,7 @@ function BookingSheet({
                 className="px-4 py-3 rounded-full text-[11px] uppercase tracking-[0.2em]"
                 style={{ border: `1px solid ${PALETTE.line}`, color: PALETTE.ink }}
               >
-                Edit
+                {t("edit")}
               </button>
             )}
             <button
@@ -859,9 +905,9 @@ function BookingSheet({
               {submitting ? (
                 <Loader2 size={14} className="animate-spin" />
               ) : step === 1 ? (
-                <>Continue <ArrowRight size={13} /></>
+                <>{t("continue")} <ArrowRight size={13} /></>
               ) : (
-                <><Check size={14} /> Confirm</>
+                <><Check size={14} /> {t("confirm")}</>
               )}
             </button>
           </div>
@@ -871,7 +917,7 @@ function BookingSheet({
   );
 }
 
-function StepDot({ active, label, done }: { active: boolean; label: string; done?: boolean }) {
+function StepDot({ active, label, done, stepNumber }: { active: boolean; label: string; done?: boolean; stepNumber: number }) {
   return (
     <div className="inline-flex items-center gap-2">
       <span
@@ -882,7 +928,7 @@ function StepDot({ active, label, done }: { active: boolean; label: string; done
           border: `1px solid ${active ? PALETTE.ink : PALETTE.line}`,
         }}
       >
-        {done ? <Check size={10} /> : label === "Details" ? "1" : "2"}
+        {done ? <Check size={10} /> : stepNumber}
       </span>
       <span className="text-[10px] uppercase tracking-[0.22em]" style={{ color: active ? PALETTE.ink : "#9aa0a6" }}>{label}</span>
     </div>
@@ -935,6 +981,10 @@ function Stepper({ value, onChange, max }: { value: number; onChange: (v: number
 }
 
 function ConfirmationOverlay({ name, experience, onClose }: { name: string; experience: string; onClose: () => void }) {
+  const { t } = useT();
+  // Build the confirmation body with the experience name highlighted in <em>.
+  const bodyTemplate = t("confirm_body", { exp: "__EXP__" });
+  const [bodyBefore, bodyAfter] = bodyTemplate.split("__EXP__");
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center animate-fade-in p-5" style={{ background: "#0E1418F2" }}>
       <div className="max-w-md text-center text-white animate-scale-in">
@@ -944,20 +994,19 @@ function ConfirmationOverlay({ name, experience, onClose }: { name: string; expe
         >
           <Check size={28} strokeWidth={1.5} />
         </div>
-        <p className="text-[11px] uppercase tracking-[0.32em]" style={{ color: PALETTE.sand }}>Reservation received</p>
+        <p className="text-[11px] uppercase tracking-[0.32em]" style={{ color: PALETTE.sand }}>{t("reservation_received")}</p>
         <h2 className="mt-4 text-4xl leading-tight" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
-          Merci, {name}.
+          {t("merci", { name })}
         </h2>
         <p className="mt-4 opacity-80 leading-relaxed">
-          Your seat at <em>{experience}</em> is being prepared. Our concierge will deliver
-          a printed confirmation to your room shortly.
+          {bodyBefore}<em>{experience}</em>{bodyAfter}
         </p>
         <button
           onClick={onClose}
           className="mt-8 inline-flex items-center gap-2 px-6 py-3 rounded-full text-xs font-medium uppercase tracking-[0.2em]"
           style={{ background: PALETTE.bg, color: PALETTE.ink }}
         >
-          Continue browsing
+          {t("continue_browsing")}
           <ArrowRight size={14} />
         </button>
       </div>
