@@ -307,11 +307,11 @@ function DayChip({ label, active, onClick }: { label: string; active: boolean; o
 
 function ExperienceCard({ exp, index, remaining, onBook }: { exp: Experience; index: number; remaining: number; onBook: () => void }) {
   const date = parseISO(exp.scheduled_at);
-  const aspect = SLUG_HEIGHTS[exp.slug] || "aspect-[4/5]";
+  const aspect = "aspect-[4/5]";
   const localImg = SLUG_IMAGES[exp.slug];
   return (
     <article
-      className="group relative overflow-hidden rounded-[28px] bg-white animate-fade-in transition-all duration-500 hover:-translate-y-1.5"
+      className="group relative overflow-hidden rounded-[28px] bg-white animate-fade-in transition-all duration-500 hover:-translate-y-1.5 h-full flex flex-col"
       style={{
         border: `1px solid ${PALETTE.line}`,
         animationDelay: `${index * 70}ms`,
