@@ -460,11 +460,11 @@ export default function Sofitel() {
               <ZelligeStar size={12} style={{ color: PALETTE.sand }} />
               Terraria × Sofitel Tamuda Bay
             </p>
-            <p className="mt-2 text-xs opacity-60">Curated by Terraria Workshop · Tetouan, Morocco</p>
+            <p className="mt-2 text-xs opacity-60">{t("footer_curated")}</p>
           </div>
           <p className="text-xs opacity-60 inline-flex items-center gap-2" style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: "italic" }}>
             <ZelligeDiamond size={10} style={{ color: PALETTE.sand }} />
-            "Discover authentic creative Morocco."
+            "{t("footer_quote")}"
             <ZelligeDiamond size={10} style={{ color: PALETTE.sand }} />
           </p>
         </div>
