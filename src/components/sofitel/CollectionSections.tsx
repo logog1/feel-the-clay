@@ -350,20 +350,44 @@ function CtaSection() {
   );
 }
 
+/* ---------- Good to know (guest-facing) ---------- */
+const GOOD_TO_KNOW = [
+  { icon: Languages, title: "Three languages", body: "Sessions in French, English or Arabic." },
+  { icon: Users, title: "Small groups", body: "From 4 guests indoors, 2 guests for outdoor immersions." },
+  { icon: Clock, title: "Book ahead", body: "A 24h notice is enough to confirm your spot." },
+  { icon: Ban, title: "Free cancellation", body: "Free up to 24h before. A 30% fee applies under 24h." },
+  { icon: Boxes, title: "All materials included", body: "Clay, tools, paints, looms, aprons, everything is set up for you." },
+  { icon: Check, title: "Take it home", body: "Most pieces are yours to keep, ready the same day or shipped after firing." },
+];
+
+function GoodToKnowSection() {
+  return (
+    <section className="max-w-6xl mx-auto px-5 py-16 sm:py-24" style={{ borderTop: `1px solid ${P.line}` }}>
+      <SectionHeader kicker="Good to know" title="A few things before you book" />
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {GOOD_TO_KNOW.map((s) => (
+          <div key={s.title} className="rounded-3xl bg-white p-6" style={{ border: `1px solid ${P.line}` }}>
+            <s.icon size={20} strokeWidth={1.5} style={{ color: P.blueDeep }} />
+            <h3 className="mt-4 text-lg" style={serif}>{s.title}</h3>
+            <p className="mt-2 text-sm opacity-75 leading-relaxed">{s.body}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 export function CollectionSections() {
   return (
     <>
-      <MergerSection />
-      <JourneySection />
       <MenuSection />
       <RugSection />
       <OutsideSection />
-      <BespokeSection />
-      <AdvantageSection />
-      <EcosystemSection />
-      <StandardsSection />
+      <GoodToKnowSection />
     </>
   );
 }
 
-export { CtaSection as CollectionCta };
+export function CollectionCta() {
+  return null;
+}
