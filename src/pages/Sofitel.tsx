@@ -691,6 +691,7 @@ function BookingSheet({
   onClose: () => void;
   onConfirmed: (name: string) => void;
 }) {
+  const { t, fmtDate, spotsLabel } = useT();
   const [step, setStep] = useState<1 | 2>(1);
   const [name, setName] = useState("");
   const [room, setRoom] = useState("");
