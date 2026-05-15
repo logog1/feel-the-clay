@@ -412,15 +412,21 @@ export default function Sofitel() {
 
       {/* FOOTER */}
       <footer className="border-t" style={{ borderColor: PALETTE.line }}>
-        <div className="max-w-6xl mx-auto px-5 py-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="max-w-6xl mx-auto px-5 pt-10">
+          <ZelligeDivider symbol="rosette" lineColor={PALETTE.line} symbolColor={PALETTE.sand} />
+        </div>
+        <div className="max-w-6xl mx-auto px-5 py-8 sm:py-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
-            <p className="text-[11px] tracking-[0.32em] uppercase" style={{ color: PALETTE.blueDeep }}>
+            <p className="text-[11px] tracking-[0.32em] uppercase inline-flex items-center gap-2" style={{ color: PALETTE.blueDeep }}>
+              <ZelligeStar size={12} style={{ color: PALETTE.sand }} />
               Terraria × Sofitel Tamuda Bay
             </p>
             <p className="mt-2 text-xs opacity-60">Curated by Terraria Workshop · Tetouan, Morocco</p>
           </div>
-          <p className="text-xs opacity-50" style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: "italic" }}>
+          <p className="text-xs opacity-60 inline-flex items-center gap-2" style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: "italic" }}>
+            <ZelligeDiamond size={10} style={{ color: PALETTE.sand }} />
             "Discover authentic creative Morocco."
+            <ZelligeDiamond size={10} style={{ color: PALETTE.sand }} />
           </p>
         </div>
       </footer>
