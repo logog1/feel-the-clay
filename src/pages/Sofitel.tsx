@@ -235,9 +235,9 @@ export default function Sofitel() {
         ) : filtered.length === 0 ? (
           <p className="text-center py-24 opacity-60">No experiences match these filters.</p>
         ) : (
-          <div className="columns-1 sm:columns-2 lg:columns-3 gap-6 [column-fill:_balance]">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {filtered.map((exp, idx) => (
-              <div key={exp.id} className="mb-6 break-inside-avoid">
+              <div key={exp.id} className="h-full">
                 <ExperienceCard
                   exp={exp}
                   index={idx}
@@ -307,11 +307,11 @@ function DayChip({ label, active, onClick }: { label: string; active: boolean; o
 
 function ExperienceCard({ exp, index, remaining, onBook }: { exp: Experience; index: number; remaining: number; onBook: () => void }) {
   const date = parseISO(exp.scheduled_at);
-  const aspect = SLUG_HEIGHTS[exp.slug] || "aspect-[4/5]";
+  const aspect = "aspect-[4/5]";
   const localImg = SLUG_IMAGES[exp.slug];
   return (
     <article
-      className="group relative overflow-hidden rounded-[28px] bg-white animate-fade-in transition-all duration-500 hover:-translate-y-1.5"
+      className="group relative overflow-hidden rounded-[28px] bg-white animate-fade-in transition-all duration-500 hover:-translate-y-1.5 h-full flex flex-col"
       style={{
         border: `1px solid ${PALETTE.line}`,
         animationDelay: `${index * 70}ms`,
