@@ -428,7 +428,7 @@ export default function Sofitel() {
             </div>
             {filtered.length > 1 && (
               <p className="sm:hidden mt-2 text-center text-[10px] uppercase tracking-[0.3em] opacity-50">
-                Swipe to explore →
+                {t("swipe_explore")}
               </p>
             )}
 
