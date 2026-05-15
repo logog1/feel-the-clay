@@ -376,15 +376,15 @@ function ExperienceCard({ exp, index, remaining, onBook }: { exp: Experience; in
           <SpotsBadge remaining={remaining} capacity={exp.capacity} />
         </div>
 
-        <div className="absolute bottom-0 left-0 right-0 p-5 text-white">
+        <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-5 text-white">
           {exp.subtitle && (
-            <p className="text-[10px] uppercase tracking-[0.32em] opacity-90 mb-2 inline-flex items-center gap-2">
+            <p className="text-[10px] uppercase tracking-[0.32em] opacity-90 mb-1.5 sm:mb-2 inline-flex items-center gap-2">
               <span className="h-px w-6" style={{ background: PALETTE.sand }} />
               <span style={{ color: PALETTE.sand }}>{exp.subtitle}</span>
             </p>
           )}
           <h3
-            className="text-[28px] leading-[1.05] transition-transform duration-500 group-hover:translate-x-1"
+            className="text-[22px] sm:text-[28px] leading-[1.05] transition-transform duration-500 group-hover:translate-x-1"
             style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 400 }}
           >
             {exp.title}
@@ -392,8 +392,8 @@ function ExperienceCard({ exp, index, remaining, onBook }: { exp: Experience; in
         </div>
       </div>
 
-      <div className="p-5 space-y-4 relative">
-        <p className="text-[13.5px] leading-relaxed" style={{ color: PALETTE.ink, opacity: 0.78 }}>
+      <div className="p-4 sm:p-5 space-y-3 sm:space-y-4 relative">
+        <p className="text-[13px] sm:text-[13.5px] leading-relaxed line-clamp-3 sm:line-clamp-none" style={{ color: PALETTE.ink, opacity: 0.78 }}>
           {exp.description}
         </p>
 
@@ -403,10 +403,10 @@ function ExperienceCard({ exp, index, remaining, onBook }: { exp: Experience; in
           {exp.location && <Meta icon={MapPin}>{exp.location}</Meta>}
         </div>
 
-        <div className="flex items-end justify-between pt-3 border-t" style={{ borderColor: PALETTE.line }}>
-          <div>
+        <div className="flex items-end justify-between gap-3 pt-3 border-t" style={{ borderColor: PALETTE.line }}>
+          <div className="min-w-0">
             <p className="text-[10px] uppercase tracking-[0.22em] opacity-50">From</p>
-            <p className="text-[22px] font-light leading-tight" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+            <p className="text-[20px] sm:text-[22px] font-light leading-tight whitespace-nowrap" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
               {exp.price_per_person > 0 ? (
                 <>
                   {exp.price_per_person} <span className="text-[12px] opacity-70">{exp.currency}</span>
@@ -420,14 +420,14 @@ function ExperienceCard({ exp, index, remaining, onBook }: { exp: Experience; in
           <button
             onClick={onBook}
             disabled={remaining === 0}
-            className="group/btn relative inline-flex items-center gap-2 px-5 py-3 rounded-full text-[10.5px] font-medium uppercase tracking-[0.22em] overflow-hidden transition-all duration-300 hover:gap-3 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:gap-2"
+            className="group/btn relative inline-flex items-center gap-1.5 sm:gap-2 px-4 sm:px-5 py-2.5 sm:py-3 rounded-full text-[10px] sm:text-[10.5px] font-medium uppercase tracking-[0.18em] sm:tracking-[0.22em] overflow-hidden transition-all duration-300 hover:gap-3 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:gap-2 shrink-0"
             style={{ background: PALETTE.ink, color: PALETTE.bg }}
           >
             <span
               className="absolute inset-0 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-500"
               style={{ background: `linear-gradient(135deg, ${PALETTE.blueDeep}, ${PALETTE.ink})` }}
             />
-            <span className="relative">{remaining === 0 ? "Fully booked" : "Reserve"}</span>
+            <span className="relative">{remaining === 0 ? "Booked" : "Reserve"}</span>
             {remaining > 0 && <ArrowRight size={13} className="relative transition-transform group-hover/btn:translate-x-1" />}
           </button>
         </div>
