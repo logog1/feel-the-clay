@@ -85,7 +85,7 @@ const FILTERS: { id: string; labelKey: SofitelKey; icon: any }[] = [
   { id: "adults", labelKey: "f_adults", icon: Palette },
 ];
 
-const DATE_LOCALES: Record<Language, Locale> = {
+const DATE_LOCALES: Record<Language, typeof enUS> = {
   en: enUS,
   fr: frLocale,
   es: esLocale,
