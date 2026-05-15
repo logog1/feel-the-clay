@@ -105,7 +105,7 @@ const ON_PROPERTY = [
 function MenuSection() {
   return (
     <section className="max-w-6xl mx-auto px-5 py-16 sm:py-24" style={{ borderTop: `1px solid ${P.line}` }}>
-      <SectionHeader kicker="The creative sanctuary" title="On-property workshop menu" sub="Four signature sessions, set up and run entirely by Terraria within the Sofitel grounds." />
+      <SectionHeader kicker="At the resort" title="Creative workshops on the Sofitel grounds" sub="Four hands-on sessions to slow down, create, and leave with something you made yourself." />
       <div className="grid sm:grid-cols-2 gap-4">
         {ON_PROPERTY.map((w) => (
           <article key={w.name} className="rounded-3xl bg-white p-6 flex gap-5" style={{ border: `1px solid ${P.line}` }}>
