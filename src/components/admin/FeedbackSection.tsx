@@ -16,6 +16,8 @@ interface Feedback {
   id: string;
   name: string | null;
   organization: string | null;
+  email: string | null;
+  phone: string | null;
   satisfaction: string | null;
   recommendation: string | null;
   length_appropriate: string | null;
