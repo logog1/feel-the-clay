@@ -1,8 +1,12 @@
 import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useWhatsAppLink } from "@/components/BookOnWhatsApp";
 
+const HIDDEN_PATHS = ["/feedback"];
+
 const WhatsAppFloat = () => {
+  const { pathname } = useLocation();
   const [visible, setVisible] = useState(false);
   const [pulse, setPulse] = useState(true);
   const [showLabel, setShowLabel] = useState(true);
