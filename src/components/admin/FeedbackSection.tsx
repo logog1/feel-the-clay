@@ -5,8 +5,12 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card } from "@/components/ui/card";
 import { toast } from "@/hooks/use-toast";
-import { format } from "date-fns";
-import { Download, Trash2, Search, RefreshCw } from "lucide-react";
+import { format, startOfMonth } from "date-fns";
+import { Download, Trash2, Search, RefreshCw, TrendingUp, Heart, Sparkles, Star } from "lucide-react";
+import {
+  ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid,
+  PieChart, Pie, Cell, LineChart, Line, Legend,
+} from "recharts";
 
 interface Feedback {
   id: string;
