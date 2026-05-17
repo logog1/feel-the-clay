@@ -161,7 +161,7 @@ export function FeedbackSection() {
 
   const exportCsv = () => {
     const headers = [
-      "created_at", "name", "satisfaction", "recommendation",
+      "created_at", "name", "email", "phone", "satisfaction", "recommendation",
       "length_appropriate", "expectations", "facilitators", "materials", "source",
       "liked_most", "suggestions", "effectiveness",
     ];
