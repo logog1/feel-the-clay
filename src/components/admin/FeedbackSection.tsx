@@ -476,3 +476,33 @@ function LongField({ label, value }: { label: string; value: string | null }) {
     </div>
   );
 }
+
+const PIE_COLORS = [
+  "hsl(var(--primary))",
+  "#10b981",
+  "#f59e0b",
+  "#ef4444",
+  "#6366f1",
+  "#ec4899",
+  "#14b8a6",
+  "#84cc16",
+];
+
+function StatCard({ icon, label, value, sub }: { icon: React.ReactNode; label: string; value: React.ReactNode; sub?: string }) {
+  return (
+    <Card className="p-4">
+      <div className="flex items-center gap-1.5 text-xs text-muted-foreground">{icon}<span>{label}</span></div>
+      <div className="text-2xl font-bold mt-1">{value}</div>
+      {sub && <div className="text-[11px] text-muted-foreground mt-0.5">{sub}</div>}
+    </Card>
+  );
+}
+
+function ChartCard({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <Card className="p-4">
+      <h3 className="text-sm font-semibold mb-3">{title}</h3>
+      {children}
+    </Card>
+  );
+}
