@@ -424,7 +424,22 @@ export function FeedbackSection() {
               </div>
             </div>
             <div className="p-4 space-y-4">
-              
+              {(selected.email || selected.phone) && (
+                <div className="grid sm:grid-cols-2 gap-3 bg-muted/40 rounded-lg p-3">
+                  {selected.email && (
+                    <div>
+                      <div className="text-xs text-muted-foreground uppercase tracking-wide">Email</div>
+                      <a href={`mailto:${selected.email}`} className="text-sm font-medium text-primary hover:underline break-all">{selected.email}</a>
+                    </div>
+                  )}
+                  {selected.phone && (
+                    <div>
+                      <div className="text-xs text-muted-foreground uppercase tracking-wide">Phone</div>
+                      <a href={`tel:${selected.phone}`} className="text-sm font-medium text-primary hover:underline">{selected.phone}</a>
+                    </div>
+                  )}
+                </div>
+              )}
               <div className="grid sm:grid-cols-2 gap-3">
                 <Field label="Satisfaction" value={selected.satisfaction} />
                 <Field label="Recommendation" value={selected.recommendation} />
