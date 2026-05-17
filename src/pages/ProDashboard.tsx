@@ -24,6 +24,7 @@ import { MediaManagerSection } from "@/components/admin/MediaManagerSection";
 import { EmailsSection } from "@/components/admin/EmailsSection";
 import { ReminderLogSection } from "@/components/admin/ReminderLogSection";
 import { SofitelSection } from "@/components/admin/SofitelSection";
+import { FeedbackSection } from "@/components/admin/FeedbackSection";
 import SEOHead from "@/components/SEOHead";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Moon, Sun } from "lucide-react";
@@ -35,6 +36,7 @@ const sectionTitles: Record<string, string> = {
   workflow: "Workflow",
   sales: "Sales & Orders",
   customers: "Customers",
+  feedback: "Feedback",
   marketing: "Marketing",
   inventory: "Needs / Inventory",
   finance: "Finance",
@@ -126,6 +128,7 @@ const ProDashboard = () => {
             {activeSection === "workflow" && <WorkflowSection />}
             {activeSection === "sales" && <SalesSection />}
             {activeSection === "customers" && <CustomersSection />}
+            {activeSection === "feedback" && <FeedbackSection />}
             {activeSection === "marketing" && <MarketingSection />}
             {activeSection === "inventory" && <InventorySection />}
             {activeSection === "finance" && <FinanceSection />}
