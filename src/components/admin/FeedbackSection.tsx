@@ -5,8 +5,12 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card } from "@/components/ui/card";
 import { toast } from "@/hooks/use-toast";
-import { format } from "date-fns";
-import { Download, Trash2, Search, RefreshCw } from "lucide-react";
+import { format, startOfMonth } from "date-fns";
+import { Download, Trash2, Search, RefreshCw, TrendingUp, Heart, Sparkles, Star } from "lucide-react";
+import {
+  ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid,
+  PieChart, Pie, Cell, LineChart, Line, Legend,
+} from "recharts";
 
 interface Feedback {
   id: string;
@@ -79,11 +83,78 @@ export function FeedbackSection() {
     });
   }, [rows, filters, search]);
 
+  const SAT_SCORE: Record<string, number> = {
+    "Very satisfied": 5, "Somewhat satisfied": 4, "Neutral": 3,
+    "Somewhat dissatisfied": 2, "Very dissatisfied": 1,
+  };
+  const REC_SCORE: Record<string, number> = {
+    "Very likely": 5, "Somewhat likely": 4, "Neutral": 3,
+    "Somewhat unlikely": 2, "Very unlikely": 1,
+  };
+
   const stats = useMemo(() => {
     const total = rows.length;
     const sat = rows.filter((r) => r.satisfaction?.includes("satisfied") && !r.satisfaction?.includes("dis")).length;
-    const promoters = rows.filter((r) => r.recommendation?.includes("likely") && !r.recommendation?.includes("un")).length;
-    return { total, sat, promoters };
+    const promoters = rows.filter((r) => r.recommendation === "Very likely" || r.recommendation === "Somewhat likely").length;
+    const detractors = rows.filter((r) => r.recommendation === "Very unlikely" || r.recommendation === "Somewhat unlikely").length;
+    const satScores = rows.map((r) => SAT_SCORE[r.satisfaction || ""]).filter(Boolean);
+    const avgSat = satScores.length ? satScores.reduce((a, b) => a + b, 0) / satScores.length : 0;
+    const recScores = rows.map((r) => REC_SCORE[r.recommendation || ""]).filter(Boolean);
+    const avgRec = recScores.length ? recScores.reduce((a, b) => a + b, 0) / recScores.length : 0;
+    const nps = total ? Math.round(((promoters - detractors) / total) * 100) : 0;
+    return { total, sat, promoters, detractors, avgSat, avgRec, nps };
+  }, [rows]);
+
+  // Chart data
+  const chartData = useMemo(() => {
+    const dist = (key: keyof Feedback, order: string[]) => {
+      const counts: Record<string, number> = {};
+      order.forEach((o) => (counts[o] = 0));
+      rows.forEach((r) => {
+        const v = r[key] as string | null;
+        if (v && counts[v] !== undefined) counts[v]++;
+      });
+      return order.map((name) => ({ name, value: counts[name] }));
+    };
+    const satisfaction = dist("satisfaction", [
+      "Very satisfied", "Somewhat satisfied", "Neutral", "Somewhat dissatisfied", "Very dissatisfied",
+    ]);
+    const recommendation = dist("recommendation", [
+      "Very likely", "Somewhat likely", "Neutral", "Somewhat unlikely", "Very unlikely",
+    ]);
+    const expectations = dist("expectations", [
+      "Exceeded expectations", "Met expectations", "Did not meet expectations",
+    ]);
+    const facilitators = dist("facilitators", [
+      "Extremely engaging", "Very engaging", "Somewhat engaging", "Not very engaging", "Not at all engaging",
+    ]);
+    const materials = dist("materials", [
+      "Extremely helpful", "Very helpful", "Somewhat helpful", "Not very helpful", "Not at all helpful",
+    ]);
+    const length = dist("length_appropriate", ["Too short", "Just right", "Too long"]);
+    const source = dist("source", [
+      "Instagram", "TikTok", "Facebook", "Google Search",
+      "Friend or family recommendation", "Event / collaboration", "Walk-in / saw the place", "Other",
+    ]).filter((s) => s.value > 0);
+
+    // Trend by month
+    const byMonth: Record<string, { count: number; satSum: number; satN: number }> = {};
+    rows.forEach((r) => {
+      const k = format(startOfMonth(new Date(r.created_at)), "yyyy-MM");
+      byMonth[k] = byMonth[k] || { count: 0, satSum: 0, satN: 0 };
+      byMonth[k].count++;
+      const s = SAT_SCORE[r.satisfaction || ""];
+      if (s) { byMonth[k].satSum += s; byMonth[k].satN++; }
+    });
+    const trend = Object.entries(byMonth)
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([k, v]) => ({
+        month: format(new Date(k + "-01"), "MMM yy"),
+        responses: v.count,
+        avgSat: v.satN ? +(v.satSum / v.satN).toFixed(2) : 0,
+      }));
+
+    return { satisfaction, recommendation, expectations, facilitators, materials, length, source, trend };
   }, [rows]);
 
   const exportCsv = () => {
@@ -138,20 +209,124 @@ export function FeedbackSection() {
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-3">
-        <Card className="p-4">
-          <div className="text-xs text-muted-foreground">Total</div>
-          <div className="text-2xl font-bold">{stats.total}</div>
-        </Card>
-        <Card className="p-4">
-          <div className="text-xs text-muted-foreground">Satisfied</div>
-          <div className="text-2xl font-bold text-emerald-600">{stats.sat}</div>
-        </Card>
-        <Card className="p-4">
-          <div className="text-xs text-muted-foreground">Promoters</div>
-          <div className="text-2xl font-bold text-primary">{stats.promoters}</div>
-        </Card>
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+        <StatCard icon={<Sparkles className="w-4 h-4" />} label="Total responses" value={stats.total} />
+        <StatCard icon={<Heart className="w-4 h-4 text-rose-500" />} label="Satisfied" value={stats.sat} sub={stats.total ? `${Math.round((stats.sat / stats.total) * 100)}%` : "0%"} />
+        <StatCard icon={<Star className="w-4 h-4 text-amber-500" />} label="Avg satisfaction" value={stats.avgSat.toFixed(2)} sub="/ 5" />
+        <StatCard icon={<TrendingUp className="w-4 h-4 text-emerald-600" />} label="Avg recommend" value={stats.avgRec.toFixed(2)} sub="/ 5" />
+        <StatCard icon={<TrendingUp className="w-4 h-4 text-primary" />} label="NPS score" value={stats.nps} sub={`${stats.promoters} promoters · ${stats.detractors} detractors`} />
       </div>
+
+      {rows.length > 0 && (
+        <div className="grid gap-4 md:grid-cols-2">
+          <ChartCard title="Satisfaction">
+            <ResponsiveContainer width="100%" height={220}>
+              <BarChart data={chartData.satisfaction} margin={{ left: -10, right: 10, top: 10, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                <XAxis dataKey="name" tick={{ fontSize: 10 }} interval={0} angle={-15} textAnchor="end" height={50} />
+                <YAxis allowDecimals={false} tick={{ fontSize: 11 }} />
+                <Tooltip contentStyle={{ fontSize: 12 }} />
+                <Bar dataKey="value" radius={[6, 6, 0, 0]} fill="hsl(var(--primary))" />
+              </BarChart>
+            </ResponsiveContainer>
+          </ChartCard>
+
+          <ChartCard title="Recommendation likelihood">
+            <ResponsiveContainer width="100%" height={220}>
+              <BarChart data={chartData.recommendation} margin={{ left: -10, right: 10, top: 10, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                <XAxis dataKey="name" tick={{ fontSize: 10 }} interval={0} angle={-15} textAnchor="end" height={50} />
+                <YAxis allowDecimals={false} tick={{ fontSize: 11 }} />
+                <Tooltip contentStyle={{ fontSize: 12 }} />
+                <Bar dataKey="value" radius={[6, 6, 0, 0]} fill="hsl(var(--primary))" />
+              </BarChart>
+            </ResponsiveContainer>
+          </ChartCard>
+
+          <ChartCard title="Expectations">
+            <ResponsiveContainer width="100%" height={220}>
+              <PieChart>
+                <Pie data={chartData.expectations.filter((d) => d.value > 0)} dataKey="value" nameKey="name" outerRadius={75} label={(e: any) => `${e.value}`}>
+                  {chartData.expectations.map((_, i) => (
+                    <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
+                  ))}
+                </Pie>
+                <Legend wrapperStyle={{ fontSize: 11 }} />
+                <Tooltip contentStyle={{ fontSize: 12 }} />
+              </PieChart>
+            </ResponsiveContainer>
+          </ChartCard>
+
+          <ChartCard title="Workshop length">
+            <ResponsiveContainer width="100%" height={220}>
+              <PieChart>
+                <Pie data={chartData.length.filter((d) => d.value > 0)} dataKey="value" nameKey="name" outerRadius={75} label={(e: any) => `${e.value}`}>
+                  {chartData.length.map((_, i) => (
+                    <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
+                  ))}
+                </Pie>
+                <Legend wrapperStyle={{ fontSize: 11 }} />
+                <Tooltip contentStyle={{ fontSize: 12 }} />
+              </PieChart>
+            </ResponsiveContainer>
+          </ChartCard>
+
+          <ChartCard title="Facilitator engagement">
+            <ResponsiveContainer width="100%" height={220}>
+              <BarChart data={chartData.facilitators} layout="vertical" margin={{ left: 30, right: 10 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                <XAxis type="number" allowDecimals={false} tick={{ fontSize: 11 }} />
+                <YAxis type="category" dataKey="name" tick={{ fontSize: 10 }} width={120} />
+                <Tooltip contentStyle={{ fontSize: 12 }} />
+                <Bar dataKey="value" radius={[0, 6, 6, 0]} fill="hsl(var(--primary))" />
+              </BarChart>
+            </ResponsiveContainer>
+          </ChartCard>
+
+          <ChartCard title="Materials helpfulness">
+            <ResponsiveContainer width="100%" height={220}>
+              <BarChart data={chartData.materials} layout="vertical" margin={{ left: 30, right: 10 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                <XAxis type="number" allowDecimals={false} tick={{ fontSize: 11 }} />
+                <YAxis type="category" dataKey="name" tick={{ fontSize: 10 }} width={120} />
+                <Tooltip contentStyle={{ fontSize: 12 }} />
+                <Bar dataKey="value" radius={[0, 6, 6, 0]} fill="hsl(var(--primary))" />
+              </BarChart>
+            </ResponsiveContainer>
+          </ChartCard>
+
+          {chartData.source.length > 0 && (
+            <ChartCard title="How they heard about us">
+              <ResponsiveContainer width="100%" height={220}>
+                <BarChart data={chartData.source} layout="vertical" margin={{ left: 30, right: 10 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                  <XAxis type="number" allowDecimals={false} tick={{ fontSize: 11 }} />
+                  <YAxis type="category" dataKey="name" tick={{ fontSize: 10 }} width={140} />
+                  <Tooltip contentStyle={{ fontSize: 12 }} />
+                  <Bar dataKey="value" radius={[0, 6, 6, 0]} fill="hsl(var(--primary))" />
+                </BarChart>
+              </ResponsiveContainer>
+            </ChartCard>
+          )}
+
+          {chartData.trend.length > 1 && (
+            <ChartCard title="Responses & avg satisfaction over time">
+              <ResponsiveContainer width="100%" height={220}>
+                <LineChart data={chartData.trend} margin={{ left: -10, right: 10, top: 10 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                  <XAxis dataKey="month" tick={{ fontSize: 11 }} />
+                  <YAxis yAxisId="l" allowDecimals={false} tick={{ fontSize: 11 }} />
+                  <YAxis yAxisId="r" orientation="right" domain={[0, 5]} tick={{ fontSize: 11 }} />
+                  <Tooltip contentStyle={{ fontSize: 12 }} />
+                  <Legend wrapperStyle={{ fontSize: 11 }} />
+                  <Line yAxisId="l" type="monotone" dataKey="responses" stroke="hsl(var(--primary))" strokeWidth={2} />
+                  <Line yAxisId="r" type="monotone" dataKey="avgSat" stroke="#10b981" strokeWidth={2} />
+                </LineChart>
+              </ResponsiveContainer>
+            </ChartCard>
+          )}
+        </div>
+      )}
 
       <Card className="p-4 space-y-3">
         <div className="relative">
@@ -299,5 +474,35 @@ function LongField({ label, value }: { label: string; value: string | null }) {
       <div className="text-xs text-muted-foreground uppercase tracking-wide mb-1">{label}</div>
       <p className="text-sm whitespace-pre-wrap">{value}</p>
     </div>
+  );
+}
+
+const PIE_COLORS = [
+  "hsl(var(--primary))",
+  "#10b981",
+  "#f59e0b",
+  "#ef4444",
+  "#6366f1",
+  "#ec4899",
+  "#14b8a6",
+  "#84cc16",
+];
+
+function StatCard({ icon, label, value, sub }: { icon: React.ReactNode; label: string; value: React.ReactNode; sub?: string }) {
+  return (
+    <Card className="p-4">
+      <div className="flex items-center gap-1.5 text-xs text-muted-foreground">{icon}<span>{label}</span></div>
+      <div className="text-2xl font-bold mt-1">{value}</div>
+      {sub && <div className="text-[11px] text-muted-foreground mt-0.5">{sub}</div>}
+    </Card>
+  );
+}
+
+function ChartCard({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <Card className="p-4">
+      <h3 className="text-sm font-semibold mb-3">{title}</h3>
+      {children}
+    </Card>
   );
 }
