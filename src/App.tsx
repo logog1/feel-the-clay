@@ -36,6 +36,7 @@ import Sofitel from "./pages/Sofitel";
 import SofitelHotel from "./pages/SofitelHotel";
 import SofitelAdmin from "./pages/SofitelAdmin";
 import SofitelQR from "./pages/SofitelQR";
+import Feedback from "./pages/Feedback";
 
 const queryClient = new QueryClient();
 
@@ -79,6 +80,7 @@ const App = () => {
               <Route path="/privacy" element={<PrivacyPolicy />} />
               <Route path="/legal" element={<LegalNotice />} />
               <Route path="/unsubscribe" element={<Unsubscribe />} />
+              <Route path="/feedback" element={<Feedback />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>

@@ -365,6 +365,57 @@ export type Database = {
         }
         Relationships: []
       }
+      feedback: {
+        Row: {
+          created_at: string
+          effectiveness: string | null
+          expectations: string | null
+          facilitators: string | null
+          id: string
+          length_appropriate: string | null
+          liked_most: string | null
+          materials: string | null
+          name: string | null
+          organization: string | null
+          recommendation: string | null
+          satisfaction: string | null
+          source: string | null
+          suggestions: string | null
+        }
+        Insert: {
+          created_at?: string
+          effectiveness?: string | null
+          expectations?: string | null
+          facilitators?: string | null
+          id?: string
+          length_appropriate?: string | null
+          liked_most?: string | null
+          materials?: string | null
+          name?: string | null
+          organization?: string | null
+          recommendation?: string | null
+          satisfaction?: string | null
+          source?: string | null
+          suggestions?: string | null
+        }
+        Update: {
+          created_at?: string
+          effectiveness?: string | null
+          expectations?: string | null
+          facilitators?: string | null
+          id?: string
+          length_appropriate?: string | null
+          liked_most?: string | null
+          materials?: string | null
+          name?: string | null
+          organization?: string | null
+          recommendation?: string | null
+          satisfaction?: string | null
+          source?: string | null
+          suggestions?: string | null
+        }
+        Relationships: []
+      }
       google_reviews: {
         Row: {
           author_name: string
