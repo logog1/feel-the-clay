@@ -1,0 +1,1 @@
+DELETE FROM public.feedback WHERE name IN ('E2E Test User', 'Browser E2E');
