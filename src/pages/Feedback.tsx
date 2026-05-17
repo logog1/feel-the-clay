@@ -10,6 +10,7 @@ import { toast } from "@/hooks/use-toast";
 import SEOHead from "@/components/SEOHead";
 import { CheckCircle2 } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
+import feedbackHero from "@/assets/feedback-hero.jpg";
 
 type Lang = "en" | "fr" | "es" | "ar";
 type L = Record<Lang, string>;
@@ -248,8 +249,14 @@ export default function Feedback() {
         path="/feedback"
       />
       <div className="max-w-2xl mx-auto">
+        <img
+          src={feedbackHero}
+          alt={tr(UI.title)}
+          className="w-full rounded-2xl shadow-md mb-6 object-cover"
+          loading="eager"
+        />
         <header className="mb-8 text-center">
-          <h1 className="text-3xl sm:text-4xl font-bold mb-2">{tr(UI.title)}</h1>
+          <h1 className="sr-only">{tr(UI.title)}</h1>
           <p className="text-muted-foreground">{tr(UI.intro)}</p>
         </header>
 
