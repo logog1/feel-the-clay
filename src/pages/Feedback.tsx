@@ -29,6 +29,8 @@ const UI: Record<string, L> = {
     ar: "يسعدنا معرفة رأيك. لن يستغرق الأمر سوى دقيقتين.",
   },
   name: { en: "Name", fr: "Nom", es: "Nombre", ar: "الاسم" },
+  email: { en: "Email", fr: "E-mail", es: "Correo electrónico", ar: "البريد الإلكتروني" },
+  phone: { en: "Phone number", fr: "Numéro de téléphone", es: "Número de teléfono", ar: "رقم الهاتف" },
   optional: { en: "(optional)", fr: "(facultatif)", es: "(opcional)", ar: "(اختياري)" },
   submit: { en: "Submit feedback", fr: "Envoyer", es: "Enviar", ar: "إرسال" },
   submitting: { en: "Submitting...", fr: "Envoi...", es: "Enviando...", ar: "جارٍ الإرسال..." },
@@ -206,6 +208,8 @@ export default function Feedback() {
     setSubmitting(true);
     const payload = {
       name: form.name?.trim() || null,
+      email: form.email?.trim() || null,
+      phone: form.phone?.trim() || null,
       satisfaction: form.satisfaction || null,
       recommendation: form.recommendation || null,
       length_appropriate: form.length_appropriate || null,
@@ -266,6 +270,35 @@ export default function Feedback() {
               {tr(UI.name)} <span className="text-muted-foreground text-xs">{tr(UI.optional)}</span>
             </Label>
             <Input id="name" value={form.name || ""} onChange={(e) => set("name", e.target.value)} maxLength={100} />
+          </div>
+
+          <div className="grid sm:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="email">
+                {tr(UI.email)} <span className="text-muted-foreground text-xs">{tr(UI.optional)}</span>
+              </Label>
+              <Input
+                id="email"
+                type="email"
+                value={form.email || ""}
+                onChange={(e) => set("email", e.target.value)}
+                maxLength={255}
+                autoComplete="email"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="phone">
+                {tr(UI.phone)} <span className="text-muted-foreground text-xs">{tr(UI.optional)}</span>
+              </Label>
+              <Input
+                id="phone"
+                type="tel"
+                value={form.phone || ""}
+                onChange={(e) => set("phone", e.target.value)}
+                maxLength={30}
+                autoComplete="tel"
+              />
+            </div>
           </div>
 
           {RADIO_QUESTIONS.map((q) => (
