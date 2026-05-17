@@ -209,20 +209,124 @@ export function FeedbackSection() {
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-3">
-        <Card className="p-4">
-          <div className="text-xs text-muted-foreground">Total</div>
-          <div className="text-2xl font-bold">{stats.total}</div>
-        </Card>
-        <Card className="p-4">
-          <div className="text-xs text-muted-foreground">Satisfied</div>
-          <div className="text-2xl font-bold text-emerald-600">{stats.sat}</div>
-        </Card>
-        <Card className="p-4">
-          <div className="text-xs text-muted-foreground">Promoters</div>
-          <div className="text-2xl font-bold text-primary">{stats.promoters}</div>
-        </Card>
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+        <StatCard icon={<Sparkles className="w-4 h-4" />} label="Total responses" value={stats.total} />
+        <StatCard icon={<Heart className="w-4 h-4 text-rose-500" />} label="Satisfied" value={stats.sat} sub={stats.total ? `${Math.round((stats.sat / stats.total) * 100)}%` : "0%"} />
+        <StatCard icon={<Star className="w-4 h-4 text-amber-500" />} label="Avg satisfaction" value={stats.avgSat.toFixed(2)} sub="/ 5" />
+        <StatCard icon={<TrendingUp className="w-4 h-4 text-emerald-600" />} label="Avg recommend" value={stats.avgRec.toFixed(2)} sub="/ 5" />
+        <StatCard icon={<TrendingUp className="w-4 h-4 text-primary" />} label="NPS score" value={stats.nps} sub={`${stats.promoters} promoters · ${stats.detractors} detractors`} />
       </div>
+
+      {rows.length > 0 && (
+        <div className="grid gap-4 md:grid-cols-2">
+          <ChartCard title="Satisfaction">
+            <ResponsiveContainer width="100%" height={220}>
+              <BarChart data={chartData.satisfaction} margin={{ left: -10, right: 10, top: 10, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                <XAxis dataKey="name" tick={{ fontSize: 10 }} interval={0} angle={-15} textAnchor="end" height={50} />
+                <YAxis allowDecimals={false} tick={{ fontSize: 11 }} />
+                <Tooltip contentStyle={{ fontSize: 12 }} />
+                <Bar dataKey="value" radius={[6, 6, 0, 0]} fill="hsl(var(--primary))" />
+              </BarChart>
+            </ResponsiveContainer>
+          </ChartCard>
+
+          <ChartCard title="Recommendation likelihood">
+            <ResponsiveContainer width="100%" height={220}>
+              <BarChart data={chartData.recommendation} margin={{ left: -10, right: 10, top: 10, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                <XAxis dataKey="name" tick={{ fontSize: 10 }} interval={0} angle={-15} textAnchor="end" height={50} />
+                <YAxis allowDecimals={false} tick={{ fontSize: 11 }} />
+                <Tooltip contentStyle={{ fontSize: 12 }} />
+                <Bar dataKey="value" radius={[6, 6, 0, 0]} fill="hsl(var(--primary))" />
+              </BarChart>
+            </ResponsiveContainer>
+          </ChartCard>
+
+          <ChartCard title="Expectations">
+            <ResponsiveContainer width="100%" height={220}>
+              <PieChart>
+                <Pie data={chartData.expectations.filter((d) => d.value > 0)} dataKey="value" nameKey="name" outerRadius={75} label={(e: any) => `${e.value}`}>
+                  {chartData.expectations.map((_, i) => (
+                    <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
+                  ))}
+                </Pie>
+                <Legend wrapperStyle={{ fontSize: 11 }} />
+                <Tooltip contentStyle={{ fontSize: 12 }} />
+              </PieChart>
+            </ResponsiveContainer>
+          </ChartCard>
+
+          <ChartCard title="Workshop length">
+            <ResponsiveContainer width="100%" height={220}>
+              <PieChart>
+                <Pie data={chartData.length.filter((d) => d.value > 0)} dataKey="value" nameKey="name" outerRadius={75} label={(e: any) => `${e.value}`}>
+                  {chartData.length.map((_, i) => (
+                    <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
+                  ))}
+                </Pie>
+                <Legend wrapperStyle={{ fontSize: 11 }} />
+                <Tooltip contentStyle={{ fontSize: 12 }} />
+              </PieChart>
+            </ResponsiveContainer>
+          </ChartCard>
+
+          <ChartCard title="Facilitator engagement">
+            <ResponsiveContainer width="100%" height={220}>
+              <BarChart data={chartData.facilitators} layout="vertical" margin={{ left: 30, right: 10 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                <XAxis type="number" allowDecimals={false} tick={{ fontSize: 11 }} />
+                <YAxis type="category" dataKey="name" tick={{ fontSize: 10 }} width={120} />
+                <Tooltip contentStyle={{ fontSize: 12 }} />
+                <Bar dataKey="value" radius={[0, 6, 6, 0]} fill="hsl(var(--primary))" />
+              </BarChart>
+            </ResponsiveContainer>
+          </ChartCard>
+
+          <ChartCard title="Materials helpfulness">
+            <ResponsiveContainer width="100%" height={220}>
+              <BarChart data={chartData.materials} layout="vertical" margin={{ left: 30, right: 10 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                <XAxis type="number" allowDecimals={false} tick={{ fontSize: 11 }} />
+                <YAxis type="category" dataKey="name" tick={{ fontSize: 10 }} width={120} />
+                <Tooltip contentStyle={{ fontSize: 12 }} />
+                <Bar dataKey="value" radius={[0, 6, 6, 0]} fill="hsl(var(--primary))" />
+              </BarChart>
+            </ResponsiveContainer>
+          </ChartCard>
+
+          {chartData.source.length > 0 && (
+            <ChartCard title="How they heard about us">
+              <ResponsiveContainer width="100%" height={220}>
+                <BarChart data={chartData.source} layout="vertical" margin={{ left: 30, right: 10 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                  <XAxis type="number" allowDecimals={false} tick={{ fontSize: 11 }} />
+                  <YAxis type="category" dataKey="name" tick={{ fontSize: 10 }} width={140} />
+                  <Tooltip contentStyle={{ fontSize: 12 }} />
+                  <Bar dataKey="value" radius={[0, 6, 6, 0]} fill="hsl(var(--primary))" />
+                </BarChart>
+              </ResponsiveContainer>
+            </ChartCard>
+          )}
+
+          {chartData.trend.length > 1 && (
+            <ChartCard title="Responses & avg satisfaction over time">
+              <ResponsiveContainer width="100%" height={220}>
+                <LineChart data={chartData.trend} margin={{ left: -10, right: 10, top: 10 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                  <XAxis dataKey="month" tick={{ fontSize: 11 }} />
+                  <YAxis yAxisId="l" allowDecimals={false} tick={{ fontSize: 11 }} />
+                  <YAxis yAxisId="r" orientation="right" domain={[0, 5]} tick={{ fontSize: 11 }} />
+                  <Tooltip contentStyle={{ fontSize: 12 }} />
+                  <Legend wrapperStyle={{ fontSize: 11 }} />
+                  <Line yAxisId="l" type="monotone" dataKey="responses" stroke="hsl(var(--primary))" strokeWidth={2} />
+                  <Line yAxisId="r" type="monotone" dataKey="avgSat" stroke="#10b981" strokeWidth={2} />
+                </LineChart>
+              </ResponsiveContainer>
+            </ChartCard>
+          )}
+        </div>
+      )}
 
       <Card className="p-4 space-y-3">
         <div className="relative">
