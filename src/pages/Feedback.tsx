@@ -78,7 +78,7 @@ export default function Feedback() {
     setSubmitting(true);
     const payload = {
       name: form.name?.trim() || null,
-      organization: form.organization?.trim() || null,
+      
       satisfaction: form.satisfaction || null,
       recommendation: form.recommendation || null,
       length_appropriate: form.length_appropriate || null,
@@ -132,15 +132,9 @@ export default function Feedback() {
         </header>
 
         <form onSubmit={onSubmit} className="space-y-6 bg-card rounded-2xl shadow-md border p-6 sm:p-8">
-          <div className="grid sm:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="name">Name <span className="text-muted-foreground text-xs">(optional)</span></Label>
-              <Input id="name" value={form.name || ""} onChange={(e) => set("name", e.target.value)} maxLength={100} />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="organization">Organization <span className="text-muted-foreground text-xs">(optional)</span></Label>
-              <Input id="organization" value={form.organization || ""} onChange={(e) => set("organization", e.target.value)} maxLength={150} />
-            </div>
+          <div className="space-y-2">
+            <Label htmlFor="name">Name <span className="text-muted-foreground text-xs">(optional)</span></Label>
+            <Input id="name" value={form.name || ""} onChange={(e) => set("name", e.target.value)} maxLength={100} />
           </div>
 
           {RADIO_QUESTIONS.map((q) => (

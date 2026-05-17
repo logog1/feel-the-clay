@@ -73,7 +73,7 @@ export function FeedbackSection() {
         if (v && v !== "__all__" && r[k as keyof Feedback] !== v) return false;
       }
       if (!q) return true;
-      return [r.name, r.organization, r.liked_most, r.suggestions, r.effectiveness]
+      return [r.name, r.liked_most, r.suggestions, r.effectiveness]
         .filter(Boolean)
         .some((s) => (s as string).toLowerCase().includes(q));
     });
@@ -88,7 +88,7 @@ export function FeedbackSection() {
 
   const exportCsv = () => {
     const headers = [
-      "created_at", "name", "organization", "satisfaction", "recommendation",
+      "created_at", "name", "satisfaction", "recommendation",
       "length_appropriate", "expectations", "facilitators", "materials", "source",
       "liked_most", "suggestions", "effectiveness",
     ];
@@ -157,7 +157,7 @@ export function FeedbackSection() {
         <div className="relative">
           <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
           <Input
-            placeholder="Search name, organization, comments..."
+            placeholder="Search name, comments..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="pl-9"
@@ -204,7 +204,7 @@ export function FeedbackSection() {
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2 mb-1 flex-wrap">
                   <span className="font-semibold">{r.name || "Anonymous"}</span>
-                  {r.organization && <span className="text-xs text-muted-foreground">· {r.organization}</span>}
+                  
                   <span className="text-xs text-muted-foreground ml-auto">
                     {format(new Date(r.created_at), "PP")}
                   </span>
@@ -247,7 +247,7 @@ export function FeedbackSection() {
               </div>
             </div>
             <div className="p-4 space-y-4">
-              {selected.organization && <Field label="Organization" value={selected.organization} />}
+              
               <div className="grid sm:grid-cols-2 gap-3">
                 <Field label="Satisfaction" value={selected.satisfaction} />
                 <Field label="Recommendation" value={selected.recommendation} />
