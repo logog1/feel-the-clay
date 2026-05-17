@@ -83,11 +83,78 @@ export function FeedbackSection() {
     });
   }, [rows, filters, search]);
 
+  const SAT_SCORE: Record<string, number> = {
+    "Very satisfied": 5, "Somewhat satisfied": 4, "Neutral": 3,
+    "Somewhat dissatisfied": 2, "Very dissatisfied": 1,
+  };
+  const REC_SCORE: Record<string, number> = {
+    "Very likely": 5, "Somewhat likely": 4, "Neutral": 3,
+    "Somewhat unlikely": 2, "Very unlikely": 1,
+  };
+
   const stats = useMemo(() => {
     const total = rows.length;
     const sat = rows.filter((r) => r.satisfaction?.includes("satisfied") && !r.satisfaction?.includes("dis")).length;
-    const promoters = rows.filter((r) => r.recommendation?.includes("likely") && !r.recommendation?.includes("un")).length;
-    return { total, sat, promoters };
+    const promoters = rows.filter((r) => r.recommendation === "Very likely" || r.recommendation === "Somewhat likely").length;
+    const detractors = rows.filter((r) => r.recommendation === "Very unlikely" || r.recommendation === "Somewhat unlikely").length;
+    const satScores = rows.map((r) => SAT_SCORE[r.satisfaction || ""]).filter(Boolean);
+    const avgSat = satScores.length ? satScores.reduce((a, b) => a + b, 0) / satScores.length : 0;
+    const recScores = rows.map((r) => REC_SCORE[r.recommendation || ""]).filter(Boolean);
+    const avgRec = recScores.length ? recScores.reduce((a, b) => a + b, 0) / recScores.length : 0;
+    const nps = total ? Math.round(((promoters - detractors) / total) * 100) : 0;
+    return { total, sat, promoters, detractors, avgSat, avgRec, nps };
+  }, [rows]);
+
+  // Chart data
+  const chartData = useMemo(() => {
+    const dist = (key: keyof Feedback, order: string[]) => {
+      const counts: Record<string, number> = {};
+      order.forEach((o) => (counts[o] = 0));
+      rows.forEach((r) => {
+        const v = r[key] as string | null;
+        if (v && counts[v] !== undefined) counts[v]++;
+      });
+      return order.map((name) => ({ name, value: counts[name] }));
+    };
+    const satisfaction = dist("satisfaction", [
+      "Very satisfied", "Somewhat satisfied", "Neutral", "Somewhat dissatisfied", "Very dissatisfied",
+    ]);
+    const recommendation = dist("recommendation", [
+      "Very likely", "Somewhat likely", "Neutral", "Somewhat unlikely", "Very unlikely",
+    ]);
+    const expectations = dist("expectations", [
+      "Exceeded expectations", "Met expectations", "Did not meet expectations",
+    ]);
+    const facilitators = dist("facilitators", [
+      "Extremely engaging", "Very engaging", "Somewhat engaging", "Not very engaging", "Not at all engaging",
+    ]);
+    const materials = dist("materials", [
+      "Extremely helpful", "Very helpful", "Somewhat helpful", "Not very helpful", "Not at all helpful",
+    ]);
+    const length = dist("length_appropriate", ["Too short", "Just right", "Too long"]);
+    const source = dist("source", [
+      "Instagram", "TikTok", "Facebook", "Google Search",
+      "Friend or family recommendation", "Event / collaboration", "Walk-in / saw the place", "Other",
+    ]).filter((s) => s.value > 0);
+
+    // Trend by month
+    const byMonth: Record<string, { count: number; satSum: number; satN: number }> = {};
+    rows.forEach((r) => {
+      const k = format(startOfMonth(new Date(r.created_at)), "yyyy-MM");
+      byMonth[k] = byMonth[k] || { count: 0, satSum: 0, satN: 0 };
+      byMonth[k].count++;
+      const s = SAT_SCORE[r.satisfaction || ""];
+      if (s) { byMonth[k].satSum += s; byMonth[k].satN++; }
+    });
+    const trend = Object.entries(byMonth)
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([k, v]) => ({
+        month: format(new Date(k + "-01"), "MMM yy"),
+        responses: v.count,
+        avgSat: v.satN ? +(v.satSum / v.satN).toFixed(2) : 0,
+      }));
+
+    return { satisfaction, recommendation, expectations, facilitators, materials, length, source, trend };
   }, [rows]);
 
   const exportCsv = () => {
