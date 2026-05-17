@@ -369,6 +369,7 @@ export type Database = {
         Row: {
           created_at: string
           effectiveness: string | null
+          email: string | null
           expectations: string | null
           facilitators: string | null
           id: string
@@ -377,6 +378,7 @@ export type Database = {
           materials: string | null
           name: string | null
           organization: string | null
+          phone: string | null
           recommendation: string | null
           satisfaction: string | null
           source: string | null
@@ -385,6 +387,7 @@ export type Database = {
         Insert: {
           created_at?: string
           effectiveness?: string | null
+          email?: string | null
           expectations?: string | null
           facilitators?: string | null
           id?: string
@@ -393,6 +396,7 @@ export type Database = {
           materials?: string | null
           name?: string | null
           organization?: string | null
+          phone?: string | null
           recommendation?: string | null
           satisfaction?: string | null
           source?: string | null
@@ -401,6 +405,7 @@ export type Database = {
         Update: {
           created_at?: string
           effectiveness?: string | null
+          email?: string | null
           expectations?: string | null
           facilitators?: string | null
           id?: string
@@ -409,6 +414,7 @@ export type Database = {
           materials?: string | null
           name?: string | null
           organization?: string | null
+          phone?: string | null
           recommendation?: string | null
           satisfaction?: string | null
           source?: string | null
