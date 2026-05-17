@@ -29,6 +29,7 @@ const WhatsAppFloat = () => {
     };
   }, []);
 
+  if (HIDDEN_PATHS.includes(pathname)) return null;
   if (!visible) return null;
 
   return (
