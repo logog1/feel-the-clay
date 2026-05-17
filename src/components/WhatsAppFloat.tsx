@@ -23,8 +23,14 @@ const WhatsAppFloat = () => {
     const pulseTimer = setTimeout(() => setPulse(false), 12000);
     const labelTimer = setTimeout(() => setShowLabel(false), 8000);
 
+    const onNav = () => setPathname(window.location.pathname);
+    window.addEventListener("popstate", onNav);
+    const interval = setInterval(onNav, 500);
+
     return () => {
       window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("popstate", onNav);
+      clearInterval(interval);
       clearTimeout(pulseTimer);
       clearTimeout(labelTimer);
     };
