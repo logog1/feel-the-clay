@@ -51,6 +51,7 @@ const BookingFormSection = () => {
   const [availableDates, setAvailableDates] = useState<string[]>([]);
   const [blockedDates, setBlockedDates] = useState<string[]>([]);
   const [cities, setCities] = useState<CityOption[]>([]);
+  const [workshopSchedules, setWorkshopSchedules] = useState<Record<string, { date: string; time_slots: string[] }[]>>({});
 
   useEffect(() => {
     const fetchAvailability = async () => {
@@ -74,8 +75,26 @@ const BookingFormSection = () => {
         })));
       }
     };
+    const fetchWorkshopSchedules = async () => {
+      const { data } = await supabase
+        .from("site_settings")
+        .select("key, value")
+        .like("key", "workshop_schedule_%");
+      if (data) {
+        const map: Record<string, { date: string; time_slots: string[] }[]> = {};
+        for (const row of data) {
+          const id = row.key.replace("workshop_schedule_", "");
+          try {
+            const parsed = JSON.parse(row.value);
+            if (Array.isArray(parsed)) map[id] = parsed;
+          } catch {}
+        }
+        setWorkshopSchedules(map);
+      }
+    };
     fetchAvailability();
     fetchCities();
+    fetchWorkshopSchedules();
   }, []);
 
   const isLargeGroup = form.participants >= 4;
