@@ -95,6 +95,34 @@ const BookingFormSection = () => {
     fetchAvailability();
     fetchCities();
     fetchWorkshopSchedules();
+
+    // Live updates: when admin changes workshop schedules or availability, refetch immediately
+    const channel = supabase
+      .channel("booking-form-live")
+      .on("postgres_changes", { event: "*", schema: "public", table: "site_settings" }, (payload: any) => {
+        const key = (payload?.new?.key || payload?.old?.key || "") as string;
+        if (key.startsWith("workshop_schedule_")) fetchWorkshopSchedules();
+      })
+      .on("postgres_changes", { event: "*", schema: "public", table: "workshop_availability" }, () => {
+        fetchAvailability();
+      })
+      .on("postgres_changes", { event: "*", schema: "public", table: "workshop_cities" }, () => {
+        fetchCities();
+      })
+      .subscribe();
+
+    // Refetch when the tab regains focus, so visitors always see the latest
+    const onFocus = () => {
+      fetchWorkshopSchedules();
+      fetchAvailability();
+      fetchCities();
+    };
+    window.addEventListener("focus", onFocus);
+
+    return () => {
+      supabase.removeChannel(channel);
+      window.removeEventListener("focus", onFocus);
+    };
   }, []);
 
   const isLargeGroup = form.participants >= 4;
