@@ -151,6 +151,38 @@ const BookingFormSection = () => {
     }
   }, [availableTimeSlots]);
 
+  // Per-workshop schedule (if admin set one, it takes precedence)
+  const currentWorkshopSchedule = useMemo(() => {
+    return workshopSchedules[form.workshop] || [];
+  }, [workshopSchedules, form.workshop]);
+
+  const workshopDateSet = useMemo(() => {
+    return new Set(currentWorkshopSchedule.map((s) => s.date));
+  }, [currentWorkshopSchedule]);
+
+  // Time slots: workshop schedule wins, otherwise fall back to city schedule
+  const availableTimeSlots = useMemo<string[]>(() => {
+    if (!form.date) return [];
+    const dateStr = format(form.date, "yyyy-MM-dd");
+    if (workshopDateSet.has(dateStr)) {
+      return currentWorkshopSchedule.find((s) => s.date === dateStr)?.time_slots || [];
+    }
+    if (!selectedCity) return [];
+    const dayName = Object.keys(DAY_TO_INDEX).find(
+      (k) => DAY_TO_INDEX[k] === form.date!.getDay()
+    );
+    if (!dayName) return [];
+    const entry = selectedCity.schedule.find((s) => s.day === dayName);
+    return entry?.time_slots?.filter(Boolean) || [];
+  }, [selectedCity, form.date, workshopDateSet, currentWorkshopSchedule]);
+
+  // Reset selected slot when the available list changes
+  useEffect(() => {
+    if (form.timeSlot && !availableTimeSlots.includes(form.timeSlot)) {
+      setForm((prev) => ({ ...prev, timeSlot: "" }));
+    }
+  }, [availableTimeSlots]);
+
   const sessionTypeKey = useMemo(() => {
     if (isLargeGroup) return form.sessionType === "private" ? "private" : "open";
     if (form.participants >= 2) return "group_small";
@@ -170,6 +202,10 @@ const BookingFormSection = () => {
     if (date < today) return true;
     const dateStr = format(date, "yyyy-MM-dd");
     if (blockedDates.includes(dateStr)) return true;
+    // If admin set a workshop-specific schedule, ONLY those dates are allowed
+    if (workshopDateSet.size > 0) {
+      return !workshopDateSet.has(dateStr);
+    }
     const day = date.getDay();
     const isWeekend = day === 0 || day === 6;
     // Open workshops (open sessions & small groups) are weekends only — regardless of city schedule
