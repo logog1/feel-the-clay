@@ -529,7 +529,7 @@ const BookingFormSection = () => {
           </div>
 
           {/* Time Slot — appears once a date is picked and the city has slots configured */}
-          {form.date && selectedCity && (
+          {form.date && (selectedCity || workshopDateSet.size > 0) && (
             <div id="time-slot-section" className="space-y-3">
               <h3 className="text-sm font-bold uppercase tracking-widest text-cta">{t("booking.time_slot")}</h3>
               {availableTimeSlots.length === 0 ? (
