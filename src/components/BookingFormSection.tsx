@@ -51,6 +51,7 @@ const BookingFormSection = () => {
   const [availableDates, setAvailableDates] = useState<string[]>([]);
   const [blockedDates, setBlockedDates] = useState<string[]>([]);
   const [cities, setCities] = useState<CityOption[]>([]);
+  const [workshopSchedules, setWorkshopSchedules] = useState<Record<string, { date: string; time_slots: string[] }[]>>({});
 
   useEffect(() => {
     const fetchAvailability = async () => {
@@ -74,8 +75,26 @@ const BookingFormSection = () => {
         })));
       }
     };
+    const fetchWorkshopSchedules = async () => {
+      const { data } = await supabase
+        .from("site_settings")
+        .select("key, value")
+        .like("key", "workshop_schedule_%");
+      if (data) {
+        const map: Record<string, { date: string; time_slots: string[] }[]> = {};
+        for (const row of data) {
+          const id = row.key.replace("workshop_schedule_", "");
+          try {
+            const parsed = JSON.parse(row.value);
+            if (Array.isArray(parsed)) map[id] = parsed;
+          } catch {}
+        }
+        setWorkshopSchedules(map);
+      }
+    };
     fetchAvailability();
     fetchCities();
+    fetchWorkshopSchedules();
   }, []);
 
   const isLargeGroup = form.participants >= 4;
@@ -114,18 +133,33 @@ const BookingFormSection = () => {
     return days;
   }, [selectedCity]);
 
-  // Time slots available for the selected city + date's weekday
+
+  // Per-workshop schedule (if admin set one, it takes precedence)
+  const currentWorkshopSchedule = useMemo(() => {
+    return workshopSchedules[form.workshop] || [];
+  }, [workshopSchedules, form.workshop]);
+
+  const workshopDateSet = useMemo(() => {
+    return new Set(currentWorkshopSchedule.map((s) => s.date));
+  }, [currentWorkshopSchedule]);
+
+  // Time slots: workshop schedule wins, otherwise fall back to city schedule
   const availableTimeSlots = useMemo<string[]>(() => {
-    if (!selectedCity || !form.date) return [];
+    if (!form.date) return [];
+    const dateStr = format(form.date, "yyyy-MM-dd");
+    if (workshopDateSet.has(dateStr)) {
+      return currentWorkshopSchedule.find((s) => s.date === dateStr)?.time_slots || [];
+    }
+    if (!selectedCity) return [];
     const dayName = Object.keys(DAY_TO_INDEX).find(
       (k) => DAY_TO_INDEX[k] === form.date!.getDay()
     );
     if (!dayName) return [];
     const entry = selectedCity.schedule.find((s) => s.day === dayName);
     return entry?.time_slots?.filter(Boolean) || [];
-  }, [selectedCity, form.date]);
+  }, [selectedCity, form.date, workshopDateSet, currentWorkshopSchedule]);
 
-  // Reset selected slot when the available list changes (city/date change)
+  // Reset selected slot when the available list changes
   useEffect(() => {
     if (form.timeSlot && !availableTimeSlots.includes(form.timeSlot)) {
       setForm((prev) => ({ ...prev, timeSlot: "" }));
@@ -151,6 +185,10 @@ const BookingFormSection = () => {
     if (date < today) return true;
     const dateStr = format(date, "yyyy-MM-dd");
     if (blockedDates.includes(dateStr)) return true;
+    // If admin set a workshop-specific schedule, ONLY those dates are allowed
+    if (workshopDateSet.size > 0) {
+      return !workshopDateSet.has(dateStr);
+    }
     const day = date.getDay();
     const isWeekend = day === 0 || day === 6;
     // Open workshops (open sessions & small groups) are weekends only — regardless of city schedule
@@ -491,7 +529,7 @@ const BookingFormSection = () => {
           </div>
 
           {/* Time Slot — appears once a date is picked and the city has slots configured */}
-          {form.date && selectedCity && (
+          {form.date && (selectedCity || workshopDateSet.size > 0) && (
             <div id="time-slot-section" className="space-y-3">
               <h3 className="text-sm font-bold uppercase tracking-widest text-cta">{t("booking.time_slot")}</h3>
               {availableTimeSlots.length === 0 ? (

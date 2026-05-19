@@ -14,6 +14,7 @@ import type { WorkshopConfig, WorkshopId, MultiLang } from "@/hooks/use-workshop
 import { emptyMultiLang } from "@/hooks/use-workshop-config";
 import { translations } from "@/i18n/translations";
 import { SiteImageUploader } from "./SiteImageUploader";
+import { WorkshopScheduleEditor } from "./WorkshopScheduleEditor";
 
 function WorkshopCardImageField({ workshopId }: { workshopId: WorkshopId }) {
   const settingKey = `image_workshop_${workshopId}`;
@@ -508,6 +509,14 @@ export function WorkshopManagementSection() {
                   >
                     <Plus size={12} /> Add Highlight
                   </Button>
+                </div>
+
+                {/* Availability Schedule */}
+                <div className="space-y-3">
+                  <h5 className="text-sm font-semibold text-foreground flex items-center gap-2">
+                    <Clock size={14} className="text-cta" /> Availability (Dates & Times)
+                  </h5>
+                  <WorkshopScheduleEditor workshopId={ws.id} />
                 </div>
 
                 {/* Save */}
