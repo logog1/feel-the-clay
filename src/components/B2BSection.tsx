@@ -1,7 +1,7 @@
 import { useScrollAnimation } from "@/hooks/use-scroll-animation";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { Building2, Users, Calendar, Award, ArrowRight } from "lucide-react";
+import { Building2, Users, Calendar, Award, ArrowRight, Hotel, QrCode, Palette, TrendingUp } from "lucide-react";
 
 const B2BSection = () => {
   const { ref: sectionRef, isVisible } = useScrollAnimation(0.1);
