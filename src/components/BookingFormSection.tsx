@@ -138,6 +138,9 @@ const BookingFormSection = () => {
     { value: "pottery", label: t("offers.pottery") },
     { value: "handbuilding", label: t("offers.handbuilding") },
     { value: "embroidery", label: t("offers.embroidery"), unavailable: true },
+    { value: "zellij", label: "Zellij Workshop" },
+    { value: "carpets", label: "Carpets Workshop", unavailable: true },
+    { value: "gardening", label: "Gardening Workshop", unavailable: true },
   ];
 
   const isPottery = form.workshop === "pottery";
