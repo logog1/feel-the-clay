@@ -71,7 +71,7 @@ const WorkshopPageLayout = ({ workshop, currentPath }: { workshop: Workshop; cur
       </div>
 
       {/* Content */}
-      <div className="max-w-3xl mx-auto px-6 py-8 md:py-12">
+      <div className="max-w-3xl lg:max-w-6xl mx-auto px-6 py-8 md:py-12">
         <div className="space-y-8">
           {/* Title card */}
           <div className="animate-fade-up p-6 rounded-3xl bg-card border-2 border-border/40 shadow-sm -mt-16 relative z-10">
