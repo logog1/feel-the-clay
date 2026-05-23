@@ -68,11 +68,7 @@ serve(async (req) => {
 
     const reviews = data.result.reviews;
 
-    // Cache in database
-    const supabaseAdmin = createClient(
-      Deno.env.get("SUPABASE_URL")!,
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
-    );
+    // Cache in database (supabaseAdmin already created above)
 
     // Clear old reviews and insert fresh ones
     await supabaseAdmin.from("google_reviews").delete().neq("id", "00000000-0000-0000-0000-000000000000");
