@@ -140,33 +140,49 @@ const OffersSection = () => {
               )}
               style={{ transitionDelay: `${(index + 1) * 150}ms` }}
             >
-              <div className="group relative block">
-                <div className="aspect-[4/3] overflow-hidden relative">
-                  <img
-                    src={offer.image}
-                    alt={offer.title}
-                    className={cn("w-full h-full transition-transform duration-700", offer.exclusive ? "object-cover opacity-85" : "object-contain", offer.unavailable ? "grayscale-[40%]" : "group-hover:scale-105")}
-                    loading="lazy"
-                  />
-                  {offer.unavailable && (
+              {offer.unavailable ? (
+                <div className="group relative block">
+                  <div className="aspect-[4/3] overflow-hidden relative">
+                    <img
+                      src={offer.image}
+                      alt={offer.title}
+                      className={cn("w-full h-full transition-transform duration-700", offer.exclusive ? "object-cover opacity-85" : "object-contain", "grayscale-[40%]")}
+                      loading="lazy"
+                    />
                     <div className="absolute inset-0 flex items-center justify-center">
                       <div className="rotate-[-25deg] border-4 border-cta/85 rounded-lg px-4 py-2 bg-background/80 backdrop-blur-[2px] shadow-lg shadow-cta/10">
                         <span className="text-terracotta font-black text-lg md:text-xl tracking-[0.2em] uppercase drop-shadow-sm">Coming Soon</span>
                       </div>
                     </div>
+                  </div>
+                  {offer.promoLabel && (
+                    <span className={cn("absolute top-3 end-3 z-10 text-xs font-bold px-3 py-1 rounded-full shadow-md", offer.exclusive ? "bg-background text-foreground" : "bg-destructive text-destructive-foreground")}>
+                      {offer.promoLabel}
+                    </span>
                   )}
                 </div>
-                {offer.popular && (
-                  <span className="absolute top-3 start-3 z-10 bg-cta text-primary-foreground text-xs font-semibold px-3 py-1 rounded-full shadow-md">
-                    {t("offers.popular")}
-                  </span>
-                )}
-                {offer.promoLabel && (
-                  <span className={cn("absolute top-3 end-3 z-10 text-xs font-bold px-3 py-1 rounded-full shadow-md", offer.exclusive ? "bg-background text-foreground" : "bg-destructive text-destructive-foreground")}>
-                    {offer.promoLabel}
-                  </span>
-                )}
-              </div>
+              ) : (
+                <Link to={offer.link} className="group relative block" aria-label={offer.title}>
+                  <div className="aspect-[4/3] overflow-hidden relative">
+                    <img
+                      src={offer.image}
+                      alt={offer.title}
+                      className={cn("w-full h-full transition-transform duration-700", offer.exclusive ? "object-cover opacity-85" : "object-contain", "group-hover:scale-105")}
+                      loading="lazy"
+                    />
+                  </div>
+                  {offer.popular && (
+                    <span className="absolute top-3 start-3 z-10 bg-cta text-primary-foreground text-xs font-semibold px-3 py-1 rounded-full shadow-md">
+                      {t("offers.popular")}
+                    </span>
+                  )}
+                  {offer.promoLabel && (
+                    <span className={cn("absolute top-3 end-3 z-10 text-xs font-bold px-3 py-1 rounded-full shadow-md", offer.exclusive ? "bg-background text-foreground" : "bg-destructive text-destructive-foreground")}>
+                      {offer.promoLabel}
+                    </span>
+                  )}
+                </Link>
+              )}
 
               <div className="p-4 mt-auto space-y-4">
                 <div className="space-y-1">
