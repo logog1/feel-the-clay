@@ -20,6 +20,36 @@ serve(async (req) => {
       });
     }
 
+    const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
+    const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY")!;
+    const SHARED_API_KEY = Deno.env.get("SHARED_API_KEY");
+    const supabaseAdmin = createClient(SUPABASE_URL, SERVICE_KEY);
+
+    // Authorization: cron with x-api-key OR signed-in admin user.
+    const apiKeyHeader = req.headers.get("x-api-key");
+    const authHeader = req.headers.get("Authorization");
+    let authorized = false;
+    if (SHARED_API_KEY && apiKeyHeader && apiKeyHeader === SHARED_API_KEY) {
+      authorized = true;
+    } else if (authHeader?.startsWith("Bearer ")) {
+      try {
+        const token = authHeader.replace(/^Bearer\s+/i, "");
+        const { data: claimsData } = await createClient(SUPABASE_URL, ANON_KEY).auth.getClaims(token);
+        const userId = claimsData?.claims?.sub;
+        if (userId) {
+          const { data: isAdmin } = await supabaseAdmin.rpc("has_role", { _user_id: userId, _role: "admin" });
+          if (isAdmin === true) authorized = true;
+        }
+      } catch (_) { /* deny */ }
+    }
+    if (!authorized) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+
     // Terraria Workshops Place ID — update if needed
     const PLACE_ID = Deno.env.get("GOOGLE_PLACE_ID") || "ChIJD8xMdCYlsQ0RjIyMjIxeXno";
 
