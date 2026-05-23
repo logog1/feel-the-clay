@@ -60,9 +60,19 @@ Deno.serve(async (req) => {
   const authHeader = req.headers.get('Authorization')
   const bearerToken = authHeader?.replace(/^Bearer\s+/i, '')
 
+  // Require at minimum an Authorization header. Prevents fully unauthenticated
+  // callers from sending branded emails to arbitrary recipients via this endpoint.
+  if (!authHeader || !bearerToken) {
+    return new Response(
+      JSON.stringify({ error: 'Unauthorized' }),
+      { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    )
+  }
+
   const publicBearerTokens = new Set(
     [supabaseAnonKey, supabasePublishableKey].filter(Boolean)
   )
+
 
   // Decode JWT payload (no verification) to detect anon-role tokens issued by
   // either the legacy or current signing key. Public booking flows always use

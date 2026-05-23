@@ -16,9 +16,35 @@ Deno.serve(async (req) => {
     const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
     const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY")!;
+    const SHARED_API_KEY = Deno.env.get("SHARED_API_KEY");
     const supabaseAdmin = createClient(SUPABASE_URL, SERVICE_KEY);
     // Use anon key when invoking send-transactional-email so its JWT check passes
     const supabaseInvoker = createClient(SUPABASE_URL, ANON_KEY);
+
+    // Authorization: allow either (a) cron/server with x-api-key === SHARED_API_KEY,
+    // or (b) signed-in admin user (used by the admin dashboard "force send" button).
+    const apiKeyHeader = req.headers.get("x-api-key");
+    const authHeader = req.headers.get("Authorization");
+    let authorized = false;
+    if (SHARED_API_KEY && apiKeyHeader && apiKeyHeader === SHARED_API_KEY) {
+      authorized = true;
+    } else if (authHeader?.startsWith("Bearer ")) {
+      try {
+        const token = authHeader.replace(/^Bearer\s+/i, "");
+        const { data: claimsData } = await createClient(SUPABASE_URL, ANON_KEY).auth.getClaims(token);
+        const userId = claimsData?.claims?.sub;
+        if (userId) {
+          const { data: isAdmin } = await supabaseAdmin.rpc("has_role", { _user_id: userId, _role: "admin" });
+          if (isAdmin === true) authorized = true;
+        }
+      } catch (_) { /* deny */ }
+    }
+    if (!authorized) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
 
     // Configured mode controls which scheduled cron is allowed to fire.
     // - "morning_of": cron runs at 09:00 UTC, targets bookings happening today
