@@ -146,7 +146,7 @@ const WorkshopPageLayout = ({ workshop, currentPath }: { workshop: Workshop; cur
           {/* Photos */}
           {workshop.images.length > 1 && (
             <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
                 {previewImages.slice(1).map((img, i) => (
                   <div key={i} className="aspect-square rounded-3xl overflow-hidden group border-2 border-border/40 shadow-sm">
                     <img src={img} alt={`${workshop.title} ${i + 2}`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
@@ -156,7 +156,7 @@ const WorkshopPageLayout = ({ workshop, currentPath }: { workshop: Workshop; cur
               
               {remainingImages.length > 0 && (
                 <>
-                  <div className={cn("grid grid-cols-2 gap-4 transition-all duration-500", showAllPhotos ? "opacity-100 max-h-[2000px]" : "opacity-0 max-h-0 overflow-hidden")}>
+                  <div className={cn("grid grid-cols-2 lg:grid-cols-3 gap-4 transition-all duration-500", showAllPhotos ? "opacity-100 max-h-[3000px]" : "opacity-0 max-h-0 overflow-hidden")}>
                     {remainingImages.map((img, i) => (
                       <div key={i} className="aspect-square rounded-3xl overflow-hidden group border-2 border-border/40 shadow-sm">
                         <img src={img} alt={`${workshop.title} ${i + 3}`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
