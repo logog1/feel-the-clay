@@ -68,6 +68,14 @@ const OffersSection = () => {
       price: handConfig?.promo_enabled && handConfig?.promo_price ? handConfig.promo_price : (handConfig?.price || t("hand.price")),
     },
     {
+      title: zellijConfig?.title?.[lang] || "Zellij Workshop",
+      image: siteImages["image_workshop_zellij"] || fallbackImages.zellij,
+      link: "/workshop/zellij",
+      unavailable: zellijConfig ? !zellijConfig.is_available : true,
+      promoLabel: zellijConfig?.promo_enabled ? zellijConfig.promo_label : undefined,
+      price: zellijConfig?.promo_enabled && zellijConfig?.promo_price ? zellijConfig.promo_price : (zellijConfig?.price || "Coming soon"),
+    },
+    {
       title: potteryConfig?.title?.[lang] || t("offers.pottery"),
       image: siteImages["image_workshop_pottery"] || fallbackImages.pottery,
       link: "/workshop/pottery-experience",
@@ -85,24 +93,6 @@ const OffersSection = () => {
       price: embrConfig?.promo_enabled && embrConfig?.promo_price ? embrConfig.promo_price : (embrConfig?.price || t("embr.price")),
     },
     {
-      title: "EXODAYA",
-      subtitle: "Art & Culture Residency",
-      image: tetouanCity,
-      link: "/exodaya",
-      unavailable: false,
-      promoLabel: "Exclusive",
-      price: "Price on request",
-      exclusive: true,
-    },
-    {
-      title: zellijConfig?.title?.[lang] || "Zellij Workshop",
-      image: siteImages["image_workshop_zellij"] || fallbackImages.zellij,
-      link: "/workshop/zellij",
-      unavailable: zellijConfig ? !zellijConfig.is_available : true,
-      promoLabel: zellijConfig?.promo_enabled ? zellijConfig.promo_label : undefined,
-      price: zellijConfig?.promo_enabled && zellijConfig?.promo_price ? zellijConfig.promo_price : (zellijConfig?.price || "Coming soon"),
-    },
-    {
       title: carpetsConfig?.title?.[lang] || "Carpets Workshop",
       image: siteImages["image_workshop_carpets"] || fallbackImages.carpets,
       link: "/workshop/carpets",
@@ -118,6 +108,16 @@ const OffersSection = () => {
       unavailable: gardeningConfig ? !gardeningConfig.is_available : false,
       promoLabel: gardeningConfig?.promo_enabled ? gardeningConfig.promo_label : undefined,
       price: gardeningConfig?.promo_enabled && gardeningConfig?.promo_price ? gardeningConfig.promo_price : (gardeningConfig?.price || "150 DH"),
+    },
+    {
+      title: "EXODAYA",
+      subtitle: "Art & Culture Residency",
+      image: tetouanCity,
+      link: "/exodaya",
+      unavailable: false,
+      promoLabel: "Exclusive",
+      price: "Price on request",
+      exclusive: true,
     },
   ];
 
