@@ -17,10 +17,10 @@ type L = Record<Lang, string>;
 
 const UI: Record<string, L> = {
   title: {
-    en: "Pottery Workshop Feedback",
-    fr: "Avis sur l'atelier de poterie",
-    es: "Opinión sobre el taller de cerámica",
-    ar: "تقييم ورشة الفخار",
+    en: "Workshop Feedback",
+    fr: "Avis sur l'atelier",
+    es: "Opinión sobre el taller",
+    ar: "تقييم الورشة",
   },
   intro: {
     en: "We'd love to hear about your experience. It only takes a couple of minutes.",
@@ -46,6 +46,24 @@ const UI: Record<string, L> = {
 };
 
 type Q = { key: string; label: L; options: { value: string; label: L }[] };
+
+const WORKSHOP_QUESTION: Q = {
+  key: "workshop",
+  label: {
+    en: "Which workshop did you join?",
+    fr: "Quel atelier avez-vous suivi ?",
+    es: "¿Qué taller hiciste?",
+    ar: "أي ورشة شاركت فيها؟",
+  },
+  options: [
+    { value: "Pottery", label: { en: "Pottery", fr: "Poterie", es: "Cerámica", ar: "الفخار" } },
+    { value: "Handbuilding", label: { en: "Handbuilding", fr: "Modelage", es: "Modelado", ar: "التشكيل باليد" } },
+    { value: "Zellige", label: { en: "Zellige", fr: "Zellige", es: "Zellige", ar: "الزليج" } },
+    { value: "Amazigh Weaving", label: { en: "Amazigh Weaving", fr: "Tissage Amazigh", es: "Tejido Amazigh", ar: "النسيج الأمازيغي" } },
+    { value: "Embroidery", label: { en: "Embroidery", fr: "Broderie", es: "Bordado", ar: "التطريز" } },
+    { value: "Terrarium Making", label: { en: "Terrarium Making", fr: "Terrarium", es: "Terrario", ar: "صناعة التراريوم" } },
+  ],
+};
 
 const RADIO_QUESTIONS: Q[] = [
   {
@@ -210,6 +228,7 @@ export default function Feedback() {
       name: form.name?.trim() || null,
       email: form.email?.trim() || null,
       phone: form.phone?.trim() || null,
+      workshop: form.workshop || null,
       satisfaction: form.satisfaction || null,
       recommendation: form.recommendation || null,
       length_appropriate: form.length_appropriate || null,
@@ -299,6 +318,32 @@ export default function Feedback() {
                 autoComplete="tel"
               />
             </div>
+          </div>
+
+          <div key={WORKSHOP_QUESTION.key} className="space-y-3">
+            <Label className="text-base">{tr(WORKSHOP_QUESTION.label)}</Label>
+            <RadioGroup
+              value={form[WORKSHOP_QUESTION.key] || ""}
+              onValueChange={(v) => set(WORKSHOP_QUESTION.key, v)}
+              className="grid gap-2"
+            >
+              {WORKSHOP_QUESTION.options.map((opt) => {
+                const selected = form[WORKSHOP_QUESTION.key] === opt.value;
+                return (
+                  <label
+                    key={opt.value}
+                    htmlFor={`${WORKSHOP_QUESTION.key}-${opt.value}`}
+                    className={[
+                      "flex items-center gap-3 rounded-lg border bg-background px-3 py-3 cursor-pointer transition-colors",
+                      selected ? "border-primary bg-primary/5" : "hover:bg-accent/40",
+                    ].join(" ")}
+                  >
+                    <RadioGroupItem id={`${WORKSHOP_QUESTION.key}-${opt.value}`} value={opt.value} />
+                    <span className="text-sm">{tr(opt.label)}</span>
+                  </label>
+                );
+              })}
+            </RadioGroup>
           </div>
 
           {RADIO_QUESTIONS.map((q) => (
