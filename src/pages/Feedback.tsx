@@ -17,10 +17,10 @@ type L = Record<Lang, string>;
 
 const UI: Record<string, L> = {
   title: {
-    en: "Pottery Workshop Feedback",
-    fr: "Avis sur l'atelier de poterie",
-    es: "Opinión sobre el taller de cerámica",
-    ar: "تقييم ورشة الفخار",
+    en: "Workshop Feedback",
+    fr: "Avis sur l'atelier",
+    es: "Opinión sobre el taller",
+    ar: "تقييم الورشة",
   },
   intro: {
     en: "We'd love to hear about your experience. It only takes a couple of minutes.",
