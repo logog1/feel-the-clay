@@ -3,6 +3,8 @@ export interface BlogPost {
   title: { en: string; ar: string; es: string; fr: string };
   excerpt: { en: string; ar: string; es: string; fr: string };
   content: { en: string; ar: string; es: string; fr: string };
+  seoTitle?: { en: string; ar: string; es: string; fr: string };
+  seoDescription?: { en: string; ar: string; es: string; fr: string };
   coverImage: string;
   category: "pottery" | "tetouan" | "culture";
   publishedAt: string;

@@ -97,6 +97,14 @@ export type Database = {
           is_published: boolean
           published_at: string
           read_time: number
+          seo_description_ar: string
+          seo_description_en: string
+          seo_description_es: string
+          seo_description_fr: string
+          seo_title_ar: string
+          seo_title_en: string
+          seo_title_es: string
+          seo_title_fr: string
           slug: string
           title_ar: string
           title_en: string
@@ -120,6 +128,14 @@ export type Database = {
           is_published?: boolean
           published_at?: string
           read_time?: number
+          seo_description_ar?: string
+          seo_description_en?: string
+          seo_description_es?: string
+          seo_description_fr?: string
+          seo_title_ar?: string
+          seo_title_en?: string
+          seo_title_es?: string
+          seo_title_fr?: string
           slug: string
           title_ar?: string
           title_en?: string
@@ -143,6 +159,14 @@ export type Database = {
           is_published?: boolean
           published_at?: string
           read_time?: number
+          seo_description_ar?: string
+          seo_description_en?: string
+          seo_description_es?: string
+          seo_description_fr?: string
+          seo_title_ar?: string
+          seo_title_en?: string
+          seo_title_es?: string
+          seo_title_fr?: string
           slug?: string
           title_ar?: string
           title_en?: string

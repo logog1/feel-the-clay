@@ -190,7 +190,15 @@ const BlogPost = () => {
 
   return (
     <main className="min-h-screen bg-background">
-      <SEOHead title={post.title[language]} description={post.excerpt[language]} path={`/blog/${post.slug}`} type="article" jsonLd={jsonLd} />
+      <SEOHead
+        title={post.seoTitle?.[language] || post.title[language]}
+        description={post.seoDescription?.[language] || post.excerpt[language]}
+        path={`/blog/${post.slug}`}
+        type="article"
+        image={post.coverImage}
+        locale={language as "en" | "fr" | "es" | "ar"}
+        jsonLd={jsonLd}
+      />
 
       {/* Reading progress bar */}
       <div className="fixed top-0 left-0 right-0 z-[60] h-[3px] bg-transparent">
