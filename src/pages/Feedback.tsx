@@ -228,6 +228,7 @@ export default function Feedback() {
       name: form.name?.trim() || null,
       email: form.email?.trim() || null,
       phone: form.phone?.trim() || null,
+      workshop: form.workshop || null,
       satisfaction: form.satisfaction || null,
       recommendation: form.recommendation || null,
       length_appropriate: form.length_appropriate || null,
