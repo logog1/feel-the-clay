@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import {
   BarChart3, Users, DollarSign, BookOpen, CalendarDays, ShoppingCart,
   Megaphone, Package, TrendingUp, UserCircle, Zap, ClipboardList,
-  Shield, ListTodo, Settings, LogOut, LayoutGrid, Palette, ImageIcon, FileText, Mail, BellRing, Hotel, MessageSquare,
+  Shield, ListTodo, Settings, LogOut, LayoutGrid, Palette, ImageIcon, FileText, Mail, BellRing, Hotel, MessageSquare, Search,
 } from "lucide-react";
 import {
   Sidebar,
