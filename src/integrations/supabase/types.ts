@@ -407,6 +407,7 @@ export type Database = {
           satisfaction: string | null
           source: string | null
           suggestions: string | null
+          workshop: string | null
         }
         Insert: {
           created_at?: string
@@ -425,6 +426,7 @@ export type Database = {
           satisfaction?: string | null
           source?: string | null
           suggestions?: string | null
+          workshop?: string | null
         }
         Update: {
           created_at?: string
@@ -443,6 +445,7 @@ export type Database = {
           satisfaction?: string | null
           source?: string | null
           suggestions?: string | null
+          workshop?: string | null
         }
         Relationships: []
       }
