@@ -33,6 +33,7 @@ export const allSidebarItems: SidebarItem[] = [
   { id: "customers", title: "Customers", icon: Users },
   { id: "feedback", title: "Feedback", icon: MessageSquare },
   { id: "marketing", title: "Marketing", icon: Megaphone },
+  { id: "search-console", title: "Search Console", icon: Search },
   { id: "inventory", title: "Needs", icon: Package },
   { id: "finance", title: "Finance", icon: DollarSign },
   { id: "accounting", title: "Accounting", icon: BookOpen },
