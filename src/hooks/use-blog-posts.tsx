@@ -8,11 +8,22 @@ interface DbBlogPost {
   title_en: string; title_ar: string; title_es: string; title_fr: string;
   excerpt_en: string; excerpt_ar: string; excerpt_es: string; excerpt_fr: string;
   content_en: string; content_ar: string; content_es: string; content_fr: string;
+  seo_title_en?: string; seo_title_ar?: string; seo_title_es?: string; seo_title_fr?: string;
+  seo_description_en?: string; seo_description_ar?: string; seo_description_es?: string; seo_description_fr?: string;
   cover_image: string;
   category: string;
   published_at: string;
   read_time: number;
   is_published: boolean;
+}
+
+function pickLocalized(row: DbBlogPost, prefix: "seo_title" | "seo_description") {
+  const en = (row as any)[`${prefix}_en`] || "";
+  const ar = (row as any)[`${prefix}_ar`] || "";
+  const es = (row as any)[`${prefix}_es`] || "";
+  const fr = (row as any)[`${prefix}_fr`] || "";
+  if (!en && !ar && !es && !fr) return undefined;
+  return { en, ar, es, fr };
 }
 
 function dbToFrontend(row: DbBlogPost): BlogPost {
@@ -21,6 +32,8 @@ function dbToFrontend(row: DbBlogPost): BlogPost {
     title: { en: row.title_en, ar: row.title_ar, es: row.title_es, fr: row.title_fr },
     excerpt: { en: row.excerpt_en, ar: row.excerpt_ar, es: row.excerpt_es, fr: row.excerpt_fr },
     content: { en: row.content_en, ar: row.content_ar, es: row.content_es, fr: row.content_fr },
+    seoTitle: pickLocalized(row, "seo_title"),
+    seoDescription: pickLocalized(row, "seo_description"),
     coverImage: row.cover_image,
     category: row.category as BlogPost["category"],
     publishedAt: row.published_at,
