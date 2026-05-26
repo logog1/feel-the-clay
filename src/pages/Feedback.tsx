@@ -47,6 +47,24 @@ const UI: Record<string, L> = {
 
 type Q = { key: string; label: L; options: { value: string; label: L }[] };
 
+const WORKSHOP_QUESTION: Q = {
+  key: "workshop",
+  label: {
+    en: "Which workshop did you join?",
+    fr: "Quel atelier avez-vous suivi ?",
+    es: "¿Qué taller hiciste?",
+    ar: "أي ورشة شاركت فيها؟",
+  },
+  options: [
+    { value: "Pottery", label: { en: "Pottery", fr: "Poterie", es: "Cerámica", ar: "الفخار" } },
+    { value: "Handbuilding", label: { en: "Handbuilding", fr: "Modelage", es: "Modelado", ar: "التشكيل باليد" } },
+    { value: "Zellige", label: { en: "Zellige", fr: "Zellige", es: "Zellige", ar: "الزليج" } },
+    { value: "Amazigh Weaving", label: { en: "Amazigh Weaving", fr: "Tissage Amazigh", es: "Tejido Amazigh", ar: "النسيج الأمازيغي" } },
+    { value: "Embroidery", label: { en: "Embroidery", fr: "Broderie", es: "Bordado", ar: "التطريز" } },
+    { value: "Terrarium Making", label: { en: "Terrarium Making", fr: "Terrarium", es: "Terrario", ar: "صناعة التراريوم" } },
+  ],
+};
+
 const RADIO_QUESTIONS: Q[] = [
   {
     key: "satisfaction",
