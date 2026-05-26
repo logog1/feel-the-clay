@@ -10,6 +10,7 @@ import { AccountingSection } from "@/components/admin/AccountingSection";
 import { WorkshopsSection } from "@/components/admin/WorkshopsSection";
 import { SalesSection } from "@/components/admin/SalesSection";
 import { MarketingSection } from "@/components/admin/MarketingSection";
+import { SearchConsoleSection } from "@/components/admin/SearchConsoleSection";
 import { InventorySection } from "@/components/admin/InventorySection";
 import { ProjectionsSection } from "@/components/admin/ProjectionsSection";
 import { EmployeesSection } from "@/components/admin/EmployeesSection";
