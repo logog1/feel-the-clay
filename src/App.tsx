@@ -37,6 +37,7 @@ import SofitelHotel from "./pages/SofitelHotel";
 import SofitelAdmin from "./pages/SofitelAdmin";
 import SofitelQR from "./pages/SofitelQR";
 import Feedback from "./pages/Feedback";
+import TetouanThingsToDo from "./pages/TetouanThingsToDo";
 
 const queryClient = new QueryClient();
 
@@ -81,6 +82,8 @@ const App = () => {
               <Route path="/legal" element={<LegalNotice />} />
               <Route path="/unsubscribe" element={<Unsubscribe />} />
               <Route path="/feedback" element={<Feedback />} />
+              <Route path="/tetouan/things-to-do" element={<TetouanThingsToDo />} />
+              <Route path="/things-to-do-in-tetouan" element={<TetouanThingsToDo />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
