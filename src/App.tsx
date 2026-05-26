@@ -37,6 +37,7 @@ import SofitelHotel from "./pages/SofitelHotel";
 import SofitelAdmin from "./pages/SofitelAdmin";
 import SofitelQR from "./pages/SofitelQR";
 import Feedback from "./pages/Feedback";
+import TetouanThingsToDo from "./pages/TetouanThingsToDo";
 
 const queryClient = new QueryClient();
 
