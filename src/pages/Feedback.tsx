@@ -320,6 +320,32 @@ export default function Feedback() {
             </div>
           </div>
 
+          <div key={WORKSHOP_QUESTION.key} className="space-y-3">
+            <Label className="text-base">{tr(WORKSHOP_QUESTION.label)}</Label>
+            <RadioGroup
+              value={form[WORKSHOP_QUESTION.key] || ""}
+              onValueChange={(v) => set(WORKSHOP_QUESTION.key, v)}
+              className="grid gap-2"
+            >
+              {WORKSHOP_QUESTION.options.map((opt) => {
+                const selected = form[WORKSHOP_QUESTION.key] === opt.value;
+                return (
+                  <label
+                    key={opt.value}
+                    htmlFor={`${WORKSHOP_QUESTION.key}-${opt.value}`}
+                    className={[
+                      "flex items-center gap-3 rounded-lg border bg-background px-3 py-3 cursor-pointer transition-colors",
+                      selected ? "border-primary bg-primary/5" : "hover:bg-accent/40",
+                    ].join(" ")}
+                  >
+                    <RadioGroupItem id={`${WORKSHOP_QUESTION.key}-${opt.value}`} value={opt.value} />
+                    <span className="text-sm">{tr(opt.label)}</span>
+                  </label>
+                );
+              })}
+            </RadioGroup>
+          </div>
+
           {RADIO_QUESTIONS.map((q) => (
             <div key={q.key} className="space-y-3">
               <Label className="text-base">{tr(q.label)}</Label>
