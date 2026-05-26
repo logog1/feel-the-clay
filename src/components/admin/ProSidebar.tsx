@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import {
   BarChart3, Users, DollarSign, BookOpen, CalendarDays, ShoppingCart,
   Megaphone, Package, TrendingUp, UserCircle, Zap, ClipboardList,
-  Shield, ListTodo, Settings, LogOut, LayoutGrid, Palette, ImageIcon, FileText, Mail, BellRing, Hotel, MessageSquare,
+  Shield, ListTodo, Settings, LogOut, LayoutGrid, Palette, ImageIcon, FileText, Mail, BellRing, Hotel, MessageSquare, Search,
 } from "lucide-react";
 import {
   Sidebar,
@@ -33,6 +33,7 @@ export const allSidebarItems: SidebarItem[] = [
   { id: "customers", title: "Customers", icon: Users },
   { id: "feedback", title: "Feedback", icon: MessageSquare },
   { id: "marketing", title: "Marketing", icon: Megaphone },
+  { id: "search-console", title: "Search Console", icon: Search },
   { id: "inventory", title: "Needs", icon: Package },
   { id: "finance", title: "Finance", icon: DollarSign },
   { id: "accounting", title: "Accounting", icon: BookOpen },

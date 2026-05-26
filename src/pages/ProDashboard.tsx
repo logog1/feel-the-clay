@@ -10,6 +10,7 @@ import { AccountingSection } from "@/components/admin/AccountingSection";
 import { WorkshopsSection } from "@/components/admin/WorkshopsSection";
 import { SalesSection } from "@/components/admin/SalesSection";
 import { MarketingSection } from "@/components/admin/MarketingSection";
+import { SearchConsoleSection } from "@/components/admin/SearchConsoleSection";
 import { InventorySection } from "@/components/admin/InventorySection";
 import { ProjectionsSection } from "@/components/admin/ProjectionsSection";
 import { EmployeesSection } from "@/components/admin/EmployeesSection";
@@ -38,6 +39,7 @@ const sectionTitles: Record<string, string> = {
   customers: "Customers",
   feedback: "Feedback",
   marketing: "Marketing",
+  "search-console": "Search Console",
   inventory: "Needs / Inventory",
   finance: "Finance",
   accounting: "Accounting",
@@ -130,6 +132,7 @@ const ProDashboard = () => {
             {activeSection === "customers" && <CustomersSection />}
             {activeSection === "feedback" && <FeedbackSection />}
             {activeSection === "marketing" && <MarketingSection />}
+            {activeSection === "search-console" && <SearchConsoleSection />}
             {activeSection === "inventory" && <InventorySection />}
             {activeSection === "finance" && <FinanceSection />}
             {activeSection === "accounting" && <AccountingSection />}
