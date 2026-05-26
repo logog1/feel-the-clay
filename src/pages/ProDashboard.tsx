@@ -132,6 +132,7 @@ const ProDashboard = () => {
             {activeSection === "customers" && <CustomersSection />}
             {activeSection === "feedback" && <FeedbackSection />}
             {activeSection === "marketing" && <MarketingSection />}
+            {activeSection === "search-console" && <SearchConsoleSection />}
             {activeSection === "inventory" && <InventorySection />}
             {activeSection === "finance" && <FinanceSection />}
             {activeSection === "accounting" && <AccountingSection />}
