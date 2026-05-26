@@ -58,7 +58,7 @@ export default defineConfig(({ mode }) => ({
         ],
       },
     }),
-    mode === "production" && process.env.PRERENDER !== "false" && Prerender({
+    mode === "production" && !process.env.VERCEL && Prerender({
       routes: [
         "/",
         "/about",
