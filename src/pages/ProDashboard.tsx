@@ -39,6 +39,7 @@ const sectionTitles: Record<string, string> = {
   customers: "Customers",
   feedback: "Feedback",
   marketing: "Marketing",
+  "search-console": "Search Console",
   inventory: "Needs / Inventory",
   finance: "Finance",
   accounting: "Accounting",
