@@ -28,6 +28,7 @@ export const allSidebarItems: SidebarItem[] = [
   { id: "overview", title: "Overview", icon: LayoutGrid },
   { id: "workshops", title: "Workshops", icon: CalendarDays },
   { id: "sofitel", title: "Sofitel", icon: Hotel },
+  { id: "hotels-riads", title: "Hotels & Riads", icon: Hotel },
   { id: "workflow", title: "Workflow", icon: ClipboardList },
   { id: "sales", title: "Sales & Orders", icon: ShoppingCart },
   { id: "customers", title: "Customers", icon: Users },

@@ -479,6 +479,84 @@ export type Database = {
         }
         Relationships: []
       }
+      hotel_partners: {
+        Row: {
+          brand_color: string
+          city: string | null
+          contact_email: string | null
+          contact_name: string | null
+          contact_phone: string | null
+          cover_image: string | null
+          created_at: string
+          experiences_config: Json
+          id: string
+          intro_ar: string
+          intro_en: string
+          intro_es: string
+          intro_fr: string
+          is_active: boolean
+          logo_url: string | null
+          name: string
+          perks: Json
+          slug: string
+          sort_order: number
+          type: string
+          updated_at: string
+          website_url: string | null
+          whatsapp: string | null
+        }
+        Insert: {
+          brand_color?: string
+          city?: string | null
+          contact_email?: string | null
+          contact_name?: string | null
+          contact_phone?: string | null
+          cover_image?: string | null
+          created_at?: string
+          experiences_config?: Json
+          id?: string
+          intro_ar?: string
+          intro_en?: string
+          intro_es?: string
+          intro_fr?: string
+          is_active?: boolean
+          logo_url?: string | null
+          name: string
+          perks?: Json
+          slug: string
+          sort_order?: number
+          type?: string
+          updated_at?: string
+          website_url?: string | null
+          whatsapp?: string | null
+        }
+        Update: {
+          brand_color?: string
+          city?: string | null
+          contact_email?: string | null
+          contact_name?: string | null
+          contact_phone?: string | null
+          cover_image?: string | null
+          created_at?: string
+          experiences_config?: Json
+          id?: string
+          intro_ar?: string
+          intro_en?: string
+          intro_es?: string
+          intro_fr?: string
+          is_active?: boolean
+          logo_url?: string | null
+          name?: string
+          perks?: Json
+          slug?: string
+          sort_order?: number
+          type?: string
+          updated_at?: string
+          website_url?: string | null
+          whatsapp?: string | null
+        }
+        Relationships: []
+      }
       inventory_items: {
         Row: {
           category: string
@@ -714,6 +792,7 @@ export type Database = {
           id: string
           notes: string | null
           participants: number
+          partner_id: string | null
           room_number: string
           source: string
           status: string
@@ -727,6 +806,7 @@ export type Database = {
           id?: string
           notes?: string | null
           participants?: number
+          partner_id?: string | null
           room_number: string
           source?: string
           status?: string
@@ -740,6 +820,7 @@ export type Database = {
           id?: string
           notes?: string | null
           participants?: number
+          partner_id?: string | null
           room_number?: string
           source?: string
           status?: string
@@ -750,6 +831,13 @@ export type Database = {
             columns: ["experience_id"]
             isOneToOne: false
             referencedRelation: "sofitel_experiences"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sofitel_bookings_partner_id_fkey"
+            columns: ["partner_id"]
+            isOneToOne: false
+            referencedRelation: "hotel_partners"
             referencedColumns: ["id"]
           },
         ]
@@ -768,6 +856,7 @@ export type Database = {
           id: string
           is_active: boolean
           location: string | null
+          partner_id: string | null
           price_per_person: number
           scheduled_at: string
           slug: string
@@ -789,6 +878,7 @@ export type Database = {
           id?: string
           is_active?: boolean
           location?: string | null
+          partner_id?: string | null
           price_per_person?: number
           scheduled_at: string
           slug: string
@@ -810,6 +900,7 @@ export type Database = {
           id?: string
           is_active?: boolean
           location?: string | null
+          partner_id?: string | null
           price_per_person?: number
           scheduled_at?: string
           slug?: string
@@ -818,7 +909,15 @@ export type Database = {
           title?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "sofitel_experiences_partner_id_fkey"
+            columns: ["partner_id"]
+            isOneToOne: false
+            referencedRelation: "hotel_partners"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       sofitel_group_requests: {
         Row: {
@@ -830,6 +929,7 @@ export type Database = {
           group_size: number
           id: string
           notes: string | null
+          partner_id: string | null
           preferred_date: string
           preferred_time: string | null
           room_number: string | null
@@ -846,6 +946,7 @@ export type Database = {
           group_size?: number
           id?: string
           notes?: string | null
+          partner_id?: string | null
           preferred_date: string
           preferred_time?: string | null
           room_number?: string | null
@@ -862,6 +963,7 @@ export type Database = {
           group_size?: number
           id?: string
           notes?: string | null
+          partner_id?: string | null
           preferred_date?: string
           preferred_time?: string | null
           room_number?: string | null
@@ -869,7 +971,15 @@ export type Database = {
           status?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "sofitel_group_requests_partner_id_fkey"
+            columns: ["partner_id"]
+            isOneToOne: false
+            referencedRelation: "hotel_partners"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       store_sections: {
         Row: {
