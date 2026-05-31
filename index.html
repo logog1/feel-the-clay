@@ -16,7 +16,7 @@
     <meta name="google-site-verification" content="Nfq2v_buKHK_hiN3HH1w3bcoWT2W-KE7ualF9CIR8H8" />
     <meta name="google-site-verification" content="qhlLdI1F-HkjQX5KfXizC1HDj7zdz2kbGw1azjoP0Pw" />
     <meta name="keywords" content="pottery workshop, Tétouan, Morocco, handbuilding, embroidery, clay, craft, atelier poterie, terraria workshops" />
-    <link rel="canonical" href="https://www.terrariaworkshops.com/" />
+    <!-- Canonical is set per-route via react-helmet-async (see src/components/SEOHead.tsx). Do not add a static canonical here. -->
     <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -145,7 +145,14 @@
           <a href="/blog" style="color:#b04a18;text-decoration:underline;">Blog</a>
           <a href="/about" style="color:#b04a18;text-decoration:underline;">About</a>
         </nav>
-        <p style="text-align:center;color:#5a3a2a;">Contact: <a href="mailto:contact.terraria@gmail.com" style="color:#b04a18;">contact.terraria@gmail.com</a></p>
+        <p style="text-align:center;color:#5a3a2a;">Contact: <a id="ct-email" href="#" style="color:#b04a18;" rel="nofollow">enable JavaScript to view</a></p>
+        <script>
+          (function(){
+            var u='contact.terraria',d='gmail.com',a=u+'@'+d,el=document.getElementById('ct-email');
+            if(el){el.href='mailto:'+a;el.textContent=a;}
+          })();
+        </script>
+
         <noscript>
           <p style="text-align:center;margin-top:24px;padding:16px;background:#fff;border-radius:12px;">
             This site uses JavaScript for interactive booking. Please enable JavaScript or contact us directly to book a workshop.
