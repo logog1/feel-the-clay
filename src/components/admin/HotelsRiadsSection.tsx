@@ -11,6 +11,8 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { PartnerExperiencesTab } from "@/components/admin/PartnerExperiencesTab";
 import { toast } from "@/hooks/use-toast";
 import { Plus, ExternalLink, QrCode, LayoutDashboard, Pencil, Hotel, Trash2, Copy, Globe } from "lucide-react";
 
@@ -293,7 +295,13 @@ function PartnerEditor({ partner, onClose }: { partner: HotelPartner; onClose: (
           <SheetTitle>Edit · {partner.name}</SheetTitle>
         </SheetHeader>
 
-        <div className="space-y-5 mt-5">
+        <Tabs defaultValue="branding" className="mt-5">
+          <TabsList className="grid grid-cols-2 w-full">
+            <TabsTrigger value="branding">Branding & info</TabsTrigger>
+            <TabsTrigger value="experiences">Experiences</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="branding" className="space-y-5 mt-5">
           <section className="space-y-3">
             <h4 className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">Identity</h4>
             <div className="grid grid-cols-2 gap-3">
@@ -352,6 +360,15 @@ function PartnerEditor({ partner, onClose }: { partner: HotelPartner; onClose: (
               ))}
             </div>
           </section>
+          </TabsContent>
+
+          <TabsContent value="experiences" className="mt-5">
+            <PartnerExperiencesTab partnerId={partner.id} brandColor={form.brand_color} />
+          </TabsContent>
+        </Tabs>
+
+        <div className="space-y-5 mt-5">
+
 
           <div className="flex justify-end gap-2 pt-3 border-t border-border/40">
             <Button variant="outline" onClick={onClose}>Cancel</Button>
