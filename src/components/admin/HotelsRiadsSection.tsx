@@ -13,8 +13,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { PartnerExperiencesTab } from "@/components/admin/PartnerExperiencesTab";
+import { PartnerStaffTab } from "@/components/admin/PartnerStaffTab";
 import { toast } from "@/hooks/use-toast";
-import { Plus, ExternalLink, QrCode, LayoutDashboard, Pencil, Hotel, Trash2, Copy, Globe } from "lucide-react";
+import { Plus, ExternalLink, QrCode, LayoutDashboard, Pencil, Hotel, Trash2, Copy, Globe, Image as ImageIcon, Loader2, Upload } from "lucide-react";
 
 const DEFAULT_PERKS: HotelPartnerPerk[] = [
   { key: "landing", enabled: true, label: "Custom landing page" },
