@@ -412,6 +412,10 @@ function PartnerEditor({ partner, onClose }: { partner: HotelPartner; onClose: (
           <TabsContent value="experiences" className="mt-5">
             <PartnerExperiencesTab partnerId={partner.id} brandColor={form.brand_color} />
           </TabsContent>
+
+          <TabsContent value="staff" className="mt-5">
+            <PartnerStaffTab partnerId={partner.id} brandColor={form.brand_color} />
+          </TabsContent>
         </Tabs>
 
         <div className="space-y-5 mt-5">
