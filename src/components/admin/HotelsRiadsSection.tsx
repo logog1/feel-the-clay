@@ -13,8 +13,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { PartnerExperiencesTab } from "@/components/admin/PartnerExperiencesTab";
+import { PartnerStaffTab } from "@/components/admin/PartnerStaffTab";
 import { toast } from "@/hooks/use-toast";
-import { Plus, ExternalLink, QrCode, LayoutDashboard, Pencil, Hotel, Trash2, Copy, Globe } from "lucide-react";
+import { Plus, ExternalLink, QrCode, LayoutDashboard, Pencil, Hotel, Trash2, Copy, Globe, Image as ImageIcon, Loader2, Upload } from "lucide-react";
 
 const DEFAULT_PERKS: HotelPartnerPerk[] = [
   { key: "landing", enabled: true, label: "Custom landing page" },
@@ -151,18 +152,12 @@ export function HotelsRiadsSection() {
                   <Button size="sm" variant="outline" className="rounded-lg justify-start text-xs" onClick={() => window.open(qrUrl, "_blank")}>
                     <QrCode size={12} className="mr-1.5" /> QR page
                   </Button>
-                  {p.slug === "sofitel" ? (
-                    <>
-                      <Button size="sm" variant="outline" className="rounded-lg justify-start text-xs" onClick={() => navigate("/sofitel/hotel")}>
-                        <LayoutDashboard size={12} className="mr-1.5" /> Concierge
-                      </Button>
-                      <Button size="sm" variant="outline" className="rounded-lg justify-start text-xs" onClick={() => navigate("/sofitel/admin")}>
-                        <ExternalLink size={12} className="mr-1.5" /> Console
-                      </Button>
-                    </>
-                  ) : (
-                    <Button size="sm" variant="outline" className="rounded-lg justify-start text-xs col-span-2" disabled>
-                      <LayoutDashboard size={12} className="mr-1.5" /> Concierge (coming soon)
+                  <Button size="sm" variant="outline" className="rounded-lg justify-start text-xs" onClick={() => window.open(`/partners/${p.slug}/concierge`, "_blank")}>
+                    <LayoutDashboard size={12} className="mr-1.5" /> Concierge
+                  </Button>
+                  {p.slug === "sofitel" && (
+                    <Button size="sm" variant="outline" className="rounded-lg justify-start text-xs" onClick={() => navigate("/sofitel/admin")}>
+                      <ExternalLink size={12} className="mr-1.5" /> Legacy console
                     </Button>
                   )}
                 </div>
@@ -249,6 +244,19 @@ export function HotelsRiadsSection() {
 function PartnerEditor({ partner, onClose }: { partner: HotelPartner; onClose: () => void }) {
   const [form, setForm] = useState<HotelPartner>(partner);
   const [saving, setSaving] = useState(false);
+  const [uploadingLogo, setUploadingLogo] = useState(false);
+  const [uploadingCover, setUploadingCover] = useState(false);
+
+  const uploadImage = async (file: File, field: "logo_url" | "cover_image") => {
+    const setBusy = field === "logo_url" ? setUploadingLogo : setUploadingCover;
+    setBusy(true);
+    const path = `partners/${partner.id}/${field}-${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.\-_]/g, "_")}`;
+    const { error } = await supabase.storage.from("site-images").upload(path, file, { upsert: false });
+    if (error) { toast({ title: "Upload failed", description: error.message, variant: "destructive" }); setBusy(false); return; }
+    const { data } = supabase.storage.from("site-images").getPublicUrl(path);
+    setForm((f) => ({ ...f, [field]: data.publicUrl } as HotelPartner));
+    setBusy(false);
+  };
 
   const updatePerk = (i: number, patch: Partial<HotelPartnerPerk>) => {
     const next = [...(form.perks || [])];
@@ -296,9 +304,10 @@ function PartnerEditor({ partner, onClose }: { partner: HotelPartner; onClose: (
         </SheetHeader>
 
         <Tabs defaultValue="branding" className="mt-5">
-          <TabsList className="grid grid-cols-2 w-full">
-            <TabsTrigger value="branding">Branding & info</TabsTrigger>
+          <TabsList className="grid grid-cols-3 w-full">
+            <TabsTrigger value="branding">Branding</TabsTrigger>
             <TabsTrigger value="experiences">Experiences</TabsTrigger>
+            <TabsTrigger value="staff">Staff</TabsTrigger>
           </TabsList>
 
           <TabsContent value="branding" className="space-y-5 mt-5">
@@ -317,8 +326,46 @@ function PartnerEditor({ partner, onClose }: { partner: HotelPartner; onClose: (
                 </select>
               </div>
               <div><Label>Brand color</Label><Input type="color" value={form.brand_color} onChange={(e) => setForm({ ...form, brand_color: e.target.value })} className="h-10 p-1" /></div>
-              <div className="col-span-2"><Label>Logo URL</Label><Input value={form.logo_url || ""} onChange={(e) => setForm({ ...form, logo_url: e.target.value })} placeholder="https://..." /></div>
-              <div className="col-span-2"><Label>Cover image URL</Label><Input value={form.cover_image || ""} onChange={(e) => setForm({ ...form, cover_image: e.target.value })} placeholder="https://..." /></div>
+
+              <div className="col-span-2">
+                <Label>Logo</Label>
+                <div className="flex items-start gap-3 mt-1">
+                  <div className="w-16 h-16 rounded-lg overflow-hidden bg-muted shrink-0 grid place-items-center">
+                    {form.logo_url
+                      ? <img src={form.logo_url} alt="" className="w-full h-full object-cover" />
+                      : <ImageIcon size={18} className="text-muted-foreground/50" />}
+                  </div>
+                  <div className="flex-1 space-y-2">
+                    <Input value={form.logo_url || ""} onChange={(e) => setForm({ ...form, logo_url: e.target.value })} placeholder="https://... or upload below" />
+                    <label className="inline-flex items-center gap-2 px-3 py-1.5 text-xs rounded-lg cursor-pointer border border-input hover:bg-muted w-fit">
+                      {uploadingLogo ? <Loader2 size={12} className="animate-spin" /> : <Upload size={12} />}
+                      Upload logo
+                      <input type="file" accept="image/*" className="hidden"
+                        onChange={(e) => e.target.files?.[0] && uploadImage(e.target.files[0], "logo_url")} />
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <div className="col-span-2">
+                <Label>Cover image</Label>
+                <div className="flex items-start gap-3 mt-1">
+                  <div className="w-24 h-16 rounded-lg overflow-hidden bg-muted shrink-0 grid place-items-center">
+                    {form.cover_image
+                      ? <img src={form.cover_image} alt="" className="w-full h-full object-cover" />
+                      : <ImageIcon size={18} className="text-muted-foreground/50" />}
+                  </div>
+                  <div className="flex-1 space-y-2">
+                    <Input value={form.cover_image || ""} onChange={(e) => setForm({ ...form, cover_image: e.target.value })} placeholder="https://... or upload below" />
+                    <label className="inline-flex items-center gap-2 px-3 py-1.5 text-xs rounded-lg cursor-pointer border border-input hover:bg-muted w-fit">
+                      {uploadingCover ? <Loader2 size={12} className="animate-spin" /> : <Upload size={12} />}
+                      Upload cover
+                      <input type="file" accept="image/*" className="hidden"
+                        onChange={(e) => e.target.files?.[0] && uploadImage(e.target.files[0], "cover_image")} />
+                    </label>
+                  </div>
+                </div>
+              </div>
             </div>
           </section>
 
@@ -364,6 +411,10 @@ function PartnerEditor({ partner, onClose }: { partner: HotelPartner; onClose: (
 
           <TabsContent value="experiences" className="mt-5">
             <PartnerExperiencesTab partnerId={partner.id} brandColor={form.brand_color} />
+          </TabsContent>
+
+          <TabsContent value="staff" className="mt-5">
+            <PartnerStaffTab partnerId={partner.id} brandColor={form.brand_color} />
           </TabsContent>
         </Tabs>
 
