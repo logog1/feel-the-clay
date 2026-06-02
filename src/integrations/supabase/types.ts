@@ -716,6 +716,30 @@ export type Database = {
         }
         Relationships: []
       }
+      partner_staff: {
+        Row: {
+          created_at: string
+          email: string | null
+          id: string
+          partner_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          partner_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          partner_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       products: {
         Row: {
           category: string
@@ -1208,6 +1232,10 @@ export type Database = {
         Returns: boolean
       }
       is_admin: { Args: never; Returns: boolean }
+      is_partner_staff: {
+        Args: { _partner_id: string; _user_id: string }
+        Returns: boolean
+      }
       list_users_with_roles: {
         Args: never
         Returns: {
