@@ -40,6 +40,7 @@ import Feedback from "./pages/Feedback";
 import TetouanThingsToDo from "./pages/TetouanThingsToDo";
 import PartnerLanding from "./pages/PartnerLanding";
 import PartnerQR from "./pages/PartnerQR";
+import PartnerConcierge from "./pages/PartnerConcierge";
 
 const queryClient = new QueryClient();
 
@@ -88,6 +89,7 @@ const App = () => {
               <Route path="/things-to-do-in-tetouan" element={<TetouanThingsToDo />} />
               <Route path="/partners/:slug" element={<PartnerLanding />} />
               <Route path="/partners/:slug/qr" element={<PartnerQR />} />
+              <Route path="/partners/:slug/concierge" element={<PartnerConcierge />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>

@@ -151,18 +151,12 @@ export function HotelsRiadsSection() {
                   <Button size="sm" variant="outline" className="rounded-lg justify-start text-xs" onClick={() => window.open(qrUrl, "_blank")}>
                     <QrCode size={12} className="mr-1.5" /> QR page
                   </Button>
-                  {p.slug === "sofitel" ? (
-                    <>
-                      <Button size="sm" variant="outline" className="rounded-lg justify-start text-xs" onClick={() => navigate("/sofitel/hotel")}>
-                        <LayoutDashboard size={12} className="mr-1.5" /> Concierge
-                      </Button>
-                      <Button size="sm" variant="outline" className="rounded-lg justify-start text-xs" onClick={() => navigate("/sofitel/admin")}>
-                        <ExternalLink size={12} className="mr-1.5" /> Console
-                      </Button>
-                    </>
-                  ) : (
-                    <Button size="sm" variant="outline" className="rounded-lg justify-start text-xs col-span-2" disabled>
-                      <LayoutDashboard size={12} className="mr-1.5" /> Concierge (coming soon)
+                  <Button size="sm" variant="outline" className="rounded-lg justify-start text-xs" onClick={() => window.open(`/partners/${p.slug}/concierge`, "_blank")}>
+                    <LayoutDashboard size={12} className="mr-1.5" /> Concierge
+                  </Button>
+                  {p.slug === "sofitel" && (
+                    <Button size="sm" variant="outline" className="rounded-lg justify-start text-xs" onClick={() => navigate("/sofitel/admin")}>
+                      <ExternalLink size={12} className="mr-1.5" /> Legacy console
                     </Button>
                   )}
                 </div>
