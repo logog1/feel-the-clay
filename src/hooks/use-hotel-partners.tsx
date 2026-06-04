@@ -25,6 +25,17 @@ export interface HotelPartner {
   experiences_config: Record<string, unknown>;
   is_active: boolean;
   sort_order: number;
+  rooms_count?: number | null;
+  qr_codes_installed?: number | null;
+  commission_rate?: number | null;
+  commission_notes?: string | null;
+  partnership_status?: string | null;
+  partnership_started_on?: string | null;
+  address?: string | null;
+  stars?: number | null;
+  internal_notes?: string | null;
+  booking_channel?: string | null;
+  languages_spoken?: string[] | null;
   created_at: string;
   updated_at: string;
 }
