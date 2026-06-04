@@ -481,8 +481,12 @@ export type Database = {
       }
       hotel_partners: {
         Row: {
+          address: string | null
+          booking_channel: string | null
           brand_color: string
           city: string | null
+          commission_notes: string | null
+          commission_rate: number | null
           contact_email: string | null
           contact_name: string | null
           contact_phone: string | null
@@ -490,24 +494,35 @@ export type Database = {
           created_at: string
           experiences_config: Json
           id: string
+          internal_notes: string | null
           intro_ar: string
           intro_en: string
           intro_es: string
           intro_fr: string
           is_active: boolean
+          languages_spoken: string[] | null
           logo_url: string | null
           name: string
+          partnership_started_on: string | null
+          partnership_status: string
           perks: Json
+          qr_codes_installed: number
+          rooms_count: number | null
           slug: string
           sort_order: number
+          stars: number | null
           type: string
           updated_at: string
           website_url: string | null
           whatsapp: string | null
         }
         Insert: {
+          address?: string | null
+          booking_channel?: string | null
           brand_color?: string
           city?: string | null
+          commission_notes?: string | null
+          commission_rate?: number | null
           contact_email?: string | null
           contact_name?: string | null
           contact_phone?: string | null
@@ -515,24 +530,35 @@ export type Database = {
           created_at?: string
           experiences_config?: Json
           id?: string
+          internal_notes?: string | null
           intro_ar?: string
           intro_en?: string
           intro_es?: string
           intro_fr?: string
           is_active?: boolean
+          languages_spoken?: string[] | null
           logo_url?: string | null
           name: string
+          partnership_started_on?: string | null
+          partnership_status?: string
           perks?: Json
+          qr_codes_installed?: number
+          rooms_count?: number | null
           slug: string
           sort_order?: number
+          stars?: number | null
           type?: string
           updated_at?: string
           website_url?: string | null
           whatsapp?: string | null
         }
         Update: {
+          address?: string | null
+          booking_channel?: string | null
           brand_color?: string
           city?: string | null
+          commission_notes?: string | null
+          commission_rate?: number | null
           contact_email?: string | null
           contact_name?: string | null
           contact_phone?: string | null
@@ -540,16 +566,23 @@ export type Database = {
           created_at?: string
           experiences_config?: Json
           id?: string
+          internal_notes?: string | null
           intro_ar?: string
           intro_en?: string
           intro_es?: string
           intro_fr?: string
           is_active?: boolean
+          languages_spoken?: string[] | null
           logo_url?: string | null
           name?: string
+          partnership_started_on?: string | null
+          partnership_status?: string
           perks?: Json
+          qr_codes_installed?: number
+          rooms_count?: number | null
           slug?: string
           sort_order?: number
+          stars?: number | null
           type?: string
           updated_at?: string
           website_url?: string | null
