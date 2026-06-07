@@ -5,13 +5,29 @@ import { ChevronDown, Calendar } from "lucide-react";
 import { useSiteImages } from "@/hooks/use-site-images";
 import { useParallax } from "@/hooks/use-parallax";
 import BookOnWhatsApp from "@/components/BookOnWhatsApp";
+import { useEffect, useState } from "react";
 
 const HeroSection = () => {
   const { t } = useLanguage();
   const siteImages = useSiteImages(["image_hero_bg"]);
-  const bgImage = siteImages["image_hero_bg"] || heroBg;
+  const remoteBg = siteImages["image_hero_bg"];
+  const [bgImage, setBgImage] = useState<string>(remoteBg || heroBg);
   const { ref: parallaxRef, offset: bgOffset } = useParallax({ speed: 0.4, clamp: 150 });
   const { ref: contentRef, offset: contentOffset } = useParallax({ speed: -0.15, clamp: 60 });
+
+  // Preload remote hero image before swapping to avoid a blank flash between old and new
+  useEffect(() => {
+    if (!remoteBg || remoteBg === bgImage) return;
+    const img = new Image();
+    img.src = remoteBg;
+    const swap = () => setBgImage(remoteBg);
+    if (img.decode) {
+      img.decode().then(swap).catch(swap);
+    } else {
+      img.onload = swap;
+      img.onerror = swap;
+    }
+  }, [remoteBg]);
 
   return (
     <section id="hero" ref={parallaxRef} className="min-h-[85vh] md:min-h-screen flex flex-col justify-end md:justify-center section-padding pb-20 md:pb-0 pt-24 md:pt-20 relative overflow-hidden">
