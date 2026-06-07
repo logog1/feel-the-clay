@@ -26,6 +26,7 @@ import { EmailsSection } from "@/components/admin/EmailsSection";
 import { ReminderLogSection } from "@/components/admin/ReminderLogSection";
 import { SofitelSection } from "@/components/admin/SofitelSection";
 import { HotelsRiadsSection } from "@/components/admin/HotelsRiadsSection";
+import { OffersEventsSection } from "@/components/admin/OffersEventsSection";
 import { FeedbackSection } from "@/components/admin/FeedbackSection";
 import SEOHead from "@/components/SEOHead";
 import { Button } from "@/components/ui/button";
