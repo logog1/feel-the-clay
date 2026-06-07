@@ -749,6 +749,137 @@ export type Database = {
         }
         Relationships: []
       }
+      partner_offer_assignments: {
+        Row: {
+          assigned_at: string
+          cta_override_type: string | null
+          cta_override_value: string | null
+          id: string
+          is_published: boolean
+          offer_id: string
+          partner_id: string
+          sort_order: number
+        }
+        Insert: {
+          assigned_at?: string
+          cta_override_type?: string | null
+          cta_override_value?: string | null
+          id?: string
+          is_published?: boolean
+          offer_id: string
+          partner_id: string
+          sort_order?: number
+        }
+        Update: {
+          assigned_at?: string
+          cta_override_type?: string | null
+          cta_override_value?: string | null
+          id?: string
+          is_published?: boolean
+          offer_id?: string
+          partner_id?: string
+          sort_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "partner_offer_assignments_offer_id_fkey"
+            columns: ["offer_id"]
+            isOneToOne: false
+            referencedRelation: "partner_offers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "partner_offer_assignments_offer_id_fkey"
+            columns: ["offer_id"]
+            isOneToOne: false
+            referencedRelation: "partner_offers_public"
+            referencedColumns: ["offer_id"]
+          },
+          {
+            foreignKeyName: "partner_offer_assignments_partner_id_fkey"
+            columns: ["partner_id"]
+            isOneToOne: false
+            referencedRelation: "hotel_partners"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "partner_offer_assignments_partner_id_fkey"
+            columns: ["partner_id"]
+            isOneToOne: false
+            referencedRelation: "hotel_partners_public"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      partner_offers: {
+        Row: {
+          capacity: number | null
+          cover_image: string | null
+          created_at: string
+          cta_label: string | null
+          cta_type: string
+          cta_value: string | null
+          currency: string
+          description: string | null
+          ends_at: string | null
+          event_at: string | null
+          id: string
+          is_active: boolean
+          kind: string
+          price: number | null
+          sort_order: number
+          starts_at: string | null
+          subtitle: string | null
+          tags: string[]
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          capacity?: number | null
+          cover_image?: string | null
+          created_at?: string
+          cta_label?: string | null
+          cta_type?: string
+          cta_value?: string | null
+          currency?: string
+          description?: string | null
+          ends_at?: string | null
+          event_at?: string | null
+          id?: string
+          is_active?: boolean
+          kind?: string
+          price?: number | null
+          sort_order?: number
+          starts_at?: string | null
+          subtitle?: string | null
+          tags?: string[]
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          capacity?: number | null
+          cover_image?: string | null
+          created_at?: string
+          cta_label?: string | null
+          cta_type?: string
+          cta_value?: string | null
+          currency?: string
+          description?: string | null
+          ends_at?: string | null
+          event_at?: string | null
+          id?: string
+          is_active?: boolean
+          kind?: string
+          price?: number | null
+          sort_order?: number
+          starts_at?: string | null
+          subtitle?: string | null
+          tags?: string[]
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       partner_staff: {
         Row: {
           created_at: string
@@ -1335,6 +1466,45 @@ export type Database = {
           whatsapp?: string | null
         }
         Relationships: []
+      }
+      partner_offers_public: {
+        Row: {
+          assignment_id: string | null
+          assignment_sort: number | null
+          capacity: number | null
+          cover_image: string | null
+          cta_label: string | null
+          cta_type: string | null
+          cta_value: string | null
+          currency: string | null
+          description: string | null
+          ends_at: string | null
+          event_at: string | null
+          kind: string | null
+          offer_id: string | null
+          partner_id: string | null
+          price: number | null
+          starts_at: string | null
+          subtitle: string | null
+          tags: string[] | null
+          title: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "partner_offer_assignments_partner_id_fkey"
+            columns: ["partner_id"]
+            isOneToOne: false
+            referencedRelation: "hotel_partners"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "partner_offer_assignments_partner_id_fkey"
+            columns: ["partner_id"]
+            isOneToOne: false
+            referencedRelation: "hotel_partners_public"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Functions: {
