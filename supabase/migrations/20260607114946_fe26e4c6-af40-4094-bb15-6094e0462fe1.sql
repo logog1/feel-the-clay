@@ -1,0 +1,1 @@
+DROP POLICY IF EXISTS "Public can read active partners via view" ON public.hotel_partners;
