@@ -255,6 +255,82 @@ export default function PartnerLanding() {
         </section>
       )}
 
+      {/* OFFERS & EVENTS */}
+      {offers.length > 0 && (
+        <section id="offers" className="section-padding">
+          <div className="container-wide max-w-6xl">
+            <div className="mb-8">
+              <p className="text-[11px] uppercase tracking-[0.3em] mb-2" style={{ color: brand }}>Curated for our guests</p>
+              <h2 className="text-3xl md:text-4xl font-light">Offers &amp; events</h2>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              {offers.map((o) => {
+                const cta = (() => {
+                  if (o.cta_type === "none") return null;
+                  if (o.cta_type === "whatsapp" && o.cta_value) {
+                    const num = o.cta_value.replace(/\D/g, "");
+                    const msg = encodeURIComponent(`Hello ${partner.name}, I'm interested in "${o.title}".`);
+                    return { href: `https://wa.me/${num}?text=${msg}`, label: o.cta_label || "WhatsApp us", external: true };
+                  }
+                  if (o.cta_type === "link" && o.cta_value) {
+                    return { href: o.cta_value, label: o.cta_label || "Learn more", external: true };
+                  }
+                  return { href: "#experiences", label: o.cta_label || "Book a workshop", external: false };
+                })();
+                return (
+                  <article key={o.assignment_id} className="group bg-card border border-border rounded-2xl overflow-hidden hover:shadow-xl transition">
+                    {o.cover_image && (
+                      <div className="aspect-[16/10] overflow-hidden">
+                        <img src={o.cover_image} alt={o.title} loading="lazy"
+                          className="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
+                      </div>
+                    )}
+                    <div className="p-5">
+                      <div className="flex items-center gap-2 mb-2 text-[10px] uppercase tracking-[0.2em]" style={{ color: brand }}>
+                        <span className="px-2 py-0.5 rounded-full text-white" style={{ backgroundColor: brand }}>
+                          {o.kind === "event" ? "Event" : "Offer"}
+                        </span>
+                        {o.kind === "event" && o.event_at && (
+                          <span className="flex items-center gap-1 text-muted-foreground">
+                            <Calendar size={11} /> {format(parseISO(o.event_at), "MMM d, HH:mm")}
+                          </span>
+                        )}
+                      </div>
+                      <h3 className="text-lg font-semibold mb-1">{o.title}</h3>
+                      {o.subtitle && <p className="text-sm text-muted-foreground mb-2">{o.subtitle}</p>}
+                      {o.description && <p className="text-sm text-foreground/80 line-clamp-3 mb-3">{o.description}</p>}
+                      <div className="flex items-center justify-between gap-3 mt-3">
+                        <div className="text-sm">
+                          {o.price != null && (
+                            <span className="font-semibold">{o.price} {o.currency}</span>
+                          )}
+                          {o.capacity != null && (
+                            <span className="text-xs text-muted-foreground ml-2">· {o.capacity} spots</span>
+                          )}
+                        </div>
+                        {cta && (
+                          cta.external ? (
+                            <a href={cta.href} target="_blank" rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 text-sm font-medium hover:opacity-80" style={{ color: brand }}>
+                              {cta.label} <ArrowRight size={14} />
+                            </a>
+                          ) : (
+                            <a href={cta.href}
+                              className="inline-flex items-center gap-1 text-sm font-medium hover:opacity-80" style={{ color: brand }}>
+                              {cta.label} <ArrowRight size={14} />
+                            </a>
+                          )
+                        )}
+                      </div>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* EXPERIENCES */}
       <section id="experiences" className="section-padding bg-card">
         <div className="container-wide max-w-6xl">
