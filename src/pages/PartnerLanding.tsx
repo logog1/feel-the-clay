@@ -97,6 +97,14 @@ export default function PartnerLanding() {
       setExperiences((data || []) as Experience[]);
       setExpLoading(false);
     })();
+    (async () => {
+      const { data } = await (supabase as any)
+        .from("partner_offers_public")
+        .select("*")
+        .eq("partner_id", partner.id)
+        .order("assignment_sort", { ascending: true });
+      setOffers((data || []) as PartnerOfferPublic[]);
+    })();
     refreshAvailability();
     const i = setInterval(refreshAvailability, 25000);
     return () => clearInterval(i);
