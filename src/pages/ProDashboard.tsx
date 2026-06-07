@@ -37,6 +37,7 @@ const sectionTitles: Record<string, string> = {
   workshops: "Workshops",
   sofitel: "Sofitel × Terraria",
   "hotels-riads": "Hotels & Riads",
+  "offers-events": "Offers & Events",
   workflow: "Workflow",
   sales: "Sales & Orders",
   customers: "Customers",
