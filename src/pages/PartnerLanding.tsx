@@ -34,6 +34,26 @@ type Experience = {
   scheduled_at: string;
 };
 
+type PartnerOfferPublic = {
+  assignment_id: string;
+  offer_id: string;
+  kind: "offer" | "event";
+  title: string;
+  subtitle: string | null;
+  description: string | null;
+  cover_image: string | null;
+  cta_type: "book" | "whatsapp" | "link" | "none";
+  cta_value: string | null;
+  cta_label: string | null;
+  price: number | null;
+  currency: string;
+  starts_at: string | null;
+  ends_at: string | null;
+  event_at: string | null;
+  capacity: number | null;
+  tags: string[];
+};
+
 const CATEGORIES: { id: string; label: string }[] = [
   { id: "all", label: "All experiences" },
   { id: "in-hotel", label: "In-property" },
