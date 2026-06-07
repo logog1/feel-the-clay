@@ -897,6 +897,13 @@ export type Database = {
             referencedRelation: "hotel_partners"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "sofitel_bookings_partner_id_fkey"
+            columns: ["partner_id"]
+            isOneToOne: false
+            referencedRelation: "hotel_partners_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
       sofitel_experiences: {
@@ -974,6 +981,13 @@ export type Database = {
             referencedRelation: "hotel_partners"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "sofitel_experiences_partner_id_fkey"
+            columns: ["partner_id"]
+            isOneToOne: false
+            referencedRelation: "hotel_partners_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
       sofitel_group_requests: {
@@ -1034,6 +1048,13 @@ export type Database = {
             columns: ["partner_id"]
             isOneToOne: false
             referencedRelation: "hotel_partners"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sofitel_group_requests_partner_id_fkey"
+            columns: ["partner_id"]
+            isOneToOne: false
+            referencedRelation: "hotel_partners_public"
             referencedColumns: ["id"]
           },
         ]
@@ -1228,7 +1249,93 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      hotel_partners_public: {
+        Row: {
+          address: string | null
+          brand_color: string | null
+          city: string | null
+          contact_email: string | null
+          contact_name: string | null
+          contact_phone: string | null
+          cover_image: string | null
+          created_at: string | null
+          experiences_config: Json | null
+          id: string | null
+          intro_ar: string | null
+          intro_en: string | null
+          intro_es: string | null
+          intro_fr: string | null
+          is_active: boolean | null
+          languages_spoken: string[] | null
+          logo_url: string | null
+          name: string | null
+          perks: Json | null
+          slug: string | null
+          sort_order: number | null
+          stars: number | null
+          type: string | null
+          updated_at: string | null
+          website_url: string | null
+          whatsapp: string | null
+        }
+        Insert: {
+          address?: string | null
+          brand_color?: string | null
+          city?: string | null
+          contact_email?: string | null
+          contact_name?: string | null
+          contact_phone?: string | null
+          cover_image?: string | null
+          created_at?: string | null
+          experiences_config?: Json | null
+          id?: string | null
+          intro_ar?: string | null
+          intro_en?: string | null
+          intro_es?: string | null
+          intro_fr?: string | null
+          is_active?: boolean | null
+          languages_spoken?: string[] | null
+          logo_url?: string | null
+          name?: string | null
+          perks?: Json | null
+          slug?: string | null
+          sort_order?: number | null
+          stars?: number | null
+          type?: string | null
+          updated_at?: string | null
+          website_url?: string | null
+          whatsapp?: string | null
+        }
+        Update: {
+          address?: string | null
+          brand_color?: string | null
+          city?: string | null
+          contact_email?: string | null
+          contact_name?: string | null
+          contact_phone?: string | null
+          cover_image?: string | null
+          created_at?: string | null
+          experiences_config?: Json | null
+          id?: string | null
+          intro_ar?: string | null
+          intro_en?: string | null
+          intro_es?: string | null
+          intro_fr?: string | null
+          is_active?: boolean | null
+          languages_spoken?: string[] | null
+          logo_url?: string | null
+          name?: string | null
+          perks?: Json | null
+          slug?: string | null
+          sort_order?: number | null
+          stars?: number | null
+          type?: string | null
+          updated_at?: string | null
+          website_url?: string | null
+          whatsapp?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       delete_email: {
