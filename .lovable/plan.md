@@ -1,45 +1,74 @@
 ## Goal
 
-Turn the one-off Sofitel integration into a reusable "Hotels & Riads" system: each partner property (riad, hotel, boutique stay) gets its own landing page, in-room QR, concierge dashboard, and admin management — all created from a new section in the Pro Dashboard.
+One central place in the Pro dashboard where you create **Offers** and **Events**, then drag each card onto the **Hotels & Riads** you want them to appear on. The same offer can be assigned to several partners at once and shows up on each partner's `/partners/:slug` landing page.
 
-## What you'll get
+## How it will work (UX)
 
-**In the Pro Dashboard → new "Hotels & Riads" section:**
-- Grid of partner properties (Sofitel will be the first one, migrated in place)
-- "+ New property" button to create a partner with: name, slug, type (hotel/riad/boutique), city, primary color, logo, contact email/phone, intro copy
-- Per-property card with quick links: public page, concierge view, QR page, admin console, plus toggle active/inactive
-- Per-property editor: branding, experiences offered, in-hotel/in-studio split, pricing, capacity, included perks (the advantages from the B2B "for hotels & riads" block: custom landing, QR check-in, group calendar, revenue share, etc.)
+A new sidebar entry **Offers & Events** opens a two-pane board:
 
-**Public-facing routes (dynamic):**
-- `/partners/:slug` — public landing page (templated from Sofitel.tsx layout)
-- `/partners/:slug/hotel` — concierge dashboard for hotel staff
-- `/partners/:slug/qr` — in-room QR / quick-book screen
-- `/partners/:slug/admin` — full per-partner admin console
-- Legacy `/sofitel*` routes continue working (redirect to slug `sofitel`)
+```text
+┌────────────────────────────┬─────────────────────────────────────┐
+│  LIBRARY (left)            │  HOTELS & RIADS (right)             │
+│  + New offer / event       │                                     │
+│                            │  ┌─────────────┐ ┌─────────────┐    │
+│  [Sunset Pottery]  active  │  │ Sofitel     │ │ Riad Dar X  │    │
+│  [Ramadan Special] draft   │  │ • 2 offers  │ │ • 1 offer   │    │
+│  [Live Music Night] event  │  │  ─ Sunset   │ │  ─ Sunset   │    │
+│  [Group 4+ Deal]   active  │  │  ─ Ramadan  │ │             │    │
+│                            │  └─────────────┘ └─────────────┘    │
+└────────────────────────────┴─────────────────────────────────────┘
+```
 
-## Technical plan
+- Drag a card from the left onto any hotel card on the right to assign it.
+- Click an assigned chip to unassign (or open a small menu: set start/end date, hide on landing, reorder).
+- Multi-select on the left + drop onto a hotel assigns several at once.
+- Each hotel card shows the live list of what is currently published on its landing page.
 
-**Database (migration):**
-- `hotel_partners` (id, slug unique, name, type, city, brand_color, logo_url, intro_*, contact_email, contact_phone, perks jsonb, is_active, sort_order)
-- Add nullable `partner_id uuid` to `sofitel_experiences`, `sofitel_bookings`, `sofitel_group_requests`; backfill to a seeded "sofitel" partner row; add indexes
-- RLS: public SELECT on active partners; admin ALL; hotel_staff role unchanged
-- GRANTs to anon/authenticated/service_role
+On the partner landing page a new **Offers & Events** section appears (above or below the existing Experiences block, your call) listing every offer assigned to that partner that is active and within its date window.
 
-**Frontend:**
-- New `src/components/admin/HotelsRiadsSection.tsx` (list + create dialog + per-partner editor sheet) wired into ProSidebar between `sofitel` and `workflow`. Keep the existing `sofitel` quick-link section as-is for now.
-- New hook `use-hotel-partners.tsx`
-- New generic pages under `src/pages/partners/`: `PartnerLanding.tsx`, `PartnerHotel.tsx`, `PartnerQR.tsx`, `PartnerAdmin.tsx` — refactored from the Sofitel pages to read partner data by `:slug` and theme via brand color CSS vars
-- Routes added in `src/App.tsx`; old `/sofitel*` routes kept as thin wrappers that render the same components with slug `sofitel`
-- B2B section CTA updated to deep-link to a generic "request your property page" form (no change in wording)
+## What is an "offer" vs an "event"
 
-**Scope guardrails:**
-- I won't rewrite Sofitel's bespoke UI — I'll generalize the data layer and reuse the same layout templated by partner.
-- Sitemap/SEO entries for new partner pages added only when a partner is created (Pro dashboard action).
+Same entity with a `kind` field:
+- **offer** — ongoing promo, no fixed date (e.g. "Group of 4 gets 10% off", "Ramadan special menu"). Shows an optional valid-from / valid-until window.
+- **event** — has a date and time (e.g. "Live oud night, Aug 12, 8pm"). Shows date, time, and capacity.
 
-## Out of scope (ask if you want them)
+Both share: title, subtitle, cover image, description, CTA (Book / WhatsApp / Custom link), price (optional), tags.
 
-- Per-partner Stripe/payment routing
-- Per-partner email templates (will use existing ones with partner name interpolated)
-- Staff invitation flow per partner (uses existing hotel_staff role)
+## Build steps
 
-If this matches, I'll start with the migration, then build the dashboard section, then the dynamic public pages.
+1. **Database**
+   - New table `partner_offers` (id, kind `offer|event`, title, subtitle, description, cover_image, cta_type, cta_value, price, currency, starts_at, ends_at, event_at, capacity, tags, is_active, sort_order, timestamps).
+   - New join table `partner_offer_assignments` (id, offer_id, partner_id, is_published, sort_order, assigned_at) with unique (offer_id, partner_id).
+   - RLS: admins manage everything; partner staff can read assignments for their own `partner_id`; public read goes through a view `partner_offers_public` that joins offer + assignment and only exposes published + active rows (mirrors how `hotel_partners_public` works today).
+   - GRANTs included per project rules.
+
+2. **Admin UI — `src/components/admin/OffersEventsSection.tsx`**
+   - Two-pane board using `@dnd-kit/core` (already lightweight, fits stack).
+   - Left pane: offer library with create / edit dialog (image upload to `site-images` bucket, same flow as the hotels tab).
+   - Right pane: hotels grid pulled from `useHotelPartners`, each card is a droppable zone listing assigned offer chips.
+   - Drop = insert row into `partner_offer_assignments`. Remove chip = delete row. Reorder chips inside a hotel = update `sort_order`.
+   - Bulk actions: publish/unpublish, duplicate offer, archive.
+   - Add new sidebar entry in `ProSidebar.tsx` and route in the pro dashboard router.
+
+3. **Public landing — `src/pages/PartnerLanding.tsx`**
+   - Fetch from `partner_offers_public` filtered by current partner slug.
+   - Render a new **Offers & Events** section: card grid with cover image, title, badge (offer/event), date or validity window, price, CTA button.
+   - Tap CTA = booking dialog (reuse existing) or WhatsApp deep-link with the partner context prefilled.
+
+4. **Optional v1 polish (cheap wins)**
+   - Per-assignment override of the CTA (e.g. same offer, different WhatsApp number per riad).
+   - Schedule auto-unpublish when `ends_at` passes (handled by the query, no cron needed).
+   - "Copy from another hotel" shortcut on a hotel card to clone its assignments.
+
+## Out of scope for this plan
+
+- Real-time scan analytics tied to QR codes (separate plan).
+- Inventory of physical QR stickers per room.
+- Multi-language offer copy (we keep one language now; can add later via a JSON column).
+
+## Technical notes
+
+- Drag-and-drop library: `@dnd-kit/core` + `@dnd-kit/sortable` (small, accessible, works on touch for mobile admins).
+- Image upload reuses the existing `SiteImageUploader` flow.
+- Realtime not required v1; a simple refetch on mutation is enough.
+- All public reads go through the view so we never expose admin-only fields, consistent with the security memory.
