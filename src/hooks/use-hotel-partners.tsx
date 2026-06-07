@@ -71,7 +71,7 @@ export function useHotelPartnerBySlug(slug: string | undefined) {
     (async () => {
       setLoading(true);
       const { data } = await (supabase as any)
-        .from("hotel_partners")
+        .from("hotel_partners_public")
         .select("*")
         .eq("slug", slug)
         .maybeSingle();
