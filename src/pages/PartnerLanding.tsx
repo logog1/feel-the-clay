@@ -34,6 +34,26 @@ type Experience = {
   scheduled_at: string;
 };
 
+type PartnerOfferPublic = {
+  assignment_id: string;
+  offer_id: string;
+  kind: "offer" | "event";
+  title: string;
+  subtitle: string | null;
+  description: string | null;
+  cover_image: string | null;
+  cta_type: "book" | "whatsapp" | "link" | "none";
+  cta_value: string | null;
+  cta_label: string | null;
+  price: number | null;
+  currency: string;
+  starts_at: string | null;
+  ends_at: string | null;
+  event_at: string | null;
+  capacity: number | null;
+  tags: string[];
+};
+
 const CATEGORIES: { id: string; label: string }[] = [
   { id: "all", label: "All experiences" },
   { id: "in-hotel", label: "In-property" },
@@ -53,6 +73,7 @@ export default function PartnerLanding() {
   const [activeDay, setActiveDay] = useState<string | null>(null);
   const [selected, setSelected] = useState<Experience | null>(null);
   const [taken, setTaken] = useState<Record<string, number>>({});
+  const [offers, setOffers] = useState<PartnerOfferPublic[]>([]);
 
   const refreshAvailability = async () => {
     const { data } = await supabase.rpc("get_sofitel_availability");
@@ -75,6 +96,14 @@ export default function PartnerLanding() {
         .order("scheduled_at", { ascending: true });
       setExperiences((data || []) as Experience[]);
       setExpLoading(false);
+    })();
+    (async () => {
+      const { data } = await (supabase as any)
+        .from("partner_offers_public")
+        .select("*")
+        .eq("partner_id", partner.id)
+        .order("assignment_sort", { ascending: true });
+      setOffers((data || []) as PartnerOfferPublic[]);
     })();
     refreshAvailability();
     const i = setInterval(refreshAvailability, 25000);
@@ -221,6 +250,82 @@ export default function PartnerLanding() {
                   </div>
                 </div>
               ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* OFFERS & EVENTS */}
+      {offers.length > 0 && (
+        <section id="offers" className="section-padding">
+          <div className="container-wide max-w-6xl">
+            <div className="mb-8">
+              <p className="text-[11px] uppercase tracking-[0.3em] mb-2" style={{ color: brand }}>Curated for our guests</p>
+              <h2 className="text-3xl md:text-4xl font-light">Offers &amp; events</h2>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              {offers.map((o) => {
+                const cta = (() => {
+                  if (o.cta_type === "none") return null;
+                  if (o.cta_type === "whatsapp" && o.cta_value) {
+                    const num = o.cta_value.replace(/\D/g, "");
+                    const msg = encodeURIComponent(`Hello ${partner.name}, I'm interested in "${o.title}".`);
+                    return { href: `https://wa.me/${num}?text=${msg}`, label: o.cta_label || "WhatsApp us", external: true };
+                  }
+                  if (o.cta_type === "link" && o.cta_value) {
+                    return { href: o.cta_value, label: o.cta_label || "Learn more", external: true };
+                  }
+                  return { href: "#experiences", label: o.cta_label || "Book a workshop", external: false };
+                })();
+                return (
+                  <article key={o.assignment_id} className="group bg-card border border-border rounded-2xl overflow-hidden hover:shadow-xl transition">
+                    {o.cover_image && (
+                      <div className="aspect-[16/10] overflow-hidden">
+                        <img src={o.cover_image} alt={o.title} loading="lazy"
+                          className="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
+                      </div>
+                    )}
+                    <div className="p-5">
+                      <div className="flex items-center gap-2 mb-2 text-[10px] uppercase tracking-[0.2em]" style={{ color: brand }}>
+                        <span className="px-2 py-0.5 rounded-full text-white" style={{ backgroundColor: brand }}>
+                          {o.kind === "event" ? "Event" : "Offer"}
+                        </span>
+                        {o.kind === "event" && o.event_at && (
+                          <span className="flex items-center gap-1 text-muted-foreground">
+                            <Calendar size={11} /> {format(parseISO(o.event_at), "MMM d, HH:mm")}
+                          </span>
+                        )}
+                      </div>
+                      <h3 className="text-lg font-semibold mb-1">{o.title}</h3>
+                      {o.subtitle && <p className="text-sm text-muted-foreground mb-2">{o.subtitle}</p>}
+                      {o.description && <p className="text-sm text-foreground/80 line-clamp-3 mb-3">{o.description}</p>}
+                      <div className="flex items-center justify-between gap-3 mt-3">
+                        <div className="text-sm">
+                          {o.price != null && (
+                            <span className="font-semibold">{o.price} {o.currency}</span>
+                          )}
+                          {o.capacity != null && (
+                            <span className="text-xs text-muted-foreground ml-2">· {o.capacity} spots</span>
+                          )}
+                        </div>
+                        {cta && (
+                          cta.external ? (
+                            <a href={cta.href} target="_blank" rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 text-sm font-medium hover:opacity-80" style={{ color: brand }}>
+                              {cta.label} <ArrowRight size={14} />
+                            </a>
+                          ) : (
+                            <a href={cta.href}
+                              className="inline-flex items-center gap-1 text-sm font-medium hover:opacity-80" style={{ color: brand }}>
+                              {cta.label} <ArrowRight size={14} />
+                            </a>
+                          )
+                        )}
+                      </div>
+                    </div>
+                  </article>
+                );
+              })}
             </div>
           </div>
         </section>

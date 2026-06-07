@@ -26,6 +26,7 @@ import { EmailsSection } from "@/components/admin/EmailsSection";
 import { ReminderLogSection } from "@/components/admin/ReminderLogSection";
 import { SofitelSection } from "@/components/admin/SofitelSection";
 import { HotelsRiadsSection } from "@/components/admin/HotelsRiadsSection";
+import { OffersEventsSection } from "@/components/admin/OffersEventsSection";
 import { FeedbackSection } from "@/components/admin/FeedbackSection";
 import SEOHead from "@/components/SEOHead";
 import { Button } from "@/components/ui/button";
@@ -36,6 +37,7 @@ const sectionTitles: Record<string, string> = {
   workshops: "Workshops",
   sofitel: "Sofitel × Terraria",
   "hotels-riads": "Hotels & Riads",
+  "offers-events": "Offers & Events",
   workflow: "Workflow",
   sales: "Sales & Orders",
   customers: "Customers",
@@ -130,6 +132,7 @@ const ProDashboard = () => {
             {activeSection === "workshops" && <WorkshopsSection />}
             {activeSection === "sofitel" && <SofitelSection />}
             {activeSection === "hotels-riads" && <HotelsRiadsSection />}
+            {activeSection === "offers-events" && <OffersEventsSection />}
             {activeSection === "workflow" && <WorkflowSection />}
             {activeSection === "sales" && <SalesSection />}
             {activeSection === "customers" && <CustomersSection />}

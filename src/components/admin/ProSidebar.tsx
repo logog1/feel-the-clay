@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import {
   BarChart3, Users, DollarSign, BookOpen, CalendarDays, ShoppingCart,
   Megaphone, Package, TrendingUp, UserCircle, Zap, ClipboardList,
-  Shield, ListTodo, Settings, LogOut, LayoutGrid, Palette, ImageIcon, FileText, Mail, BellRing, Hotel, MessageSquare, Search,
+  Shield, ListTodo, Settings, LogOut, LayoutGrid, Palette, ImageIcon, FileText, Mail, BellRing, Hotel, MessageSquare, Search, Gift,
 } from "lucide-react";
 import {
   Sidebar,
@@ -29,6 +29,7 @@ export const allSidebarItems: SidebarItem[] = [
   { id: "workshops", title: "Workshops", icon: CalendarDays },
   { id: "sofitel", title: "Sofitel", icon: Hotel },
   { id: "hotels-riads", title: "Hotels & Riads", icon: Hotel },
+  { id: "offers-events", title: "Offers & Events", icon: Gift },
   { id: "workflow", title: "Workflow", icon: ClipboardList },
   { id: "sales", title: "Sales & Orders", icon: ShoppingCart },
   { id: "customers", title: "Customers", icon: Users },
