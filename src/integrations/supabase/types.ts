@@ -1119,8 +1119,16 @@ export type Database = {
       }
       sofitel_bookings: {
         Row: {
+          cancellation_reason: string | null
+          cancelled_at: string | null
+          commission_amount: number | null
+          commission_rate: number | null
+          commission_status: string | null
+          completed_at: string | null
           created_at: string
+          currency: string | null
           experience_id: string
+          gross_amount: number | null
           guest_email: string | null
           guest_name: string
           guest_phone: string | null
@@ -1128,13 +1136,22 @@ export type Database = {
           notes: string | null
           participants: number
           partner_id: string | null
+          price_per_person: number | null
           room_number: string
           source: string
           status: string
         }
         Insert: {
+          cancellation_reason?: string | null
+          cancelled_at?: string | null
+          commission_amount?: number | null
+          commission_rate?: number | null
+          commission_status?: string | null
+          completed_at?: string | null
           created_at?: string
+          currency?: string | null
           experience_id: string
+          gross_amount?: number | null
           guest_email?: string | null
           guest_name: string
           guest_phone?: string | null
@@ -1142,13 +1159,22 @@ export type Database = {
           notes?: string | null
           participants?: number
           partner_id?: string | null
+          price_per_person?: number | null
           room_number: string
           source?: string
           status?: string
         }
         Update: {
+          cancellation_reason?: string | null
+          cancelled_at?: string | null
+          commission_amount?: number | null
+          commission_rate?: number | null
+          commission_status?: string | null
+          completed_at?: string | null
           created_at?: string
+          currency?: string | null
           experience_id?: string
+          gross_amount?: number | null
           guest_email?: string | null
           guest_name?: string
           guest_phone?: string | null
@@ -1156,6 +1182,7 @@ export type Database = {
           notes?: string | null
           participants?: number
           partner_id?: string | null
+          price_per_person?: number | null
           room_number?: string
           source?: string
           status?: string
