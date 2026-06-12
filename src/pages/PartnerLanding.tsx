@@ -106,6 +106,18 @@ export default function PartnerLanding() {
       setOffers((data || []) as PartnerOfferPublic[]);
     })();
     refreshAvailability();
+    // Log QR scan / landing visit (deduped per tab + partner)
+    try {
+      const key = `qr_logged_${partner.id}`;
+      if (!sessionStorage.getItem(key)) {
+        sessionStorage.setItem(key, "1");
+        (supabase as any).from("qr_scan_log").insert({
+          partner_id: partner.id,
+          user_agent: navigator.userAgent.slice(0, 200),
+          referrer: document.referrer ? document.referrer.slice(0, 200) : null,
+        });
+      }
+    } catch { /* non-blocking */ }
     const i = setInterval(refreshAvailability, 25000);
     return () => clearInterval(i);
   }, [partner?.id]);
