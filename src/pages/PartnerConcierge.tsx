@@ -33,6 +33,13 @@ type Booking = {
   status: string;
   created_at: string;
   source: string;
+  gross_amount: number | null;
+  commission_rate: number | null;
+  commission_amount: number | null;
+  commission_status: string | null;
+  completed_at: string | null;
+  cancelled_at: string | null;
+  currency: string | null;
 };
 
 export default function PartnerConcierge() {
