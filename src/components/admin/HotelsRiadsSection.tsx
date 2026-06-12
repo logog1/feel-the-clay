@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useHotelPartners, type HotelPartner, type HotelPartnerPerk } from "@/hooks/use-hotel-partners";
+import { PartnerPerformancePanel } from "./PartnerPerformancePanel";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -152,6 +153,8 @@ export function HotelsRiadsSection() {
           <Plus size={16} className="mr-1.5" /> New property
         </Button>
       </div>
+
+      <PartnerPerformancePanel partners={partners.map((p) => ({ id: p.id, name: p.name, brand_color: p.brand_color, commission_rate: (p as any).commission_rate ?? null }))} />
 
       {loading ? (
         <p className="text-sm text-muted-foreground">Loading…</p>

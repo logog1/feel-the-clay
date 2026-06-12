@@ -179,47 +179,92 @@ export type Database = {
       bookings: {
         Row: {
           booking_date: string | null
+          cancellation_reason: string | null
+          cancelled_at: string | null
           city: string | null
+          commission_amount: number | null
+          commission_rate: number | null
+          commission_status: string | null
+          completed_at: string | null
           created_at: string
           email: string | null
+          gross_amount: number | null
           id: string
           name: string
           notes: string | null
           participants: number | null
+          partner_id: string | null
           phone: string | null
+          room_number: string | null
           session_info: string | null
+          source: string | null
           status: string
           workshop: string
         }
         Insert: {
           booking_date?: string | null
+          cancellation_reason?: string | null
+          cancelled_at?: string | null
           city?: string | null
+          commission_amount?: number | null
+          commission_rate?: number | null
+          commission_status?: string | null
+          completed_at?: string | null
           created_at?: string
           email?: string | null
+          gross_amount?: number | null
           id?: string
           name: string
           notes?: string | null
           participants?: number | null
+          partner_id?: string | null
           phone?: string | null
+          room_number?: string | null
           session_info?: string | null
+          source?: string | null
           status?: string
           workshop: string
         }
         Update: {
           booking_date?: string | null
+          cancellation_reason?: string | null
+          cancelled_at?: string | null
           city?: string | null
+          commission_amount?: number | null
+          commission_rate?: number | null
+          commission_status?: string | null
+          completed_at?: string | null
           created_at?: string
           email?: string | null
+          gross_amount?: number | null
           id?: string
           name?: string
           notes?: string | null
           participants?: number | null
+          partner_id?: string | null
           phone?: string | null
+          room_number?: string | null
           session_info?: string | null
+          source?: string | null
           status?: string
           workshop?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "bookings_partner_id_fkey"
+            columns: ["partner_id"]
+            isOneToOne: false
+            referencedRelation: "hotel_partners"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bookings_partner_id_fkey"
+            columns: ["partner_id"]
+            isOneToOne: false
+            referencedRelation: "hotel_partners_public"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       customers: {
         Row: {
@@ -880,6 +925,69 @@ export type Database = {
         }
         Relationships: []
       }
+      partner_payouts: {
+        Row: {
+          amount: number
+          booking_ids: string[] | null
+          created_at: string
+          currency: string
+          id: string
+          method: string | null
+          notes: string | null
+          paid_at: string | null
+          partner_id: string
+          period_end: string
+          period_start: string
+          reference: string | null
+          updated_at: string
+        }
+        Insert: {
+          amount?: number
+          booking_ids?: string[] | null
+          created_at?: string
+          currency?: string
+          id?: string
+          method?: string | null
+          notes?: string | null
+          paid_at?: string | null
+          partner_id: string
+          period_end: string
+          period_start: string
+          reference?: string | null
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          booking_ids?: string[] | null
+          created_at?: string
+          currency?: string
+          id?: string
+          method?: string | null
+          notes?: string | null
+          paid_at?: string | null
+          partner_id?: string
+          period_end?: string
+          period_start?: string
+          reference?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "partner_payouts_partner_id_fkey"
+            columns: ["partner_id"]
+            isOneToOne: false
+            referencedRelation: "hotel_partners"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "partner_payouts_partner_id_fkey"
+            columns: ["partner_id"]
+            isOneToOne: false
+            referencedRelation: "hotel_partners_public"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       partner_staff: {
         Row: {
           created_at: string
@@ -952,6 +1060,45 @@ export type Database = {
         }
         Relationships: []
       }
+      qr_scan_log: {
+        Row: {
+          id: string
+          partner_id: string
+          referrer: string | null
+          scanned_at: string
+          user_agent: string | null
+        }
+        Insert: {
+          id?: string
+          partner_id: string
+          referrer?: string | null
+          scanned_at?: string
+          user_agent?: string | null
+        }
+        Update: {
+          id?: string
+          partner_id?: string
+          referrer?: string | null
+          scanned_at?: string
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "qr_scan_log_partner_id_fkey"
+            columns: ["partner_id"]
+            isOneToOne: false
+            referencedRelation: "hotel_partners"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "qr_scan_log_partner_id_fkey"
+            columns: ["partner_id"]
+            isOneToOne: false
+            referencedRelation: "hotel_partners_public"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       site_settings: {
         Row: {
           key: string
@@ -972,8 +1119,16 @@ export type Database = {
       }
       sofitel_bookings: {
         Row: {
+          cancellation_reason: string | null
+          cancelled_at: string | null
+          commission_amount: number | null
+          commission_rate: number | null
+          commission_status: string | null
+          completed_at: string | null
           created_at: string
+          currency: string | null
           experience_id: string
+          gross_amount: number | null
           guest_email: string | null
           guest_name: string
           guest_phone: string | null
@@ -981,13 +1136,22 @@ export type Database = {
           notes: string | null
           participants: number
           partner_id: string | null
+          price_per_person: number | null
           room_number: string
           source: string
           status: string
         }
         Insert: {
+          cancellation_reason?: string | null
+          cancelled_at?: string | null
+          commission_amount?: number | null
+          commission_rate?: number | null
+          commission_status?: string | null
+          completed_at?: string | null
           created_at?: string
+          currency?: string | null
           experience_id: string
+          gross_amount?: number | null
           guest_email?: string | null
           guest_name: string
           guest_phone?: string | null
@@ -995,13 +1159,22 @@ export type Database = {
           notes?: string | null
           participants?: number
           partner_id?: string | null
+          price_per_person?: number | null
           room_number: string
           source?: string
           status?: string
         }
         Update: {
+          cancellation_reason?: string | null
+          cancelled_at?: string | null
+          commission_amount?: number | null
+          commission_rate?: number | null
+          commission_status?: string | null
+          completed_at?: string | null
           created_at?: string
+          currency?: string | null
           experience_id?: string
+          gross_amount?: number | null
           guest_email?: string | null
           guest_name?: string
           guest_phone?: string | null
@@ -1009,6 +1182,7 @@ export type Database = {
           notes?: string | null
           participants?: number
           partner_id?: string | null
+          price_per_person?: number | null
           room_number?: string
           source?: string
           status?: string
@@ -1517,6 +1691,10 @@ export type Database = {
         Returns: number
       }
       get_my_profile_type: { Args: never; Returns: string }
+      get_partner_commission_rate: {
+        Args: { _partner_id: string }
+        Returns: number
+      }
       get_sofitel_availability: {
         Args: never
         Returns: {

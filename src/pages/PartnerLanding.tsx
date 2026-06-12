@@ -106,6 +106,18 @@ export default function PartnerLanding() {
       setOffers((data || []) as PartnerOfferPublic[]);
     })();
     refreshAvailability();
+    // Log QR scan / landing visit (deduped per tab + partner)
+    try {
+      const key = `qr_logged_${partner.id}`;
+      if (!sessionStorage.getItem(key)) {
+        sessionStorage.setItem(key, "1");
+        (supabase as any).from("qr_scan_log").insert({
+          partner_id: partner.id,
+          user_agent: navigator.userAgent.slice(0, 200),
+          referrer: document.referrer ? document.referrer.slice(0, 200) : null,
+        });
+      }
+    } catch { /* non-blocking */ }
     const i = setInterval(refreshAvailability, 25000);
     return () => clearInterval(i);
   }, [partner?.id]);
@@ -549,6 +561,15 @@ function BookingDialog({
       return;
     }
     setSubmitting(true);
+    // Snapshot commission rate at booking time (so future rate changes don't rewrite history)
+    let commissionRate: number | null = null;
+    try {
+      const { data } = await (supabase as any).rpc("get_partner_commission_rate", { _partner_id: partnerId });
+      if (typeof data === "number") commissionRate = data;
+    } catch { /* leave null - admin can backfill */ }
+
+
+    const gross = (experience.price_per_person || 0) * participants;
     const { error } = await supabase.from("sofitel_bookings").insert({
       experience_id: experience.id,
       partner_id: partnerId,
@@ -559,6 +580,10 @@ function BookingDialog({
       participants,
       notes: notes.trim() || null,
       source: "partner_landing",
+      price_per_person: experience.price_per_person || null,
+      currency: experience.currency || "MAD",
+      gross_amount: gross,
+      commission_rate: commissionRate,
     } as any);
     setSubmitting(false);
     if (error) return toast({ title: "Booking failed", description: error.message, variant: "destructive" });
