@@ -325,10 +325,13 @@ export default function PartnerConcierge() {
                       </p>
                     </div>
                     <div className="flex items-center gap-1">
-                      {b.status !== "confirmed" && (
+                      {b.status !== "confirmed" && b.status !== "completed" && b.status !== "cancelled" && (
                         <Button size="sm" variant="outline" onClick={() => updateStatus(b.id, "confirmed")}>Confirm</Button>
                       )}
-                      {b.status !== "cancelled" && (
+                      {b.status !== "completed" && b.status !== "cancelled" && (
+                        <Button size="sm" variant="outline" className="border-emerald-500 text-emerald-700 hover:bg-emerald-50" onClick={() => updateStatus(b.id, "completed")}>Done</Button>
+                      )}
+                      {b.status !== "cancelled" && b.status !== "completed" && (
                         <Button size="sm" variant="ghost" className="text-destructive" onClick={() => updateStatus(b.id, "cancelled")}>Cancel</Button>
                       )}
                     </div>
@@ -338,6 +341,9 @@ export default function PartnerConcierge() {
             </div>
           )}
         </section>
+
+        {/* Statement / Commission */}
+        <StatementPanel bookings={bookings} brand={brand} partnerName={partner.name} />
 
         {/* All recent bookings */}
         <section className="space-y-2">
