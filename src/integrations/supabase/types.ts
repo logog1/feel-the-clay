@@ -1691,6 +1691,10 @@ export type Database = {
         Returns: number
       }
       get_my_profile_type: { Args: never; Returns: string }
+      get_partner_commission_rate: {
+        Args: { _partner_id: string }
+        Returns: number
+      }
       get_sofitel_availability: {
         Args: never
         Returns: {
