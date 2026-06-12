@@ -379,3 +379,87 @@ function Stat({ label, value, accent }: { label: string; value: number; accent?:
     </Card>
   );
 }
+
+function StatementPanel({ bookings, brand, partnerName }: { bookings: any[]; brand: string; partnerName: string }) {
+  const [range, setRange] = useState<"this_month" | "last_month" | "all">("this_month");
+
+  const inRange = (iso?: string | null) => {
+    if (!iso) return false;
+    const d = new Date(iso);
+    const now = new Date();
+    if (range === "all") return true;
+    const monthOffset = range === "last_month" ? -1 : 0;
+    const start = new Date(now.getFullYear(), now.getMonth() + monthOffset, 1);
+    const end = new Date(now.getFullYear(), now.getMonth() + monthOffset + 1, 1);
+    return d >= start && d < end;
+  };
+
+  const filtered = bookings.filter((b) => inRange(b.completed_at || b.cancelled_at || b.created_at));
+  const completed = filtered.filter((b) => b.status === "completed");
+  const cancelled = filtered.filter((b) => b.status === "cancelled");
+  const gross = completed.reduce((s, b) => s + Number(b.gross_amount || 0), 0);
+  const commissionDue = completed.filter((b) => b.commission_status === "due").reduce((s, b) => s + Number(b.commission_amount || 0), 0);
+  const commissionPaid = completed.filter((b) => b.commission_status === "paid").reduce((s, b) => s + Number(b.commission_amount || 0), 0);
+  const currency = completed[0]?.currency || "MAD";
+
+  const exportCSV = () => {
+    const headers = ["Date", "Guest", "Room", "Participants", "Status", "Gross", "Rate %", "Commission", "Commission status"];
+    const rows = filtered.map((b) => [
+      (b.completed_at || b.created_at || "").slice(0, 10),
+      b.guest_name,
+      b.room_number,
+      b.participants,
+      b.status,
+      b.gross_amount ?? "",
+      b.commission_rate ?? "",
+      b.commission_amount ?? "",
+      b.commission_status ?? "",
+    ]);
+    const csv = [headers, ...rows].map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(",")).join("\n");
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = `statement-${partnerName.replace(/\s+/g, "-").toLowerCase()}-${range}.csv`;
+    a.click(); URL.revokeObjectURL(url);
+  };
+
+  return (
+    <section className="space-y-2">
+      <div className="flex items-center justify-between gap-3 flex-wrap">
+        <h3 className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">Statement & commission</h3>
+        <div className="flex items-center gap-1">
+          {(["this_month", "last_month", "all"] as const).map((r) => (
+            <button key={r} onClick={() => setRange(r)}
+              className={`text-[11px] px-2.5 py-1 rounded-full border ${range === r ? "text-white" : "bg-white"}`}
+              style={range === r ? { background: brand, borderColor: brand } : {}}>
+              {r === "this_month" ? "This month" : r === "last_month" ? "Last month" : "All time"}
+            </button>
+          ))}
+          <Button size="sm" variant="outline" className="ml-1 h-7 text-[11px]" onClick={exportCSV}>Export CSV</Button>
+        </div>
+      </div>
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
+        <Stat label="Completed" value={completed.length} accent="#059669" />
+        <Stat label="Cancelled" value={cancelled.length} />
+        <KStat label="Gross" value={`${gross.toLocaleString()} ${currency}`} />
+        <KStat label="Commission due" value={`${commissionDue.toLocaleString()} ${currency}`} accent={brand} />
+        <KStat label="Commission paid" value={`${commissionPaid.toLocaleString()} ${currency}`} accent="#059669" />
+      </div>
+      {completed.length === 0 && (
+        <Card className="p-4 text-xs text-muted-foreground text-center border-dashed">
+          No completed bookings in this period yet. Mark a booking as Done after the guest attends to record commission.
+        </Card>
+      )}
+    </section>
+  );
+}
+
+function KStat({ label, value, accent }: { label: string; value: string; accent?: string }) {
+  return (
+    <Card className="p-3">
+      <p className="text-[10px] uppercase tracking-wider text-muted-foreground">{label}</p>
+      <p className="text-base font-semibold mt-0.5" style={accent ? { color: accent } : {}}>{value}</p>
+    </Card>
+  );
+}
+
