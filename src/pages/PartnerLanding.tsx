@@ -549,16 +549,13 @@ function BookingDialog({
       return;
     }
     setSubmitting(true);
-    // Snapshot pricing & commission so future changes don't rewrite history
+    // Snapshot commission rate at booking time (so future rate changes don't rewrite history)
     let commissionRate: number | null = null;
     try {
-      const { data: p } = await (supabase as any)
-        .from("hotel_partners_public")
-        .select("commission_rate")
-        .eq("id", partnerId)
-        .maybeSingle();
-      commissionRate = p?.commission_rate ?? null;
-    } catch { /* commission stays null if view doesn't expose it */ }
+      const { data } = await (supabase as any).rpc("get_partner_commission_rate", { _partner_id: partnerId });
+      if (typeof data === "number") commissionRate = data;
+    } catch { /* leave null - admin can backfill */ }
+
 
     const gross = (experience.price_per_person || 0) * participants;
     const { error } = await supabase.from("sofitel_bookings").insert({
