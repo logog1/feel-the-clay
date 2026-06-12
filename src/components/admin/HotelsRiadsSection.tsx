@@ -153,6 +153,8 @@ export function HotelsRiadsSection() {
         </Button>
       </div>
 
+      <PartnerPerformancePanel partners={partners.map((p) => ({ id: p.id, name: p.name, brand_color: p.brand_color, commission_rate: (p as any).commission_rate ?? null }))} />
+
       {loading ? (
         <p className="text-sm text-muted-foreground">Loading…</p>
       ) : partners.length === 0 ? (
