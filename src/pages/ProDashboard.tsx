@@ -35,7 +35,7 @@ import { ArrowLeft, Moon, Sun } from "lucide-react";
 const sectionTitles: Record<string, string> = {
   overview: "Overview",
   workshops: "Workshops",
-  sofitel: "Sofitel × Terraria",
+  
   "hotels-riads": "Hotels & Riads",
   "offers-events": "Offers & Events",
   workflow: "Workflow",
