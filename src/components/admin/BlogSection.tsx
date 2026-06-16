@@ -219,6 +219,8 @@ export function BlogSection() {
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="pottery">Pottery</SelectItem>
+                    <SelectItem value="zellige">Zellige</SelectItem>
+                    <SelectItem value="weaving">Weaving (Rugs)</SelectItem>
                     <SelectItem value="tetouan">Tetouan</SelectItem>
                     <SelectItem value="culture">Culture</SelectItem>
                   </SelectContent>
