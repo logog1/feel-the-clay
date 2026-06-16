@@ -471,7 +471,7 @@ function PartnerEditor({ partner, onClose }: { partner: HotelPartner; onClose: (
           <TabsList className="grid grid-cols-4 w-full">
             <TabsTrigger value="branding">Branding</TabsTrigger>
             <TabsTrigger value="operations">Operations</TabsTrigger>
-            <TabsTrigger value="experiences">Experiences</TabsTrigger>
+            <TabsTrigger value="staff">Staff</TabsTrigger>
             <TabsTrigger value="staff">Staff</TabsTrigger>
           </TabsList>
 
