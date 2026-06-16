@@ -24,7 +24,7 @@ import { ThemeManagerSection } from "@/components/admin/ThemeManagerSection";
 import { MediaManagerSection } from "@/components/admin/MediaManagerSection";
 import { EmailsSection } from "@/components/admin/EmailsSection";
 import { ReminderLogSection } from "@/components/admin/ReminderLogSection";
-import { SofitelSection } from "@/components/admin/SofitelSection";
+
 import { HotelsRiadsSection } from "@/components/admin/HotelsRiadsSection";
 import { OffersEventsSection } from "@/components/admin/OffersEventsSection";
 import { FeedbackSection } from "@/components/admin/FeedbackSection";
