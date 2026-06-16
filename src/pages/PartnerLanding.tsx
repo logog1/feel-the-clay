@@ -551,7 +551,9 @@ function BookingDialog({
   onClose: () => void; onSuccess: () => void;
 }) {
   const [name, setName] = useState("");
-  const [room, setRoom] = useState("");
+  const [room, setRoom] = useState(() => {
+    try { return sessionStorage.getItem(`qr_room_${partnerId}`) || ""; } catch { return ""; }
+  });
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [participants, setParticipants] = useState(1);
