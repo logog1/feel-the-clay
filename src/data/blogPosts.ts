@@ -6,7 +6,7 @@ export interface BlogPost {
   seoTitle?: { en: string; ar: string; es: string; fr: string };
   seoDescription?: { en: string; ar: string; es: string; fr: string };
   coverImage: string;
-  category: "pottery" | "tetouan" | "culture";
+  category: "pottery" | "tetouan" | "culture" | "zellige" | "weaving";
   publishedAt: string;
   readTime: number;
 }
