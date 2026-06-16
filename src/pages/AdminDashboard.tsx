@@ -152,14 +152,16 @@ const AdminDashboard = () => {
 
   const fetchAll = useCallback(async () => {
     setLoading(true);
-    const [b, o, p, a, s] = await Promise.all([
+    const [b, o, p, a, s, hp] = await Promise.all([
       supabase.from("bookings").select("*").order("created_at", { ascending: false }),
       supabase.from("orders").select("*").order("created_at", { ascending: false }),
       supabase.from("products").select("*").order("category"),
       supabase.from("workshop_availability").select("*"),
       supabase.from("store_sections").select("*").order("sort_order"),
+      (supabase as any).from("hotel_partners").select("id, name, type, brand_color").eq("is_active", true).order("name"),
     ]);
     setBookings((b.data as Booking[]) || []);
+    setPartners((hp.data as PartnerLite[]) || []);
     setOrders((o.data as Order[]) || []);
     setProducts((p.data || []).map((prod: any) => ({
       ...prod,
