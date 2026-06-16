@@ -63,10 +63,6 @@ const App = () => {
               <Route path="/workshop/zellij" element={<ZellijWorkshop />} />
               <Route path="/workshop/carpets" element={<CarpetsWorkshop />} />
               <Route path="/workshop/gardening" element={<GardeningWorkshop />} />
-              <Route path="/sofitel" element={<Sofitel />} />
-              <Route path="/sofitel/hotel" element={<SofitelHotel />} />
-              <Route path="/sofitel/admin" element={<SofitelAdmin />} />
-              <Route path="/sofitel/qr" element={<SofitelQR />} />
               <Route path="/store" element={<Store />} />
               <Route path="/cart" element={<Cart />} />
               <Route path="/admin/login" element={<AdminLogin />} />
