@@ -16,6 +16,8 @@ const categoryColors: Record<string, string> = {
   Pottery: "bg-cta/10 text-cta border-cta/20",
   tetouan: "bg-blue-500/10 text-blue-600 border-blue-500/20",
   culture: "bg-purple-500/10 text-purple-600 border-purple-500/20",
+  zellige: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20",
+  weaving: "bg-rose-500/10 text-rose-600 border-rose-500/20",
 };
 
 const categoryLabels: Record<string, Record<string, string>> = {
@@ -23,6 +25,8 @@ const categoryLabels: Record<string, Record<string, string>> = {
   Pottery: { en: "Pottery", ar: "الفخار", es: "Cerámica", fr: "Poterie" },
   tetouan: { en: "Tetouan", ar: "تطوان", es: "Tetuán", fr: "Tétouan" },
   culture: { en: "Culture", ar: "الثقافة", es: "Cultura", fr: "Culture" },
+  zellige: { en: "Zellige", ar: "الزليج", es: "Zellige", fr: "Zellige" },
+  weaving: { en: "Weaving", ar: "النسج", es: "Tejido", fr: "Tissage" },
 };
 
 const BlogPost = () => {
