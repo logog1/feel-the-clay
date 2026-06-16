@@ -228,11 +228,6 @@ export function HotelsRiadsSection() {
                   <Button size="sm" variant="outline" className="rounded-lg justify-start text-xs" onClick={() => window.open(`/partners/${p.slug}/concierge`, "_blank")}>
                     <LayoutDashboard size={12} className="mr-1.5" /> Concierge
                   </Button>
-                  {p.slug === "sofitel" && (
-                    <Button size="sm" variant="outline" className="rounded-lg justify-start text-xs" onClick={() => navigate("/sofitel/admin")}>
-                      <ExternalLink size={12} className="mr-1.5" /> Legacy console
-                    </Button>
-                  )}
                 </div>
 
                 <div className="flex items-center justify-between gap-2 pt-2 border-t border-border/40">
