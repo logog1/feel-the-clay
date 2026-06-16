@@ -85,6 +85,9 @@ const WorkshopCardImageField = ({ settingKey, label }: { settingKey: string; lab
 const AdminDashboard = () => {
   const navigate = useNavigate();
   const [bookings, setBookings] = useState<Booking[]>([]);
+  const [partners, setPartners] = useState<PartnerLite[]>([]);
+  const [bookingChannel, setBookingChannel] = useState<string>("all"); // all | website | partner-id
+  const [bookingStatusFilter, setBookingStatusFilter] = useState<string>("all");
   const [orders, setOrders] = useState<Order[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [storeSections, setStoreSections] = useState<StoreSection[]>([]);
