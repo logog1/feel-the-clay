@@ -19,7 +19,12 @@ interface Booking {
   phone: string | null; workshop: string; session_info: string | null;
   participants: number | null; booking_date: string | null; notes: string | null;
   status: string; created_at: string;
+  partner_id: string | null; source: string | null; room_number: string | null;
+  gross_amount: number | null; commission_rate: number | null;
+  commission_amount: number | null; commission_status: string | null;
+  qr_variant_code: string | null; qr_variant_scope: string | null;
 }
+interface PartnerLite { id: string; name: string; type: string; brand_color: string | null; }
 interface Order {
   id: string; customer_name: string; customer_phone: string | null;
   customer_address: string | null; region: string | null;
