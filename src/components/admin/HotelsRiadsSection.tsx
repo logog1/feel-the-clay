@@ -648,10 +648,6 @@ function PartnerEditor({ partner, onClose }: { partner: HotelPartner; onClose: (
             </section>
           </TabsContent>
 
-          <TabsContent value="experiences" className="mt-5">
-            <PartnerExperiencesTab partnerId={partner.id} brandColor={form.brand_color} />
-          </TabsContent>
-
           <TabsContent value="staff" className="mt-5">
             <PartnerStaffTab partnerId={partner.id} brandColor={form.brand_color} />
           </TabsContent>
