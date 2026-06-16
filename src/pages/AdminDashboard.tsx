@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
-import { LogOut, CalendarDays, ShoppingCart, RefreshCw, Clock, CheckCircle2, XCircle, Package, Calendar, Plus, Trash2, Tag, ToggleLeft, ToggleRight, ChevronLeft, ChevronRight, Upload, ImagePlus, X, LayoutList, GripVertical, Eye, EyeOff, Save, AlertTriangle, Settings, Mail, Phone, Users, Shield, ShieldCheck, ShieldX, UserCheck, UserX, Zap, MapPin, DollarSign, Sparkles } from "lucide-react";
+import { LogOut, CalendarDays, ShoppingCart, RefreshCw, Clock, CheckCircle2, XCircle, Package, Calendar, Plus, Trash2, Tag, ToggleLeft, ToggleRight, ChevronLeft, ChevronRight, Upload, ImagePlus, X, LayoutList, GripVertical, Eye, EyeOff, Save, AlertTriangle, Settings, Mail, Phone, Users, Shield, ShieldCheck, ShieldX, UserCheck, UserX, Zap, MapPin, DollarSign, Sparkles, Globe, Hotel } from "lucide-react";
 import { CitiesPricingSection } from "@/components/admin/CitiesPricingSection";
 import { WorkshopManagementSection } from "@/components/admin/WorkshopManagementSection";
 import { SiteImageUploader } from "@/components/admin/SiteImageUploader";
@@ -19,7 +19,12 @@ interface Booking {
   phone: string | null; workshop: string; session_info: string | null;
   participants: number | null; booking_date: string | null; notes: string | null;
   status: string; created_at: string;
+  partner_id: string | null; source: string | null; room_number: string | null;
+  gross_amount: number | null; commission_rate: number | null;
+  commission_amount: number | null; commission_status: string | null;
+  qr_variant_code: string | null; qr_variant_scope: string | null;
 }
+interface PartnerLite { id: string; name: string; type: string; brand_color: string | null; }
 interface Order {
   id: string; customer_name: string; customer_phone: string | null;
   customer_address: string | null; region: string | null;
@@ -48,7 +53,9 @@ interface ManagedUser {
 const statusColors: Record<string, string> = {
   pending: "bg-amber-100 text-amber-800 border-amber-200",
   confirmed: "bg-emerald-100 text-emerald-800 border-emerald-200",
+  completed: "bg-emerald-600 text-white border-emerald-700",
   cancelled: "bg-red-100 text-red-800 border-red-200",
+  no_show: "bg-zinc-200 text-zinc-700 border-zinc-300",
   delivered: "bg-blue-100 text-blue-800 border-blue-200",
   packed: "bg-purple-100 text-purple-800 border-purple-200",
   retour: "bg-orange-100 text-orange-800 border-orange-200",
@@ -57,11 +64,12 @@ const statusColors: Record<string, string> = {
 const StatusBadge = ({ status }: { status: string }) => (
   <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium border ${statusColors[status] || statusColors.pending}`}>
     {status === "pending" && <Clock size={12} />}
-    {(status === "confirmed" || status === "delivered" || status === "done") && <CheckCircle2 size={12} />}
+    {(status === "confirmed" || status === "delivered" || status === "done" || status === "completed") && <CheckCircle2 size={12} />}
     {status === "cancelled" && <XCircle size={12} />}
+    {status === "no_show" && <UserX size={12} />}
     {status === "packed" && <Package size={12} />}
     {status === "retour" && <AlertTriangle size={12} />}
-    {status.charAt(0).toUpperCase() + status.slice(1)}
+    {status === "no_show" ? "No-show" : status.charAt(0).toUpperCase() + status.slice(1)}
   </span>
 );
 
@@ -80,6 +88,9 @@ const WorkshopCardImageField = ({ settingKey, label }: { settingKey: string; lab
 const AdminDashboard = () => {
   const navigate = useNavigate();
   const [bookings, setBookings] = useState<Booking[]>([]);
+  const [partners, setPartners] = useState<PartnerLite[]>([]);
+  const [bookingChannel, setBookingChannel] = useState<string>("all"); // all | website | partner-id
+  const [bookingStatusFilter, setBookingStatusFilter] = useState<string>("all");
   const [orders, setOrders] = useState<Order[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [storeSections, setStoreSections] = useState<StoreSection[]>([]);
@@ -144,14 +155,16 @@ const AdminDashboard = () => {
 
   const fetchAll = useCallback(async () => {
     setLoading(true);
-    const [b, o, p, a, s] = await Promise.all([
+    const [b, o, p, a, s, hp] = await Promise.all([
       supabase.from("bookings").select("*").order("created_at", { ascending: false }),
       supabase.from("orders").select("*").order("created_at", { ascending: false }),
       supabase.from("products").select("*").order("category"),
       supabase.from("workshop_availability").select("*"),
       supabase.from("store_sections").select("*").order("sort_order"),
+      (supabase as any).from("hotel_partners").select("id, name, type, brand_color").eq("is_active", true).order("name"),
     ]);
     setBookings((b.data as Booking[]) || []);
+    setPartners((hp.data as PartnerLite[]) || []);
     setOrders((o.data as Order[]) || []);
     setProducts((p.data || []).map((prod: any) => ({
       ...prod,
@@ -549,49 +562,153 @@ const AdminDashboard = () => {
             <TabsTrigger value="users" className="rounded-xl gap-2 data-[state=active]:bg-card"><Users size={14} /> Users</TabsTrigger>
           </TabsList>
 
-          {/* ── Bookings ── */}
+          {/* ── Bookings (unified across channels) ── */}
           <TabsContent value="bookings">
-            {bookings.length === 0 ? (
-              <p className="text-center text-muted-foreground py-12">No bookings yet</p>
-            ) : (
-              <div className="space-y-4">
-                {bookings.map((b) => (
-                  <div key={b.id} className="p-5 rounded-3xl bg-card border-2 border-border/40 space-y-3">
-                    <div className="flex items-start justify-between gap-4">
-                      <div>
-                        <h3 className="font-bold text-foreground">{b.name}</h3>
-                        <p className="text-sm text-muted-foreground">{b.workshop} — {b.session_info || "Open Workshop"}</p>
-                      </div>
-                      <StatusBadge status={b.status} />
-                    </div>
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
-                      {b.city && <div><span className="text-muted-foreground">City:</span> {b.city}</div>}
-                      {b.email && <div><span className="text-muted-foreground">Email:</span> {b.email}</div>}
-                      {b.phone && <div><span className="text-muted-foreground">Phone:</span> {b.phone}</div>}
-                      <div><span className="text-muted-foreground">Participants:</span> {b.participants}</div>
-                      {b.booking_date && <div><span className="text-muted-foreground">Date:</span> {b.booking_date}</div>}
-                      <div><span className="text-muted-foreground">Submitted:</span> {new Date(b.created_at).toLocaleDateString()}</div>
-                    </div>
-                    {b.notes && <p className="text-sm text-muted-foreground bg-muted/30 p-3 rounded-xl">{b.notes}</p>}
-                    <div className="flex flex-wrap gap-2 pt-1">
-                      {b.status !== "confirmed" && (
-                        <Button size="sm" variant="outline" className="rounded-xl text-xs gap-1" onClick={() => updateStatus("bookings", b.id, "confirmed")}>
-                          <CheckCircle2 size={12} /> Confirm
-                        </Button>
-                      )}
-                      {b.status !== "cancelled" && (
-                        <Button size="sm" variant="outline" className="rounded-xl text-xs gap-1 text-destructive" onClick={() => updateStatus("bookings", b.id, "cancelled")}>
-                          <XCircle size={12} /> Cancel
-                        </Button>
-                      )}
-                      <Button size="sm" variant="outline" className="rounded-xl text-xs gap-1 text-destructive" onClick={() => confirmDeleteItem(b.id, b.name, "bookings")}>
-                        <Trash2 size={12} /> Delete
-                      </Button>
-                    </div>
+            {(() => {
+              const partnerById = new Map(partners.map((p) => [p.id, p]));
+              const filtered = bookings.filter((b) => {
+                if (bookingChannel === "website" && b.partner_id) return false;
+                if (bookingChannel !== "all" && bookingChannel !== "website" && b.partner_id !== bookingChannel) return false;
+                if (bookingStatusFilter !== "all" && b.status !== bookingStatusFilter) return false;
+                return true;
+              });
+              const websiteCount = bookings.filter((b) => !b.partner_id).length;
+              const partnerCount = bookings.filter((b) => b.partner_id).length;
+              const statuses = ["all", "pending", "confirmed", "completed", "cancelled", "no_show"];
+
+              return (
+                <div className="space-y-4">
+                  {/* Channel filter pills */}
+                  <div className="flex flex-wrap items-center gap-2 p-3 rounded-2xl bg-muted/30 border border-border/40">
+                    <span className="text-xs uppercase tracking-wider text-muted-foreground font-semibold pr-1">Channel</span>
+                    <button onClick={() => setBookingChannel("all")} className={`px-3 py-1.5 rounded-full text-xs font-medium border transition ${bookingChannel === "all" ? "bg-foreground text-background border-foreground" : "bg-card border-border/60 hover:bg-muted"}`}>
+                      All <span className="opacity-60">({bookings.length})</span>
+                    </button>
+                    <button onClick={() => setBookingChannel("website")} className={`px-3 py-1.5 rounded-full text-xs font-medium border transition flex items-center gap-1.5 ${bookingChannel === "website" ? "bg-foreground text-background border-foreground" : "bg-card border-border/60 hover:bg-muted"}`}>
+                      <Globe size={11} /> Website <span className="opacity-60">({websiteCount})</span>
+                    </button>
+                    {partners.length > 0 && (
+                      <span className="h-5 w-px bg-border/60 mx-1" />
+                    )}
+                    {partners.map((p) => {
+                      const count = bookings.filter((b) => b.partner_id === p.id).length;
+                      const active = bookingChannel === p.id;
+                      return (
+                        <button key={p.id} onClick={() => setBookingChannel(p.id)} className={`px-3 py-1.5 rounded-full text-xs font-medium border transition flex items-center gap-1.5 ${active ? "text-white border-transparent" : "bg-card border-border/60 hover:bg-muted"}`}
+                          style={active ? { background: p.brand_color || "#c4654a" } : {}}>
+                          <Hotel size={11} /> {p.name} <span className="opacity-60">({count})</span>
+                        </button>
+                      );
+                    })}
+                    {partnerCount > 0 && bookingChannel === "all" && (
+                      <span className="ml-auto text-xs text-muted-foreground">{partnerCount} from partners</span>
+                    )}
                   </div>
-                ))}
-              </div>
-            )}
+
+                  {/* Status filter */}
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">Status</span>
+                    {statuses.map((s) => (
+                      <button key={s} onClick={() => setBookingStatusFilter(s)} className={`px-2.5 py-1 rounded-lg text-xs capitalize border transition ${bookingStatusFilter === s ? "bg-foreground text-background border-foreground" : "bg-card border-border/60 hover:bg-muted text-muted-foreground"}`}>
+                        {s.replace("_", " ")}
+                      </button>
+                    ))}
+                  </div>
+
+                  {filtered.length === 0 ? (
+                    <p className="text-center text-muted-foreground py-12">No bookings match these filters</p>
+                  ) : (
+                    <div className="rounded-2xl border-2 border-border/40 bg-card overflow-hidden">
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-sm">
+                          <thead className="bg-muted/40 text-[11px] uppercase tracking-wider text-muted-foreground">
+                            <tr>
+                              <th className="px-3 py-2.5 text-left font-semibold">Channel</th>
+                              <th className="px-3 py-2.5 text-left font-semibold">Guest</th>
+                              <th className="px-3 py-2.5 text-left font-semibold">Workshop</th>
+                              <th className="px-3 py-2.5 text-left font-semibold">Date</th>
+                              <th className="px-3 py-2.5 text-right font-semibold">Pax</th>
+                              <th className="px-3 py-2.5 text-left font-semibold">Status</th>
+                              <th className="px-3 py-2.5 text-right font-semibold">Actions</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-border/40">
+                            {filtered.map((b) => {
+                              const p = b.partner_id ? partnerById.get(b.partner_id) : null;
+                              return (
+                                <tr key={b.id} className="hover:bg-muted/20 align-top">
+                                  <td className="px-3 py-3">
+                                    {p ? (
+                                      <div className="flex flex-col gap-0.5">
+                                        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[11px] font-semibold text-white w-fit" style={{ background: p.brand_color || "#c4654a" }}>
+                                          <Hotel size={10} /> {p.type === "riad" ? "Riad" : "Hotel"}
+                                        </span>
+                                        <span className="text-xs font-medium text-foreground">{p.name}</span>
+                                        {(b.room_number || b.qr_variant_code) && (
+                                          <span className="text-[10px] text-muted-foreground">
+                                            {b.room_number && `Room ${b.room_number}`}
+                                            {b.room_number && b.qr_variant_code && " · "}
+                                            {b.qr_variant_code && `QR: ${b.qr_variant_code}`}
+                                          </span>
+                                        )}
+                                      </div>
+                                    ) : (
+                                      <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[11px] font-semibold bg-foreground/90 text-background w-fit">
+                                        <Globe size={10} /> Website
+                                      </span>
+                                    )}
+                                  </td>
+                                  <td className="px-3 py-3">
+                                    <div className="font-semibold text-foreground">{b.name}</div>
+                                    <div className="text-[11px] text-muted-foreground space-x-2">
+                                      {b.email && <span>{b.email}</span>}
+                                      {b.phone && <span>· {b.phone}</span>}
+                                    </div>
+                                    {b.city && <div className="text-[11px] text-muted-foreground">{b.city}</div>}
+                                  </td>
+                                  <td className="px-3 py-3">
+                                    <div className="text-foreground">{b.workshop}</div>
+                                    {b.session_info && <div className="text-[11px] text-muted-foreground">{b.session_info}</div>}
+                                  </td>
+                                  <td className="px-3 py-3 text-foreground whitespace-nowrap">
+                                    {b.booking_date || <span className="text-muted-foreground">—</span>}
+                                    <div className="text-[11px] text-muted-foreground">submitted {new Date(b.created_at).toLocaleDateString()}</div>
+                                  </td>
+                                  <td className="px-3 py-3 text-right tabular-nums font-medium">{b.participants ?? 1}</td>
+                                  <td className="px-3 py-3"><StatusBadge status={b.status} /></td>
+                                  <td className="px-3 py-3">
+                                    <div className="flex flex-wrap gap-1 justify-end">
+                                      {b.status !== "confirmed" && b.status !== "completed" && (
+                                        <Button size="sm" variant="outline" className="rounded-lg text-[11px] h-7 gap-1" onClick={() => updateStatus("bookings", b.id, "confirmed")}>
+                                          <CheckCircle2 size={11} /> Confirm
+                                        </Button>
+                                      )}
+                                      {b.status !== "completed" && b.status !== "cancelled" && (
+                                        <Button size="sm" variant="outline" className="rounded-lg text-[11px] h-7 gap-1 text-emerald-700 border-emerald-300 hover:bg-emerald-50" onClick={() => updateStatus("bookings", b.id, "completed")}>
+                                          Done
+                                        </Button>
+                                      )}
+                                      {b.status !== "cancelled" && (
+                                        <Button size="sm" variant="outline" className="rounded-lg text-[11px] h-7 gap-1 text-destructive" onClick={() => updateStatus("bookings", b.id, "cancelled")}>
+                                          <XCircle size={11} /> Cancel
+                                        </Button>
+                                      )}
+                                      <Button size="sm" variant="ghost" className="rounded-lg text-[11px] h-7 px-2 text-destructive" onClick={() => confirmDeleteItem(b.id, b.name, "bookings")}>
+                                        <Trash2 size={11} />
+                                      </Button>
+                                    </div>
+                                  </td>
+                                </tr>
+                              );
+                            })}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
           </TabsContent>
 
           {/* ── Orders ── */}

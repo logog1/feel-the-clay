@@ -13,7 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { PartnerExperiencesTab } from "@/components/admin/PartnerExperiencesTab";
+
 import { PartnerStaffTab } from "@/components/admin/PartnerStaffTab";
 import { toast } from "@/hooks/use-toast";
 import { Plus, ExternalLink, QrCode, LayoutDashboard, Pencil, Hotel, Trash2, Copy, Globe, Image as ImageIcon, Loader2, Upload, BedDouble, Percent, Star } from "lucide-react";
@@ -228,11 +228,6 @@ export function HotelsRiadsSection() {
                   <Button size="sm" variant="outline" className="rounded-lg justify-start text-xs" onClick={() => window.open(`/partners/${p.slug}/concierge`, "_blank")}>
                     <LayoutDashboard size={12} className="mr-1.5" /> Concierge
                   </Button>
-                  {p.slug === "sofitel" && (
-                    <Button size="sm" variant="outline" className="rounded-lg justify-start text-xs" onClick={() => navigate("/sofitel/admin")}>
-                      <ExternalLink size={12} className="mr-1.5" /> Legacy console
-                    </Button>
-                  )}
                 </div>
 
                 <div className="flex items-center justify-between gap-2 pt-2 border-t border-border/40">
@@ -476,7 +471,6 @@ function PartnerEditor({ partner, onClose }: { partner: HotelPartner; onClose: (
           <TabsList className="grid grid-cols-4 w-full">
             <TabsTrigger value="branding">Branding</TabsTrigger>
             <TabsTrigger value="operations">Operations</TabsTrigger>
-            <TabsTrigger value="experiences">Experiences</TabsTrigger>
             <TabsTrigger value="staff">Staff</TabsTrigger>
           </TabsList>
 
@@ -652,10 +646,6 @@ function PartnerEditor({ partner, onClose }: { partner: HotelPartner; onClose: (
               <Textarea rows={4} value={form.internal_notes || ""} onChange={(e) => setForm({ ...form, internal_notes: e.target.value })}
                 placeholder="Key contacts, concierge names, delivery schedules, anything the team should know." />
             </section>
-          </TabsContent>
-
-          <TabsContent value="experiences" className="mt-5">
-            <PartnerExperiencesTab partnerId={partner.id} brandColor={form.brand_color} />
           </TabsContent>
 
           <TabsContent value="staff" className="mt-5">
