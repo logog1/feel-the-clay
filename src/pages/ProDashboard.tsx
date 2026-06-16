@@ -130,7 +130,7 @@ const ProDashboard = () => {
           <main className="flex-1 p-4 md:p-6 overflow-auto">
             {activeSection === "overview" && <OverviewSection />}
             {activeSection === "workshops" && <WorkshopsSection />}
-            {activeSection === "sofitel" && <SofitelSection />}
+            
             {activeSection === "hotels-riads" && <HotelsRiadsSection />}
             {activeSection === "offers-events" && <OffersEventsSection />}
             {activeSection === "workflow" && <WorkflowSection />}
