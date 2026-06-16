@@ -1,91 +1,81 @@
+## Goal
 
-## Audit results — what's broken or missing today
+Turn the current single-QR-per-property setup into a proper hotel/riad partnership toolkit: per-room and per-staff trackable QR codes, a printable kit, a polished guest landing page in all four languages, and a concierge dashboard where hotels can see every booking with full commission detail, payout history, and a scan-to-booking funnel.
 
-I traced the full QR → landing → booking → concierge dashboard flow. Here's what I found before we touch anything:
+## What changes
 
-### Critical bugs (silent data loss)
-1. **`PartnerLanding.tsx` inserts `partner_id` and `source` into `public.bookings`, but those columns don't exist.**
-   The bookings table only has: id, name, city, email, phone, workshop, session_info, participants, booking_date, notes, status, created_at.
-   → Either the insert fails entirely, or (more likely) Supabase strips unknown fields and the booking lands with **no link to the hotel that generated it**. Hotels can't be credited, commissions can't be computed, you can't even tell which QR worked.
+### 1. Trackable QR variants (DB)
 
-2. **`PartnerConcierge.tsx` only reads `sofitel_bookings` / `sofitel_experiences`** — it never queries the regular `bookings` table. So even if attribution worked, a hotel signing into their concierge dashboard would not see a single workshop booking generated from their own QR.
+Extend `qr_scan_log` and `bookings` so every QR can be attributed to a room or staff member.
 
-3. **No commission field anywhere on bookings.** Nothing is calculated, stored, or reported. `hotel_partners.commission_rate` exists but is never used.
+`qr_scan_log` new columns:
+- `variant_code` text — short slug like `r-204` or `staff-amine`
+- `variant_label` text — human label shown to admin
+- `variant_scope` text — `property` | `room` | `staff` | `event`
+- `ip_hash` text — short hash for unique-visitor estimates (no raw IP)
+- `session_id` text — anonymous cookie/uuid to dedupe scans per device
+- `booking_id` uuid nullable — set when the scan converts
 
-4. **No completed / cancelled lifecycle for partner bookings.** Status updates exist only on `sofitel_bookings`. A regular booking from a partner page has no "mark as completed / no-show / cancelled" UI for either the hotel or the admin in a partner-aware view.
+`bookings` and `sofitel_bookings` new columns:
+- `qr_variant_code` text
+- `qr_variant_scope` text
 
-### Gaps for a smooth hotel/riad collaboration
-- No payout / statement view (hotel: "how much do you owe us this month?").
-- No CSV export of bookings or commissions per partner.
-- No notification to the hotel when a guest books from their QR (right now only Terraria gets the email).
-- No per-booking room number / guest reference (regular `bookings` has no `room_number`).
-- No booking source/UTM tracking beyond a single string — can't tell QR vs concierge vs direct link.
-- No "block dates" or capacity rules per partner.
-- No partner-side analytics (scans, conversion, top experiences).
+New table `partner_qr_variants`:
+- `partner_id`, `code`, `label`, `scope`, `room_number` (nullable), `staff_user_id` (nullable), `is_active`, `created_at`. Unique on `(partner_id, code)`. RLS: admin all; staff of that partner read.
 
----
+### 2. Edge function `qr-scan`
 
-## Plan
+Public POST endpoint called from the landing page on mount with `{ slug, variant }`. It looks up `partner_id`, writes a `qr_scan_log` row, sets/reads a `qr_session` cookie, and returns `{ partner_id, session_id }`. The landing page stores the session id in `sessionStorage` so the subsequent booking insert can include `qr_variant_code` + `qr_variant_scope`.
 
-### 1. Make partner attribution actually work (DB migration)
+### 3. Printable QR kit page `/partners/:slug/qr`
 
-Add to `public.bookings`:
-- `partner_id uuid REFERENCES public.hotel_partners(id) ON DELETE SET NULL`
-- `source text` (e.g. `partner_landing`, `partner_qr`, `concierge`, `website`)
-- `room_number text` (for hotel guests)
-- `commission_rate numeric` (snapshotted from partner at booking time, so future rate changes don't rewrite history)
-- `commission_amount numeric` (computed)
-- `commission_status text` default `'pending'` → `pending | due | paid | void`
-- `gross_amount numeric` (so commission = gross × rate, transparent)
-- `completed_at timestamptz`, `cancelled_at timestamptz`, `cancellation_reason text`
-- Index on `partner_id` + `status`.
+Replace today's single-QR view with a full kit (still public, no auth):
+- Admin/staff toggle to switch between three presets: A4 poster, A5 flyer, table-tent.
+- "Generate QRs for rooms" input (e.g. `101-120` or comma list) creates variants in `partner_qr_variants` and renders a grid of one card per variant.
+- "Staff QR" tab lists staff variants.
+- Each card uses the QR Server API with `?v=<variant>` appended to the landing URL, plus the hotel logo, brand color, the offer headline, and an FR/EN toggle for the printed strapline.
+- "Download as PDF" button uses `jspdf` + `html2canvas` to export all selected cards. (Both deps already exist; otherwise add `jspdf` and `html2canvas`.)
+- "Print" button just calls `window.print()` with a print stylesheet that hides chrome.
 
-Trigger: when status flips to `completed`, compute `commission_amount = gross_amount × commission_rate` and set `commission_status = 'due'`. When status flips to `cancelled`, set `commission_status = 'void'` and stamp `cancelled_at`.
+### 4. Richer guest landing `/partners/:slug`
 
-### 2. Fix the insert path
-- `PartnerLanding.tsx`: include `partner_id`, `source: 'partner_landing'`, `room_number`, snapshot `commission_rate` and `gross_amount` (participants × price) into the new columns.
-- Add a small "Room number" field to the booking form on partner pages.
+Polish the existing `PartnerLanding`:
+- Reads `?v=` from URL, calls the `qr-scan` function once, persists `variant` in `sessionStorage`.
+- Hero with hotel logo, cover image, brand color accent, and a one-line welcome in the guest's language (auto-detect from `navigator.language`, fallback EN; manual switch for FR/ES/AR).
+- Multi-offer carousel pulling published `partner_offer_assignments` joined with `partner_offers` (already in DB), with price, duration, capacity, CTA.
+- Sticky bottom CTA: "Book your spot · Room __". Booking form pre-fills `room_number` when scope=`room`, and writes `qr_variant_code` / `qr_variant_scope` / `partner_id` on insert.
+- WhatsApp concierge button using `partner.whatsapp` if present.
 
-### 3. Hotel concierge dashboard sees everything
-Update `PartnerConcierge.tsx`:
-- Pull from `bookings WHERE partner_id = …` alongside `sofitel_bookings`.
-- Show name, room #, phone, email (full guest info), workshop, date, status badge.
-- Add "Mark completed / cancelled / no-show" buttons (RLS-scoped to partner staff for their own partner).
-- New **Statement tab**: this month / last month / custom range showing bookings, gross, commission rate, commission due, total payout. CSV export.
-- New **QR analytics card** (light): scans today / week / month and conversion rate.
+### 5. Concierge dashboard upgrades `/partners/:slug/concierge`
 
-### 4. Admin (Pro dashboard) gets a Partner Performance view
-Inside the existing `HotelsRiadsSection`, add per-partner:
-- KPIs: bookings, completed, cancelled, gross revenue, commission owed, commission paid.
-- Table of pending payouts with "Mark as paid" → writes a `partner_payouts` row (new tiny table: id, partner_id, period_start, period_end, amount, paid_at, notes).
-- CSV export per partner per period.
+Keep the existing auth flow (email + password, admin-invited via `partner_staff`). Add:
+- **Funnel card** on top: scans / unique sessions / bookings / completed / conversion %, with day-by-day sparkline.
+- **Per-variant table**: code, label, scans, bookings, completed, commission earned. Sort by performance.
+- **Per-booking commission detail** (replaces the current compact list): date, guest, room, participants, gross, rate %, commission, status (`due` / `paid` / `void`), source variant. CSV export already exists, extend with variant columns.
+- **Payouts history section**: reads `partner_payouts` for this partner, lists period, amount, method, reference, paid date, linked booking count. Read-only.
 
-### 5. RLS + GRANTs
-- New `partner_payouts` table: admin-only writes; partner staff can SELECT their own partner's payouts via `is_partner_staff`.
-- Extend `bookings` SELECT policy so a partner staff can read bookings where `partner_id` matches their partner (admin keeps full access).
-- Add `bookings` UPDATE policy for partner staff to change `status`, `completed_at`, `cancelled_at`, `cancellation_reason`, `room_number`, `notes` on their own rows only.
+### 6. Admin: QR & staff management
 
-### 6. Notifications
-- Extend `send-notification` so a new partner-attributed booking also emails the partner's `contact_email` (template: `partner-booking-notification`) and optionally WhatsApps `partner.whatsapp` if set.
-- New email when a booking attributed to them is cancelled.
+Inside `HotelsRiadsSection` (admin), add tabs on each hotel detail panel:
+- **Staff**: list `partner_staff`, "Invite staff" form that creates an auth user via existing admin pattern and inserts into `partner_staff`. Remove button.
+- **QR variants**: list `partner_qr_variants` with quick edit, bulk-create rooms, deactivate.
+- **Payouts**: list `partner_payouts`, "Record payout" form (period, amount, method, reference, mark linked bookings as paid).
 
-### 7. Verification (after build)
-Using `supabase--insert` I will:
-- Create one booking attributed to the first active partner → mark `completed` → verify commission auto-computed and visible in both concierge and Pro dashboard.
-- Create a second booking → mark `cancelled` → verify it's voided, hotel sees the cancellation, no commission owed.
-- Confirm the partner statement totals match the sum of completed bookings.
+### 7. RLS / GRANTS
 
----
+For every new table or column, follow the project pattern:
+- `partner_qr_variants` and new `qr_scan_log` columns: admin full access, `partner_staff` SELECT for their `partner_id`, `anon` INSERT only via the edge function (service role).
+- `partner_payouts` already restricted; ensure staff can SELECT for their partner.
 
-## Things this plan deliberately does NOT do (call out if you want them)
-- Online payments / Stripe payout to hotels — keeping it manual ledger for now.
-- Multi-currency — assuming MAD/DH like the rest of the app.
-- Per-experience commission overrides — single rate per partner.
-- A native partner mobile app — concierge page is already mobile-friendly.
+## Technical notes
 
-## Open questions before I implement
-1. Commission base: **gross booking value** (participants × price) or **net after any partner-side discount**?
-2. Who marks a booking as "completed" — the hotel concierge, the Terraria admin, or both?
-3. Should cancellations within 24h still owe a (partial) commission, or always be voided?
+- QR rendering stays on api.qrserver.com (no new dependency) but the printable kit needs `jspdf` + `html2canvas` for PDF export; add if missing.
+- Edge function `qr-scan` uses service role to bypass RLS for inserts; validates body with zod; CORS open.
+- Funnel queries: simple `count(*)` per day from `qr_scan_log` and `bookings` filtered by `partner_id`; can compute client-side after a single fetch of the last 30 days.
+- Sofitel bookings already share `partner_id`, `gross_amount`, `commission_*`, so the funnel and statement work for both `bookings` and `sofitel_bookings` tables via a union view if needed; v1 uses `sofitel_bookings` (current concierge source) plus the public `bookings` table joined by `partner_id`.
 
-Tell me your answers and I'll switch to build.
+## Out of scope (call out if needed later)
+
+- Sending the invite email itself uses the existing transactional flow; no new template yet.
+- Real PDF generation server-side (we stick to client-side `jspdf` for v1).
+- Multi-tier commission rules per offer (today the rate lives on `hotel_partners`).

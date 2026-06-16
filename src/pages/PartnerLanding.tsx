@@ -106,21 +106,32 @@ export default function PartnerLanding() {
       setOffers((data || []) as PartnerOfferPublic[]);
     })();
     refreshAvailability();
-    // Log QR scan / landing visit (deduped per tab + partner)
+    // Log QR scan / landing visit via edge function (captures variant + session)
     try {
       const key = `qr_logged_${partner.id}`;
+      const variant = new URLSearchParams(window.location.search).get("v");
+      const existingSid = sessionStorage.getItem("qr_sid") || undefined;
       if (!sessionStorage.getItem(key)) {
         sessionStorage.setItem(key, "1");
-        (supabase as any).from("qr_scan_log").insert({
-          partner_id: partner.id,
-          user_agent: navigator.userAgent.slice(0, 200),
-          referrer: document.referrer ? document.referrer.slice(0, 200) : null,
-        });
+        supabase.functions
+          .invoke("qr-scan", { body: { slug: partner.slug, variant, session_id: existingSid } })
+          .then(({ data }: any) => {
+            if (data?.session_id) sessionStorage.setItem("qr_sid", data.session_id);
+            if (data?.variant_code) {
+              sessionStorage.setItem(`qr_variant_${partner.id}`, data.variant_code);
+              sessionStorage.setItem(`qr_scope_${partner.id}`, data.variant_scope || "property");
+              // Pre-fill room number when variant is room-scoped and code looks like r-<num>
+              if (data.variant_scope === "room") {
+                const m = String(data.variant_code).match(/(\d+)/);
+                if (m) sessionStorage.setItem(`qr_room_${partner.id}`, m[1]);
+              }
+            }
+          });
       }
     } catch { /* non-blocking */ }
     const i = setInterval(refreshAvailability, 25000);
     return () => clearInterval(i);
-  }, [partner?.id]);
+  }, [partner?.id, partner?.slug]);
 
   const days = useMemo(() => {
     const seen = new Map<string, Date>();
@@ -540,7 +551,9 @@ function BookingDialog({
   onClose: () => void; onSuccess: () => void;
 }) {
   const [name, setName] = useState("");
-  const [room, setRoom] = useState("");
+  const [room, setRoom] = useState(() => {
+    try { return sessionStorage.getItem(`qr_room_${partnerId}`) || ""; } catch { return ""; }
+  });
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [participants, setParticipants] = useState(1);
@@ -570,6 +583,8 @@ function BookingDialog({
 
 
     const gross = (experience.price_per_person || 0) * participants;
+    const qr_variant_code = sessionStorage.getItem(`qr_variant_${partnerId}`) || null;
+    const qr_variant_scope = sessionStorage.getItem(`qr_scope_${partnerId}`) || null;
     const { error } = await supabase.from("sofitel_bookings").insert({
       experience_id: experience.id,
       partner_id: partnerId,
@@ -579,11 +594,13 @@ function BookingDialog({
       guest_phone: phone.trim() || null,
       participants,
       notes: notes.trim() || null,
-      source: "partner_landing",
+      source: qr_variant_code ? `qr:${qr_variant_code}` : "partner_landing",
       price_per_person: experience.price_per_person || null,
       currency: experience.currency || "MAD",
       gross_amount: gross,
       commission_rate: commissionRate,
+      qr_variant_code,
+      qr_variant_scope,
     } as any);
     setSubmitting(false);
     if (error) return toast({ title: "Booking failed", description: error.message, variant: "destructive" });

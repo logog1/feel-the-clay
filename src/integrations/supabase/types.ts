@@ -195,6 +195,8 @@ export type Database = {
           participants: number | null
           partner_id: string | null
           phone: string | null
+          qr_variant_code: string | null
+          qr_variant_scope: string | null
           room_number: string | null
           session_info: string | null
           source: string | null
@@ -219,6 +221,8 @@ export type Database = {
           participants?: number | null
           partner_id?: string | null
           phone?: string | null
+          qr_variant_code?: string | null
+          qr_variant_scope?: string | null
           room_number?: string | null
           session_info?: string | null
           source?: string | null
@@ -243,6 +247,8 @@ export type Database = {
           participants?: number | null
           partner_id?: string | null
           phone?: string | null
+          qr_variant_code?: string | null
+          qr_variant_scope?: string | null
           room_number?: string | null
           session_info?: string | null
           source?: string | null
@@ -988,6 +994,60 @@ export type Database = {
           },
         ]
       }
+      partner_qr_variants: {
+        Row: {
+          code: string
+          created_at: string
+          id: string
+          is_active: boolean
+          label: string
+          partner_id: string
+          room_number: string | null
+          scope: string
+          staff_user_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          label: string
+          partner_id: string
+          room_number?: string | null
+          scope?: string
+          staff_user_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          label?: string
+          partner_id?: string
+          room_number?: string | null
+          scope?: string
+          staff_user_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "partner_qr_variants_partner_id_fkey"
+            columns: ["partner_id"]
+            isOneToOne: false
+            referencedRelation: "hotel_partners"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "partner_qr_variants_partner_id_fkey"
+            columns: ["partner_id"]
+            isOneToOne: false
+            referencedRelation: "hotel_partners_public"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       partner_staff: {
         Row: {
           created_at: string
@@ -1062,25 +1122,43 @@ export type Database = {
       }
       qr_scan_log: {
         Row: {
+          booking_id: string | null
           id: string
+          ip_hash: string | null
           partner_id: string
           referrer: string | null
           scanned_at: string
+          session_id: string | null
           user_agent: string | null
+          variant_code: string | null
+          variant_label: string | null
+          variant_scope: string | null
         }
         Insert: {
+          booking_id?: string | null
           id?: string
+          ip_hash?: string | null
           partner_id: string
           referrer?: string | null
           scanned_at?: string
+          session_id?: string | null
           user_agent?: string | null
+          variant_code?: string | null
+          variant_label?: string | null
+          variant_scope?: string | null
         }
         Update: {
+          booking_id?: string | null
           id?: string
+          ip_hash?: string | null
           partner_id?: string
           referrer?: string | null
           scanned_at?: string
+          session_id?: string | null
           user_agent?: string | null
+          variant_code?: string | null
+          variant_label?: string | null
+          variant_scope?: string | null
         }
         Relationships: [
           {
@@ -1137,6 +1215,8 @@ export type Database = {
           participants: number
           partner_id: string | null
           price_per_person: number | null
+          qr_variant_code: string | null
+          qr_variant_scope: string | null
           room_number: string
           source: string
           status: string
@@ -1160,6 +1240,8 @@ export type Database = {
           participants?: number
           partner_id?: string | null
           price_per_person?: number | null
+          qr_variant_code?: string | null
+          qr_variant_scope?: string | null
           room_number: string
           source?: string
           status?: string
@@ -1183,6 +1265,8 @@ export type Database = {
           participants?: number
           partner_id?: string | null
           price_per_person?: number | null
+          qr_variant_code?: string | null
+          qr_variant_scope?: string | null
           room_number?: string
           source?: string
           status?: string
