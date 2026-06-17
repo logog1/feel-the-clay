@@ -47,7 +47,7 @@ serve(async (req) => {
     const body = req.method === "POST" ? await req.json().catch(() => ({})) : {};
     const action: string = body.action || "queries";
     const days: number = Math.min(Math.max(parseInt(body.days ?? "28", 10) || 28, 1), 90);
-    const siteUrl: string = body.siteUrl || "https://terrariaworkshops.lovable.app/";
+    const siteUrl: string = body.siteUrl || "https://www.terrariaworkshops.com/";
     const filterTerm: string = (body.filter || "tetouan").toLowerCase();
 
     const headers = {
