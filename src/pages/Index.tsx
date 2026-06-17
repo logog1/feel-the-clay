@@ -25,7 +25,7 @@ const jsonLd = {
   "@type": "LocalBusiness",
   "@id": "https://www.terrariaworkshops.com/#localbusiness",
   name: "Terraria Workshops",
-  description: "Hands-on pottery workshops in Tétouan, Morocco. Wheel throwing, handbuilding, embroidery, zellij and weaving with local artisans. All materials and mint tea included.",
+  description: "A social initiative in Tétouan, Morocco offering authentic Moroccan craft workshops — pottery, zellige, weaving, embroidery and gardening — taught by master artisans. Every booking directly supports local craftspeople.",
   url: "https://www.terrariaworkshops.com",
   image: "https://www.terrariaworkshops.com/og.jpg",
   logo: "https://www.terrariaworkshops.com/logo.png",
