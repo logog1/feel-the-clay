@@ -122,9 +122,7 @@ const AdminLogin = () => {
       <SEOHead title="Admin Login" description="Admin login for Terraria Workshops" path="/admin/login" />
       <div className="w-full max-w-sm space-y-8">
         <div className="text-center space-y-2">
-          <div className="w-14 h-14 mx-auto rounded-2xl bg-cta/10 border-2 border-cta/20 flex items-center justify-center">
-            {isSignUp ? <UserPlus className="w-6 h-6 text-cta" /> : <Lock className="w-6 h-6 text-cta" />}
-          </div>
+          <IconTile icon={isSignUp ? UserPlus : Lock} size="lg" className="mx-auto" />
           <h1 className="text-2xl font-bold text-foreground">{isSignUp ? "Create Account" : "Admin Login"}</h1>
           <p className="text-sm text-muted-foreground">Terraria Workshops Dashboard</p>
         </div>
