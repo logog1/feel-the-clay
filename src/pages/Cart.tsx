@@ -79,7 +79,7 @@ const Cart = () => {
     const validated = result.data;
 
     try {
-      await supabase.functions.invoke("send-notification", {
+      const { error } = await supabase.functions.invoke("send-notification", {
         body: {
           type: "purchase",
           data: {
@@ -96,8 +96,12 @@ const Cart = () => {
           },
         },
       });
+      if (error) throw error;
     } catch (err) {
-      console.error(err);
+      console.error("Order submission failed:", err);
+      setSending(false);
+      setErrors({ name: "We couldn't send your order. Please try again or contact us on WhatsApp." });
+      return;
     }
 
     setSending(false);
