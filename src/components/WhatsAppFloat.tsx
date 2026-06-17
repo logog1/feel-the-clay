@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useWhatsAppLink } from "@/components/BookOnWhatsApp";
 import { WhatsAppIcon } from "@/components/icons/social";
@@ -6,9 +7,10 @@ import { WhatsAppIcon } from "@/components/icons/social";
 const HIDDEN_PATHS = ["/feedback"];
 
 const WhatsAppFloat = () => {
-  const [pathname, setPathname] = useState(
-    typeof window !== "undefined" ? window.location.pathname : "/"
-  );
+  // useLocation reacts to React Router navigation — we previously polled
+  // window.location.pathname every 500ms because popstate doesn't fire on
+  // pushState. The poll ran for the lifetime of every page; this replaces it.
+  const { pathname } = useLocation();
   const [visible, setVisible] = useState(false);
   const [pulse, setPulse] = useState(true);
   const [showLabel, setShowLabel] = useState(true);
@@ -24,14 +26,8 @@ const WhatsAppFloat = () => {
     const pulseTimer = setTimeout(() => setPulse(false), 12000);
     const labelTimer = setTimeout(() => setShowLabel(false), 8000);
 
-    const onNav = () => setPathname(window.location.pathname);
-    window.addEventListener("popstate", onNav);
-    const interval = setInterval(onNav, 500);
-
     return () => {
       window.removeEventListener("scroll", handleScroll);
-      window.removeEventListener("popstate", onNav);
-      clearInterval(interval);
       clearTimeout(pulseTimer);
       clearTimeout(labelTimer);
     };
