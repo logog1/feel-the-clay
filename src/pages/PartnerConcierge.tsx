@@ -258,8 +258,8 @@ export default function PartnerConcierge() {
         <div className="flex items-center justify-between gap-3">
           <h2 className="font-semibold">Schedule</h2>
           <div className="flex items-center gap-1">
-            <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setWeekStart(addDays(weekStart, -7))}><ChevronLeft size={14} /></Button>
-            <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setWeekStart(addDays(weekStart, 7))}><ChevronRight size={14} /></Button>
+            <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setWeekStart(addDays(weekStart, -7))} aria-label="Previous week"><ChevronLeft size={14} /></Button>
+            <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setWeekStart(addDays(weekStart, 7))} aria-label="Next week"><ChevronRight size={14} /></Button>
           </div>
         </div>
         <div className="grid grid-cols-7 gap-1.5">

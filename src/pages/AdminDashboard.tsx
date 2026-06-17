@@ -351,11 +351,11 @@ const AdminDashboard = () => {
       <div>
         {/* Month nav */}
         <div className="flex items-center justify-between mb-4">
-          <Button variant="outline" size="icon" className="rounded-xl" onClick={() => setCalMonth(subMonths(calMonth, 1))}>
+          <Button variant="outline" size="icon" className="rounded-xl" onClick={() => setCalMonth(subMonths(calMonth, 1))} aria-label="Previous month">
             <ChevronLeft size={16} />
           </Button>
           <span className="font-bold text-foreground">{format(calMonth, "MMMM yyyy")}</span>
-          <Button variant="outline" size="icon" className="rounded-xl" onClick={() => setCalMonth(addMonths(calMonth, 1))}>
+          <Button variant="outline" size="icon" className="rounded-xl" onClick={() => setCalMonth(addMonths(calMonth, 1))} aria-label="Next month">
             <ChevronRight size={16} />
           </Button>
         </div>
