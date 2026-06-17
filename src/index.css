@@ -377,3 +377,29 @@
 .animate-float-particle {
   animation: floatParticle 10s linear infinite;
 }
+
+/* International phone input — adapt to design system */
+.phone-input.PhoneInput,
+.phone-input {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.phone-input .PhoneInputCountry {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+.phone-input .PhoneInputInput {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-size: 0.875rem;
+  color: hsl(var(--foreground));
+}
+.phone-input .PhoneInputCountrySelect {
+  background: transparent;
+  border: none;
+  color: hsl(var(--foreground));
+}
