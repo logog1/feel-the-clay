@@ -315,12 +315,17 @@ export default function PartnerLanding() {
                 })();
                 return (
                   <article key={o.assignment_id} className="group bg-card border border-border rounded-2xl overflow-hidden hover:shadow-xl transition">
-                    {o.cover_image && (
-                      <div className="aspect-[16/10] overflow-hidden">
+                    <div className="aspect-[16/10] overflow-hidden relative">
+                      {o.cover_image ? (
                         <img src={o.cover_image} alt={o.title} loading="lazy"
                           className="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
-                      </div>
-                    )}
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center"
+                          style={{ background: `linear-gradient(135deg, ${brand}, ${brand}aa)` }}>
+                          <Sparkles className="text-white/40" size={36} />
+                        </div>
+                      )}
+                    </div>
                     <div className="p-5">
                       <div className="flex items-center gap-2 mb-2 text-[10px] uppercase tracking-[0.2em]" style={{ color: brand }}>
                         <span className="px-2 py-0.5 rounded-full text-white" style={{ backgroundColor: brand }}>
