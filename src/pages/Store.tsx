@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { ShoppingCart, ShoppingBag, Plus, Check, Sparkles, Heart, GraduationCap, Crown, ChevronLeft, ChevronRight, Scissors, X, PackageOpen } from "lucide-react";
+import { ShoppingCart, ShoppingBag, Plus, Check, Sparkles, Heart, GraduationCap, Crown, ChevronLeft, ChevronRight, Scissors, X, PackageOpen, type LucideIcon } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useCart } from "@/contexts/CartContext";
 import { cn } from "@/lib/utils";
@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import Header from "@/components/Header";
 import SEOHead from "@/components/SEOHead";
 import { EmptyState, SkeletonGrid } from "@/components/ui/empty-state";
+import { IconTile } from "@/components/ui/icon-tile";
 
 // Static product images map
 import productHeartMug from "@/assets/product-heart-mug.png";
@@ -70,7 +71,7 @@ interface Product {
   dimensions?: string | null;
 }
 
-const categoryIcons: Record<string, React.ElementType> = {
+const categoryIcons: Record<string, LucideIcon> = {
   terraria: Crown,
   artisan: Sparkles,
   traveler: Heart,
@@ -380,9 +381,7 @@ const Store = () => {
               <section key={cat.key} className="mb-20">
                 <div className="mb-8 p-6 rounded-3xl bg-card border-2 border-border/40 shadow-sm">
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-2xl bg-cta/10 border-2 border-cta/20 flex items-center justify-center flex-shrink-0">
-                      <Icon size={22} className="text-cta" />
-                    </div>
+                    <IconTile icon={Icon} size="md" />
                     <div className="flex-1">
                       <h2 className="text-xl font-bold text-foreground flex items-center gap-3 tracking-tight">
                         {cat.title}

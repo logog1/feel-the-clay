@@ -13,6 +13,7 @@ import { cn } from "@/lib/utils";
 import Header from "@/components/Header";
 import { z } from "zod";
 import { EmptyState } from "@/components/ui/empty-state";
+import { IconTile } from "@/components/ui/icon-tile";
 
 type Region = "north" | "morocco";
 
@@ -159,9 +160,7 @@ const Cart = () => {
       <div className="max-w-2xl mx-auto px-6 pt-24 pb-12">
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-cta/10 border-2 border-cta/20 flex items-center justify-center">
-              <ShoppingCart size={18} className="text-cta" />
-            </div>
+            <IconTile icon={ShoppingCart} size="sm" />
             <h1 className="text-2xl md:text-3xl font-bold text-foreground">{t("cart.title")} <span className="text-cta">({totalItems})</span></h1>
           </div>
           <button onClick={clearCart} className="text-xs text-foreground/40 hover:text-destructive transition-colors font-medium px-3 py-1.5 rounded-xl hover:bg-destructive/10">
