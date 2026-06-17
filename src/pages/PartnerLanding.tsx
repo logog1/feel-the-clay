@@ -574,12 +574,13 @@ function BookingDialog({
   const [room, setRoom] = useState(() => {
     try { return sessionStorage.getItem(`qr_room_${partnerId}`) || ""; } catch { return ""; }
   });
-  const [phone, setPhone] = useState("");
+  const [phone, setPhone] = useState<string | undefined>();
   const [email, setEmail] = useState("");
   const [participants, setParticipants] = useState(1);
   const [notes, setNotes] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
+  const [bookingRef, setBookingRef] = useState<string | null>(null);
 
   const date = parseISO(experience.scheduled_at);
   const total = experience.price_per_person * participants;
@@ -587,6 +588,10 @@ function BookingDialog({
   const submit = async () => {
     if (!name.trim() || !room.trim()) {
       toast({ title: "Name and room/reference required", variant: "destructive" });
+      return;
+    }
+    if (!phone || phone.length < 7) {
+      toast({ title: "Please enter a valid phone number with country code", variant: "destructive" });
       return;
     }
     if (participants > remaining) {
@@ -601,17 +606,16 @@ function BookingDialog({
       if (typeof data === "number") commissionRate = data;
     } catch { /* leave null - admin can backfill */ }
 
-
     const gross = (experience.price_per_person || 0) * participants;
     const qr_variant_code = sessionStorage.getItem(`qr_variant_${partnerId}`) || null;
     const qr_variant_scope = sessionStorage.getItem(`qr_scope_${partnerId}`) || null;
-    const { error } = await supabase.from("sofitel_bookings").insert({
+    const { data: inserted, error } = await supabase.from("sofitel_bookings").insert({
       experience_id: experience.id,
       partner_id: partnerId,
       guest_name: name.trim(),
       room_number: room.trim(),
       guest_email: email.trim() || null,
-      guest_phone: phone.trim() || null,
+      guest_phone: phone || null,
       participants,
       notes: notes.trim() || null,
       source: qr_variant_code ? `qr:${qr_variant_code}` : "partner_landing",
@@ -621,23 +625,75 @@ function BookingDialog({
       commission_rate: commissionRate,
       qr_variant_code,
       qr_variant_scope,
-    } as any);
+    } as any).select("id").single();
     setSubmitting(false);
     if (error) return toast({ title: "Booking failed", description: error.message, variant: "destructive" });
+    setBookingRef(inserted?.id ? inserted.id.slice(0, 8).toUpperCase() : null);
     setDone(true);
-    setTimeout(onSuccess, 1800);
   };
 
+  // Build calendar (.ics) link
+  const calendarHref = (() => {
+    const start = date;
+    const end = new Date(start.getTime() + (experience.duration_minutes || 90) * 60000);
+    const fmt = (d: Date) => d.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
+    const ics = [
+      "BEGIN:VCALENDAR", "VERSION:2.0", "BEGIN:VEVENT",
+      `SUMMARY:${experience.title}`,
+      `DTSTART:${fmt(start)}`, `DTEND:${fmt(end)}`,
+      `LOCATION:${experience.location || ""}`,
+      `DESCRIPTION:Booking ref ${bookingRef || ""}`,
+      "END:VEVENT", "END:VCALENDAR",
+    ].join("\n");
+    return `data:text/calendar;charset=utf-8,${encodeURIComponent(ics)}`;
+  })();
+
   return (
-    <Dialog open onOpenChange={(o) => !o && onClose()}>
+    <Dialog open onOpenChange={(o) => !o && (done ? onSuccess() : onClose())}>
       <DialogContent className="max-w-md">
         {done ? (
-          <div className="text-center py-8 space-y-3">
-            <div className="w-14 h-14 mx-auto rounded-full flex items-center justify-center text-white" style={{ background: brand }}>
-              <Check size={26} />
+          <div className="text-center py-6 space-y-4">
+            <div className="w-16 h-16 mx-auto rounded-full flex items-center justify-center text-white" style={{ background: brand }}>
+              <Check size={32} />
             </div>
-            <h3 className="text-2xl font-light">Reservation received</h3>
-            <p className="text-sm text-muted-foreground">Thank you {name}, we'll confirm shortly.</p>
+            <div>
+              <h3 className="text-2xl font-light mb-1">Reservation confirmed</h3>
+              <p className="text-sm text-muted-foreground">Thank you, {name.split(" ")[0]}.</p>
+            </div>
+
+            {bookingRef && (
+              <div className="inline-block px-4 py-2 rounded-xl bg-muted text-xs">
+                <span className="text-muted-foreground">Booking reference</span>
+                <p className="font-mono font-semibold text-sm mt-0.5">#{bookingRef}</p>
+              </div>
+            )}
+
+            <div className="text-left bg-muted/40 rounded-xl p-4 space-y-2 text-sm">
+              <p className="flex items-start gap-2">
+                <MessageCircle size={14} className="mt-0.5 shrink-0" style={{ color: brand }} />
+                <span>We'll send a WhatsApp confirmation to <strong>{phone}</strong> within minutes.</span>
+              </p>
+              {email && (
+                <p className="flex items-start gap-2">
+                  <Mail size={14} className="mt-0.5 shrink-0" style={{ color: brand }} />
+                  <span>A receipt is on its way to <strong>{email}</strong>.</span>
+                </p>
+              )}
+              <p className="flex items-start gap-2">
+                <Calendar size={14} className="mt-0.5 shrink-0" style={{ color: brand }} />
+                <span>{format(date, "EEEE d MMMM · HH:mm")} — meet at the lobby 10 min before.</span>
+              </p>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-2 pt-2">
+              <a href={calendarHref} download={`terraria-${bookingRef || "booking"}.ics`}
+                className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-full border border-border text-sm hover:bg-muted transition">
+                <Calendar size={14} /> Add to calendar
+              </a>
+              <Button onClick={onSuccess} className="flex-1 rounded-full" style={{ background: brand }}>
+                Done
+              </Button>
+            </div>
           </div>
         ) : (
           <>
@@ -651,8 +707,18 @@ function BookingDialog({
               <div className="grid grid-cols-2 gap-3">
                 <div><Label>Full name</Label><Input value={name} onChange={(e) => setName(e.target.value)} required /></div>
                 <div><Label>Room / reference</Label><Input value={room} onChange={(e) => setRoom(e.target.value)} required /></div>
-                <div><Label>Email</Label><Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} /></div>
-                <div><Label>Phone</Label><Input value={phone} onChange={(e) => setPhone(e.target.value)} /></div>
+                <div className="col-span-2">
+                  <Label>Phone (with country code)</Label>
+                  <PhoneInput
+                    international
+                    defaultCountry="MA"
+                    value={phone}
+                    onChange={setPhone}
+                    placeholder="Enter phone number"
+                    className="phone-input mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  />
+                </div>
+                <div className="col-span-2"><Label>Email (optional)</Label><Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} /></div>
                 <div>
                   <Label>Participants</Label>
                   <Input type="number" min={1} max={remaining} value={participants}
@@ -668,6 +734,9 @@ function BookingDialog({
                 <Label>Notes (optional)</Label>
                 <Textarea rows={2} value={notes} onChange={(e) => setNotes(e.target.value)} />
               </div>
+              <p className="text-[11px] text-muted-foreground inline-flex items-center gap-1.5">
+                <Shield size={11} /> Free cancellation up to 24h before · taxes included · pay on site
+              </p>
             </div>
             <DialogFooter>
               <Button variant="outline" onClick={onClose}>Cancel</Button>
