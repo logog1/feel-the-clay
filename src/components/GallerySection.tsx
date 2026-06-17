@@ -78,7 +78,7 @@ const GalleryRow = ({ images, animationClass, imageWidth }: { images: ImageItem[
   );
 
   return (
-    <div ref={containerRef} className="overflow-hidden cursor-grab active:cursor-grabbing" onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd} onMouseDown={handleMouseDown} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp}>
+    <div ref={containerRef} className="overflow-hidden cursor-grab active:cursor-grabbing mask-edge-x" onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd} onMouseDown={handleMouseDown} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp}>
       <div ref={rowRef} className={`flex gap-3 md:gap-4 w-max ${animationClass}`}>
         {renderGroup("a", false)}
         {renderGroup("b", true)}

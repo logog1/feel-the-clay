@@ -93,11 +93,31 @@
     @apply bg-background text-foreground font-sans antialiased;
     font-family: 'Rubik', sans-serif;
   }
+
+  /* Unified focus ring — replaces inconsistent per-component focus states. */
+  :where(a, button, [role="button"], input, select, textarea, summary, [tabindex]):focus-visible {
+    @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background rounded-md;
+  }
+
+  /* Honor user motion preference everywhere */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
 }
 
 @layer components {
   .section-padding {
     @apply px-5 py-10 md:px-12 md:py-24 lg:px-20;
+  }
+
+  /* Unified vertical section rhythm — opt-in alternative to ad-hoc py-*. */
+  .section-y {
+    @apply py-12 md:py-20;
   }
 
   .container-narrow {
@@ -108,9 +128,33 @@
     @apply max-w-5xl mx-auto;
   }
 
+  /* Consistent horizontal padding for full-width sections. */
+  .container-x {
+    @apply px-5 sm:px-6 md:px-8;
+  }
+
   /* Glass card */
   .glass-card {
     @apply bg-card/60 backdrop-blur-md border border-border/30 rounded-2xl shadow-sm;
+  }
+
+  /* Reusable elevated card surface — Store, Offers, dashboards. */
+  .surface-card {
+    @apply bg-card border border-border/40 rounded-2xl shadow-sm transition-all duration-300;
+  }
+  .surface-card-hover {
+    @apply hover:-translate-y-0.5 hover:shadow-lg hover:border-cta/30;
+  }
+
+  /* Skeleton shimmer for loading states. */
+  .skeleton {
+    @apply animate-pulse rounded-xl bg-muted/70;
+  }
+
+  /* Horizontal edge fade for carousels / marquees. */
+  .mask-edge-x {
+    -webkit-mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+    mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
   }
 
   /* Section depth - elevated look */

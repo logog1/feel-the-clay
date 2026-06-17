@@ -12,6 +12,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { cn } from "@/lib/utils";
 import Header from "@/components/Header";
 import { z } from "zod";
+import { EmptyState } from "@/components/ui/empty-state";
 
 type Region = "north" | "morocco";
 
@@ -53,6 +54,7 @@ const Cart = () => {
   const [region, setRegion] = useState<Region>("north");
   const [form, setForm] = useState<CheckoutForm>({ name: "", email: "", phone: "", address: "" });
   const [errors, setErrors] = useState<Partial<Record<keyof CheckoutForm, string>>>({});
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [honeypot, setHoneypot] = useState("");
   const [sending, setSending] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -71,9 +73,11 @@ const Cart = () => {
         if (!fieldErrors[field]) fieldErrors[field] = err.message;
       });
       setErrors(fieldErrors);
+      setSubmitError(null);
       return;
     }
     setErrors({});
+    setSubmitError(null);
     setSending(true);
 
     const validated = result.data;
@@ -104,7 +108,7 @@ const Cart = () => {
     } catch (err) {
       console.error("Order submission failed:", err);
       setSending(false);
-      setErrors({ name: "We couldn't send your order. Please try again or contact us on WhatsApp." });
+      setSubmitError("We couldn't send your order. Please try again or contact us on WhatsApp.");
       return;
     }
 
@@ -133,15 +137,17 @@ const Cart = () => {
     return (
       <main className="min-h-screen bg-background">
         <Header />
-        <div className="max-w-md mx-auto px-6 pt-32 pb-12 text-center">
-          <div className="w-24 h-24 mx-auto mb-6 rounded-3xl bg-cta/10 border-2 border-cta/20 flex items-center justify-center">
-            <ShoppingBag size={40} className="text-cta/60" />
-          </div>
-          <h1 className="text-2xl font-bold text-foreground mb-2">{t("cart.empty_title")}</h1>
-          <p className="text-muted-foreground text-sm mb-8">{t("cart.empty_desc")}</p>
-          <Link to="/store">
-            <Button variant="cta" size="lg" className="gap-2"><ShoppingBag size={16} /> {t("cart.browse")}</Button>
-          </Link>
+        <div className="max-w-md mx-auto px-6 pt-32 pb-12">
+          <EmptyState
+            icon={ShoppingBag}
+            title={t("cart.empty_title")}
+            description={t("cart.empty_desc")}
+            action={
+              <Link to="/store">
+                <Button variant="cta" size="lg" className="gap-2"><ShoppingBag size={16} /> {t("cart.browse")}</Button>
+              </Link>
+            }
+          />
         </div>
       </main>
     );
@@ -228,23 +234,23 @@ const Cart = () => {
           <div className="space-y-3">
             <div className="space-y-1.5">
               <Label htmlFor="cart-name">{t("cart.name")} *</Label>
-              <Input id="cart-name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="rounded-xl" />
-              {errors.name && <p className="text-xs text-destructive">{errors.name}</p>}
+              <Input id="cart-name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="rounded-xl" aria-invalid={!!errors.name} aria-describedby={errors.name ? "cart-name-err" : undefined} />
+              {errors.name && <p id="cart-name-err" className="text-xs text-destructive">{errors.name}</p>}
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="cart-email">Email</Label>
-              <Input id="cart-email" type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="email@example.com" className="rounded-xl" />
-              {errors.email && <p className="text-xs text-destructive">{errors.email}</p>}
+              <Input id="cart-email" type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="email@example.com" className="rounded-xl" aria-invalid={!!errors.email} aria-describedby={errors.email ? "cart-email-err" : undefined} />
+              {errors.email && <p id="cart-email-err" className="text-xs text-destructive">{errors.email}</p>}
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="cart-phone">{t("cart.phone")} *</Label>
-              <Input id="cart-phone" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="+212..." className="rounded-xl" />
-              {errors.phone && <p className="text-xs text-destructive">{errors.phone}</p>}
+              <Input id="cart-phone" inputMode="tel" autoComplete="tel" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="+212..." className="rounded-xl" aria-invalid={!!errors.phone} aria-describedby={errors.phone ? "cart-phone-err" : undefined} />
+              {errors.phone && <p id="cart-phone-err" className="text-xs text-destructive">{errors.phone}</p>}
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="cart-address">{t("cart.address")} *</Label>
-              <Textarea id="cart-address" value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} className="rounded-xl min-h-[80px]" />
-              {errors.address && <p className="text-xs text-destructive">{errors.address}</p>}
+              <Textarea id="cart-address" value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} className="rounded-xl min-h-[80px]" aria-invalid={!!errors.address} aria-describedby={errors.address ? "cart-address-err" : undefined} />
+              {errors.address && <p id="cart-address-err" className="text-xs text-destructive">{errors.address}</p>}
             </div>
           </div>
         </div>
@@ -268,12 +274,18 @@ const Cart = () => {
             <label htmlFor="cart-website">Website</label>
             <input id="cart-website" name="website" type="text" value={honeypot} onChange={(e) => setHoneypot(e.target.value)} autoComplete="off" tabIndex={-1} />
           </div>
+          {submitError && (
+            <p role="alert" className="text-xs text-destructive bg-destructive/10 border border-destructive/30 rounded-xl px-3 py-2">
+              {submitError}
+            </p>
+          )}
           <Button
             variant="cta"
             size="xl"
             className="w-full shadow-xl shadow-cta/20 gap-2"
             onClick={handleCheckout}
             disabled={sending}
+            aria-busy={sending}
           >
             <Send size={16} />
             {sending ? t("cart.sending") : t("cart.checkout")}
