@@ -4,85 +4,24 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
-import { LogOut, CalendarDays, ShoppingCart, RefreshCw, Clock, CheckCircle2, XCircle, Package, Calendar, Plus, Trash2, Tag, ToggleLeft, ToggleRight, ChevronLeft, ChevronRight, Upload, ImagePlus, X, LayoutList, GripVertical, Eye, EyeOff, Save, AlertTriangle, Settings, Mail, Phone, Users, Shield, ShieldCheck, ShieldX, UserCheck, UserX, Zap, MapPin, DollarSign, Sparkles, Globe, Hotel } from "lucide-react";
+import { LogOut, CalendarDays, ShoppingCart, RefreshCw, Calendar, Plus, Trash2, Tag, ToggleLeft, ToggleRight, ChevronLeft, ChevronRight, Upload, ImagePlus, X, LayoutList, GripVertical, Eye, EyeOff, Save, Settings, Mail, Phone, Users, Shield, ShieldCheck, ShieldX, UserCheck, UserX, Zap, MapPin, DollarSign, Sparkles, Globe, Hotel } from "lucide-react";
 import { CitiesPricingSection } from "@/components/admin/CitiesPricingSection";
 import { WorkshopManagementSection } from "@/components/admin/WorkshopManagementSection";
-import { SiteImageUploader } from "@/components/admin/SiteImageUploader";
+import { BookingStatusBadge as StatusBadge } from "@/components/admin/BookingStatusBadge";
+import { WorkshopCardImageField } from "@/components/admin/WorkshopCardImageField";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import SEOHead from "@/components/SEOHead";
 import { cn } from "@/lib/utils";
 import { format, addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterval, getDay } from "date-fns";
-
-// ── Types ──────────────────────────────────────────────────────────────────
-interface Booking {
-  id: string; name: string; city: string | null; email: string | null;
-  phone: string | null; workshop: string; session_info: string | null;
-  participants: number | null; booking_date: string | null; notes: string | null;
-  status: string; created_at: string;
-  partner_id: string | null; source: string | null; room_number: string | null;
-  gross_amount: number | null; commission_rate: number | null;
-  commission_amount: number | null; commission_status: string | null;
-  qr_variant_code: string | null; qr_variant_scope: string | null;
-}
-interface PartnerLite { id: string; name: string; type: string; brand_color: string | null; }
-interface Order {
-  id: string; customer_name: string; customer_phone: string | null;
-  customer_address: string | null; region: string | null;
-  items: Array<{ name: string; quantity: number; price: number }>;
-  subtotal: number; delivery_fee: number; grand_total: number; status: string; created_at: string;
-}
-interface Product {
-  id: string; name: string; price: number; original_price: number | null;
-  images: string[]; category: string; stock: number; is_sold_out: boolean;
-  is_promotion: boolean; promotion_label: string | null; dimensions: string | null;
-}
-interface StoreSection {
-  id: string;
-  title_en: string; title_ar: string; title_es: string; title_fr: string;
-  description_en: string; description_ar: string; description_es: string; description_fr: string;
-  enabled: boolean; sort_order: number; donation: boolean;
-}
-interface Availability {
-  id: string; date: string; workshop: string; is_available: boolean;
-}
-interface ManagedUser {
-  user_id: string; email: string; created_at: string; role: string; last_sign_in_at: string | null;
-}
-
-// ── Status helpers ─────────────────────────────────────────────────────────
-const statusColors: Record<string, string> = {
-  pending: "bg-amber-100 text-amber-800 border-amber-200",
-  confirmed: "bg-emerald-100 text-emerald-800 border-emerald-200",
-  completed: "bg-emerald-600 text-white border-emerald-700",
-  cancelled: "bg-red-100 text-red-800 border-red-200",
-  no_show: "bg-zinc-200 text-zinc-700 border-zinc-300",
-  delivered: "bg-blue-100 text-blue-800 border-blue-200",
-  packed: "bg-purple-100 text-purple-800 border-purple-200",
-  retour: "bg-orange-100 text-orange-800 border-orange-200",
-  done: "bg-teal-100 text-teal-800 border-teal-200",
-};
-const StatusBadge = ({ status }: { status: string }) => (
-  <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium border ${statusColors[status] || statusColors.pending}`}>
-    {status === "pending" && <Clock size={12} />}
-    {(status === "confirmed" || status === "delivered" || status === "done" || status === "completed") && <CheckCircle2 size={12} />}
-    {status === "cancelled" && <XCircle size={12} />}
-    {status === "no_show" && <UserX size={12} />}
-    {status === "packed" && <Package size={12} />}
-    {status === "retour" && <AlertTriangle size={12} />}
-    {status === "no_show" ? "No-show" : status.charAt(0).toUpperCase() + status.slice(1)}
-  </span>
-);
-
-// Inline helper that loads current value and renders the uploader
-const WorkshopCardImageField = ({ settingKey, label }: { settingKey: string; label: string }) => {
-  const [url, setUrl] = useState<string>("");
-  useEffect(() => {
-    supabase.from("site_settings").select("value").eq("key", settingKey).maybeSingle().then(({ data }) => {
-      setUrl((data?.value as string) || "");
-    });
-  }, [settingKey]);
-  return <SiteImageUploader settingKey={settingKey} label={label} currentUrl={url} onUploaded={setUrl} />;
-};
+import type {
+  Booking,
+  PartnerLite,
+  Order,
+  Product,
+  StoreSection,
+  Availability,
+  ManagedUser,
+} from "@/types/admin";
 
 // ── Main Component ─────────────────────────────────────────────────────────
 const AdminDashboard = () => {
