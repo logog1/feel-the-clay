@@ -262,7 +262,7 @@ export default function PartnerLanding() {
             <p className="text-[11px] uppercase tracking-[0.3em] text-muted-foreground mb-2" style={{ color: brand }}>
               What we offer
             </p>
-            <h2 className="text-3xl md:text-4xl font-light mb-8">Curated for {partner.name} guests</h2>
+            <h2 className="text-3xl md:text-4xl font-light mb-8 capitalize">Curated for {partner.name} guests</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {(partner.perks || []).filter((p) => p.enabled).map((perk) => (
                 <div key={perk.key} className="p-5 rounded-2xl border border-border/40 bg-card flex gap-4">
