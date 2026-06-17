@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Lock, UserPlus } from "lucide-react";
 import SEOHead from "@/components/SEOHead";
+import { IconTile } from "@/components/ui/icon-tile";
 
 const AdminLogin = () => {
   const navigate = useNavigate();
