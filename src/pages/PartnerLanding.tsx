@@ -441,38 +441,35 @@ export default function PartnerLanding() {
         </div>
       </section>
 
-      {/* Contact */}
-      {(partner.contact_email || partner.contact_phone || partner.website_url) && (
-        <section className="section-padding">
-          <div className="container-wide max-w-3xl text-center">
-            <h2 className="text-2xl md:text-3xl font-light mb-3">Talk to us</h2>
-            <p className="text-muted-foreground mb-6">
-              {partner.contact_name ? `Reach out to ${partner.contact_name} to coordinate.` : "Reach out to coordinate."}
-            </p>
-            <div className="flex flex-wrap justify-center gap-3">
-              {partner.contact_email && (
-                <a href={`mailto:${partner.contact_email}`} className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-border bg-background hover:border-foreground/30 transition text-sm">
-                  <Mail size={14} /> {partner.contact_email}
-                </a>
-              )}
-              {partner.contact_phone && (
-                <a href={`tel:${partner.contact_phone}`} className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-border bg-background hover:border-foreground/30 transition text-sm">
-                  <Phone size={14} /> {partner.contact_phone}
-                </a>
-              )}
-              {partner.website_url && (
-                <a href={partner.website_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-border bg-background hover:border-foreground/30 transition text-sm">
-                  <Globe size={14} /> Website
-                </a>
-              )}
-            </div>
+      {/* Concierge contact — branded */}
+      <section className="section-padding">
+        <div className="container-wide max-w-3xl text-center">
+          <p className="text-[11px] uppercase tracking-[0.3em] mb-2" style={{ color: brand }}>Need a hand?</p>
+          <h2 className="text-2xl md:text-3xl font-light mb-3">Talk to our concierge</h2>
+          <p className="text-muted-foreground mb-6">
+            Our Terraria concierge team replies within the hour, 7 days a week.
+          </p>
+          <div className="flex flex-wrap justify-center gap-3">
+            {waLink && (
+              <a href={waLink} target="_blank" rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-white text-sm font-medium hover:opacity-90 transition"
+                style={{ background: brand }}>
+                <MessageCircle size={14} /> WhatsApp the concierge
+              </a>
+            )}
+            {partner.website_url && (
+              <a href={partner.website_url} target="_blank" rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-border bg-background hover:border-foreground/30 transition text-sm">
+                <Globe size={14} /> {partner.name} website
+              </a>
+            )}
           </div>
-        </section>
-      )}
+        </div>
+      </section>
 
       {/* FOOTER */}
-      <footer className="border-t border-border/40 py-8 text-center text-xs text-muted-foreground">
-        <p>{partner.name} × Terraria · Curated craft experiences</p>
+      <footer className="border-t border-border/40 py-8 text-center text-xs text-muted-foreground capitalize">
+        <p className="capitalize">{partner.name} × Terraria · Curated craft experiences</p>
       </footer>
 
       {selected && (
