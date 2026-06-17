@@ -66,9 +66,10 @@ const App = () => {
               <Sonner />
               <LanguageSwitcher />
               <CookieConsent />
-              <WhatsAppFloat />
 
               <BrowserRouter>
+                {/* WhatsAppFloat uses useLocation — must live inside Router */}
+                <WhatsAppFloat />
                 <ScrollToTop />
                 <Suspense fallback={<RouteFallback />}>
                   <Routes>
