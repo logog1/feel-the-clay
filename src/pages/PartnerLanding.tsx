@@ -548,6 +548,11 @@ function ExperienceCard({ exp, brand, remaining, onBook }: { exp: Experience; br
             <p className="text-xl font-light">
               {exp.price_per_person > 0 ? <>{exp.price_per_person} <span className="text-xs opacity-70">{exp.currency}</span></> : <em className="text-sm">On request</em>}
             </p>
+            {exp.price_per_person > 0 && (
+              <p className="text-[10px] text-muted-foreground mt-0.5 inline-flex items-center gap-1">
+                <Shield size={10} /> per person · taxes incl · free cancel 24h
+              </p>
+            )}
           </div>
           <Button size="sm" disabled={full} onClick={onBook} className="rounded-full text-xs"
             style={{ background: brand }}>
