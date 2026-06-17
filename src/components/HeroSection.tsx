@@ -33,7 +33,7 @@ const HeroSection = () => {
   return (
     <section id="hero" ref={parallaxRef} className="min-h-[85vh] md:min-h-screen flex flex-col justify-end md:justify-center section-padding pb-20 md:pb-0 pt-24 md:pt-20 relative overflow-hidden">
       <Helmet>
-        <link rel="preload" as="image" href={bgImage} fetchpriority="high" />
+        <link rel="preload" as="image" href={bgImage} {...({ fetchpriority: "high" } as Record<string, string>)} />
       </Helmet>
       <div className="absolute inset-[-10%] bg-cover bg-no-repeat bg-center will-change-transform" style={{ backgroundImage: `url(${bgImage})`, transform: `translateY(${bgOffset * 0.5}px) scale(1.1)` }} />
       <div className="absolute inset-0 md:hidden bg-gradient-to-b from-transparent via-transparent to-background" style={{ top: '60%' }} />
