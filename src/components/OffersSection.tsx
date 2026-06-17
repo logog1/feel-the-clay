@@ -162,11 +162,11 @@ const OffersSection = () => {
                   )}
                 </div>
               ) : (
-                <Link to={offer.link} className="group relative block" aria-label={offer.title}>
+                <Link to={offer.link} className="group relative block" aria-label={`${offer.title} — ${offer.subtitle || 'workshop'}`}>
                   <div className="aspect-[4/3] overflow-hidden relative">
                     <img
                       src={offer.image}
-                      alt={offer.title}
+                      alt={`${offer.title}${offer.subtitle ? ` — ${offer.subtitle}` : ''}`}
                       className={cn("w-full h-full transition-transform duration-700", offer.exclusive ? "object-cover opacity-85" : "object-contain", "group-hover:scale-105")}
                       loading="lazy"
                     />
@@ -202,12 +202,13 @@ const OffersSection = () => {
                   <div className="space-y-2">
                     <Link
                       to={offer.link}
+                      aria-label={offer.exclusive ? `Learn more about ${offer.title}` : `Book ${offer.title}`}
                       className={cn(
                         "flex w-full items-center justify-center gap-2 text-sm font-semibold py-2.5 rounded-full transition-all duration-300 active:scale-95 shadow-md",
                         offer.exclusive ? "bg-background text-foreground hover:bg-background/90" : "bg-cta text-primary-foreground hover:bg-cta-hover shadow-cta/20"
                       )}
                     >
-                      {offer.exclusive ? t("offers.learn_more") : t("offers.book_now")}
+                      {offer.exclusive ? `${t("offers.learn_more")} — ${offer.title}` : t("offers.book_now")}
                     </Link>
                     {!offer.exclusive && (
                       <BookOnWhatsApp
