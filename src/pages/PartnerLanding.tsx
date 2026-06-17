@@ -12,9 +12,11 @@ import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { toast } from "@/hooks/use-toast";
 import {
-  ArrowRight, Hotel, Sparkles, Phone, Mail, Globe, MapPin, Clock, Users, Loader2, Calendar, X, Check,
+  ArrowRight, Hotel, Sparkles, Phone, Mail, Globe, MapPin, Clock, Users, Loader2, Calendar, X, Check, Shield, MessageCircle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import PhoneInput from "react-phone-number-input";
+import "react-phone-number-input/style.css";
 
 type Experience = {
   id: string;
