@@ -118,7 +118,7 @@ const ProDashboard = () => {
               <ArrowLeft size={14} /> Simple
             </Button>
             <div className="ml-auto flex items-center gap-3">
-              <Button variant="ghost" size="icon" className="h-8 w-8 rounded-xl" onClick={toggleDark} title={dark ? "Light mode" : "Dark mode"}>
+              <Button variant="ghost" size="icon" className="h-8 w-8 rounded-xl" onClick={toggleDark} title={dark ? "Light mode" : "Dark mode"} aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}>
                 {dark ? <Sun size={16} /> : <Moon size={16} />}
               </Button>
               {!isAdmin && (
