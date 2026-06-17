@@ -128,9 +128,9 @@ const WorkshopPageLayout = ({ workshop, currentPath }: { workshop: Workshop; cur
 
           {/* Highlights */}
           <div className="rounded-3xl border-2 border-cta/20 bg-cta/5 p-6 shadow-sm">
-            <h3 className="font-bold mb-5 text-lg text-foreground flex items-center gap-2">
+            <h2 className="font-bold mb-5 text-lg text-foreground flex items-center gap-2">
               <Star size={16} className="text-cta" /> {t("workshop.included")}
-            </h3>
+            </h2>
             <ul className="space-y-3">
               {workshop.highlights.map((h, i) => (
                 <li key={i} className="flex items-start gap-3 text-sm text-foreground/80">
@@ -194,7 +194,7 @@ const WorkshopPageLayout = ({ workshop, currentPath }: { workshop: Workshop; cur
 
         {/* Other workshops */}
         <div className="mt-16 pt-8 border-t-2 border-border/30">
-          <h3 className="text-lg font-bold mb-5 text-foreground tracking-tight">{t("workshop.explore")}</h3>
+          <h2 className="text-lg font-bold mb-5 text-foreground tracking-tight">{t("workshop.explore")}</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {otherWorkshopsData
               .filter((w) => w.link !== currentPath)

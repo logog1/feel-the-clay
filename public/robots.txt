@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://www.terrariaworkshops.com/sitemap.xml
+Sitemap: https://terrariaworkshops.lovable.app/sitemap.xml

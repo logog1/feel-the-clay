@@ -1,0 +1,29 @@
+# Terraria Workshops
+
+> Hands-on Moroccan craft workshops in Tetouan and Midelt — pottery, weaving, zellij, embroidery and more — with social impact for local artisans.
+
+Terraria is a social-innovation studio that brings travellers and locals into authentic artisan workshops led by Moroccan potters and weavers. We also run a curated store of handmade goods and partner with hotels and riads across Morocco.
+
+## Pages
+
+- [Home](/): Overview, featured workshops, booking, and impact stats.
+- [About](/about): Mission, founders, and the artisans behind Terraria.
+- [Store](/store): Handmade pottery, Amazigh rugs, and home goods.
+- [Blog](/blog): Stories on Moroccan craft, Zellige, weaving, and culture.
+- [Contact](/contact): Phone, WhatsApp, email, and studio locations.
+- [Retreats](/retreats): Multi-day craft retreats in Morocco.
+- [B2B / Corporate](/b2b): Team experiences for companies and partners.
+- [EXODAYA Residency](/exodaya): Art and culture residency program.
+
+## Workshops
+
+- [Pottery Experience](/workshop/pottery-experience): Wheel pottery with a master potter.
+- [Hand-building](/workshop/handbuilding): Sculpt clay by hand.
+- [Embroidery](/workshop/embroidery): Traditional Moroccan embroidery.
+- [Zellij](/workshop/zellij): Geometric tile mosaic workshop.
+- [Carpets / Weaving](/workshop/carpets): Amazigh rug weaving in Midelt.
+- [Paint a Pot & Plant](/workshop/gardening): Family-friendly pot painting and planting.
+
+## Optional
+
+- [Partners](/partners): Hotels and riads that work with Terraria.
