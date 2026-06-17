@@ -189,9 +189,6 @@ export default function PartnerLanding() {
       {/* HERO — cinematic cover */}
       <header className="relative overflow-hidden min-h-[78vh] flex items-end">
         <div className="absolute inset-0">
-      {/* HERO — cinematic cover */}
-      <header className="relative overflow-hidden min-h-[78vh] flex items-end">
-        <div className="absolute inset-0">
           {partner.cover_image ? (
             <img src={partner.cover_image} alt={partner.name} className="w-full h-full object-cover" />
           ) : (
