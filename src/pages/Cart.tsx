@@ -79,6 +79,10 @@ const Cart = () => {
     const validated = result.data;
 
     try {
+      // supabase.functions.invoke does NOT throw on non-2xx responses — it
+      // returns { data, error }. We must explicitly inspect `error` and
+      // re-throw, otherwise a failed notification would silently fall through
+      // and we'd clear the cart while the order never reached us.
       const { error } = await supabase.functions.invoke("send-notification", {
         body: {
           type: "purchase",

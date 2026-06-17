@@ -127,7 +127,11 @@ const BookingFormSection = () => {
 
   const isLargeGroup = form.participants >= 4;
 
-  // Auto-correct participants to 4 when pottery is selected with fewer than 4
+  // Pottery sessions require a minimum of 4 participants. When the user
+  // switches *to* pottery with a smaller party we bump the count up and clear
+  // the dependent fields (session type / date / slot) so they re-pick a valid
+  // combination. Deps intentionally exclude `participants` — we only react to
+  // a workshop switch, not to the user manually editing the count.
   useEffect(() => {
     if (form.workshop === "pottery" && form.participants < 4) {
       setForm((prev) => ({ ...prev, participants: 4, sessionType: "", date: undefined, timeSlot: "" }));

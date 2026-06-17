@@ -105,6 +105,8 @@ const AdminDashboard = () => {
     setBookings((b.data as Booking[]) || []);
     setPartners((hp.data as PartnerLite[]) || []);
     setOrders((o.data as Order[]) || []);
+    // `images` is stored as jsonb today but legacy rows may still hold a JSON
+    // string from the pre-migration schema — normalize both shapes to an array.
     setProducts((p.data || []).map((prod: any) => ({
       ...prod,
       images: Array.isArray(prod.images) ? prod.images : JSON.parse(prod.images || "[]"),
