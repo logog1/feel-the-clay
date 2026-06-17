@@ -54,6 +54,7 @@ const Cart = () => {
   const [region, setRegion] = useState<Region>("north");
   const [form, setForm] = useState<CheckoutForm>({ name: "", email: "", phone: "", address: "" });
   const [errors, setErrors] = useState<Partial<Record<keyof CheckoutForm, string>>>({});
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [honeypot, setHoneypot] = useState("");
   const [sending, setSending] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -72,9 +73,11 @@ const Cart = () => {
         if (!fieldErrors[field]) fieldErrors[field] = err.message;
       });
       setErrors(fieldErrors);
+      setSubmitError(null);
       return;
     }
     setErrors({});
+    setSubmitError(null);
     setSending(true);
 
     const validated = result.data;
@@ -105,7 +108,7 @@ const Cart = () => {
     } catch (err) {
       console.error("Order submission failed:", err);
       setSending(false);
-      setErrors({ name: "We couldn't send your order. Please try again or contact us on WhatsApp." });
+      setSubmitError("We couldn't send your order. Please try again or contact us on WhatsApp.");
       return;
     }
 
