@@ -363,11 +363,13 @@ const Store = () => {
         </div>
 
         {loading ? (
-          <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 md:gap-4">
-            {[...Array(6)].map((_, i) =>
-              <div key={i} className="aspect-[4/5] rounded-3xl bg-muted animate-pulse" />
-            )}
-          </div>
+          <SkeletonGrid count={8} className="grid grid-cols-3 sm:grid-cols-4 gap-3 md:gap-4" itemClassName="aspect-square" />
+        ) : products.length === 0 ? (
+          <EmptyState
+            icon={PackageOpen}
+            title="Nothing here yet"
+            description="New handmade pieces are added regularly. Check back soon."
+          />
         ) : (
           categories.map((cat) => {
             const catProducts = products.filter((p) => p.category === cat.key);
