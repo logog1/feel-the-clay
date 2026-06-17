@@ -15,7 +15,7 @@ const PRESETS = ["tetouan", "tétouan", "pottery tetouan", "workshop tetouan", "
 export function SearchConsoleSection() {
   const [filter, setFilter] = useState("tetouan");
   const [days, setDays] = useState("28");
-  const [siteUrl, setSiteUrl] = useState("https://terrariaworkshops.lovable.app/");
+  const [siteUrl, setSiteUrl] = useState("https://www.terrariaworkshops.com/");
   const [loading, setLoading] = useState(false);
   const [queries, setQueries] = useState<QueryRow[]>([]);
   const [series, setSeries] = useState<QueryRow[]>([]);
