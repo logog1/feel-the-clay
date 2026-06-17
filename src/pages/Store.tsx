@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { ShoppingCart, ShoppingBag, Plus, Check, Sparkles, Heart, GraduationCap, Crown, ChevronLeft, ChevronRight, Scissors, X, PackageOpen } from "lucide-react";
+import { ShoppingCart, ShoppingBag, Plus, Check, Sparkles, Heart, GraduationCap, Crown, ChevronLeft, ChevronRight, Scissors, X, PackageOpen, type LucideIcon } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useCart } from "@/contexts/CartContext";
 import { cn } from "@/lib/utils";
@@ -71,7 +71,7 @@ interface Product {
   dimensions?: string | null;
 }
 
-const categoryIcons: Record<string, React.ElementType> = {
+const categoryIcons: Record<string, LucideIcon> = {
   terraria: Crown,
   artisan: Sparkles,
   traveler: Heart,
