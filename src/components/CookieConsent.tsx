@@ -50,8 +50,8 @@ const CookieConsent = () => {
   return (
     <div
       className={cn(
-        "fixed bottom-20 left-4 right-20 md:bottom-4 md:left-auto md:right-6 md:max-w-sm z-40",
-        "glass-card p-4 shadow-xl border border-border/40",
+        "fixed z-40 bottom-3 right-3 left-3 md:left-auto md:bottom-4 md:right-6 md:max-w-xs",
+        "glass-card p-3 md:p-4 shadow-xl border border-border/40 rounded-2xl",
         "animate-fade-up"
       )}
     >
