@@ -12,6 +12,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { cn } from "@/lib/utils";
 import Header from "@/components/Header";
 import { z } from "zod";
+import { EmptyState } from "@/components/ui/empty-state";
 
 type Region = "north" | "morocco";
 
@@ -133,15 +134,17 @@ const Cart = () => {
     return (
       <main className="min-h-screen bg-background">
         <Header />
-        <div className="max-w-md mx-auto px-6 pt-32 pb-12 text-center">
-          <div className="w-24 h-24 mx-auto mb-6 rounded-3xl bg-cta/10 border-2 border-cta/20 flex items-center justify-center">
-            <ShoppingBag size={40} className="text-cta/60" />
-          </div>
-          <h1 className="text-2xl font-bold text-foreground mb-2">{t("cart.empty_title")}</h1>
-          <p className="text-muted-foreground text-sm mb-8">{t("cart.empty_desc")}</p>
-          <Link to="/store">
-            <Button variant="cta" size="lg" className="gap-2"><ShoppingBag size={16} /> {t("cart.browse")}</Button>
-          </Link>
+        <div className="max-w-md mx-auto px-6 pt-32 pb-12">
+          <EmptyState
+            icon={ShoppingBag}
+            title={t("cart.empty_title")}
+            description={t("cart.empty_desc")}
+            action={
+              <Link to="/store">
+                <Button variant="cta" size="lg" className="gap-2"><ShoppingBag size={16} /> {t("cart.browse")}</Button>
+              </Link>
+            }
+          />
         </div>
       </main>
     );
