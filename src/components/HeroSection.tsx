@@ -5,6 +5,7 @@ import { ChevronDown, Calendar } from "lucide-react";
 import { useSiteImages } from "@/hooks/use-site-images";
 import { useParallax } from "@/hooks/use-parallax";
 import BookOnWhatsApp from "@/components/BookOnWhatsApp";
+import { Helmet } from "react-helmet-async";
 import { useEffect, useState } from "react";
 
 const HeroSection = () => {
@@ -31,6 +32,9 @@ const HeroSection = () => {
 
   return (
     <section id="hero" ref={parallaxRef} className="min-h-[85vh] md:min-h-screen flex flex-col justify-end md:justify-center section-padding pb-20 md:pb-0 pt-24 md:pt-20 relative overflow-hidden">
+      <Helmet>
+        <link rel="preload" as="image" href={bgImage} {...({ fetchpriority: "high" } as Record<string, string>)} />
+      </Helmet>
       <div className="absolute inset-[-10%] bg-cover bg-no-repeat bg-center will-change-transform" style={{ backgroundImage: `url(${bgImage})`, transform: `translateY(${bgOffset * 0.5}px) scale(1.1)` }} />
       <div className="absolute inset-0 md:hidden bg-gradient-to-b from-transparent via-transparent to-background" style={{ top: '60%' }} />
       <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/30 to-background/80" />
@@ -79,14 +83,14 @@ const HeroSection = () => {
           </div>
           <div>
             <p className="text-sm font-bold text-foreground">{t("hero.city_name")}</p>
-            <p className="text-xs text-foreground/60">{t("hero.city_desc")}</p>
+            <p className="text-xs text-foreground/80">{t("hero.city_desc")}</p>
           </div>
         </div>
       </div>
 
       {/* Scroll indicator */}
       <div className="absolute bottom-6 left-1/2 -translate-x-1/2 animate-fade-in" style={{ animationDelay: '1.2s' }}>
-        <a href="#about" onClick={(e) => { e.preventDefault(); document.querySelector("#about")?.scrollIntoView({ behavior: "smooth" }); }} className="flex flex-col items-center gap-1 text-foreground/40 hover:text-foreground/70 transition-colors">
+        <a href="#about" onClick={(e) => { e.preventDefault(); document.querySelector("#about")?.scrollIntoView({ behavior: "smooth" }); }} className="flex flex-col items-center gap-1 text-foreground/70 hover:text-foreground transition-colors">
           <span className="text-[10px] uppercase tracking-widest font-medium">Scroll</span>
           <ChevronDown className="w-4 h-4 animate-gentle-float" />
         </a>
