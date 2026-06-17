@@ -189,10 +189,24 @@ export default function PartnerLanding() {
       {/* HERO — cinematic cover */}
       <header className="relative overflow-hidden min-h-[78vh] flex items-end">
         <div className="absolute inset-0">
+      {/* HERO — cinematic cover */}
+      <header className="relative overflow-hidden min-h-[78vh] flex items-end">
+        <div className="absolute inset-0">
           {partner.cover_image ? (
             <img src={partner.cover_image} alt={partner.name} className="w-full h-full object-cover" />
           ) : (
-            <div className="w-full h-full" style={{ background: `linear-gradient(135deg, ${brand}, ${brand}cc)` }} />
+            <div
+              className="w-full h-full flex items-center justify-center"
+              style={{ background: `radial-gradient(circle at 30% 20%, ${brand}ee, ${brand}99 60%, ${brand}55 100%)` }}
+            >
+              {partner.logo_url ? (
+                <img src={partner.logo_url} alt={partner.name} className="max-h-32 w-auto opacity-30" />
+              ) : (
+                <span className="text-7xl md:text-9xl font-light text-white/10 capitalize tracking-tight px-6 text-center">
+                  {partner.name}
+                </span>
+              )}
+            </div>
           )}
         </div>
         <div
