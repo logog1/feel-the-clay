@@ -25,7 +25,7 @@ const jsonLd = {
   "@type": "LocalBusiness",
   "@id": "https://www.terrariaworkshops.com/#localbusiness",
   name: "Terraria Workshops",
-  description: "Hands-on pottery workshops in Tétouan, Morocco. Wheel throwing, handbuilding, embroidery, zellij and weaving with local artisans. All materials and mint tea included.",
+  description: "A social initiative in Tétouan, Morocco offering authentic Moroccan craft workshops — pottery, zellige, weaving, embroidery and gardening — taught by master artisans. Every booking directly supports local craftspeople.",
   url: "https://www.terrariaworkshops.com",
   image: "https://www.terrariaworkshops.com/og.jpg",
   logo: "https://www.terrariaworkshops.com/logo.png",
@@ -118,8 +118,8 @@ const Index = () => {
   return (
     <main className="min-h-screen">
       <SEOHead
-        title="Pottery workshops in Tétouan"
-        description="Hands-on pottery workshops in Tétouan. Learn wheel throwing and hand-building, all materials included. Book your spot and pay on site."
+        title="Moroccan craft experiences in Tétouan"
+        description="Pottery, zellige, weaving and embroidery workshops with master artisans in Tétouan, Morocco. A social initiative making Moroccan craft accessible to all."
         path="/"
         jsonLd={jsonLd}
       />
