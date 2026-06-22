@@ -433,11 +433,68 @@ function StatementPanel({ bookings, brand, partnerName }: { bookings: any[]; bra
     a.click(); URL.revokeObjectURL(url);
   };
 
+  const rangeLabel = range === "this_month" ? "This month" : range === "last_month" ? "Last month" : "All time";
+  const periodLabel = (() => {
+    if (range === "all") return "All time";
+    const now = new Date();
+    const offset = range === "last_month" ? -1 : 0;
+    const d = new Date(now.getFullYear(), now.getMonth() + offset, 1);
+    return d.toLocaleDateString(undefined, { month: "long", year: "numeric" });
+  })();
+
+  const downloadPDF = () => {
+    const w = window.open("", "_blank", "width=900,height=1100");
+    if (!w) return;
+    const rowsHtml = completed.map((b) => `
+      <tr>
+        <td>${(b.completed_at || b.created_at || "").slice(0, 10)}</td>
+        <td>${escapeHtml(b.guest_name || "")}</td>
+        <td>${escapeHtml(b.room_number || "")}</td>
+        <td style="text-align:right">${b.participants ?? ""}</td>
+        <td style="text-align:right">${Number(b.gross_amount || 0).toLocaleString()} ${b.currency || currency}</td>
+        <td style="text-align:right">${b.commission_rate ?? ""}%</td>
+        <td style="text-align:right">${Number(b.commission_amount || 0).toLocaleString()} ${b.currency || currency}</td>
+        <td style="text-transform:capitalize">${b.commission_status || "due"}</td>
+      </tr>`).join("");
+    w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>Statement · ${escapeHtml(partnerName)} · ${periodLabel}</title>
+      <style>
+        *{box-sizing:border-box} body{font-family:Inter,system-ui,sans-serif;color:#1a1a1a;padding:32px;max-width:820px;margin:0 auto}
+        h1{font-size:22px;margin:0} .muted{color:#666;font-size:12px} .bar{height:4px;background:${brand};margin:14px 0 22px;border-radius:2px}
+        .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0 22px}
+        .box{border:1px solid #eee;border-radius:8px;padding:10px}
+        .lbl{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:#888}
+        .val{font-size:16px;font-weight:600;margin-top:4px}
+        table{width:100%;border-collapse:collapse;font-size:12px} th,td{padding:7px 8px;border-bottom:1px solid #eee;text-align:left}
+        th{background:#fafafa;font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:#666}
+        .total{margin-top:16px;text-align:right;font-size:14px} .total b{color:${brand};font-size:18px}
+        .foot{margin-top:32px;font-size:11px;color:#888;border-top:1px solid #eee;padding-top:12px}
+        @media print{@page{margin:18mm}}
+      </style></head><body>
+      <div style="display:flex;justify-content:space-between;align-items:flex-end">
+        <div><h1>Commission statement</h1><div class="muted">${escapeHtml(partnerName)} · ${periodLabel}</div></div>
+        <div class="muted" style="text-align:right">Issued ${new Date().toLocaleDateString()}<br/>Terraria Workshops</div>
+      </div>
+      <div class="bar"></div>
+      <div class="grid">
+        <div class="box"><div class="lbl">Completed</div><div class="val">${completed.length}</div></div>
+        <div class="box"><div class="lbl">Gross</div><div class="val">${gross.toLocaleString()} ${currency}</div></div>
+        <div class="box"><div class="lbl">Commission due</div><div class="val" style="color:${brand}">${commissionDue.toLocaleString()} ${currency}</div></div>
+        <div class="box"><div class="lbl">Commission paid</div><div class="val" style="color:#059669">${commissionPaid.toLocaleString()} ${currency}</div></div>
+      </div>
+      <table><thead><tr><th>Date</th><th>Guest</th><th>Room</th><th style="text-align:right">Pax</th><th style="text-align:right">Gross</th><th style="text-align:right">Rate</th><th style="text-align:right">Commission</th><th>Status</th></tr></thead>
+      <tbody>${rowsHtml || `<tr><td colspan="8" style="text-align:center;color:#888;padding:24px">No completed bookings</td></tr>`}</tbody></table>
+      <div class="total">Total commission due this period: <b>${commissionDue.toLocaleString()} ${currency}</b></div>
+      <div class="foot">Payable within 15 days of statement date. Questions: hello@terrariaworkshops.com</div>
+      <script>setTimeout(()=>window.print(),300)<\/script>
+      </body></html>`);
+    w.document.close();
+  };
+
   return (
     <section className="space-y-2">
       <div className="flex items-center justify-between gap-3 flex-wrap">
-        <h3 className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">Statement & commission</h3>
-        <div className="flex items-center gap-1">
+        <h3 className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">Statement & commission · {rangeLabel}</h3>
+        <div className="flex items-center gap-1 flex-wrap">
           {(["this_month", "last_month", "all"] as const).map((r) => (
             <button key={r} onClick={() => setRange(r)}
               className={`text-[11px] px-2.5 py-1 rounded-full border ${range === r ? "text-white" : "bg-white"}`}
@@ -446,6 +503,7 @@ function StatementPanel({ bookings, brand, partnerName }: { bookings: any[]; bra
             </button>
           ))}
           <Button size="sm" variant="outline" className="ml-1 h-7 text-[11px]" onClick={exportCSV}>Export CSV</Button>
+          <Button size="sm" className="h-7 text-[11px] text-white" style={{ background: brand }} onClick={downloadPDF}>Download PDF</Button>
         </div>
       </div>
       <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
@@ -455,13 +513,63 @@ function StatementPanel({ bookings, brand, partnerName }: { bookings: any[]; bra
         <KStat label="Commission due" value={`${commissionDue.toLocaleString()} ${currency}`} accent={brand} />
         <KStat label="Commission paid" value={`${commissionPaid.toLocaleString()} ${currency}`} accent="#059669" />
       </div>
-      {completed.length === 0 && (
+      {completed.length === 0 ? (
         <Card className="p-4 text-xs text-muted-foreground text-center border-dashed">
           No completed bookings in this period yet. Mark a booking as Done after the guest attends to record commission.
+        </Card>
+      ) : (
+        <Card className="overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs">
+              <thead className="bg-muted/40 text-[10px] uppercase tracking-wider text-muted-foreground">
+                <tr>
+                  <th className="text-left px-3 py-2">Date</th>
+                  <th className="text-left px-3 py-2">Guest</th>
+                  <th className="text-left px-3 py-2">Room</th>
+                  <th className="text-right px-3 py-2">Pax</th>
+                  <th className="text-right px-3 py-2">Gross</th>
+                  <th className="text-right px-3 py-2">Rate</th>
+                  <th className="text-right px-3 py-2">Commission</th>
+                  <th className="text-left px-3 py-2">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {completed.map((b) => (
+                  <tr key={b.id} className="border-t">
+                    <td className="px-3 py-2">{(b.completed_at || b.created_at || "").slice(0, 10)}</td>
+                    <td className="px-3 py-2 font-medium">{b.guest_name}</td>
+                    <td className="px-3 py-2">{b.room_number}</td>
+                    <td className="px-3 py-2 text-right">{b.participants}</td>
+                    <td className="px-3 py-2 text-right">{Number(b.gross_amount || 0).toLocaleString()} {b.currency || currency}</td>
+                    <td className="px-3 py-2 text-right">{b.commission_rate ?? "—"}%</td>
+                    <td className="px-3 py-2 text-right font-semibold" style={{ color: brand }}>{Number(b.commission_amount || 0).toLocaleString()} {b.currency || currency}</td>
+                    <td className="px-3 py-2 capitalize">
+                      <span className={`px-1.5 py-0.5 rounded text-[10px] ${b.commission_status === "paid" ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700"}`}>
+                        {b.commission_status || "due"}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+              <tfoot className="bg-muted/20 font-semibold">
+                <tr>
+                  <td className="px-3 py-2" colSpan={4}>Total · {periodLabel}</td>
+                  <td className="px-3 py-2 text-right">{gross.toLocaleString()} {currency}</td>
+                  <td></td>
+                  <td className="px-3 py-2 text-right" style={{ color: brand }}>{commissionDue.toLocaleString()} {currency}</td>
+                  <td className="px-3 py-2 text-[10px] text-muted-foreground">due</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
         </Card>
       )}
     </section>
   );
+}
+
+function escapeHtml(s: string) {
+  return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]!));
 }
 
 function KStat({ label, value, accent }: { label: string; value: string; accent?: string }) {
