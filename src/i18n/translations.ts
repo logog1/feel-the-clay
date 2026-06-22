@@ -14,7 +14,7 @@ export const translations = {
   "nav.blog": { en: "Blog", ar: "المدونة", es: "Blog", fr: "Blog" },
 
   // Hero
-  "hero.title1": { en: "Rethinking pottery as", ar: "إعادة تصور الفخار", es: "Reinventando la cerámica como", fr: "Repenser la poterie comme" },
+  "hero.title1": { en: "Rethinking craft as", ar: "إعادة تصور الحرفة", es: "Reinventando la artesanía como", fr: "Repenser l'artisanat comme" },
   "hero.highlight": { en: "community", ar: "كمجتمع", es: "comunidad", fr: "communauté" },
   "hero.subtitle": { en: "A creative, grounding experience in Tetouan.", ar: "تجربة إبداعية وأصيلة في تطوان.", es: "Una experiencia creativa y enraizada en Tetuán.", fr: "Une expérience créative et ancrée à Tétouan." },
   "hero.city_name": { en: "Tetouan, Morocco", ar: "تطوان، المغرب", es: "Tetuán, Marruecos", fr: "Tétouan, Maroc" },
