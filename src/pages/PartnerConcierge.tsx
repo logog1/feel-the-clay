@@ -234,6 +234,9 @@ export default function PartnerConcierge() {
             </div>
           </div>
           <div className="flex items-center gap-2">
+            <Button size="sm" variant="outline" onClick={() => window.open(`/partners/${partner.slug}/kit`, "_blank")}>
+              <BookOpen size={12} className="mr-1" /> Staff Kit
+            </Button>
             <Button size="sm" variant="outline" onClick={() => window.open(`/partners/${partner.slug}/qr`, "_blank")}>
               <QrCode size={12} className="mr-1" /> QR Kit
             </Button>
