@@ -118,11 +118,13 @@ const Index = () => {
   return (
     <main className="min-h-screen">
       <SEOHead
-        title="Moroccan craft experiences in Tétouan"
-        description="Pottery, zellige, weaving and embroidery workshops with master artisans in Tétouan, Morocco. A social initiative making Moroccan craft accessible to all."
+        title="Pottery, Zellige & Weaving Workshops in Tétouan"
+        description="Hands-on Moroccan craft workshops in Tétouan — pottery, zellige, weaving and embroidery with master artisans. A social initiative making craft accessible to all."
         path="/"
         jsonLd={jsonLd}
+        noSuffix
       />
+
       <SeasonalThemeOverlay />
       <ScrollProgress />
       <Header />
