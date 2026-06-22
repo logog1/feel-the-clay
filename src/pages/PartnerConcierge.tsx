@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Calendar, Users, Clock, LogOut, Loader2, Lock, ChevronLeft, ChevronRight, Mail, Phone, ExternalLink, QrCode } from "lucide-react";
+import { Calendar, Users, Clock, LogOut, Loader2, Lock, ChevronLeft, ChevronRight, Mail, Phone, ExternalLink, QrCode, BookOpen } from "lucide-react";
 import ConciergeAnalytics from "@/components/partner/ConciergeAnalytics";
 
 type Experience = {
@@ -234,6 +234,9 @@ export default function PartnerConcierge() {
             </div>
           </div>
           <div className="flex items-center gap-2">
+            <Button size="sm" variant="outline" onClick={() => window.open(`/partners/${partner.slug}/kit`, "_blank")}>
+              <BookOpen size={12} className="mr-1" /> Staff Kit
+            </Button>
             <Button size="sm" variant="outline" onClick={() => window.open(`/partners/${partner.slug}/qr`, "_blank")}>
               <QrCode size={12} className="mr-1" /> QR Kit
             </Button>

@@ -42,6 +42,7 @@ const TetouanThingsToDo = lazy(() => import("./pages/TetouanThingsToDo"));
 const PartnerLanding = lazy(() => import("./pages/PartnerLanding"));
 const PartnerQR = lazy(() => import("./pages/PartnerQR"));
 const PartnerConcierge = lazy(() => import("./pages/PartnerConcierge"));
+const PartnerKit = lazy(() => import("./pages/PartnerKit"));
 
 const queryClient = new QueryClient();
 
@@ -98,6 +99,7 @@ const App = () => {
                     <Route path="/things-to-do-in-tetouan" element={<TetouanThingsToDo />} />
                     <Route path="/partners/:slug" element={<PartnerLanding />} />
                     <Route path="/partners/:slug/qr" element={<PartnerQR />} />
+                    <Route path="/partners/:slug/kit" element={<PartnerKit />} />
                     <Route path="/partners/:slug/concierge" element={<PartnerConcierge />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
