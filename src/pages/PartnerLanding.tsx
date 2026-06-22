@@ -627,7 +627,12 @@ function BookingDialog({
       qr_variant_scope,
     } as any).select("id").single();
     setSubmitting(false);
-    if (error) return toast({ title: "Booking failed", description: error.message, variant: "destructive" });
+    if (error) {
+      const msg = /Capacity exceeded/i.test(error.message)
+        ? error.message.replace(/^.*Capacity exceeded: /i, "")
+        : error.message;
+      return toast({ title: "Booking failed", description: msg, variant: "destructive" });
+    }
     setBookingRef(inserted?.id ? inserted.id.slice(0, 8).toUpperCase() : null);
     setDone(true);
   };
