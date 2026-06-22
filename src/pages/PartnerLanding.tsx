@@ -518,13 +518,15 @@ function ExperienceCard({ exp, brand, remaining, onBook }: { exp: Experience; br
           <span className="text-[10px] uppercase tracking-[0.2em] px-2.5 py-1 rounded-full bg-white/90 text-foreground">
             {exp.category}
           </span>
-          <span className="text-[10px] uppercase tracking-[0.2em] px-2.5 py-1 rounded-full font-medium"
-            style={{
-              background: full ? "#0E1418" : low ? brand : "rgba(255,255,255,0.9)",
-              color: full || low ? "white" : "#0E1418",
-            }}>
-            {full ? "Fully booked" : low ? `Only ${remaining} left` : `${remaining} spots`}
-          </span>
+          {(full || low) && (
+            <span className="text-[10px] uppercase tracking-[0.2em] px-2.5 py-1 rounded-full font-medium"
+              style={{
+                background: full ? "#0E1418" : brand,
+                color: "white",
+              }}>
+              {full ? "Fully booked" : `Only ${remaining} left`}
+            </span>
+          )}
         </div>
         <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
           {exp.subtitle && (
