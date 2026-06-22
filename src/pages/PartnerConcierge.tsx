@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Calendar, Users, Clock, LogOut, Loader2, Lock, ChevronLeft, ChevronRight, Mail, Phone, ExternalLink, QrCode } from "lucide-react";
+import { Calendar, Users, Clock, LogOut, Loader2, Lock, ChevronLeft, ChevronRight, Mail, Phone, ExternalLink, QrCode, BookOpen } from "lucide-react";
 import ConciergeAnalytics from "@/components/partner/ConciergeAnalytics";
 
 type Experience = {
