@@ -99,6 +99,7 @@ const App = () => {
                     <Route path="/things-to-do-in-tetouan" element={<TetouanThingsToDo />} />
                     <Route path="/partners/:slug" element={<PartnerLanding />} />
                     <Route path="/partners/:slug/qr" element={<PartnerQR />} />
+                    <Route path="/partners/:slug/kit" element={<PartnerKit />} />
                     <Route path="/partners/:slug/concierge" element={<PartnerConcierge />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
