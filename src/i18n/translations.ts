@@ -31,17 +31,17 @@ export const translations = {
   "impact.title": { en: "More than pottery", ar: "أكثر من مجرد فخار", es: "Más que cerámica", fr: "Plus que de la poterie" },
   "impact.subtitle": { en: "A social initiative connecting travelers with tradition", ar: "مبادرة اجتماعية تربط المسافرين بالتقاليد", es: "Una iniciativa social que conecta viajeros con la tradición", fr: "Une initiative sociale reliant les voyageurs à la tradition" },
   "impact.story": {
-    en: 'While volunteering as a tour guide in Tetouan, Otman discovered potters living just minutes from his home — artisans he never knew existed, struggling with low income and little exposure. That discovery sparked a mission: bridge tourism with tradition, and create meaningful income for these craftspeople.',
+    en: 'While volunteering as a tour guide in Tetouan, Othmane discovered potters living just minutes from his home — artisans he never knew existed, struggling with low income and little exposure. That discovery sparked a mission: bridge tourism with tradition, and create meaningful income for these craftspeople.',
     ar: 'أثناء تطوعه كمرشد سياحي في تطوان، اكتشف عثمان حرفيين يعيشون على بعد دقائق من منزله — صناع لم يكن يعلم بوجودهم، يعانون من دخل منخفض وقلة التعريف. أشعل ذلك الاكتشاف مهمة: ربط السياحة بالتقاليد، وخلق دخل حقيقي لهؤلاء الحرفيين.',
-    es: 'Mientras trabajaba como guía turístico voluntario en Tetuán, Otman descubrió alfareros viviendo a minutos de su casa — artesanos que nunca supo que existían, luchando con bajos ingresos y poca exposición. Ese descubrimiento encendió una misión: unir turismo con tradición y crear ingresos significativos para estos artesanos.',
-    fr: 'En faisant du bénévolat comme guide touristique à Tétouan, Otman a découvert des potiers vivant à quelques minutes de chez lui — des artisans dont il ignorait l\'existence, luttant avec de faibles revenus et peu de visibilité. Cette découverte a déclenché une mission : relier le tourisme à la tradition et créer des revenus significatifs pour ces artisans.'
+    es: 'Mientras trabajaba como guía turístico voluntario en Tetuán, Othmane descubrió alfareros viviendo a minutos de su casa — artesanos que nunca supo que existían, luchando con bajos ingresos y poca exposición. Ese descubrimiento encendió una misión: unir turismo con tradición y crear ingresos significativos para estos artesanos.',
+    fr: 'En faisant du bénévolat comme guide touristique à Tétouan, Othmane a découvert des potiers vivant à quelques minutes de chez lui — des artisans dont il ignorait l\'existence, luttant avec de faibles revenus et peu de visibilité. Cette découverte a déclenché une mission : relier le tourisme à la tradition et créer des revenus significatifs pour ces artisans.'
   },
   "impact.origin_label": { en: "Our Origin Story", ar: "قصة بدايتنا", es: "Nuestra Historia de Origen", fr: "Notre histoire d'origine" },
   "impact.story_p1_before": {
-    en: "While volunteering as a tour guide in Tetouan, Otman discovered ",
+    en: "While volunteering as a tour guide in Tetouan, Othmane discovered ",
     ar: "أثناء تطوعه كمرشد سياحي في تطوان، اكتشف عثمان ",
-    es: "Mientras trabajaba como guía turístico voluntario en Tetuán, Otman descubrió ",
-    fr: "En faisant du bénévolat comme guide touristique à Tétouan, Otman a découvert "
+    es: "Mientras trabajaba como guía turístico voluntario en Tetuán, Othmane descubrió ",
+    fr: "En faisant du bénévolat comme guide touristique à Tétouan, Othmane a découvert "
   },
   "impact.story_highlight1": {
     en: "potters living just minutes from his home",
