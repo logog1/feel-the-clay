@@ -80,10 +80,28 @@ const PRESET_LABELS: Record<Language, Record<string, string>> = {
 };
 
 const REGION_LABELS: Record<Language, Record<Region, string>> = {
-  en: { corners: "Corners", sides: "Sides", frame: "Grout", diamonds: "Triangles", petals: "Diamond", center: "Center star" },
-  fr: { corners: "Coins", sides: "Côtés", frame: "Filets", diamonds: "Triangles", petals: "Losange", center: "Étoile centrale" },
-  es: { corners: "Esquinas", sides: "Lados", frame: "Juntas", diamonds: "Triángulos", petals: "Rombo", center: "Estrella central" },
-  ar: { corners: "الزوايا", sides: "الجوانب", frame: "الفواصل", diamonds: "المثلثات", petals: "المعين", center: "النجمة الوسطى" },
+  en: { corners: "Chamfered square", sides: "Octagon", frame: "Background", diamonds: "Kite", petals: "Triangle", center: "8-point star (Khatim)" },
+  fr: { corners: "Carré chanfreiné", sides: "Octogone", frame: "Fond", diamonds: "Cerf-volant", petals: "Triangle", center: "Étoile 8 branches (Khatim)" },
+  es: { corners: "Cuadrado achaflanado", sides: "Octógono", frame: "Fondo", diamonds: "Cometa", petals: "Triángulo", center: "Estrella de 8 puntas" },
+  ar: { corners: "مربع مشطوف", sides: "مثمن", frame: "خلفية", diamonds: "معين طائر", petals: "مثلث", center: "خاتم (نجمة ثمانية)" },
+};
+
+const RegionIcon = ({ r, fill }: { r: Region; fill: string }) => {
+  const props = { fill, stroke: "currentColor", strokeWidth: 1, strokeLinejoin: "round" as const };
+  switch (r) {
+    case "corners":
+      return <svg viewBox="0 0 20 20" className="w-4 h-4 shrink-0"><polygon points="1,1 19,1 19,13 13,19 1,19" {...props} /></svg>;
+    case "sides":
+      return <svg viewBox="0 0 20 20" className="w-4 h-4 shrink-0"><polygon points="6,1 14,1 19,6 19,14 14,19 6,19 1,14 1,6" {...props} /></svg>;
+    case "diamonds":
+      return <svg viewBox="0 0 20 20" className="w-4 h-4 shrink-0"><polygon points="2,2 10,10 18,2 10,18" {...props} /></svg>;
+    case "petals":
+      return <svg viewBox="0 0 20 20" className="w-4 h-4 shrink-0"><polygon points="10,2 18,18 2,18" {...props} /></svg>;
+    case "center":
+      return <svg viewBox="0 0 20 20" className="w-4 h-4 shrink-0"><polygon points="10,1 12,7 19,7 13.5,11 15.5,18 10,13.5 4.5,18 6.5,11 1,7 8,7" {...props} /></svg>;
+    case "frame":
+      return <svg viewBox="0 0 20 20" className="w-4 h-4 shrink-0"><rect x="1" y="1" width="18" height="18" {...props} /></svg>;
+  }
 };
 
 const KIT_COPY: Record<Language, {
