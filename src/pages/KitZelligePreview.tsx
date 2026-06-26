@@ -329,16 +329,14 @@ const KitZelligePreview = () => {
             <div className="aspect-square rounded-3xl bg-card border-2 border-border/40 shadow-sm p-6 sm:p-10">
               <Motif
                 colors={activeColors}
-                selectedRegion={mode === "custom" ? selectedRegion : null}
+                selectedRegion={selectedRegion}
                 onSelectRegion={setSelectedRegion}
-                interactive={mode === "custom"}
+                interactive
               />
             </div>
-            {mode === "custom" && (
-              <p className="text-xs text-muted-foreground text-center">
-                {copy.customHint}
-              </p>
-            )}
+            <p className="text-xs text-muted-foreground text-center">
+              {copy.customHint}
+            </p>
           </div>
 
           {/* Right: details + selector */}
