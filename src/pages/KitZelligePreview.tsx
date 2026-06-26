@@ -162,8 +162,8 @@ const Motif = ({
         className={cn(interactive && "cursor-pointer", ring("frame"))}
       />
 
-      {/* 4 burgundy triangles forming the X (full-edge bases) */}
-      {burgundyTris.map((pts, i) => (
+      {/* 4 burgundy corner kites forming the diagonal X */}
+      {burgundyKites.map((pts, i) => (
         <polygon
           key={`b-${i}`}
           points={pts}
