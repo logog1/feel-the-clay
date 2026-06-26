@@ -29,27 +29,29 @@ const PALETTE = [
 ];
 
 // ── Presets (matching the reference tile) ──────────────────────────────────
-// Regions: corners (blue), sides (coral), diamonds (maroon X), petals (orange diamond), center (8-pt star), frame (white)
-type Region = "corners" | "sides" | "diamonds" | "petals" | "center" | "frame";
+// Regions match the actual fills present in the source SVG.
+type Region = "corners" | "sides" | "diamonds" | "petals" | "center" | "frame" | "background";
 type ColorMap = Record<Region, string>;
 
 const PRESETS: { id: string; colors: ColorMap }[] = [
-  { id: "p1", colors: { corners: "#5A6FF0", sides: "#FF5B66", diamonds: "#8B2E2E", petals: "#FF7300", center: "#EE8A00", frame: "#FFFFFF" } },
-  { id: "p2", colors: { corners: "#1F6B3A", sides: "#D88A8A", diamonds: "#6B1F25", petals: "#3FA89A", center: "#E5B23A", frame: "#FFFFFF" } },
-  { id: "p3", colors: { corners: "#B23A2E", sides: "#E2C9A0", diamonds: "#6B1F25", petals: "#E96A1F", center: "#C98727", frame: "#FFFFFF" } },
-  { id: "p4", colors: { corners: "#2F5E8A", sides: "#A9C8E0", diamonds: "#1A3A5C", petals: "#E5B23A", center: "#B23A2E", frame: "#FFFFFF" } },
-  { id: "p5", colors: { corners: "#1A1A1A", sides: "#D88A8A", diamonds: "#1A1A1A", petals: "#B23A2E", center: "#E5B23A", frame: "#FFFFFF" } },
+  { id: "p1", colors: { corners: "#5A6FF0", sides: "#FF5B66", diamonds: "#8B2E2E", petals: "#FF7300", center: "#EE8A00", frame: "#FFFFFF", background: "#3B3D17" } },
+  { id: "p2", colors: { corners: "#1F6B3A", sides: "#D88A8A", diamonds: "#6B1F25", petals: "#3FA89A", center: "#E5B23A", frame: "#FFFFFF", background: "#1A1A1A" } },
+  { id: "p3", colors: { corners: "#B23A2E", sides: "#E2C9A0", diamonds: "#6B1F25", petals: "#E96A1F", center: "#C98727", frame: "#FFFFFF", background: "#3B3D17" } },
+  { id: "p4", colors: { corners: "#2F5E8A", sides: "#A9C8E0", diamonds: "#1A3A5C", petals: "#E5B23A", center: "#B23A2E", frame: "#FFFFFF", background: "#0F2A44" } },
+  { id: "p5", colors: { corners: "#1A1A1A", sides: "#D88A8A", diamonds: "#1A1A1A", petals: "#B23A2E", center: "#E5B23A", frame: "#FFFFFF", background: "#2A1010" } },
 ];
 
 // Source fills present in the original SVG file — used to recolor by region.
 const SRC_COLORS: Record<Region, string> = {
-  corners: "#5170ff",
-  sides:   "#ff5757",
-  diamonds:"#812c2c",
-  petals:  "#ff6200",
-  center:  "#e2830d",
-  frame:   "#ffffff",
+  corners:    "#5170ff",
+  sides:      "#ff5757",
+  diamonds:   "#812c2c",
+  petals:     "#ff6200",
+  center:     "#e2830d",
+  frame:      "#ffffff",
+  background: "#3b3d17",
 };
+
 
 const Motif = ({ colors }: { colors: ColorMap; selectedRegion?: Region | null; onSelectRegion?: (r: Region) => void; interactive?: boolean }) => {
   const svg = useMemo(() => {
@@ -80,10 +82,10 @@ const PRESET_LABELS: Record<Language, Record<string, string>> = {
 };
 
 const REGION_LABELS: Record<Language, Record<Region, string>> = {
-  en: { corners: "Chamfered square", sides: "Octagon", frame: "Background", diamonds: "Kite", petals: "Triangle", center: "8-point star (Khatim)" },
-  fr: { corners: "Carré chanfreiné", sides: "Octogone", frame: "Fond", diamonds: "Cerf-volant", petals: "Triangle", center: "Étoile 8 branches (Khatim)" },
-  es: { corners: "Cuadrado achaflanado", sides: "Octógono", frame: "Fondo", diamonds: "Cometa", petals: "Triángulo", center: "Estrella de 8 puntas" },
-  ar: { corners: "مربع مشطوف", sides: "مثمن", frame: "خلفية", diamonds: "معين طائر", petals: "مثلث", center: "خاتم (نجمة ثمانية)" },
+  en: { corners: "Chamfered square", sides: "Octagon", frame: "Joints", diamonds: "Kite", petals: "Triangle", center: "8-point star (Khatim)", background: "Background" },
+  fr: { corners: "Carré chanfreiné", sides: "Octogone", frame: "Joints", diamonds: "Cerf-volant", petals: "Triangle", center: "Étoile 8 branches (Khatim)", background: "Fond" },
+  es: { corners: "Cuadrado achaflanado", sides: "Octógono", frame: "Juntas", diamonds: "Cometa", petals: "Triángulo", center: "Estrella de 8 puntas", background: "Fondo" },
+  ar: { corners: "مربع مشطوف", sides: "مثمن", frame: "الفواصل", diamonds: "معين طائر", petals: "مثلث", center: "خاتم (نجمة ثمانية)", background: "خلفية" },
 };
 
 const RegionIcon = ({ r, fill }: { r: Region; fill: string }) => {
@@ -100,9 +102,12 @@ const RegionIcon = ({ r, fill }: { r: Region; fill: string }) => {
     case "center":
       return <svg viewBox="0 0 20 20" className="w-4 h-4 shrink-0"><polygon points="10,1 12,7 19,7 13.5,11 15.5,18 10,13.5 4.5,18 6.5,11 1,7 8,7" {...props} /></svg>;
     case "frame":
+      return <svg viewBox="0 0 20 20" className="w-4 h-4 shrink-0"><path d="M1 10 H19 M10 1 V19" stroke={fill} strokeWidth="3" fill="none" /></svg>;
+    case "background":
       return <svg viewBox="0 0 20 20" className="w-4 h-4 shrink-0"><rect x="1" y="1" width="18" height="18" {...props} /></svg>;
   }
 };
+
 
 const KIT_COPY: Record<Language, {
   seoTitle: string;
