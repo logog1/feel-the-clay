@@ -40,11 +40,11 @@ const PRESETS: { id: string; colors: ColorMap }[] = [
   { id: "p5", colors: { corners: "#1A1A1A", sides: "#D88A8A", diamonds: "#1A1A1A", petals: "#B23A2E", center: "#E5B23A", frame: "#FFFFFF" } },
 ];
 
-// Dark olive base — peeks through between tiles as small accent shapes
+// Dark olive base, visible between tiles as small accent shapes
 const OLIVE_BASE = "#454A16";
 const GROUT = 2.5; // white grout stroke width
 
-// ── Motif SVG — Moroccan zellige tile (viewBox 0 0 400 400)
+// ── Motif SVG, Moroccan zellige tile (viewBox 0 0 400 400)
 const Motif = ({
   colors,
   selectedRegion,
@@ -66,7 +66,7 @@ const Motif = ({
       ? "outline outline-2 outline-offset-2 outline-cta"
       : "";
 
-  // Stepped 8-point star (Khatim) — square with 4 rectangular protrusions
+  // Stepped 8-point star (Khatim), square with 4 rectangular protrusions
   // Built as union of a base square + 4 rectangles, expressed as a single polygon
   const stepStar = (cx: number, cy: number, half: number, arm: number) => {
     // half = half-side of base square; arm = depth of each protruding rectangle; arm-width = half
@@ -87,7 +87,7 @@ const Motif = ({
   };
 
   // ── Outer ring geometry ─────────────────────────────────────────────────
-  // Blue corner blocks (chamfered pentagons) — inner corner cut diagonally
+  // Blue corner blocks (chamfered pentagons), inner corner cut diagonally
   const cornerTiles = [
     "0,0 120,0 120,80 80,120 0,120",                       // TL
     "280,0 400,0 400,120 320,120 280,80",                  // TR
@@ -104,7 +104,7 @@ const Motif = ({
   ];
 
   // ── Inner motif (within white-framed square 110..290) ───────────────────
-  // 4 burgundy corner kites — each fills a corner of the inner square,
+  // 4 burgundy corner kites, each fills a corner of the inner square,
   // formed by joining the two triangles adjacent to a corner (4 vertices, apex at center)
   const burgundyKites = [
     "110,110 140,110 200,200 110,140", // TL
@@ -113,7 +113,7 @@ const Motif = ({
     "110,260 200,200 140,290 110,290", // BL
   ];
 
-  // 4 orange cardinal triangles — wide base on each inner-square edge, apex at center
+  // 4 orange cardinal triangles, wide base on each inner-square edge, apex at center
   const orangeTris = [
     "140,110 260,110 200,200", // N
     "290,140 290,260 200,200", // E
@@ -123,7 +123,7 @@ const Motif = ({
 
   return (
     <svg viewBox="0 0 400 400" className="w-full h-full" shapeRendering="geometricPrecision">
-      {/* olive base — shows through as small accent pieces between tiles */}
+      {/* olive base, visible as small accent pieces between tiles */}
       <rect x="0" y="0" width="400" height="400" fill={OLIVE_BASE} pointerEvents="none" />
 
       {/* 4 blue chamfered corner blocks */}
@@ -566,7 +566,7 @@ const KitZelligePreview = () => {
                           style={{ background: c.hex }}
                           title={c.name}
                         >
-                          {active && <Check size={14} className="text-white drop-shadow" />}
+                          {active && <Check size={14} className="text-primary-foreground drop-shadow" />}
                         </button>
                       );
                     })}
