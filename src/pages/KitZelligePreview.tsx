@@ -31,17 +31,18 @@ type Region = "corners" | "sides" | "diamonds" | "petals" | "center" | "frame";
 type ColorMap = Record<Region, string>;
 
 const PRESETS: { id: string; label: string; colors: ColorMap }[] = [
-  { id: "p1", label: "Bleu & Corail",   colors: { corners: "#5778C9", sides: "#F37B6E", diamonds: "#6B2A2E", petals: "#E96A1F", center: "#C98727", frame: "#F4EFE6" } },
-  { id: "p2", label: "Vert & Rose",     colors: { corners: "#1F6B3A", sides: "#D88A8A", diamonds: "#6B1F25", petals: "#3FA89A", center: "#E5B23A", frame: "#F4EFE6" } },
-  { id: "p3", label: "Rouge & Beige",   colors: { corners: "#B23A2E", sides: "#E2C9A0", diamonds: "#6B1F25", petals: "#E96A1F", center: "#C98727", frame: "#F4EFE6" } },
-  { id: "p4", label: "Bleu & Jaune",    colors: { corners: "#2F5E8A", sides: "#A9C8E0", diamonds: "#1A3A5C", petals: "#E5B23A", center: "#B23A2E", frame: "#F4EFE6" } },
-  { id: "p5", label: "Noir & Rouge",    colors: { corners: "#1A1A1A", sides: "#D88A8A", diamonds: "#1A1A1A", petals: "#B23A2E", center: "#E5B23A", frame: "#F4EFE6" } },
+  { id: "p1", label: "Bleu & Corail",   colors: { corners: "#5A6FF0", sides: "#FF5B66", diamonds: "#8B2E2E", petals: "#FF7300", center: "#EE8A00", frame: "#FFFFFF" } },
+  { id: "p2", label: "Vert & Rose",     colors: { corners: "#1F6B3A", sides: "#D88A8A", diamonds: "#6B1F25", petals: "#3FA89A", center: "#E5B23A", frame: "#FFFFFF" } },
+  { id: "p3", label: "Rouge & Beige",   colors: { corners: "#B23A2E", sides: "#E2C9A0", diamonds: "#6B1F25", petals: "#E96A1F", center: "#C98727", frame: "#FFFFFF" } },
+  { id: "p4", label: "Bleu & Jaune",    colors: { corners: "#2F5E8A", sides: "#A9C8E0", diamonds: "#1A3A5C", petals: "#E5B23A", center: "#B23A2E", frame: "#FFFFFF" } },
+  { id: "p5", label: "Noir & Rouge",    colors: { corners: "#1A1A1A", sides: "#D88A8A", diamonds: "#1A1A1A", petals: "#B23A2E", center: "#E5B23A", frame: "#FFFFFF" } },
 ];
 
-// Dark olive base — peeks through as small accent triangles at tile junctions
-const OLIVE_BASE = "#3A3D1F";
+// Dark olive base — peeks through between tiles as small accent shapes
+const OLIVE_BASE = "#454A16";
+const GROUT = 2.5; // white grout stroke width
 
-// ── Motif SVG — square zellige tile matching the reference photo
+// ── Motif SVG — Moroccan zellige tile (viewBox 0 0 400 400)
 const Motif = ({
   colors,
   selectedRegion,
@@ -63,114 +64,138 @@ const Motif = ({
       ? "outline outline-2 outline-offset-2 outline-cta"
       : "";
 
-  // 8-point star (Khatim) from two rotated squares
-  const star = (cx: number, cy: number, r: number, rot = 0) => {
-    const inner = r * Math.cos(Math.PI / 8);
-    const pts: string[] = [];
-    for (let i = 0; i < 8; i++) {
-      const a = (Math.PI / 4) * i - Math.PI / 2 + rot;
-      const a2 = a + Math.PI / 8;
-      pts.push(`${cx + r * Math.cos(a)},${cy + r * Math.sin(a)}`);
-      pts.push(`${cx + inner * Math.cos(a2)},${cy + inner * Math.sin(a2)}`);
-    }
-    return pts.join(" ");
+  // Stepped 8-point star (Khatim) — square with 4 rectangular protrusions
+  // Built as union of a base square + 4 rectangles, expressed as a single polygon
+  const stepStar = (cx: number, cy: number, half: number, arm: number) => {
+    // half = half-side of base square; arm = depth of each protruding rectangle; arm-width = half
+    const h = half, a = arm;
+    // walk perimeter clockwise starting at top-left of top protrusion
+    return [
+      `${cx - h/2},${cy - h - a}`, `${cx + h/2},${cy - h - a}`,
+      `${cx + h/2},${cy - h}`,     `${cx + h},${cy - h}`,
+      `${cx + h},${cy - h/2}`,     `${cx + h + a},${cy - h/2}`,
+      `${cx + h + a},${cy + h/2}`, `${cx + h},${cy + h/2}`,
+      `${cx + h},${cy + h}`,       `${cx + h/2},${cy + h}`,
+      `${cx + h/2},${cy + h + a}`, `${cx - h/2},${cy + h + a}`,
+      `${cx - h/2},${cy + h}`,     `${cx - h},${cy + h}`,
+      `${cx - h},${cy + h/2}`,     `${cx - h - a},${cy + h/2}`,
+      `${cx - h - a},${cy - h/2}`, `${cx - h},${cy - h/2}`,
+      `${cx - h},${cy - h}`,       `${cx - h/2},${cy - h}`,
+    ].join(" ");
   };
 
-  // Chamfered corner tiles (blue) — 50×50 with diagonal cut toward center
+  // ── Outer ring geometry ─────────────────────────────────────────────────
+  // Blue corner blocks (chamfered pentagons) — inner corner cut diagonally
   const cornerTiles = [
-    "0,0 50,0 50,35 35,50 0,50",                   // top-left
-    "150,0 200,0 200,50 165,50 150,35",            // top-right
-    "0,150 35,150 50,165 50,200 0,200",            // bottom-left
-    "200,150 200,200 150,200 150,165 165,150",     // bottom-right
+    "0,0 120,0 120,80 80,120 0,120",                       // TL
+    "280,0 400,0 400,120 320,120 280,80",                  // TR
+    "0,280 80,280 120,320 120,400 0,400",                  // BL
+    "320,280 400,280 400,400 280,400 280,320",             // BR
   ];
 
-  // Side tiles (coral) — between corners, full edge to inner square
+  // Coral elongated octagons on each side (flat outer edge along canvas edge)
   const sideTiles = [
-    "50,0 150,0 150,50 50,50",     // top
-    "150,50 200,50 200,150 150,150", // right
-    "50,150 150,150 150,200 50,200", // bottom
-    "0,50 50,50 50,150 0,150",      // left
+    "140,0 260,0 300,40 300,100 260,140 140,140 100,100 100,40",       // TOP
+    "400,140 400,260 360,300 300,300 260,260 260,140 300,100 360,100", // RIGHT
+    "260,400 140,400 100,360 100,300 140,260 260,260 300,300 300,360", // BOTTOM
+    "0,260 0,140 40,100 100,100 140,140 140,260 100,300 40,300",       // LEFT
   ];
 
-  // Inner square (50..150) — split by both diagonals into 4 triangles
-  // Maroon triangles fill the four sides between the orange diamond and the white frame
-  const maroonTris = [
-    "50,50 150,50 100,100",   // top
-    "150,50 150,150 100,100", // right
-    "150,150 50,150 100,100", // bottom
-    "50,150 50,50 100,100",   // left
+  // ── Inner motif (within white-framed square 110..290) ───────────────────
+  // 4 burgundy triangles (X across inner square — base on each edge, apex at center)
+  const burgundyTris = [
+    "110,110 290,110 200,200", // N
+    "290,110 290,290 200,200", // E
+    "290,290 110,290 200,200", // S
+    "110,290 110,110 200,200", // W
   ];
 
-  // Orange diamond (rotated square inscribed in inner square)
-  const orangeDiamond = "100,50 150,100 100,150 50,100";
+  // 4 orange triangles (narrow, in front of burgundy — base centered on each edge)
+  const orangeTris = [
+    "165,110 235,110 200,200", // N
+    "290,165 290,235 200,200", // E
+    "235,290 165,290 200,200", // S
+    "110,235 110,165 200,200", // W
+  ];
 
   return (
-    <svg viewBox="0 0 200 200" className="w-full h-full">
-      {/* olive base — shows through as small accent triangles */}
-      <rect x="0" y="0" width="200" height="200" fill={OLIVE_BASE} pointerEvents="none" />
+    <svg viewBox="0 0 400 400" className="w-full h-full" shapeRendering="geometricPrecision">
+      {/* olive base — shows through as small accent pieces between tiles */}
+      <rect x="0" y="0" width="400" height="400" fill={OLIVE_BASE} pointerEvents="none" />
 
-      {/* 4 blue chamfered corner tiles */}
+      {/* 4 blue chamfered corner blocks */}
       {cornerTiles.map((pts, i) => (
         <polygon
           key={`c-${i}`}
           points={pts}
           fill={colors.corners}
           stroke={colors.frame}
-          strokeWidth="1.5"
+          strokeWidth={GROUT}
           strokeLinejoin="miter"
           onClick={handle("corners")}
           className={cn(interactive && "cursor-pointer", ring("corners"))}
         />
       ))}
 
-      {/* 4 coral side tiles */}
+      {/* 4 coral octagonal side tiles */}
       {sideTiles.map((pts, i) => (
         <polygon
           key={`s-${i}`}
           points={pts}
           fill={colors.sides}
           stroke={colors.frame}
-          strokeWidth="1.5"
+          strokeWidth={GROUT}
+          strokeLinejoin="miter"
           onClick={handle("sides")}
           className={cn(interactive && "cursor-pointer", ring("sides"))}
         />
       ))}
 
-      {/* white inner square frame */}
+      {/* white inner square (frame / grout field) */}
       <rect
-        x="50" y="50" width="100" height="100"
+        x="110" y="110" width="180" height="180"
         fill={colors.frame}
+        stroke={colors.frame}
+        strokeWidth={GROUT}
         onClick={handle("frame")}
         className={cn(interactive && "cursor-pointer", ring("frame"))}
       />
 
-      {/* 4 maroon triangles (X across inner square) */}
-      {maroonTris.map((pts, i) => (
+      {/* 4 burgundy triangles forming the X (full-edge bases) */}
+      {burgundyTris.map((pts, i) => (
         <polygon
-          key={`m-${i}`}
+          key={`b-${i}`}
           points={pts}
           fill={colors.diamonds}
+          stroke={colors.frame}
+          strokeWidth={GROUT}
+          strokeLinejoin="miter"
           onClick={handle("diamonds")}
           className={cn(interactive && "cursor-pointer", ring("diamonds"))}
         />
       ))}
 
-      {/* orange diamond on top — leaves 4 maroon corner triangles visible */}
-      <polygon
-        points={orangeDiamond}
-        fill={colors.petals}
-        stroke={colors.frame}
-        strokeWidth="2"
-        onClick={handle("petals")}
-        className={cn(interactive && "cursor-pointer", ring("petals"))}
-      />
+      {/* 4 orange triangles in front of burgundy (narrow, pointing to center) */}
+      {orangeTris.map((pts, i) => (
+        <polygon
+          key={`o-${i}`}
+          points={pts}
+          fill={colors.petals}
+          stroke={colors.frame}
+          strokeWidth={GROUT}
+          strokeLinejoin="miter"
+          onClick={handle("petals")}
+          className={cn(interactive && "cursor-pointer", ring("petals"))}
+        />
+      ))}
 
-      {/* central 8-point star (Khatim) */}
+      {/* central stepped 8-point star (khatam) */}
       <polygon
-        points={star(100, 100, 20)}
+        points={stepStar(200, 200, 22, 14)}
         fill={colors.center}
         stroke={colors.frame}
-        strokeWidth="1"
+        strokeWidth={GROUT}
+        strokeLinejoin="miter"
         onClick={handle("center")}
         className={cn(interactive && "cursor-pointer", ring("center"))}
       />
