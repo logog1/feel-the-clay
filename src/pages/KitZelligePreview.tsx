@@ -140,11 +140,12 @@ const Motif = ({
 
 const REGION_LABELS: Record<Region, string> = {
   background: "Fond",
-  frame: "Cadre",
-  star: "Étoile",
+  frame: "Filets",
+  star: "Carré central",
   diamonds: "Losanges",
-  center: "Centre",
+  center: "Étoile",
 };
+
 
 const KitZelligePreview = () => {
   const [mode, setMode] = useState<"preset" | "custom">("preset");
