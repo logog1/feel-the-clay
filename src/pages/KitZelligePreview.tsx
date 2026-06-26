@@ -28,18 +28,15 @@ const PALETTE = [
   { name: "Blanc",     hex: "#F4EFE6" },
 ];
 
-// ── Presets (matching the reference tile) ──────────────────────────────────
 // Regions match the actual fills present in the source SVG.
 type Region = "corners" | "sides" | "diamonds" | "petals" | "center" | "frame" | "background";
 type ColorMap = Record<Region, string>;
 
-const PRESETS: { id: string; colors: ColorMap }[] = [
-  { id: "p1", colors: { corners: "#5A6FF0", sides: "#FF5B66", diamonds: "#8B2E2E", petals: "#FF7300", center: "#EE8A00", frame: "#FFFFFF", background: "#3B3D17" } },
-  { id: "p2", colors: { corners: "#1F6B3A", sides: "#D88A8A", diamonds: "#6B1F25", petals: "#3FA89A", center: "#E5B23A", frame: "#FFFFFF", background: "#1A1A1A" } },
-  { id: "p3", colors: { corners: "#B23A2E", sides: "#E2C9A0", diamonds: "#6B1F25", petals: "#E96A1F", center: "#C98727", frame: "#FFFFFF", background: "#3B3D17" } },
-  { id: "p4", colors: { corners: "#2F5E8A", sides: "#A9C8E0", diamonds: "#1A3A5C", petals: "#E5B23A", center: "#B23A2E", frame: "#FFFFFF", background: "#0F2A44" } },
-  { id: "p5", colors: { corners: "#1A1A1A", sides: "#D88A8A", diamonds: "#1A1A1A", petals: "#B23A2E", center: "#E5B23A", frame: "#FFFFFF", background: "#2A1010" } },
-];
+// Default colorway — matches the source SVG fills so it renders as-is on first load.
+const DEFAULT_COLORS: ColorMap = {
+  corners: "#5170ff", sides: "#ff3131", diamonds: "#a44135",
+  petals: "#fe8f00", center: "#b86a0a", frame: "#ffffff", background: "#91a597",
+};
 
 // Source fills present in the original SVG file — used to recolor by region.
 const SRC_COLORS: Record<Region, string> = {
@@ -79,12 +76,6 @@ const Motif = ({ colors }: { colors: ColorMap; selectedRegion?: Region | null; o
 
 
 
-const PRESET_LABELS: Record<Language, Record<string, string>> = {
-  en: { p1: "Blue & Coral", p2: "Green & Pink", p3: "Red & Beige", p4: "Blue & Yellow", p5: "Black & Red" },
-  fr: { p1: "Bleu & Corail", p2: "Vert & Rose", p3: "Rouge & Beige", p4: "Bleu & Jaune", p5: "Noir & Rouge" },
-  es: { p1: "Azul y coral", p2: "Verde y rosa", p3: "Rojo y beige", p4: "Azul y amarillo", p5: "Negro y rojo" },
-  ar: { p1: "أزرق ومرجاني", p2: "أخضر ووردي", p3: "أحمر وبيج", p4: "أزرق وأصفر", p5: "أسود وأحمر" },
-};
 
 const REGION_LABELS: Record<Language, Record<Region, string>> = {
   en: { corners: "Chamfered square", sides: "Octagon", frame: "Joints", diamonds: "Kite", petals: "Triangle", center: "8-point star (Khatim)", background: "Background" },
@@ -299,25 +290,18 @@ const KitZelligePreview = () => {
   const { language } = useLanguage();
   const copy = KIT_COPY[language];
   const regionLabels = REGION_LABELS[language];
-  const presetLabels = PRESET_LABELS[language];
-  const [mode, setMode] = useState<"preset" | "custom">("preset");
-  const [presetId, setPresetId] = useState<string>("p1");
-  const [custom, setCustom] = useState<ColorMap>(PRESETS[0].colors);
+  const [custom, setCustom] = useState<ColorMap>(DEFAULT_COLORS);
   const [selectedRegion, setSelectedRegion] = useState<Region | null>("center");
 
-  const activeColors = mode === "preset"
-    ? PRESETS.find((p) => p.id === presetId)!.colors
-    : custom;
+  const activeColors = custom;
 
   const orderText = useMemo(() => {
     const lines = [
       copy.orderGreeting,
-      mode === "preset"
-        ? `${copy.orderPreset} ${presetLabels[presetId]}`
-        : `${copy.orderCustom} ${Object.entries(custom).map(([k,v]) => `${regionLabels[k as Region]} ${v}`).join(", ")}`,
+      `${copy.orderCustom} ${Object.entries(custom).map(([k,v]) => `${regionLabels[k as Region]} ${v}`).join(", ")}`,
     ];
     return encodeURIComponent(lines.join("\n"));
-  }, [mode, presetId, custom, copy, presetLabels, regionLabels]);
+  }, [custom, copy, regionLabels]);
 
   const applyColor = (hex: string) => {
     if (!selectedRegion) return;
@@ -345,16 +329,14 @@ const KitZelligePreview = () => {
             <div className="aspect-square rounded-3xl bg-card border-2 border-border/40 shadow-sm p-6 sm:p-10">
               <Motif
                 colors={activeColors}
-                selectedRegion={mode === "custom" ? selectedRegion : null}
+                selectedRegion={selectedRegion}
                 onSelectRegion={setSelectedRegion}
-                interactive={mode === "custom"}
+                interactive
               />
             </div>
-            {mode === "custom" && (
-              <p className="text-xs text-muted-foreground text-center">
-                {copy.customHint}
-              </p>
-            )}
+            <p className="text-xs text-muted-foreground text-center">
+              {copy.customHint}
+            </p>
           </div>
 
           {/* Right: details + selector */}
@@ -375,98 +357,49 @@ const KitZelligePreview = () => {
               </div>
             </div>
 
-            {/* Mode toggle */}
-            <div className="flex p-1 rounded-2xl bg-muted border border-border/40">
-              <button
-                onClick={() => setMode("preset")}
-                className={cn(
-                  "flex-1 py-2.5 rounded-xl text-sm font-bold transition-all",
-                  mode === "preset" ? "bg-card shadow text-foreground" : "text-muted-foreground"
-                )}
-              >
-                {copy.presetMode}
-              </button>
-              <button
-                onClick={() => { setMode("custom"); setCustom(activeColors); }}
-                className={cn(
-                  "flex-1 py-2.5 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-1.5",
-                  mode === "custom" ? "bg-card shadow text-foreground" : "text-muted-foreground"
-                )}
-              >
-                <Palette size={14} /> {copy.customMode}
-              </button>
-            </div>
-
-            {/* Preset selector */}
-            {mode === "preset" && (
+            {/* Custom builder */}
+            <div className="space-y-4">
               <div>
-                <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-3">{copy.motifLabel}</p>
-                <div className="grid grid-cols-5 gap-2">
-                  {PRESETS.map((p) => (
+                <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">{copy.selectedZone}</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {(Object.keys(regionLabels) as Region[]).map((r) => (
                     <button
-                      key={p.id}
-                      onClick={() => setPresetId(p.id)}
+                      key={r}
+                      onClick={() => setSelectedRegion(r)}
                       className={cn(
-                        "aspect-square rounded-xl border-2 p-1.5 transition-all",
-                        presetId === p.id ? "border-cta scale-105 shadow-lg" : "border-border/40 hover:border-border"
+                        "px-3 py-1.5 rounded-full text-xs font-semibold border-2 transition-all flex items-center gap-1.5",
+                        selectedRegion === r ? "border-cta bg-cta/10 text-cta" : "border-border/40 text-foreground/70 hover:border-border"
                       )}
-                      title={presetLabels[p.id]}
                     >
-                      <Motif colors={p.colors} />
+                      <RegionIcon r={r} fill={custom[r]} />
+                      {regionLabels[r]}
                     </button>
                   ))}
                 </div>
-                <p className="text-xs text-muted-foreground mt-2 text-center">
-                  {presetLabels[presetId]}
-                </p>
               </div>
-            )}
-
-            {/* Custom builder */}
-            {mode === "custom" && (
-              <div className="space-y-4">
-                <div>
-                  <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">{copy.selectedZone}</p>
-                  <div className="flex flex-wrap gap-1.5">
-                    {(Object.keys(regionLabels) as Region[]).map((r) => (
+              <div>
+                <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">{copy.palette}</p>
+                <div className="grid grid-cols-9 gap-2">
+                  {PALETTE.map((c) => {
+                    const active = selectedRegion && custom[selectedRegion] === c.hex;
+                    return (
                       <button
-                        key={r}
-                        onClick={() => setSelectedRegion(r)}
+                        key={c.hex}
+                        onClick={() => applyColor(c.hex)}
                         className={cn(
-                          "px-3 py-1.5 rounded-full text-xs font-semibold border-2 transition-all flex items-center gap-1.5",
-                          selectedRegion === r ? "border-cta bg-cta/10 text-cta" : "border-border/40 text-foreground/70 hover:border-border"
+                          "aspect-square rounded-lg border-2 transition-all flex items-center justify-center",
+                          active ? "border-cta scale-110 shadow" : "border-border/40 hover:border-border"
                         )}
+                        style={{ background: c.hex }}
+                        title={c.name}
                       >
-                        <RegionIcon r={r} fill={custom[r]} />
-                        {regionLabels[r]}
+                        {active && <Check size={14} className="text-primary-foreground drop-shadow" />}
                       </button>
-                    ))}
-                  </div>
-                </div>
-                <div>
-                  <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">{copy.palette}</p>
-                  <div className="grid grid-cols-9 gap-2">
-                    {PALETTE.map((c) => {
-                      const active = selectedRegion && custom[selectedRegion] === c.hex;
-                      return (
-                        <button
-                          key={c.hex}
-                          onClick={() => applyColor(c.hex)}
-                          className={cn(
-                            "aspect-square rounded-lg border-2 transition-all flex items-center justify-center",
-                            active ? "border-cta scale-110 shadow" : "border-border/40 hover:border-border"
-                          )}
-                          style={{ background: c.hex }}
-                          title={c.name}
-                        >
-                          {active && <Check size={14} className="text-primary-foreground drop-shadow" />}
-                        </button>
-                      );
-                    })}
-                  </div>
+                    );
+                  })}
                 </div>
               </div>
-            )}
+            </div>
 
             {/* CTA */}
             <a
