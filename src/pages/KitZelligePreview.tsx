@@ -427,7 +427,7 @@ const KitZelligePreview = () => {
                           selectedRegion === r ? "border-cta bg-cta/10 text-cta" : "border-border/40 text-foreground/70 hover:border-border"
                         )}
                       >
-                        <span className="inline-block w-3 h-3 rounded-full border border-border" style={{ background: custom[r] }} />
+                        <RegionIcon r={r} fill={custom[r]} />
                         {regionLabels[r]}
                       </button>
                     ))}
