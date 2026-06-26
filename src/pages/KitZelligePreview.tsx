@@ -193,7 +193,7 @@ const KitZelligePreview = () => {
   const [mode, setMode] = useState<"preset" | "custom">("preset");
   const [presetId, setPresetId] = useState<string>("p1");
   const [custom, setCustom] = useState<ColorMap>(PRESETS[0].colors);
-  const [selectedRegion, setSelectedRegion] = useState<Region | null>("star");
+  const [selectedRegion, setSelectedRegion] = useState<Region | null>("center");
 
   const activeColors = mode === "preset"
     ? PRESETS.find((p) => p.id === presetId)!.colors
