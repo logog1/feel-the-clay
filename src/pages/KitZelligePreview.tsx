@@ -31,12 +31,13 @@ type Region = "center" | "star" | "diamonds" | "frame" | "background";
 type ColorMap = Record<Region, string>;
 
 const PRESETS: { id: string; label: string; colors: ColorMap }[] = [
-  { id: "p1", label: "Rouge & Beige",   colors: { center: "#B23A2E", star: "#E2C9A0", diamonds: "#B23A2E", frame: "#1A1A1A", background: "#F4EFE6" } },
-  { id: "p2", label: "Rouge & Bleu",    colors: { center: "#B23A2E", star: "#2F5E8A", diamonds: "#E5B23A", frame: "#1A1A1A", background: "#F4EFE6" } },
-  { id: "p3", label: "Vert & Jaune",    colors: { center: "#1F6B3A", star: "#E5B23A", diamonds: "#1F6B3A", frame: "#1A1A1A", background: "#F4EFE6" } },
-  { id: "p4", label: "Rose & Bleu",     colors: { center: "#D88A8A", star: "#A9C8E0", diamonds: "#D88A8A", frame: "#1A1A1A", background: "#F4EFE6" } },
-  { id: "p5", label: "Noir & Vert",     colors: { center: "#1A1A1A", star: "#1F6B3A", diamonds: "#1A1A1A", frame: "#1A1A1A", background: "#F4EFE6" } },
+  { id: "p1", label: "Vert & Rose",     colors: { center: "#1F6B3A", star: "#3FA89A", diamonds: "#6B1F25", frame: "#F4EFE6", background: "#D88A8A" } },
+  { id: "p2", label: "Rouge & Beige",   colors: { center: "#B23A2E", star: "#E2C9A0", diamonds: "#6B1F25", frame: "#F4EFE6", background: "#E2C9A0" } },
+  { id: "p3", label: "Bleu & Jaune",    colors: { center: "#2F5E8A", star: "#A9C8E0", diamonds: "#1A3A5C", frame: "#F4EFE6", background: "#E5B23A" } },
+  { id: "p4", label: "Vert & Jaune",    colors: { center: "#1F6B3A", star: "#E5B23A", diamonds: "#1F6B3A", frame: "#F4EFE6", background: "#E2C9A0" } },
+  { id: "p5", label: "Noir & Rouge",    colors: { center: "#1A1A1A", star: "#B23A2E", diamonds: "#1A1A1A", frame: "#F4EFE6", background: "#D88A8A" } },
 ];
+
 
 // ── Motif SVG (simple zellige-inspired pattern with 5 paintable region groups)
 const Motif = ({
