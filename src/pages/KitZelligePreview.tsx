@@ -44,12 +44,12 @@ const PRESETS: { id: string; colors: ColorMap }[] = [
 // Source fills present in the original SVG file — used to recolor by region.
 const SRC_COLORS: Record<Region, string> = {
   corners:    "#5170ff",
-  sides:      "#ff5757",
-  diamonds:   "#812c2c",
-  petals:     "#ff6200",
-  center:     "#e2830d",
+  sides:      "#ff3131",
+  diamonds:   "#a44135",
+  petals:     "#fe8f00",
+  center:     "#b86a0a",
   frame:      "#ffffff",
-  background: "#3b3d17",
+  background: "#91a597",
 };
 
 
