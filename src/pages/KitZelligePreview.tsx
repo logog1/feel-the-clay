@@ -76,12 +76,6 @@ const Motif = ({ colors }: { colors: ColorMap; selectedRegion?: Region | null; o
 
 
 
-const PRESET_LABELS: Record<Language, Record<string, string>> = {
-  en: { p1: "Blue & Coral", p2: "Green & Pink", p3: "Red & Beige", p4: "Blue & Yellow", p5: "Black & Red" },
-  fr: { p1: "Bleu & Corail", p2: "Vert & Rose", p3: "Rouge & Beige", p4: "Bleu & Jaune", p5: "Noir & Rouge" },
-  es: { p1: "Azul y coral", p2: "Verde y rosa", p3: "Rojo y beige", p4: "Azul y amarillo", p5: "Negro y rojo" },
-  ar: { p1: "أزرق ومرجاني", p2: "أخضر ووردي", p3: "أحمر وبيج", p4: "أزرق وأصفر", p5: "أسود وأحمر" },
-};
 
 const REGION_LABELS: Record<Language, Record<Region, string>> = {
   en: { corners: "Chamfered square", sides: "Octagon", frame: "Joints", diamonds: "Kite", petals: "Triangle", center: "8-point star (Khatim)", background: "Background" },
