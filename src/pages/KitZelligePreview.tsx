@@ -28,18 +28,15 @@ const PALETTE = [
   { name: "Blanc",     hex: "#F4EFE6" },
 ];
 
-// ── Presets (matching the reference tile) ──────────────────────────────────
 // Regions match the actual fills present in the source SVG.
 type Region = "corners" | "sides" | "diamonds" | "petals" | "center" | "frame" | "background";
 type ColorMap = Record<Region, string>;
 
-const PRESETS: { id: string; colors: ColorMap }[] = [
-  { id: "p1", colors: { corners: "#5A6FF0", sides: "#FF5B66", diamonds: "#8B2E2E", petals: "#FF7300", center: "#EE8A00", frame: "#FFFFFF", background: "#3B3D17" } },
-  { id: "p2", colors: { corners: "#1F6B3A", sides: "#D88A8A", diamonds: "#6B1F25", petals: "#3FA89A", center: "#E5B23A", frame: "#FFFFFF", background: "#1A1A1A" } },
-  { id: "p3", colors: { corners: "#B23A2E", sides: "#E2C9A0", diamonds: "#6B1F25", petals: "#E96A1F", center: "#C98727", frame: "#FFFFFF", background: "#3B3D17" } },
-  { id: "p4", colors: { corners: "#2F5E8A", sides: "#A9C8E0", diamonds: "#1A3A5C", petals: "#E5B23A", center: "#B23A2E", frame: "#FFFFFF", background: "#0F2A44" } },
-  { id: "p5", colors: { corners: "#1A1A1A", sides: "#D88A8A", diamonds: "#1A1A1A", petals: "#B23A2E", center: "#E5B23A", frame: "#FFFFFF", background: "#2A1010" } },
-];
+// Default colorway — matches the source SVG fills so it renders as-is on first load.
+const DEFAULT_COLORS: ColorMap = {
+  corners: "#5170ff", sides: "#ff3131", diamonds: "#a44135",
+  petals: "#fe8f00", center: "#b86a0a", frame: "#ffffff", background: "#91a597",
+};
 
 // Source fills present in the original SVG file — used to recolor by region.
 const SRC_COLORS: Record<Region, string> = {
