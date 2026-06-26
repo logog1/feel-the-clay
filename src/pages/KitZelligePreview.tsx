@@ -115,24 +115,25 @@ const Motif = ({
           className={cn(interactive && "cursor-pointer", ring("diamonds"))}
         />
       ))}
-      {/* center rotated square (the teal middle) */}
+      {/* teal 8-point star (larger) */}
       <polygon
-        points="100,40 160,100 100,160 40,100"
+        points={star(100, 100, 56)}
         fill={colors.star}
         stroke={colors.frame}
         strokeWidth="3"
         onClick={handle("star")}
         className={cn(interactive && "cursor-pointer", ring("star"))}
       />
-      {/* inner 8-point star */}
+      {/* inner green 8-point star */}
       <polygon
-        points={star(100, 100, 28)}
+        points={star(100, 100, 30)}
         fill={colors.center}
         stroke={colors.frame}
         strokeWidth="2"
         onClick={handle("center")}
         className={cn(interactive && "cursor-pointer", ring("center"))}
       />
+
     </svg>
   );
 };
