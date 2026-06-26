@@ -357,98 +357,49 @@ const KitZelligePreview = () => {
               </div>
             </div>
 
-            {/* Mode toggle */}
-            <div className="flex p-1 rounded-2xl bg-muted border border-border/40">
-              <button
-                onClick={() => setMode("preset")}
-                className={cn(
-                  "flex-1 py-2.5 rounded-xl text-sm font-bold transition-all",
-                  mode === "preset" ? "bg-card shadow text-foreground" : "text-muted-foreground"
-                )}
-              >
-                {copy.presetMode}
-              </button>
-              <button
-                onClick={() => { setMode("custom"); setCustom(activeColors); }}
-                className={cn(
-                  "flex-1 py-2.5 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-1.5",
-                  mode === "custom" ? "bg-card shadow text-foreground" : "text-muted-foreground"
-                )}
-              >
-                <Palette size={14} /> {copy.customMode}
-              </button>
-            </div>
-
-            {/* Preset selector */}
-            {mode === "preset" && (
+            {/* Custom builder */}
+            <div className="space-y-4">
               <div>
-                <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-3">{copy.motifLabel}</p>
-                <div className="grid grid-cols-5 gap-2">
-                  {PRESETS.map((p) => (
+                <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">{copy.selectedZone}</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {(Object.keys(regionLabels) as Region[]).map((r) => (
                     <button
-                      key={p.id}
-                      onClick={() => setPresetId(p.id)}
+                      key={r}
+                      onClick={() => setSelectedRegion(r)}
                       className={cn(
-                        "aspect-square rounded-xl border-2 p-1.5 transition-all",
-                        presetId === p.id ? "border-cta scale-105 shadow-lg" : "border-border/40 hover:border-border"
+                        "px-3 py-1.5 rounded-full text-xs font-semibold border-2 transition-all flex items-center gap-1.5",
+                        selectedRegion === r ? "border-cta bg-cta/10 text-cta" : "border-border/40 text-foreground/70 hover:border-border"
                       )}
-                      title={presetLabels[p.id]}
                     >
-                      <Motif colors={p.colors} />
+                      <RegionIcon r={r} fill={custom[r]} />
+                      {regionLabels[r]}
                     </button>
                   ))}
                 </div>
-                <p className="text-xs text-muted-foreground mt-2 text-center">
-                  {presetLabels[presetId]}
-                </p>
               </div>
-            )}
-
-            {/* Custom builder */}
-            {mode === "custom" && (
-              <div className="space-y-4">
-                <div>
-                  <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">{copy.selectedZone}</p>
-                  <div className="flex flex-wrap gap-1.5">
-                    {(Object.keys(regionLabels) as Region[]).map((r) => (
+              <div>
+                <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">{copy.palette}</p>
+                <div className="grid grid-cols-9 gap-2">
+                  {PALETTE.map((c) => {
+                    const active = selectedRegion && custom[selectedRegion] === c.hex;
+                    return (
                       <button
-                        key={r}
-                        onClick={() => setSelectedRegion(r)}
+                        key={c.hex}
+                        onClick={() => applyColor(c.hex)}
                         className={cn(
-                          "px-3 py-1.5 rounded-full text-xs font-semibold border-2 transition-all flex items-center gap-1.5",
-                          selectedRegion === r ? "border-cta bg-cta/10 text-cta" : "border-border/40 text-foreground/70 hover:border-border"
+                          "aspect-square rounded-lg border-2 transition-all flex items-center justify-center",
+                          active ? "border-cta scale-110 shadow" : "border-border/40 hover:border-border"
                         )}
+                        style={{ background: c.hex }}
+                        title={c.name}
                       >
-                        <RegionIcon r={r} fill={custom[r]} />
-                        {regionLabels[r]}
+                        {active && <Check size={14} className="text-primary-foreground drop-shadow" />}
                       </button>
-                    ))}
-                  </div>
-                </div>
-                <div>
-                  <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">{copy.palette}</p>
-                  <div className="grid grid-cols-9 gap-2">
-                    {PALETTE.map((c) => {
-                      const active = selectedRegion && custom[selectedRegion] === c.hex;
-                      return (
-                        <button
-                          key={c.hex}
-                          onClick={() => applyColor(c.hex)}
-                          className={cn(
-                            "aspect-square rounded-lg border-2 transition-all flex items-center justify-center",
-                            active ? "border-cta scale-110 shadow" : "border-border/40 hover:border-border"
-                          )}
-                          style={{ background: c.hex }}
-                          title={c.name}
-                        >
-                          {active && <Check size={14} className="text-primary-foreground drop-shadow" />}
-                        </button>
-                      );
-                    })}
-                  </div>
+                    );
+                  })}
                 </div>
               </div>
-            )}
+            </div>
 
             {/* CTA */}
             <a
