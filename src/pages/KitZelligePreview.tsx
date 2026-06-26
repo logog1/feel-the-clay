@@ -290,25 +290,18 @@ const KitZelligePreview = () => {
   const { language } = useLanguage();
   const copy = KIT_COPY[language];
   const regionLabels = REGION_LABELS[language];
-  const presetLabels = PRESET_LABELS[language];
-  const [mode, setMode] = useState<"preset" | "custom">("preset");
-  const [presetId, setPresetId] = useState<string>("p1");
-  const [custom, setCustom] = useState<ColorMap>(PRESETS[0].colors);
+  const [custom, setCustom] = useState<ColorMap>(DEFAULT_COLORS);
   const [selectedRegion, setSelectedRegion] = useState<Region | null>("center");
 
-  const activeColors = mode === "preset"
-    ? PRESETS.find((p) => p.id === presetId)!.colors
-    : custom;
+  const activeColors = custom;
 
   const orderText = useMemo(() => {
     const lines = [
       copy.orderGreeting,
-      mode === "preset"
-        ? `${copy.orderPreset} ${presetLabels[presetId]}`
-        : `${copy.orderCustom} ${Object.entries(custom).map(([k,v]) => `${regionLabels[k as Region]} ${v}`).join(", ")}`,
+      `${copy.orderCustom} ${Object.entries(custom).map(([k,v]) => `${regionLabels[k as Region]} ${v}`).join(", ")}`,
     ];
     return encodeURIComponent(lines.join("\n"));
-  }, [mode, presetId, custom, copy, presetLabels, regionLabels]);
+  }, [custom, copy, regionLabels]);
 
   const applyColor = (hex: string) => {
     if (!selectedRegion) return;
