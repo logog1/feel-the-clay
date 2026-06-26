@@ -443,13 +443,26 @@ const KitZelligePreview = () => {
                           key={c.hex}
                           onClick={() => applyColor(c.hex)}
                           className={cn(
-                            "aspect-square rounded-lg border-2 transition-all flex items-center justify-center",
-                            active ? "border-cta scale-110 shadow" : "border-border/40 hover:border-border"
+                            "relative aspect-square rounded-[3px] transition-all overflow-hidden",
+                            active ? "ring-2 ring-cta ring-offset-2 ring-offset-background scale-105" : "hover:scale-[1.03]"
                           )}
-                          style={{ background: c.hex }}
+                          style={{
+                            background: `
+                              radial-gradient(ellipse 70% 55% at 28% 20%, rgba(255,255,255,0.55), rgba(255,255,255,0) 60%),
+                              radial-gradient(ellipse 90% 60% at 75% 95%, rgba(0,0,0,0.22), rgba(0,0,0,0) 65%),
+                              linear-gradient(135deg, rgba(255,255,255,0.10), rgba(0,0,0,0.18)),
+                              ${c.hex}
+                            `,
+                            boxShadow:
+                              "inset 0 1px 1px rgba(255,255,255,0.45), inset 0 -2px 3px rgba(0,0,0,0.28), 0 1px 2px rgba(0,0,0,0.18)",
+                          }}
                           title={c.name}
                         >
-                          {active && <Check size={14} className="text-primary-foreground drop-shadow" />}
+                          <span
+                            className="pointer-events-none absolute inset-x-[10%] top-[8%] h-[18%] rounded-full opacity-60 blur-[1px]"
+                            style={{ background: "linear-gradient(180deg, rgba(255,255,255,0.7), rgba(255,255,255,0))" }}
+                          />
+                          {active && <Check size={14} className="absolute inset-0 m-auto text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]" />}
                         </button>
                       );
                     })}
