@@ -330,9 +330,9 @@ const KitZelligePreview = () => {
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
         <div className="grid md:grid-cols-2 gap-6 md:gap-10">
-          {/* Left: motif preview — sticky so it stays visible while picking colors */}
-          <div className="md:space-y-4 sticky top-0 z-20 -mx-4 sm:-mx-6 md:mx-0 md:static bg-background/95 backdrop-blur md:bg-transparent md:backdrop-blur-0 px-4 sm:px-6 md:px-0 pt-2 pb-3 md:pt-0 md:pb-0 md:self-start md:top-4">
-            <div className="mx-auto w-40 sm:w-56 md:w-full aspect-square rounded-2xl md:rounded-3xl bg-card border-2 border-border/40 shadow-sm p-3 sm:p-5 md:p-10">
+          {/* Left: motif preview */}
+          <div className="space-y-4 md:self-start md:sticky md:top-4">
+            <div className="aspect-square rounded-3xl bg-card border-2 border-border/40 shadow-sm p-4 sm:p-6 md:p-10 max-w-sm mx-auto md:max-w-none">
               <Motif
                 colors={activeColors}
                 selectedRegion={mode === "custom" ? selectedRegion : null}
@@ -341,7 +341,7 @@ const KitZelligePreview = () => {
               />
             </div>
             {mode === "custom" && (
-              <p className="hidden md:block text-xs text-muted-foreground text-center">
+              <p className="text-xs text-muted-foreground text-center">
                 {copy.customHint}
               </p>
             )}
