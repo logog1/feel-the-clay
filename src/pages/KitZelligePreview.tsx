@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import SEOHead from "@/components/SEOHead";
 import { useLanguage } from "@/i18n/LanguageContext";
 import type { Language } from "@/i18n/translations";
-import zelligeSvgRaw from "@/assets/zellige-motif.svg?raw";
+import zelligeSvgRaw from "@/assets/zellige-kit-motif-final.svg?raw";
 
 /**
  * Preview page (not linked from nav) for the upcoming Zellige DIY Kit product.
@@ -56,6 +56,11 @@ const SRC_COLORS: Record<Region, string> = {
 const Motif = ({ colors }: { colors: ColorMap; selectedRegion?: Region | null; onSelectRegion?: (r: Region) => void; interactive?: boolean }) => {
   const svg = useMemo(() => {
     let s = zelligeSvgRaw;
+    s = s
+      .replace(/\swidth="[^"]*"/i, "")
+      .replace(/\sheight="[^"]*"/i, "")
+      .replace(/viewBox="[^"]*"/i, 'viewBox="0 0 1190.25 1683.75"')
+      .replace(/preserveAspectRatio="[^"]*"/i, 'preserveAspectRatio="xMidYMid meet"');
     (Object.keys(SRC_COLORS) as Region[]).forEach((r) => {
       const src = SRC_COLORS[r];
       const target = colors[r];
