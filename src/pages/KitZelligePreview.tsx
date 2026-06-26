@@ -102,20 +102,21 @@ const Motif = ({
   ];
 
   // ── Inner motif (within white-framed square 110..290) ───────────────────
-  // 4 burgundy triangles (X across inner square — base on each edge, apex at center)
-  const burgundyTris = [
-    "110,110 290,110 200,200", // N
-    "290,110 290,290 200,200", // E
-    "290,290 110,290 200,200", // S
-    "110,290 110,110 200,200", // W
+  // 4 burgundy corner kites — each fills a corner of the inner square,
+  // formed by joining the two triangles adjacent to a corner (4 vertices, apex at center)
+  const burgundyKites = [
+    "110,110 140,110 200,200 110,140", // TL
+    "260,110 290,110 290,140 200,200", // TR
+    "290,260 290,290 260,290 200,200", // BR
+    "110,260 200,200 140,290 110,290", // BL
   ];
 
-  // 4 orange triangles (narrow, in front of burgundy — base centered on each edge)
+  // 4 orange cardinal triangles — wide base on each inner-square edge, apex at center
   const orangeTris = [
-    "165,110 235,110 200,200", // N
-    "290,165 290,235 200,200", // E
-    "235,290 165,290 200,200", // S
-    "110,235 110,165 200,200", // W
+    "140,110 260,110 200,200", // N
+    "290,140 290,260 200,200", // E
+    "260,290 140,290 200,200", // S
+    "110,260 110,140 200,200", // W
   ];
 
   return (
