@@ -61,24 +61,19 @@ const Motif = ({
       ? "outline outline-2 outline-offset-2 outline-cta"
       : "";
 
-  // 8-point star built from two overlapping squares
+  // Moroccan 8-point star (khatim) — two overlapping squares
   const star = (cx: number, cy: number, r: number) => {
+    const inner = r * Math.cos(Math.PI / 8);
     const pts: string[] = [];
     for (let i = 0; i < 8; i++) {
       const a = (Math.PI / 4) * i - Math.PI / 2;
-      pts.push(`${cx + r * Math.cos(a)},${cy + r * Math.sin(a)}`);
-    }
-    // interleave inner points for 8-point star
-    const inner = r * 0.55;
-    const starPts: string[] = [];
-    for (let i = 0; i < 8; i++) {
-      const a = (Math.PI / 4) * i - Math.PI / 2;
       const a2 = a + Math.PI / 8;
-      starPts.push(`${cx + r * Math.cos(a)},${cy + r * Math.sin(a)}`);
-      starPts.push(`${cx + inner * Math.cos(a2)},${cy + inner * Math.sin(a2)}`);
+      pts.push(`${cx + r * Math.cos(a)},${cy + r * Math.sin(a)}`);
+      pts.push(`${cx + inner * Math.cos(a2)},${cy + inner * Math.sin(a2)}`);
     }
-    return starPts.join(" ");
+    return pts.join(" ");
   };
+
 
   return (
     <svg viewBox="0 0 200 200" className="w-full h-full">
