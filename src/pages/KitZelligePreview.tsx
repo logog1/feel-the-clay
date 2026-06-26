@@ -60,56 +60,82 @@ const Motif = ({
       ? "outline outline-2 outline-offset-2 outline-cta"
       : "";
 
+  // 8-point star built from two overlapping squares
+  const star = (cx: number, cy: number, r: number) => {
+    const pts: string[] = [];
+    for (let i = 0; i < 8; i++) {
+      const a = (Math.PI / 4) * i - Math.PI / 2;
+      pts.push(`${cx + r * Math.cos(a)},${cy + r * Math.sin(a)}`);
+    }
+    // interleave inner points for 8-point star
+    const inner = r * 0.55;
+    const starPts: string[] = [];
+    for (let i = 0; i < 8; i++) {
+      const a = (Math.PI / 4) * i - Math.PI / 2;
+      const a2 = a + Math.PI / 8;
+      starPts.push(`${cx + r * Math.cos(a)},${cy + r * Math.sin(a)}`);
+      starPts.push(`${cx + inner * Math.cos(a2)},${cy + inner * Math.sin(a2)}`);
+    }
+    return starPts.join(" ");
+  };
+
   return (
     <svg viewBox="0 0 200 200" className="w-full h-full">
-      {/* background */}
+      {/* background (corners) */}
       <rect
         x="0" y="0" width="200" height="200"
         fill={colors.background}
         onClick={handle("background")}
         className={cn(interactive && "cursor-pointer", ring("background"))}
       />
-      {/* corner diamonds */}
-      {[[30,30],[170,30],[30,170],[170,170]].map(([cx,cy],i) => (
+      {/* 4 large diamonds at edge midpoints (and partials at corners via clipping) */}
+      {[
+        [100, 0], [200, 100], [100, 200], [0, 100],
+      ].map(([cx, cy], i) => (
         <polygon
-          key={i}
-          points={`${cx},${cy-20} ${cx+20},${cy} ${cx},${cy+20} ${cx-20},${cy}`}
+          key={`d-${i}`}
+          points={`${cx},${cy - 55} ${cx + 55},${cy} ${cx},${cy + 55} ${cx - 55},${cy}`}
           fill={colors.diamonds}
+          stroke={colors.frame}
+          strokeWidth="3"
           onClick={handle("diamonds")}
           className={cn(interactive && "cursor-pointer", ring("diamonds"))}
         />
       ))}
-      {/* 8-point star */}
-      <g onClick={handle("star")} className={cn(interactive && "cursor-pointer", ring("star"))}>
+      {/* corner partial diamonds (from neighbouring tiles) */}
+      {[[0,0],[200,0],[0,200],[200,200]].map(([cx,cy], i) => (
         <polygon
-          points="100,30 118,82 170,100 118,118 100,170 82,118 30,100 82,82"
-          fill={colors.star}
+          key={`c-${i}`}
+          points={`${cx},${cy - 40} ${cx + 40},${cy} ${cx},${cy + 40} ${cx - 40},${cy}`}
+          fill={colors.diamonds}
+          stroke={colors.frame}
+          strokeWidth="3"
+          onClick={handle("diamonds")}
+          className={cn(interactive && "cursor-pointer", ring("diamonds"))}
         />
-        <polygon
-          points="100,55 115,85 145,100 115,115 100,145 85,115 55,100 85,85"
-          fill={colors.star}
-          opacity="0.85"
-        />
-      </g>
-      {/* center */}
-      <circle
-        cx="100" cy="100" r="22"
+      ))}
+      {/* center rotated square (the teal middle) */}
+      <polygon
+        points="100,40 160,100 100,160 40,100"
+        fill={colors.star}
+        stroke={colors.frame}
+        strokeWidth="3"
+        onClick={handle("star")}
+        className={cn(interactive && "cursor-pointer", ring("star"))}
+      />
+      {/* inner 8-point star */}
+      <polygon
+        points={star(100, 100, 28)}
         fill={colors.center}
+        stroke={colors.frame}
+        strokeWidth="2"
         onClick={handle("center")}
         className={cn(interactive && "cursor-pointer", ring("center"))}
-      />
-      {/* frame */}
-      <rect
-        x="4" y="4" width="192" height="192"
-        fill="none"
-        stroke={colors.frame}
-        strokeWidth="6"
-        onClick={handle("frame")}
-        className={cn(interactive && "cursor-pointer", ring("frame"))}
       />
     </svg>
   );
 };
+
 
 const REGION_LABELS: Record<Region, string> = {
   background: "Fond",
