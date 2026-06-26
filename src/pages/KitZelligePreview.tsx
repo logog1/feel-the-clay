@@ -39,7 +39,7 @@ const PRESETS: { id: string; label: string; colors: ColorMap }[] = [
 ];
 
 
-// ── Motif SVG (simple zellige-inspired pattern with 5 paintable region groups)
+// ── Motif SVG — clean Moroccan rosette (8 petals + nested 8-point stars)
 const Motif = ({
   colors,
   selectedRegion,
@@ -61,12 +61,14 @@ const Motif = ({
       ? "outline outline-2 outline-offset-2 outline-cta"
       : "";
 
-  // Moroccan 8-point star (khatim) — two overlapping squares
-  const star = (cx: number, cy: number, r: number) => {
+  const CX = 100, CY = 100;
+
+  // 8-point star (Khatim) from two rotated squares
+  const star = (cx: number, cy: number, r: number, rot = 0) => {
     const inner = r * Math.cos(Math.PI / 8);
     const pts: string[] = [];
     for (let i = 0; i < 8; i++) {
-      const a = (Math.PI / 4) * i - Math.PI / 2;
+      const a = (Math.PI / 4) * i - Math.PI / 2 + rot;
       const a2 = a + Math.PI / 8;
       pts.push(`${cx + r * Math.cos(a)},${cy + r * Math.sin(a)}`);
       pts.push(`${cx + inner * Math.cos(a2)},${cy + inner * Math.sin(a2)}`);
@@ -74,61 +76,82 @@ const Motif = ({
     return pts.join(" ");
   };
 
+  // 8 radiating kite petals
+  const petal = (i: number) => {
+    const a = (Math.PI / 4) * i - Math.PI / 2;
+    const tipR = 92, baseR = 54, innerR = 40, halfW = Math.PI / 14;
+    const tx = CX + tipR * Math.cos(a);
+    const ty = CY + tipR * Math.sin(a);
+    const b1x = CX + baseR * Math.cos(a - halfW);
+    const b1y = CY + baseR * Math.sin(a - halfW);
+    const b2x = CX + baseR * Math.cos(a + halfW);
+    const b2y = CY + baseR * Math.sin(a + halfW);
+    const ix = CX + innerR * Math.cos(a);
+    const iy = CY + innerR * Math.sin(a);
+    return `${ix},${iy} ${b1x},${b1y} ${tx},${ty} ${b2x},${b2y}`;
+  };
 
   return (
     <svg viewBox="0 0 200 200" className="w-full h-full">
-      {/* background (corners) */}
       <rect
         x="0" y="0" width="200" height="200"
         fill={colors.background}
         onClick={handle("background")}
         className={cn(interactive && "cursor-pointer", ring("background"))}
       />
-      {/* 4 large diamonds at edge midpoints (and partials at corners via clipping) */}
-      {[
-        [100, 0], [200, 100], [100, 200], [0, 100],
-      ].map(([cx, cy], i) => (
-        <polygon
-          key={`d-${i}`}
-          points={`${cx},${cy - 55} ${cx + 55},${cy} ${cx},${cy + 55} ${cx - 55},${cy}`}
-          fill={colors.diamonds}
-          stroke={colors.frame}
-          strokeWidth="3"
-          onClick={handle("diamonds")}
-          className={cn(interactive && "cursor-pointer", ring("diamonds"))}
-        />
-      ))}
-      {/* corner partial diamonds (from neighbouring tiles) */}
+
+      {/* corner quarter-rosettes (tile-repeat illusion) */}
       {[[0,0],[200,0],[0,200],[200,200]].map(([cx,cy], i) => (
+        <circle
+          key={`corner-${i}`}
+          cx={cx} cy={cy} r={24}
+          fill={colors.star}
+          stroke={colors.frame}
+          strokeWidth="1.5"
+          onClick={handle("star")}
+          className={cn(interactive && "cursor-pointer", ring("star"))}
+        />
+      ))}
+
+      {/* 8 petals */}
+      {Array.from({ length: 8 }).map((_, i) => (
         <polygon
-          key={`c-${i}`}
-          points={`${cx},${cy - 40} ${cx + 40},${cy} ${cx},${cy + 40} ${cx - 40},${cy}`}
+          key={`p-${i}`}
+          points={petal(i)}
           fill={colors.diamonds}
           stroke={colors.frame}
-          strokeWidth="3"
+          strokeWidth="1.5"
+          strokeLinejoin="round"
           onClick={handle("diamonds")}
           className={cn(interactive && "cursor-pointer", ring("diamonds"))}
         />
       ))}
-      {/* teal 8-point star (larger) */}
+
+      {/* outer frame ring */}
+      <circle cx={CX} cy={CY} r={42} fill="none" stroke={colors.frame} strokeWidth="2" pointerEvents="none" />
+
+      {/* outer 8-point star */}
       <polygon
-        points={star(100, 100, 56)}
+        points={star(CX, CY, 42)}
         fill={colors.star}
         stroke={colors.frame}
-        strokeWidth="3"
+        strokeWidth="1.5"
         onClick={handle("star")}
         className={cn(interactive && "cursor-pointer", ring("star"))}
       />
-      {/* inner green 8-point star */}
+
+      {/* inner rotated 8-point star */}
       <polygon
-        points={star(100, 100, 30)}
+        points={star(CX, CY, 22, Math.PI / 8)}
         fill={colors.center}
         stroke={colors.frame}
-        strokeWidth="2"
+        strokeWidth="1.2"
         onClick={handle("center")}
         className={cn(interactive && "cursor-pointer", ring("center"))}
       />
 
+      {/* central dot */}
+      <circle cx={CX} cy={CY} r={4.5} fill={colors.frame} pointerEvents="none" />
     </svg>
   );
 };
@@ -137,9 +160,9 @@ const Motif = ({
 const REGION_LABELS: Record<Region, string> = {
   background: "Fond",
   frame: "Filets",
-  star: "Carré central",
-  diamonds: "Losanges",
-  center: "Étoile",
+  star: "Étoile extérieure",
+  diamonds: "Pétales",
+  center: "Étoile centrale",
 };
 
 
