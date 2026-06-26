@@ -25,21 +25,23 @@ const PALETTE = [
   { name: "Blanc",     hex: "#F4EFE6" },
 ];
 
-// ── Presets (matching the reference image) ─────────────────────────────────
-// Regions: center, star, diamonds, frame, background
-type Region = "center" | "star" | "diamonds" | "frame" | "background";
+// ── Presets (matching the reference tile) ──────────────────────────────────
+// Regions: corners (blue), sides (coral), diamonds (maroon X), petals (orange diamond), center (8-pt star), frame (white)
+type Region = "corners" | "sides" | "diamonds" | "petals" | "center" | "frame";
 type ColorMap = Record<Region, string>;
 
 const PRESETS: { id: string; label: string; colors: ColorMap }[] = [
-  { id: "p1", label: "Vert & Rose",     colors: { center: "#1F6B3A", star: "#3FA89A", diamonds: "#6B1F25", frame: "#F4EFE6", background: "#D88A8A" } },
-  { id: "p2", label: "Rouge & Beige",   colors: { center: "#B23A2E", star: "#E2C9A0", diamonds: "#6B1F25", frame: "#F4EFE6", background: "#E2C9A0" } },
-  { id: "p3", label: "Bleu & Jaune",    colors: { center: "#2F5E8A", star: "#A9C8E0", diamonds: "#1A3A5C", frame: "#F4EFE6", background: "#E5B23A" } },
-  { id: "p4", label: "Vert & Jaune",    colors: { center: "#1F6B3A", star: "#E5B23A", diamonds: "#1F6B3A", frame: "#F4EFE6", background: "#E2C9A0" } },
-  { id: "p5", label: "Noir & Rouge",    colors: { center: "#1A1A1A", star: "#B23A2E", diamonds: "#1A1A1A", frame: "#F4EFE6", background: "#D88A8A" } },
+  { id: "p1", label: "Bleu & Corail",   colors: { corners: "#5778C9", sides: "#F37B6E", diamonds: "#6B2A2E", petals: "#E96A1F", center: "#C98727", frame: "#F4EFE6" } },
+  { id: "p2", label: "Vert & Rose",     colors: { corners: "#1F6B3A", sides: "#D88A8A", diamonds: "#6B1F25", petals: "#3FA89A", center: "#E5B23A", frame: "#F4EFE6" } },
+  { id: "p3", label: "Rouge & Beige",   colors: { corners: "#B23A2E", sides: "#E2C9A0", diamonds: "#6B1F25", petals: "#E96A1F", center: "#C98727", frame: "#F4EFE6" } },
+  { id: "p4", label: "Bleu & Jaune",    colors: { corners: "#2F5E8A", sides: "#A9C8E0", diamonds: "#1A3A5C", petals: "#E5B23A", center: "#B23A2E", frame: "#F4EFE6" } },
+  { id: "p5", label: "Noir & Rouge",    colors: { corners: "#1A1A1A", sides: "#D88A8A", diamonds: "#1A1A1A", petals: "#B23A2E", center: "#E5B23A", frame: "#F4EFE6" } },
 ];
 
+// Dark olive base — peeks through as small accent triangles at tile junctions
+const OLIVE_BASE = "#3A3D1F";
 
-// ── Motif SVG — clean Moroccan rosette (8 petals + nested 8-point stars)
+// ── Motif SVG — square zellige tile matching the reference photo
 const Motif = ({
   colors,
   selectedRegion,
@@ -61,8 +63,6 @@ const Motif = ({
       ? "outline outline-2 outline-offset-2 outline-cta"
       : "";
 
-  const CX = 100, CY = 100;
-
   // 8-point star (Khatim) from two rotated squares
   const star = (cx: number, cy: number, r: number, rot = 0) => {
     const inner = r * Math.cos(Math.PI / 8);
@@ -76,92 +76,115 @@ const Motif = ({
     return pts.join(" ");
   };
 
-  // 8 radiating kite petals
-  const petal = (i: number) => {
-    const a = (Math.PI / 4) * i - Math.PI / 2;
-    const tipR = 92, baseR = 54, innerR = 40, halfW = Math.PI / 14;
-    const tx = CX + tipR * Math.cos(a);
-    const ty = CY + tipR * Math.sin(a);
-    const b1x = CX + baseR * Math.cos(a - halfW);
-    const b1y = CY + baseR * Math.sin(a - halfW);
-    const b2x = CX + baseR * Math.cos(a + halfW);
-    const b2y = CY + baseR * Math.sin(a + halfW);
-    const ix = CX + innerR * Math.cos(a);
-    const iy = CY + innerR * Math.sin(a);
-    return `${ix},${iy} ${b1x},${b1y} ${tx},${ty} ${b2x},${b2y}`;
-  };
+  // Chamfered corner tiles (blue) — 50×50 with diagonal cut toward center
+  const cornerTiles = [
+    "0,0 50,0 50,35 35,50 0,50",                   // top-left
+    "150,0 200,0 200,50 165,50 150,35",            // top-right
+    "0,150 35,150 50,165 50,200 0,200",            // bottom-left
+    "200,150 200,200 150,200 150,165 165,150",     // bottom-right
+  ];
+
+  // Side tiles (coral) — between corners, full edge to inner square
+  const sideTiles = [
+    "50,0 150,0 150,50 50,50",     // top
+    "150,50 200,50 200,150 150,150", // right
+    "50,150 150,150 150,200 50,200", // bottom
+    "0,50 50,50 50,150 0,150",      // left
+  ];
+
+  // Inner square (50..150) — split by both diagonals into 4 triangles
+  // Maroon triangles fill the four sides between the orange diamond and the white frame
+  const maroonTris = [
+    "50,50 150,50 100,100",   // top
+    "150,50 150,150 100,100", // right
+    "150,150 50,150 100,100", // bottom
+    "50,150 50,50 100,100",   // left
+  ];
+
+  // Orange diamond (rotated square inscribed in inner square)
+  const orangeDiamond = "100,50 150,100 100,150 50,100";
 
   return (
     <svg viewBox="0 0 200 200" className="w-full h-full">
-      <rect
-        x="0" y="0" width="200" height="200"
-        fill={colors.background}
-        onClick={handle("background")}
-        className={cn(interactive && "cursor-pointer", ring("background"))}
-      />
+      {/* olive base — shows through as small accent triangles */}
+      <rect x="0" y="0" width="200" height="200" fill={OLIVE_BASE} pointerEvents="none" />
 
-      {/* corner quarter-rosettes (tile-repeat illusion) */}
-      {[[0,0],[200,0],[0,200],[200,200]].map(([cx,cy], i) => (
-        <circle
-          key={`corner-${i}`}
-          cx={cx} cy={cy} r={24}
-          fill={colors.star}
+      {/* 4 blue chamfered corner tiles */}
+      {cornerTiles.map((pts, i) => (
+        <polygon
+          key={`c-${i}`}
+          points={pts}
+          fill={colors.corners}
           stroke={colors.frame}
           strokeWidth="1.5"
-          onClick={handle("star")}
-          className={cn(interactive && "cursor-pointer", ring("star"))}
+          strokeLinejoin="miter"
+          onClick={handle("corners")}
+          className={cn(interactive && "cursor-pointer", ring("corners"))}
         />
       ))}
 
-      {/* 8 petals */}
-      {Array.from({ length: 8 }).map((_, i) => (
+      {/* 4 coral side tiles */}
+      {sideTiles.map((pts, i) => (
         <polygon
-          key={`p-${i}`}
-          points={petal(i)}
-          fill={colors.diamonds}
+          key={`s-${i}`}
+          points={pts}
+          fill={colors.sides}
           stroke={colors.frame}
           strokeWidth="1.5"
-          strokeLinejoin="round"
+          onClick={handle("sides")}
+          className={cn(interactive && "cursor-pointer", ring("sides"))}
+        />
+      ))}
+
+      {/* white inner square frame */}
+      <rect
+        x="50" y="50" width="100" height="100"
+        fill={colors.frame}
+        onClick={handle("frame")}
+        className={cn(interactive && "cursor-pointer", ring("frame"))}
+      />
+
+      {/* 4 maroon triangles (X across inner square) */}
+      {maroonTris.map((pts, i) => (
+        <polygon
+          key={`m-${i}`}
+          points={pts}
+          fill={colors.diamonds}
           onClick={handle("diamonds")}
           className={cn(interactive && "cursor-pointer", ring("diamonds"))}
         />
       ))}
 
-      {/* outer frame ring */}
-      <circle cx={CX} cy={CY} r={42} fill="none" stroke={colors.frame} strokeWidth="2" pointerEvents="none" />
-
-      {/* outer 8-point star */}
+      {/* orange diamond on top — leaves 4 maroon corner triangles visible */}
       <polygon
-        points={star(CX, CY, 42)}
-        fill={colors.star}
+        points={orangeDiamond}
+        fill={colors.petals}
         stroke={colors.frame}
-        strokeWidth="1.5"
-        onClick={handle("star")}
-        className={cn(interactive && "cursor-pointer", ring("star"))}
+        strokeWidth="2"
+        onClick={handle("petals")}
+        className={cn(interactive && "cursor-pointer", ring("petals"))}
       />
 
-      {/* inner rotated 8-point star */}
+      {/* central 8-point star (Khatim) */}
       <polygon
-        points={star(CX, CY, 22, Math.PI / 8)}
+        points={star(100, 100, 20)}
         fill={colors.center}
         stroke={colors.frame}
-        strokeWidth="1.2"
+        strokeWidth="1"
         onClick={handle("center")}
         className={cn(interactive && "cursor-pointer", ring("center"))}
       />
-
-      {/* central dot */}
-      <circle cx={CX} cy={CY} r={4.5} fill={colors.frame} pointerEvents="none" />
     </svg>
   );
 };
 
 
 const REGION_LABELS: Record<Region, string> = {
-  background: "Fond",
+  corners: "Coins",
+  sides: "Côtés",
   frame: "Filets",
-  star: "Étoile extérieure",
-  diamonds: "Pétales",
+  diamonds: "Triangles",
+  petals: "Losange",
   center: "Étoile centrale",
 };
 
@@ -170,7 +193,7 @@ const KitZelligePreview = () => {
   const [mode, setMode] = useState<"preset" | "custom">("preset");
   const [presetId, setPresetId] = useState<string>("p1");
   const [custom, setCustom] = useState<ColorMap>(PRESETS[0].colors);
-  const [selectedRegion, setSelectedRegion] = useState<Region | null>("star");
+  const [selectedRegion, setSelectedRegion] = useState<Region | null>("center");
 
   const activeColors = mode === "preset"
     ? PRESETS.find((p) => p.id === presetId)!.colors
