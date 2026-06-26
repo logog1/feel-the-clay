@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import SEOHead from "@/components/SEOHead";
 import { useLanguage } from "@/i18n/LanguageContext";
 import type { Language } from "@/i18n/translations";
+import zelligeSvgRaw from "@/assets/zellige-motif.svg?raw";
 
 /**
  * Preview page (not linked from nav) for the upcoming Zellige DIY Kit product.
