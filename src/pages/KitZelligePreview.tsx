@@ -160,9 +160,9 @@ const Motif = ({
 const REGION_LABELS: Record<Region, string> = {
   background: "Fond",
   frame: "Filets",
-  star: "Carré central",
-  diamonds: "Losanges",
-  center: "Étoile",
+  star: "Étoile extérieure",
+  diamonds: "Pétales",
+  center: "Étoile centrale",
 };
 
 
