@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Check, Palette, MessageCircle, Sparkles, Package, Clock, Heart, ArrowLeft } from "lucide-react";
+import { Check, Palette, MessageCircle, Sparkles, Package, Clock, Heart, ArrowLeft, RotateCcw } from "lucide-react";
 import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import SEOHead from "@/components/SEOHead";
@@ -8,392 +8,183 @@ import type { Language } from "@/i18n/translations";
 import zelligeSvgRaw from "@/assets/zellige-kit-motif-final.svg?raw";
 
 /**
- * Preview page (not linked from nav) for the upcoming Zellige DIY Kit product.
- * Shows the 5 preset colorways AND a "Customize" mode (à la carreaux-zellige.com)
- * where the user paints each region of the motif from a palette.
- *
+ * Kit Zellige preview — customize the motif by recoloring each
+ * region (= each unique fill in the source SVG).
  * Route: /preview/kit-zellige
  */
 
-// ── Palette ────────────────────────────────────────────────────────────────
+// Each region is keyed by its original fill in the source SVG.
+const REGIONS = [
+  { key: "#b86a0a", label: { en: "8-point star (Khatim)", fr: "Étoile 8 branches (Khatim)", es: "Estrella de 8 puntas", ar: "خاتم (نجمة ثمانية)" } },
+  { key: "#fe8f00", label: { en: "Triangles", fr: "Triangles", es: "Triángulos", ar: "مثلثات" } },
+  { key: "#a44135", label: { en: "Kites", fr: "Cerfs-volants", es: "Cometas", ar: "معينات" } },
+  { key: "#ff3131", label: { en: "Octagons", fr: "Octogones", es: "Octógonos", ar: "مثمنات" } },
+  { key: "#5170ff", label: { en: "Chamfered squares", fr: "Carrés chanfreinés", es: "Cuadrados achaflanados", ar: "مربعات مشطوفة" } },
+  { key: "#91a597", label: { en: "Background", fr: "Fond", es: "Fondo", ar: "خلفية" } },
+  { key: "#ffffff", label: { en: "Joints", fr: "Joints", es: "Juntas", ar: "الفواصل" } },
+] as const;
+
 const PALETTE = [
-  { name: "Rouge",     hex: "#B23A2E" },
-  { name: "Beige",     hex: "#E2C9A0" },
-  { name: "Bleu",      hex: "#2F5E8A" },
-  { name: "Vert",      hex: "#1F6B3A" },
-  { name: "Jaune",     hex: "#E5B23A" },
-  { name: "Rose",      hex: "#D88A8A" },
-  { name: "Bleu clair",hex: "#A9C8E0" },
-  { name: "Noir",      hex: "#1A1A1A" },
-  { name: "Blanc",     hex: "#F4EFE6" },
+  "#B23A2E", "#E2C9A0", "#2F5E8A", "#1F6B3A", "#E5B23A",
+  "#D88A8A", "#A9C8E0", "#1A1A1A", "#F4EFE6", "#5170ff",
+  "#ff3131", "#a44135", "#fe8f00", "#b86a0a", "#91a597",
+  "#ffffff", "#0F3D2E", "#C97B3F",
 ];
 
-// Regions match the actual fills present in the source SVG.
-type Region = "corners" | "sides" | "diamonds" | "petals" | "center" | "frame" | "background";
-type ColorMap = Record<Region, string>;
+const DEFAULTS = Object.fromEntries(REGIONS.map((r) => [r.key, r.key])) as Record<string, string>;
 
-// Default colorway — matches the source SVG fills so it renders as-is on first load.
-const DEFAULT_COLORS: ColorMap = {
-  corners: "#5170ff", sides: "#ff3131", diamonds: "#a44135",
-  petals: "#fe8f00", center: "#b86a0a", frame: "#ffffff", background: "#91a597",
+const COPY: Record<Language, Record<string, string>> = {
+  en: { banner: "Preview page, not published.", store: "Store", new: "New", title: "Kit Zellige", subtitle: "Create your own Moroccan craft masterpiece", duration: "1h30 to 2h", zone: "Pick a zone", palette: "Choose a color", reset: "Reset", whatsapp: "Order on WhatsApp", payment: "Cash on delivery or in-store payment · Delivery in Morocco", hint: "Pick a zone, then tap a color to recolor it.", descTitle: "A creative journey into zellige", desc: "Discover zellige, the ancestral art that shapes Moroccan craftsmanship. With our complete kit, you create your own unique piece using traditional methods.", contentsTitle: "Kit contents", whyTitle: "Why this kit?", greeting: "Hello, I would like to order the Zellige Kit.", customLine: "Custom design:" },
+  fr: { banner: "Page d'aperçu, non publiée.", store: "Boutique", new: "Nouveau", title: "Kit Zellige", subtitle: "Créez votre propre chef-d'œuvre d'artisanat marocain", duration: "1h30 à 2h", zone: "Choisir une zone", palette: "Choisir une couleur", reset: "Réinitialiser", whatsapp: "Commander sur WhatsApp", payment: "Paiement à la livraison ou en boutique · Livraison Maroc", hint: "Sélectionnez une zone, puis touchez une couleur pour la recolorer.", descTitle: "Un voyage créatif au cœur du zellige", desc: "Plongez dans l'univers du zellige, cet art ancestral de l'artisanat marocain. Avec notre kit complet, vous créez votre pièce unique selon les méthodes traditionnelles.", contentsTitle: "Contenu du kit", whyTitle: "Pourquoi ce kit ?", greeting: "Bonjour, je souhaite commander le Kit Zellige.", customLine: "Modèle personnalisé :" },
+  es: { banner: "Página de vista previa, no publicada.", store: "Tienda", new: "Nuevo", title: "Kit Zellige", subtitle: "Crea tu propia obra maestra de artesanía marroquí", duration: "1h30 a 2h", zone: "Elige una zona", palette: "Elige un color", reset: "Restablecer", whatsapp: "Pedir por WhatsApp", payment: "Pago contra entrega o en tienda · Entrega en Marruecos", hint: "Selecciona una zona y luego un color para recolorearla.", descTitle: "Un viaje creativo al corazón del zellige", desc: "Descubre el zellige, el arte ancestral de la artesanía marroquí. Con nuestro kit completo, creas tu pieza única siguiendo métodos tradicionales.", contentsTitle: "Contenido del kit", whyTitle: "¿Por qué este kit?", greeting: "Hola, quiero pedir el Kit Zellige.", customLine: "Diseño personalizado:" },
+  ar: { banner: "صفحة معاينة غير منشورة.", store: "المتجر", new: "جديد", title: "طقم الزليج", subtitle: "اصنع تحفتك الخاصة من الحرف المغربية", duration: "ساعة ونصف إلى ساعتين", zone: "اختر منطقة", palette: "اختر لوناً", reset: "إعادة", whatsapp: "اطلب عبر واتساب", payment: "الدفع عند الاستلام أو في المتجر · التوصيل داخل المغرب", hint: "اختر منطقة ثم لوناً لإعادة تلوينها.", descTitle: "رحلة إبداعية في عالم الزليج", desc: "اكتشف الزليج، الفن العريق للصناعة التقليدية المغربية. مع طقمنا الكامل تصنع قطعة فريدة باتباع طرق تقليدية.", contentsTitle: "محتويات الطقم", whyTitle: "لماذا هذا الطقم؟", greeting: "مرحباً، أريد طلب طقم الزليج.", customLine: "تصميم مخصص:" },
 };
 
-// Source fills present in the original SVG file — used to recolor by region.
-const SRC_COLORS: Record<Region, string> = {
-  corners:    "#5170ff",
-  sides:      "#ff3131",
-  diamonds:   "#a44135",
-  petals:     "#fe8f00",
-  center:     "#b86a0a",
-  frame:      "#ffffff",
-  background: "#91a597",
+const CONTENTS: Record<Language, string[]> = {
+  en: ["Hand-cut zellige pieces", "Plaster pouch for assembly", "Lègant, spoon and cup", "Detailed instruction card", "Booklet about the motif", "Back-frame and frame"],
+  fr: ["Pièces de zellige taillées à la main", "Sachet de plâtre pour l'assemblage", "Lègant, cuillère et gobelet", "Carte d'instruction détaillée", "Brochure sur le motif", "Sous-cadre et cadre"],
+  es: ["Piezas de zellige cortadas a mano", "Bolsa de yeso para el montaje", "Lègant, cuchara y vaso", "Tarjeta de instrucciones detallada", "Folleto sobre el motivo", "Base y marco"],
+  ar: ["قطع زليج مقطوعة يدوياً", "كيس جبس للتركيب", "لگّانت وملعقة وكأس", "بطاقة تعليمات مفصلة", "كتيب عن الزخرفة", "قاعدة وإطار"],
 };
 
-
-const Motif = ({ colors }: { colors: ColorMap; selectedRegion?: Region | null; onSelectRegion?: (r: Region) => void; interactive?: boolean }) => {
-  const svg = useMemo(() => {
-    let s = zelligeSvgRaw;
-    s = s
-      .replace(/\swidth="[^"]*"/i, "")
-      .replace(/\sheight="[^"]*"/i, "")
-      .replace(/viewBox="[^"]*"/i, 'viewBox="0 0 1190.25 1683.75"')
-      .replace(/preserveAspectRatio="[^"]*"/i, 'preserveAspectRatio="xMidYMid meet"');
-    (Object.keys(SRC_COLORS) as Region[]).forEach((r) => {
-      const src = SRC_COLORS[r];
-      const target = colors[r];
-      s = s.split(`fill="${src}"`).join(`fill="${target}"`);
-      s = s.split(`fill="${src.toUpperCase()}"`).join(`fill="${target}"`);
-    });
-    return s;
-  }, [colors]);
-  return (
-    <div
-      className="w-full h-full flex items-center justify-center [&>svg]:w-full [&>svg]:h-full [&>svg]:max-w-full [&>svg]:max-h-full"
-      dangerouslySetInnerHTML={{ __html: svg }}
-    />
-  );
+const BENEFITS: Record<Language, { title: string; description: string; icon: typeof Sparkles }[]> = {
+  en: [
+    { icon: Sparkles, title: "Artisanal authenticity", description: "Each piece is hand-cut by Moroccan artisans." },
+    { icon: Heart, title: "Cultural immersion", description: "Learn traditional techniques from home." },
+    { icon: Palette, title: "Creativity and calm", description: "A relaxing activity that stimulates creativity." },
+    { icon: Package, title: "A unique object", description: "Create a personalized piece for your home." },
+  ],
+  fr: [
+    { icon: Sparkles, title: "Authenticité artisanale", description: "Chaque pièce est taillée à la main par des artisans marocains." },
+    { icon: Heart, title: "Immersion culturelle", description: "Apprenez les techniques traditionnelles depuis chez vous." },
+    { icon: Palette, title: "Créativité et détente", description: "Une activité relaxante qui stimule votre créativité." },
+    { icon: Package, title: "Objet unique", description: "Créez une décoration personnalisée pour votre intérieur." },
+  ],
+  es: [
+    { icon: Sparkles, title: "Autenticidad artesanal", description: "Cada pieza está cortada a mano por artesanos marroquíes." },
+    { icon: Heart, title: "Inmersión cultural", description: "Aprende técnicas tradicionales desde casa." },
+    { icon: Palette, title: "Creatividad y calma", description: "Una actividad relajante que estimula la creatividad." },
+    { icon: Package, title: "Objeto único", description: "Crea una pieza personalizada para tu hogar." },
+  ],
+  ar: [
+    { icon: Sparkles, title: "أصالة حرفية", description: "كل قطعة مقطوعة يدوياً من طرف حرفيين مغاربة." },
+    { icon: Heart, title: "انغماس ثقافي", description: "تعلم تقنيات تقليدية من منزلك." },
+    { icon: Palette, title: "إبداع وهدوء", description: "نشاط مريح يحفز الإبداع." },
+    { icon: Package, title: "قطعة فريدة", description: "اصنع قطعة مخصصة لمنزلك." },
+  ],
 };
-
-
-
-
-const REGION_LABELS: Record<Language, Record<Region, string>> = {
-  en: { corners: "Chamfered square", sides: "Octagon", frame: "Joints", diamonds: "Kite", petals: "Triangle", center: "8-point star (Khatim)", background: "Background" },
-  fr: { corners: "Carré chanfreiné", sides: "Octogone", frame: "Joints", diamonds: "Cerf-volant", petals: "Triangle", center: "Étoile 8 branches (Khatim)", background: "Fond" },
-  es: { corners: "Cuadrado achaflanado", sides: "Octógono", frame: "Juntas", diamonds: "Cometa", petals: "Triángulo", center: "Estrella de 8 puntas", background: "Fondo" },
-  ar: { corners: "مربع مشطوف", sides: "مثمن", frame: "الفواصل", diamonds: "معين طائر", petals: "مثلث", center: "خاتم (نجمة ثمانية)", background: "خلفية" },
-};
-
-const RegionIcon = ({ r, fill }: { r: Region; fill: string }) => {
-  const props = { fill, stroke: "currentColor", strokeWidth: 1, strokeLinejoin: "round" as const };
-  switch (r) {
-    case "corners":
-      return <svg viewBox="0 0 20 20" className="w-4 h-4 shrink-0"><polygon points="1,1 19,1 19,13 13,19 1,19" {...props} /></svg>;
-    case "sides":
-      return <svg viewBox="0 0 20 20" className="w-4 h-4 shrink-0"><polygon points="6,1 14,1 19,6 19,14 14,19 6,19 1,14 1,6" {...props} /></svg>;
-    case "diamonds":
-      return <svg viewBox="0 0 20 20" className="w-4 h-4 shrink-0"><polygon points="2,2 10,10 18,2 10,18" {...props} /></svg>;
-    case "petals":
-      return <svg viewBox="0 0 20 20" className="w-4 h-4 shrink-0"><polygon points="10,2 18,18 2,18" {...props} /></svg>;
-    case "center":
-      return <svg viewBox="0 0 20 20" className="w-4 h-4 shrink-0"><polygon points="10,1 12,7 19,7 13.5,11 15.5,18 10,13.5 4.5,18 6.5,11 1,7 8,7" {...props} /></svg>;
-    case "frame":
-      return <svg viewBox="0 0 20 20" className="w-4 h-4 shrink-0"><path d="M1 10 H19 M10 1 V19" stroke={fill} strokeWidth="3" fill="none" /></svg>;
-    case "background":
-      return <svg viewBox="0 0 20 20" className="w-4 h-4 shrink-0"><rect x="1" y="1" width="18" height="18" {...props} /></svg>;
-  }
-};
-
-
-const KIT_COPY: Record<Language, {
-  seoTitle: string;
-  seoDescription: string;
-  previewBanner: string;
-  storeLabel: string;
-  customHint: string;
-  newLabel: string;
-  subtitle: string;
-  duration: string;
-  presetMode: string;
-  customMode: string;
-  motifLabel: string;
-  selectedZone: string;
-  palette: string;
-  whatsappCta: string;
-  payment: string;
-  descriptionTitle: string;
-  description: string;
-  contentsTitle: string;
-  contents: string[];
-  whyTitle: string;
-  benefits: { title: string; description: string; icon: typeof Sparkles }[];
-  orderGreeting: string;
-  orderPreset: string;
-  orderCustom: string;
-}> = {
-  en: {
-    seoTitle: "Zellige Kit Preview",
-    seoDescription: "Preview of the DIY Zellige Kit with preset designs and a customization option.",
-    previewBanner: "Preview page, not published. To validate before launch.",
-    storeLabel: "Store",
-    customHint: "Click an area of the motif, then choose a color below.",
-    newLabel: "New",
-    subtitle: "Create your own Moroccan craft masterpiece",
-    duration: "1h30 to 2h",
-    presetMode: "5 designs",
-    customMode: "Customize",
-    motifLabel: "Zellige motif",
-    selectedZone: "Selected area",
-    palette: "Palette",
-    whatsappCta: "Order on WhatsApp",
-    payment: "Cash on delivery or in-store payment · Delivery in Morocco",
-    descriptionTitle: "A creative journey into zellige",
-    description: "Discover zellige, the ancestral art that shaped Moroccan craftsmanship. With our complete kit, you create your own unique piece while following traditional methods.",
-    contentsTitle: "Kit contents",
-    contents: [
-      "Hand-cut zellige pieces",
-      "Plaster pouch for assembly",
-      "Lègant, spoon and cup to prepare the plaster",
-      "Detailed instruction card",
-      "Booklet about the history, origin and meaning of the motif",
-      "Back frame and frame to finish your creation",
-    ],
-    whyTitle: "Why this kit?",
-    benefits: [
-      { icon: Sparkles, title: "Artisanal authenticity", description: "Each zellige piece is hand-cut by Moroccan artisans." },
-      { icon: Heart, title: "Cultural immersion", description: "Learn traditional techniques and explore Morocco's heritage from home." },
-      { icon: Palette, title: "Creativity and calm", description: "A relaxing activity that stimulates your creativity." },
-      { icon: Package, title: "A unique object", description: "Create a personalized decoration for your home." },
-    ],
-    orderGreeting: "Hello, I would like to order the Zellige Kit.",
-    orderPreset: "Chosen design:",
-    orderCustom: "Custom design:",
-  },
-  fr: {
-    seoTitle: "Kit Zellige, Aperçu",
-    seoDescription: "Aperçu du Kit Zellige DIY avec modèles prédéfinis et option de personnalisation.",
-    previewBanner: "Page d'aperçu, non publiée. À valider avant lancement.",
-    storeLabel: "Boutique",
-    customHint: "Cliquez sur une zone du motif, puis choisissez une couleur ci-dessous.",
-    newLabel: "Nouveau",
-    subtitle: "Créez votre propre chef-d'œuvre d'artisanat marocain",
-    duration: "1h30 à 2h",
-    presetMode: "5 modèles",
-    customMode: "Personnaliser",
-    motifLabel: "Motif Zellige",
-    selectedZone: "Zone sélectionnée",
-    palette: "Palette",
-    whatsappCta: "Commander sur WhatsApp",
-    payment: "Paiement à la livraison ou en boutique · Livraison Maroc",
-    descriptionTitle: "Un voyage créatif au cœur du zellige",
-    description: "Plongez dans l'univers fascinant du zellige, cet art ancestral qui fait la renommée de l'artisanat marocain. Avec notre kit complet, vous créez votre propre pièce unique, en suivant les méthodes traditionnelles.",
-    contentsTitle: "Contenu du kit",
-    contents: [
-      "Pièces de zellige taillées à la main",
-      "Sachet de plâtre pour l'assemblage",
-      "Lègant, cuillère et gobelet pour préparer le plâtre",
-      "Carte d'instruction détaillée",
-      "Brochure : histoire, origine et signification du motif",
-      "Sous-cadre et cadre pour finaliser votre création",
-    ],
-    whyTitle: "Pourquoi ce kit ?",
-    benefits: [
-      { icon: Sparkles, title: "Authenticité artisanale", description: "Chaque pièce de zellige est taillée à la main par des artisans marocains." },
-      { icon: Heart, title: "Immersion culturelle", description: "Apprenez les techniques traditionnelles et explorez l'héritage du Maroc depuis chez vous." },
-      { icon: Palette, title: "Créativité et détente", description: "Une activité relaxante qui stimule votre créativité." },
-      { icon: Package, title: "Objet unique", description: "Créez une décoration personnalisée pour votre intérieur." },
-    ],
-    orderGreeting: "Bonjour, je souhaite commander le Kit Zellige.",
-    orderPreset: "Modèle choisi :",
-    orderCustom: "Modèle personnalisé :",
-  },
-  es: {
-    seoTitle: "Kit Zellige, Vista previa",
-    seoDescription: "Vista previa del Kit Zellige DIY con diseños predefinidos y opción de personalización.",
-    previewBanner: "Página de vista previa, no publicada. Para validar antes del lanzamiento.",
-    storeLabel: "Tienda",
-    customHint: "Haz clic en una zona del motivo y elige un color abajo.",
-    newLabel: "Nuevo",
-    subtitle: "Crea tu propia obra maestra de artesanía marroquí",
-    duration: "1h30 a 2h",
-    presetMode: "5 diseños",
-    customMode: "Personalizar",
-    motifLabel: "Motivo Zellige",
-    selectedZone: "Zona seleccionada",
-    palette: "Paleta",
-    whatsappCta: "Pedir por WhatsApp",
-    payment: "Pago contra entrega o en tienda · Entrega en Marruecos",
-    descriptionTitle: "Un viaje creativo al corazón del zellige",
-    description: "Descubre el zellige, el arte ancestral que distingue la artesanía marroquí. Con nuestro kit completo, creas tu propia pieza única siguiendo métodos tradicionales.",
-    contentsTitle: "Contenido del kit",
-    contents: [
-      "Piezas de zellige cortadas a mano",
-      "Bolsa de yeso para el montaje",
-      "Lègant, cuchara y vaso para preparar el yeso",
-      "Tarjeta de instrucciones detallada",
-      "Folleto sobre la historia, el origen y el significado del motivo",
-      "Base y marco para finalizar tu creación",
-    ],
-    whyTitle: "¿Por qué este kit?",
-    benefits: [
-      { icon: Sparkles, title: "Autenticidad artesanal", description: "Cada pieza de zellige está cortada a mano por artesanos marroquíes." },
-      { icon: Heart, title: "Inmersión cultural", description: "Aprende técnicas tradicionales y explora la herencia de Marruecos desde casa." },
-      { icon: Palette, title: "Creatividad y calma", description: "Una actividad relajante que estimula tu creatividad." },
-      { icon: Package, title: "Objeto único", description: "Crea una decoración personalizada para tu hogar." },
-    ],
-    orderGreeting: "Hola, quiero pedir el Kit Zellige.",
-    orderPreset: "Diseño elegido:",
-    orderCustom: "Diseño personalizado:",
-  },
-  ar: {
-    seoTitle: "معاينة طقم الزليج",
-    seoDescription: "معاينة طقم الزليج المنزلي مع تصاميم جاهزة وخيار التخصيص.",
-    previewBanner: "صفحة معاينة غير منشورة. للمراجعة قبل الإطلاق.",
-    storeLabel: "المتجر",
-    customHint: "اضغط على جزء من الزخرفة، ثم اختر اللون من الأسفل.",
-    newLabel: "جديد",
-    subtitle: "اصنع تحفتك الخاصة من الحرف المغربية",
-    duration: "ساعة ونصف إلى ساعتين",
-    presetMode: "5 تصاميم",
-    customMode: "تخصيص",
-    motifLabel: "زخرفة الزليج",
-    selectedZone: "الجزء المختار",
-    palette: "لوحة الألوان",
-    whatsappCta: "اطلب عبر واتساب",
-    payment: "الدفع عند الاستلام أو في المتجر · التوصيل داخل المغرب",
-    descriptionTitle: "رحلة إبداعية في عالم الزليج",
-    description: "اكتشف الزليج، الفن العريق الذي يميز الصناعة التقليدية المغربية. مع طقمنا الكامل، تصنع قطعة فريدة خاصة بك باتباع طرق تقليدية.",
-    contentsTitle: "محتويات الطقم",
-    contents: [
-      "قطع زليج مقطوعة يدوياً",
-      "كيس جبس للتركيب",
-      "لگّانت وملعقة وكأس لتحضير الجبس",
-      "بطاقة تعليمات مفصلة",
-      "كتيب عن تاريخ الزخرفة وأصلها ومعناها",
-      "قاعدة وإطار لإنهاء عملك",
-    ],
-    whyTitle: "لماذا هذا الطقم؟",
-    benefits: [
-      { icon: Sparkles, title: "أصالة حرفية", description: "كل قطعة زليج مقطوعة يدوياً من طرف حرفيين مغاربة." },
-      { icon: Heart, title: "انغماس ثقافي", description: "تعلم تقنيات تقليدية واكتشف تراث المغرب من منزلك." },
-      { icon: Palette, title: "إبداع وهدوء", description: "نشاط مريح يحفز الإبداع." },
-      { icon: Package, title: "قطعة فريدة", description: "اصنع ديكوراً مخصصاً لمنزلك." },
-    ],
-    orderGreeting: "مرحباً، أريد طلب طقم الزليج.",
-    orderPreset: "التصميم المختار:",
-    orderCustom: "تصميم مخصص:",
-  },
-};
-
 
 const KitZelligePreview = () => {
   const { language } = useLanguage();
-  const copy = KIT_COPY[language];
-  const regionLabels = REGION_LABELS[language];
-  const [custom, setCustom] = useState<ColorMap>(DEFAULT_COLORS);
-  const [selectedRegion, setSelectedRegion] = useState<Region | null>("center");
+  const t = COPY[language];
+  const [colors, setColors] = useState<Record<string, string>>(DEFAULTS);
+  const [selected, setSelected] = useState<string>(REGIONS[0].key);
 
-  const activeColors = custom;
+  const svg = useMemo(() => {
+    let s = zelligeSvgRaw
+      .replace(/\swidth="[^"]*"/i, "")
+      .replace(/\sheight="[^"]*"/i, "");
+    for (const r of REGIONS) {
+      const target = colors[r.key];
+      if (target.toLowerCase() === r.key.toLowerCase()) continue;
+      s = s.split(`fill="${r.key}"`).join(`fill="${target}"`);
+      s = s.split(`fill="${r.key.toUpperCase()}"`).join(`fill="${target}"`);
+    }
+    return s;
+  }, [colors]);
 
   const orderText = useMemo(() => {
     const lines = [
-      copy.orderGreeting,
-      `${copy.orderCustom} ${Object.entries(custom).map(([k,v]) => `${regionLabels[k as Region]} ${v}`).join(", ")}`,
+      t.greeting,
+      `${t.customLine} ${REGIONS.map((r) => `${r.label[language]}=${colors[r.key]}`).join(", ")}`,
     ];
     return encodeURIComponent(lines.join("\n"));
-  }, [custom, copy, regionLabels]);
+  }, [colors, t, language]);
 
-  const applyColor = (hex: string) => {
-    if (!selectedRegion) return;
-    setCustom((c) => ({ ...c, [selectedRegion]: hex }));
-  };
+  const applyColor = (hex: string) => setColors((c) => ({ ...c, [selected]: hex }));
 
   return (
     <main className="min-h-screen bg-background">
-      <SEOHead title={copy.seoTitle} description={copy.seoDescription} path="/preview/kit-zellige" />
+      <SEOHead title="Zellige Kit Preview" description="Preview of the DIY Zellige Kit with customization." path="/preview/kit-zellige" />
 
-      {/* Preview banner */}
       <div className="bg-amber-100 border-b border-amber-300 text-amber-900 text-xs font-medium px-4 py-2 flex items-center justify-between">
-        <span className="flex items-center gap-2">
-          <Sparkles size={14} /> {copy.previewBanner}
-        </span>
+        <span className="flex items-center gap-2"><Sparkles size={14} /> {t.banner}</span>
         <Link to="/store" className="flex items-center gap-1 underline hover:no-underline">
-          <ArrowLeft size={12} /> {copy.storeLabel}
+          <ArrowLeft size={12} /> {t.store}
         </Link>
       </div>
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10">
         <div className="grid md:grid-cols-2 gap-10">
-          {/* Left: motif preview */}
+          {/* Motif preview */}
           <div className="space-y-4">
-            <div className="aspect-square rounded-3xl bg-card border-2 border-border/40 shadow-sm p-6 sm:p-10">
-              <Motif
-                colors={activeColors}
-                selectedRegion={selectedRegion}
-                onSelectRegion={setSelectedRegion}
-                interactive
+            <div className="aspect-square rounded-3xl bg-card border-2 border-border/40 shadow-sm p-6 sm:p-10 overflow-hidden">
+              <div
+                className="w-full h-full flex items-center justify-center [&>svg]:w-full [&>svg]:h-full [&>svg]:max-w-full [&>svg]:max-h-full"
+                dangerouslySetInnerHTML={{ __html: svg }}
               />
             </div>
-            <p className="text-xs text-muted-foreground text-center">
-              {copy.customHint}
-            </p>
+            <p className="text-xs text-muted-foreground text-center">{t.hint}</p>
           </div>
 
-          {/* Right: details + selector */}
+          {/* Details + builder */}
           <div className="space-y-6">
             <div>
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-cta/10 text-cta text-[11px] font-bold uppercase tracking-widest">
-                <Package size={12} /> {copy.newLabel}
+                <Package size={12} /> {t.new}
               </span>
-              <h1 className="mt-3 text-3xl sm:text-4xl font-bold text-foreground tracking-tight leading-tight">
-                Kit Zellige
-              </h1>
-              <p className="mt-1 text-base text-foreground/70">
-                {copy.subtitle}
-              </p>
+              <h1 className="mt-3 text-3xl sm:text-4xl font-bold text-foreground tracking-tight leading-tight">{t.title}</h1>
+              <p className="mt-1 text-base text-foreground/70">{t.subtitle}</p>
               <div className="mt-4 flex items-baseline gap-3">
                 <span className="text-3xl font-bold text-cta">350 DH</span>
-                <span className="text-xs text-muted-foreground flex items-center gap-1"><Clock size={12} /> {copy.duration}</span>
+                <span className="text-xs text-muted-foreground flex items-center gap-1"><Clock size={12} /> {t.duration}</span>
               </div>
             </div>
 
-            {/* Custom builder */}
             <div className="space-y-4">
               <div>
-                <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">{copy.selectedZone}</p>
+                <div className="flex items-center justify-between mb-2">
+                  <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">{t.zone}</p>
+                  <button
+                    onClick={() => setColors(DEFAULTS)}
+                    className="text-[11px] font-semibold text-muted-foreground hover:text-foreground flex items-center gap-1"
+                  >
+                    <RotateCcw size={11} /> {t.reset}
+                  </button>
+                </div>
                 <div className="flex flex-wrap gap-1.5">
-                  {(Object.keys(regionLabels) as Region[]).map((r) => (
+                  {REGIONS.map((r) => (
                     <button
-                      key={r}
-                      onClick={() => setSelectedRegion(r)}
+                      key={r.key}
+                      onClick={() => setSelected(r.key)}
                       className={cn(
-                        "px-3 py-1.5 rounded-full text-xs font-semibold border-2 transition-all flex items-center gap-1.5",
-                        selectedRegion === r ? "border-cta bg-cta/10 text-cta" : "border-border/40 text-foreground/70 hover:border-border"
+                        "px-3 py-1.5 rounded-full text-xs font-semibold border-2 transition-all flex items-center gap-2",
+                        selected === r.key ? "border-cta bg-cta/10 text-cta" : "border-border/40 text-foreground/70 hover:border-border"
                       )}
                     >
-                      <RegionIcon r={r} fill={custom[r]} />
-                      {regionLabels[r]}
+                      <span className="w-3 h-3 rounded-full border border-border/60" style={{ background: colors[r.key] }} />
+                      {r.label[language]}
                     </button>
                   ))}
                 </div>
               </div>
               <div>
-                <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">{copy.palette}</p>
+                <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">{t.palette}</p>
                 <div className="grid grid-cols-9 gap-2">
-                  {PALETTE.map((c) => {
-                    const active = selectedRegion && custom[selectedRegion] === c.hex;
+                  {PALETTE.map((hex) => {
+                    const active = colors[selected]?.toLowerCase() === hex.toLowerCase();
                     return (
                       <button
-                        key={c.hex}
-                        onClick={() => applyColor(c.hex)}
+                        key={hex}
+                        onClick={() => applyColor(hex)}
                         className={cn(
                           "aspect-square rounded-lg border-2 transition-all flex items-center justify-center",
                           active ? "border-cta scale-110 shadow" : "border-border/40 hover:border-border"
                         )}
-                        style={{ background: c.hex }}
-                        title={c.name}
+                        style={{ background: hex }}
+                        title={hex}
                       >
-                        {active && <Check size={14} className="text-primary-foreground drop-shadow" />}
+                        {active && <Check size={14} className="text-white drop-shadow" />}
                       </button>
                     );
                   })}
@@ -401,31 +192,25 @@ const KitZelligePreview = () => {
               </div>
             </div>
 
-            {/* CTA */}
             <a
               href={`https://wa.me/message/SBUBJACPVCNGM1?text=${orderText}`}
               target="_blank"
               rel="noopener noreferrer"
               className="w-full py-4 rounded-2xl bg-cta text-primary-foreground font-bold text-sm flex items-center justify-center gap-2 hover:bg-cta-hover active:scale-95 transition-all shadow-lg shadow-cta/30"
             >
-              <MessageCircle size={16} /> {copy.whatsappCta}
+              <MessageCircle size={16} /> {t.whatsapp}
             </a>
-            <p className="text-[11px] text-center text-muted-foreground">
-              {copy.payment}
-            </p>
+            <p className="text-[11px] text-center text-muted-foreground">{t.payment}</p>
           </div>
         </div>
 
-        {/* Long description */}
         <section className="mt-16 grid md:grid-cols-2 gap-10">
           <div className="space-y-4">
-            <h2 className="text-xl font-bold text-foreground">{copy.descriptionTitle}</h2>
-            <p className="text-foreground/75 leading-relaxed text-sm">
-              {copy.description}
-            </p>
-            <h3 className="font-bold text-foreground pt-2">{copy.contentsTitle}</h3>
+            <h2 className="text-xl font-bold text-foreground">{t.descTitle}</h2>
+            <p className="text-foreground/75 leading-relaxed text-sm">{t.desc}</p>
+            <h3 className="font-bold text-foreground pt-2">{t.contentsTitle}</h3>
             <ul className="space-y-2 text-sm text-foreground/75">
-              {copy.contents.map((line) => (
+              {CONTENTS[language].map((line) => (
                 <li key={line} className="flex gap-2">
                   <Check size={16} className="text-cta flex-shrink-0 mt-0.5" /> {line}
                 </li>
@@ -433,9 +218,9 @@ const KitZelligePreview = () => {
             </ul>
           </div>
           <div className="space-y-4">
-            <h2 className="text-xl font-bold text-foreground">{copy.whyTitle}</h2>
+            <h2 className="text-xl font-bold text-foreground">{t.whyTitle}</h2>
             <div className="space-y-3">
-              {copy.benefits.map(({ icon: Icon, title, description }) => (
+              {BENEFITS[language].map(({ icon: Icon, title, description }) => (
                 <div key={title} className="flex gap-3 p-4 rounded-2xl bg-card border border-border/40">
                   <div className="w-10 h-10 rounded-xl bg-cta/10 flex items-center justify-center flex-shrink-0">
                     <Icon size={18} className="text-cta" />
