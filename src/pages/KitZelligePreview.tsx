@@ -41,171 +41,35 @@ const PRESETS: { id: string; colors: ColorMap }[] = [
   { id: "p5", colors: { corners: "#1A1A1A", sides: "#D88A8A", diamonds: "#1A1A1A", petals: "#B23A2E", center: "#E5B23A", frame: "#FFFFFF" } },
 ];
 
-// Dark olive base, visible between tiles as small accent shapes
-const OLIVE_BASE = "#454A16";
-const GROUT = 2.5; // white grout stroke width
+// Source fills present in the original SVG file — used to recolor by region.
+const SRC_COLORS: Record<Region, string> = {
+  corners: "#5170ff",
+  sides:   "#ff5757",
+  diamonds:"#812c2c",
+  petals:  "#ff6200",
+  center:  "#e2830d",
+  frame:   "#ffffff",
+};
 
-// ── Motif SVG, Moroccan zellige tile (viewBox 0 0 400 400)
-const Motif = ({
-  colors,
-  selectedRegion,
-  onSelectRegion,
-  interactive,
-}: {
-  colors: ColorMap;
-  selectedRegion?: Region | null;
-  onSelectRegion?: (r: Region) => void;
-  interactive?: boolean;
-}) => {
-  const handle = (r: Region) => (e: React.MouseEvent) => {
-    if (!interactive) return;
-    e.stopPropagation();
-    onSelectRegion?.(r);
-  };
-  const ring = (r: Region) =>
-    interactive && selectedRegion === r
-      ? "outline outline-2 outline-offset-2 outline-cta"
-      : "";
-
-  // Stepped 8-point star (Khatim), square with 4 rectangular protrusions
-  // Built as union of a base square + 4 rectangles, expressed as a single polygon
-  const stepStar = (cx: number, cy: number, half: number, arm: number) => {
-    // half = half-side of base square; arm = depth of each protruding rectangle; arm-width = half
-    const h = half, a = arm;
-    // walk perimeter clockwise starting at top-left of top protrusion
-    return [
-      `${cx - h/2},${cy - h - a}`, `${cx + h/2},${cy - h - a}`,
-      `${cx + h/2},${cy - h}`,     `${cx + h},${cy - h}`,
-      `${cx + h},${cy - h/2}`,     `${cx + h + a},${cy - h/2}`,
-      `${cx + h + a},${cy + h/2}`, `${cx + h},${cy + h/2}`,
-      `${cx + h},${cy + h}`,       `${cx + h/2},${cy + h}`,
-      `${cx + h/2},${cy + h + a}`, `${cx - h/2},${cy + h + a}`,
-      `${cx - h/2},${cy + h}`,     `${cx - h},${cy + h}`,
-      `${cx - h},${cy + h/2}`,     `${cx - h - a},${cy + h/2}`,
-      `${cx - h - a},${cy - h/2}`, `${cx - h},${cy - h/2}`,
-      `${cx - h},${cy - h}`,       `${cx - h/2},${cy - h}`,
-    ].join(" ");
-  };
-
-  // ── Outer ring geometry ─────────────────────────────────────────────────
-  // Blue corner blocks (chamfered pentagons), inner corner cut diagonally
-  const cornerTiles = [
-    "0,0 120,0 120,80 80,120 0,120",                       // TL
-    "280,0 400,0 400,120 320,120 280,80",                  // TR
-    "0,280 80,280 120,320 120,400 0,400",                  // BL
-    "320,280 400,280 400,400 280,400 280,320",             // BR
-  ];
-
-  // Coral elongated octagons on each side (flat outer edge along canvas edge)
-  const sideTiles = [
-    "140,0 260,0 300,40 300,100 260,140 140,140 100,100 100,40",       // TOP
-    "400,140 400,260 360,300 300,300 260,260 260,140 300,100 360,100", // RIGHT
-    "260,400 140,400 100,360 100,300 140,260 260,260 300,300 300,360", // BOTTOM
-    "0,260 0,140 40,100 100,100 140,140 140,260 100,300 40,300",       // LEFT
-  ];
-
-  // ── Inner motif (within white-framed square 110..290) ───────────────────
-  // 4 burgundy corner kites, each fills a corner of the inner square,
-  // formed by joining the two triangles adjacent to a corner (4 vertices, apex at center)
-  const burgundyKites = [
-    "110,110 140,110 200,200 110,140", // TL
-    "260,110 290,110 290,140 200,200", // TR
-    "290,260 290,290 260,290 200,200", // BR
-    "110,260 200,200 140,290 110,290", // BL
-  ];
-
-  // 4 orange cardinal triangles, wide base on each inner-square edge, apex at center
-  const orangeTris = [
-    "140,110 260,110 200,200", // N
-    "290,140 290,260 200,200", // E
-    "260,290 140,290 200,200", // S
-    "110,260 110,140 200,200", // W
-  ];
-
+const Motif = ({ colors }: { colors: ColorMap; selectedRegion?: Region | null; onSelectRegion?: (r: Region) => void; interactive?: boolean }) => {
+  const svg = useMemo(() => {
+    let s = zelligeSvgRaw;
+    (Object.keys(SRC_COLORS) as Region[]).forEach((r) => {
+      const src = SRC_COLORS[r];
+      const target = colors[r];
+      s = s.split(`fill="${src}"`).join(`fill="${target}"`);
+      s = s.split(`fill="${src.toUpperCase()}"`).join(`fill="${target}"`);
+    });
+    return s;
+  }, [colors]);
   return (
-    <svg viewBox="0 0 400 400" className="w-full h-full" shapeRendering="geometricPrecision">
-      {/* olive base, visible as small accent pieces between tiles */}
-      <rect x="0" y="0" width="400" height="400" fill={OLIVE_BASE} pointerEvents="none" />
-
-      {/* 4 blue chamfered corner blocks */}
-      {cornerTiles.map((pts, i) => (
-        <polygon
-          key={`c-${i}`}
-          points={pts}
-          fill={colors.corners}
-          stroke={colors.frame}
-          strokeWidth={GROUT}
-          strokeLinejoin="miter"
-          onClick={handle("corners")}
-          className={cn(interactive && "cursor-pointer", ring("corners"))}
-        />
-      ))}
-
-      {/* 4 coral octagonal side tiles */}
-      {sideTiles.map((pts, i) => (
-        <polygon
-          key={`s-${i}`}
-          points={pts}
-          fill={colors.sides}
-          stroke={colors.frame}
-          strokeWidth={GROUT}
-          strokeLinejoin="miter"
-          onClick={handle("sides")}
-          className={cn(interactive && "cursor-pointer", ring("sides"))}
-        />
-      ))}
-
-      {/* white inner square (frame / grout field) */}
-      <rect
-        x="110" y="110" width="180" height="180"
-        fill={colors.frame}
-        stroke={colors.frame}
-        strokeWidth={GROUT}
-        onClick={handle("frame")}
-        className={cn(interactive && "cursor-pointer", ring("frame"))}
-      />
-
-      {/* 4 burgundy corner kites forming the diagonal X */}
-      {burgundyKites.map((pts, i) => (
-        <polygon
-          key={`b-${i}`}
-          points={pts}
-          fill={colors.diamonds}
-          stroke={colors.frame}
-          strokeWidth={GROUT}
-          strokeLinejoin="miter"
-          onClick={handle("diamonds")}
-          className={cn(interactive && "cursor-pointer", ring("diamonds"))}
-        />
-      ))}
-
-      {/* 4 orange triangles in front of burgundy (narrow, pointing to center) */}
-      {orangeTris.map((pts, i) => (
-        <polygon
-          key={`o-${i}`}
-          points={pts}
-          fill={colors.petals}
-          stroke={colors.frame}
-          strokeWidth={GROUT}
-          strokeLinejoin="miter"
-          onClick={handle("petals")}
-          className={cn(interactive && "cursor-pointer", ring("petals"))}
-        />
-      ))}
-
-      {/* central stepped 8-point star (khatam) */}
-      <polygon
-        points={stepStar(200, 200, 22, 14)}
-        fill={colors.center}
-        stroke={colors.frame}
-        strokeWidth={GROUT}
-        strokeLinejoin="miter"
-        onClick={handle("center")}
-        className={cn(interactive && "cursor-pointer", ring("center"))}
-      />
-    </svg>
+    <div
+      className="w-full h-full flex items-center justify-center [&>svg]:w-full [&>svg]:h-full [&>svg]:max-w-full [&>svg]:max-h-full"
+      dangerouslySetInnerHTML={{ __html: svg }}
+    />
   );
 };
+
 
 
 const PRESET_LABELS: Record<Language, Record<string, string>> = {
