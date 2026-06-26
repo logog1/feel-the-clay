@@ -109,17 +109,12 @@ const OffersSection = () => {
       promoLabel: gardeningConfig?.promo_enabled ? gardeningConfig.promo_label : undefined,
       price: gardeningConfig?.promo_enabled && gardeningConfig?.promo_price ? gardeningConfig.promo_price : (gardeningConfig?.price || "150 DH"),
     },
-    {
-      title: "EXODAYA",
-      subtitle: "Art & Culture Residency",
-      image: tetouanCity,
-      link: "/exodaya",
-      unavailable: false,
-      promoLabel: "Exclusive",
-      price: "Price on request",
-      exclusive: true,
-    },
   ];
+
+  // Hide workshops that are marked unavailable in the admin config.
+  // The Exodaya residency card is intentionally removed from the public grid.
+  const visibleOffers = offers.filter((o) => !o.unavailable);
+
 
   return (
     <section id="offers" ref={ref} className="py-14 md:py-24 bg-sand-light/30">
@@ -130,7 +125,7 @@ const OffersSection = () => {
         </div>
 
         <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory md:grid md:grid-cols-3 lg:grid-cols-6 md:overflow-visible md:pb-0 md:gap-5">
-          {offers.map((offer, index) => (
+          {visibleOffers.map((offer, index) => (
             <div
               key={offer.title}
               className={cn(
