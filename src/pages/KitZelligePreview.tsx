@@ -118,6 +118,7 @@ const KitZelligePreview = () => {
   const [presetId, setPresetId] = useState<string>(PRESETS[0].id);
   const [colors, setColors] = useState<Record<string, string>>(PRESETS[0].colors);
   const [selected, setSelected] = useState<string>(REGIONS[0].key);
+  const [pulseKey, setPulseKey] = useState(0);
 
   const applyPreset = (id: string) => {
     const p = PRESETS.find((x) => x.id === id);
