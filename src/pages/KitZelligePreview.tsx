@@ -42,6 +42,30 @@ const DEFAULTS: Record<string, string> = {
   "#ffffff": "#FFFFFF", // joints → white
 };
 
+// Ready-made colorways (each maps region key → color).
+const PRESETS: { id: string; label: Record<Language, string>; colors: Record<string, string> }[] = [
+  {
+    id: "fes-classic",
+    label: { en: "Fès Classic", fr: "Fès Classique", es: "Fez Clásico", ar: "فاس الكلاسيكي" },
+    colors: { "#b86a0a": "#B23A2E", "#fe8f00": "#E2C9A0", "#a44135": "#C97B3F", "#ff3131": "#2F5E8A", "#5170ff": "#1F6B3A", "#91a597": "#F4EFE6", "#ffffff": "#FFFFFF" },
+  },
+  {
+    id: "majorelle",
+    label: { en: "Majorelle Blue", fr: "Bleu Majorelle", es: "Azul Majorelle", ar: "أزرق ماجوريل" },
+    colors: { "#b86a0a": "#1B3A8A", "#fe8f00": "#E5B23A", "#a44135": "#0F3D2E", "#ff3131": "#1B3A8A", "#5170ff": "#F4EFE6", "#91a597": "#F4EFE6", "#ffffff": "#FFFFFF" },
+  },
+  {
+    id: "sahara",
+    label: { en: "Sahara Sand", fr: "Sable du Sahara", es: "Arena del Sahara", ar: "رمال الصحراء" },
+    colors: { "#b86a0a": "#8B4513", "#fe8f00": "#E2C9A0", "#a44135": "#C97B3F", "#ff3131": "#B23A2E", "#5170ff": "#A0825A", "#91a597": "#F4EFE6", "#ffffff": "#FFFFFF" },
+  },
+  {
+    id: "midnight",
+    label: { en: "Midnight Medina", fr: "Médina Nuit", es: "Medina Nocturna", ar: "مدينة الليل" },
+    colors: { "#b86a0a": "#E5B23A", "#fe8f00": "#1A1A1A", "#a44135": "#0F3D2E", "#ff3131": "#2F5E8A", "#5170ff": "#1A1A1A", "#91a597": "#1F2937", "#ffffff": "#F4EFE6" },
+  },
+];
+
 const COPY: Record<Language, Record<string, string>> = {
   en: { banner: "Preview page, not published.", store: "Store", new: "New", title: "Kit Zellige", subtitle: "Create your own Moroccan craft masterpiece", duration: "1h30 to 2h", zone: "Pick a zone", palette: "Choose a color", reset: "Reset", whatsapp: "Order on WhatsApp", payment: "Cash on delivery or in-store payment · Delivery in Morocco", hint: "Pick a zone, then tap a color to recolor it.", descTitle: "A creative journey into zellige", desc: "Discover zellige, the ancestral art that shapes Moroccan craftsmanship. With our complete kit, you create your own unique piece using traditional methods.", contentsTitle: "Kit contents", whyTitle: "Why this kit?", greeting: "Hello, I would like to order the Zellige Kit.", customLine: "Custom design:" },
   fr: { banner: "Page d'aperçu, non publiée.", store: "Boutique", new: "Nouveau", title: "Kit Zellige", subtitle: "Créez votre propre chef-d'œuvre d'artisanat marocain", duration: "1h30 à 2h", zone: "Choisir une zone", palette: "Choisir une couleur", reset: "Réinitialiser", whatsapp: "Commander sur WhatsApp", payment: "Paiement à la livraison ou en boutique · Livraison Maroc", hint: "Sélectionnez une zone, puis touchez une couleur pour la recolorer.", descTitle: "Un voyage créatif au cœur du zellige", desc: "Plongez dans l'univers du zellige, cet art ancestral de l'artisanat marocain. Avec notre kit complet, vous créez votre pièce unique selon les méthodes traditionnelles.", contentsTitle: "Contenu du kit", whyTitle: "Pourquoi ce kit ?", greeting: "Bonjour, je souhaite commander le Kit Zellige.", customLine: "Modèle personnalisé :" },
