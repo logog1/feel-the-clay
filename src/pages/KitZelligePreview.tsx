@@ -6,6 +6,10 @@ import SEOHead from "@/components/SEOHead";
 import { useLanguage } from "@/i18n/LanguageContext";
 import type { Language } from "@/i18n/translations";
 import zelligeSvgRaw from "@/assets/zellige-kit-motif-final.svg?raw";
+import gallery1 from "@/assets/zellige-kit-gallery-1.jpg";
+import gallery2 from "@/assets/zellige-kit-gallery-2.jpg";
+import gallery3 from "@/assets/zellige-kit-gallery-3.jpg";
+import gallery4 from "@/assets/zellige-kit-gallery-4.jpg";
 
 /**
  * Kit Zellige preview — customize the motif by recoloring each
@@ -291,6 +295,22 @@ const KitZelligePreview = () => {
             </div>
           </div>
         </div>
+
+        {/* Gallery */}
+        <section className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-3">
+          {[gallery1, gallery2, gallery3, gallery4].map((src, i) => (
+            <div key={i} className="aspect-square rounded-2xl overflow-hidden bg-card border border-border/40">
+              <img
+                src={src}
+                alt={`${t.title} ${i + 1}`}
+                loading="lazy"
+                width={1024}
+                height={1024}
+                className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+              />
+            </div>
+          ))}
+        </section>
 
         <section className="mt-16 grid md:grid-cols-2 gap-10">
           <div className="space-y-4">
