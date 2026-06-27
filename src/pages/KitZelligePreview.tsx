@@ -6,6 +6,10 @@ import SEOHead from "@/components/SEOHead";
 import { useLanguage } from "@/i18n/LanguageContext";
 import type { Language } from "@/i18n/translations";
 import zelligeSvgRaw from "@/assets/zellige-kit-motif-final.svg?raw";
+import gallery1 from "@/assets/zellige-kit-gallery-1.jpg";
+import gallery2 from "@/assets/zellige-kit-gallery-2.jpg";
+import gallery3 from "@/assets/zellige-kit-gallery-3.jpg";
+import gallery4 from "@/assets/zellige-kit-gallery-4.jpg";
 
 /**
  * Kit Zellige preview — customize the motif by recoloring each
