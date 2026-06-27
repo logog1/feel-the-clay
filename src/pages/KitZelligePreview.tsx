@@ -161,8 +161,8 @@ const KitZelligePreview = () => {
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10">
         <div className="grid md:grid-cols-2 gap-10">
-          {/* Motif preview */}
-          <div className="space-y-4">
+          {/* Motif preview + builder directly underneath */}
+          <div className="space-y-5">
             <div className="aspect-square rounded-3xl bg-card border-2 border-border/40 shadow-sm p-6 sm:p-10 overflow-hidden">
               <div
                 className="w-full h-full flex items-center justify-center [&>svg]:w-full [&>svg]:h-full [&>svg]:max-w-full [&>svg]:max-h-full"
@@ -170,21 +170,6 @@ const KitZelligePreview = () => {
               />
             </div>
             <p className="text-xs text-muted-foreground text-center">{t.hint}</p>
-          </div>
-
-          {/* Details + builder */}
-          <div className="space-y-6">
-            <div>
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-cta/10 text-cta text-[11px] font-bold uppercase tracking-widest">
-                <Package size={12} /> {t.new}
-              </span>
-              <h1 className="mt-3 text-3xl sm:text-4xl font-bold text-foreground tracking-tight leading-tight">{t.title}</h1>
-              <p className="mt-1 text-base text-foreground/70">{t.subtitle}</p>
-              <div className="mt-4 flex items-baseline gap-3">
-                <span className="text-3xl font-bold text-cta">350 DH</span>
-                <span className="text-xs text-muted-foreground flex items-center gap-1"><Clock size={12} /> {t.duration}</span>
-              </div>
-            </div>
 
             {/* Mode toggle: Ready models vs Customize */}
             <div className="inline-flex p-1 rounded-full bg-muted/60 border border-border/40">
@@ -277,16 +262,33 @@ const KitZelligePreview = () => {
                 </div>
               </div>
             )}
+          </div>
 
-            <a
-              href={`https://wa.me/message/SBUBJACPVCNGM1?text=${orderText}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full py-4 rounded-2xl bg-cta text-primary-foreground font-bold text-sm flex items-center justify-center gap-2 hover:bg-cta-hover active:scale-95 transition-all shadow-lg shadow-cta/30"
-            >
-              <MessageCircle size={16} /> {t.whatsapp}
-            </a>
-            <p className="text-[11px] text-center text-muted-foreground">{t.payment}</p>
+          {/* Details + price + CTA */}
+          <div className="space-y-6">
+            <div>
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-cta/10 text-cta text-[11px] font-bold uppercase tracking-widest">
+                <Package size={12} /> {t.new}
+              </span>
+              <h1 className="mt-3 text-3xl sm:text-4xl font-bold text-foreground tracking-tight leading-tight">{t.title}</h1>
+              <p className="mt-1 text-base text-foreground/70">{t.subtitle}</p>
+            </div>
+
+            <div className="p-5 rounded-2xl bg-card border border-border/40">
+              <div className="flex items-baseline gap-3">
+                <span className="text-3xl font-bold text-cta">350 DH</span>
+                <span className="text-xs text-muted-foreground flex items-center gap-1"><Clock size={12} /> {t.duration}</span>
+              </div>
+              <a
+                href={`https://wa.me/message/SBUBJACPVCNGM1?text=${orderText}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-4 w-full py-4 rounded-2xl bg-cta text-primary-foreground font-bold text-sm flex items-center justify-center gap-2 hover:bg-cta-hover active:scale-95 transition-all shadow-lg shadow-cta/30"
+              >
+                <MessageCircle size={16} /> {t.whatsapp}
+              </a>
+              <p className="mt-2 text-[11px] text-center text-muted-foreground">{t.payment}</p>
+            </div>
           </div>
         </div>
 
