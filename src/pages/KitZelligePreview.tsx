@@ -136,12 +136,15 @@ const KitZelligePreview = () => {
   }, [colors]);
 
   const orderText = useMemo(() => {
+    const preset = PRESETS.find((p) => p.id === presetId);
     const lines = [
       t.greeting,
-      `${t.customLine} ${REGIONS.map((r) => `${r.label[language]}=${colors[r.key]}`).join(", ")}`,
+      mode === "ready" && preset
+        ? `${t.presetLine} ${preset.label[language]}`
+        : `${t.customLine} ${REGIONS.map((r) => `${r.label[language]}=${colors[r.key]}`).join(", ")}`,
     ];
     return encodeURIComponent(lines.join("\n"));
-  }, [colors, t, language]);
+  }, [colors, t, language, mode, presetId]);
 
   const applyColor = (hex: string) => setColors((c) => ({ ...c, [selected]: hex }));
 
