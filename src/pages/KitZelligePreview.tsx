@@ -186,56 +186,97 @@ const KitZelligePreview = () => {
               </div>
             </div>
 
-            <div className="space-y-4">
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">{t.zone}</p>
-                  <button
-                    onClick={() => setColors(DEFAULTS)}
-                    className="text-[11px] font-semibold text-muted-foreground hover:text-foreground flex items-center gap-1"
-                  >
-                    <RotateCcw size={11} /> {t.reset}
-                  </button>
-                </div>
-                <div className="flex flex-wrap gap-1.5">
-                  {REGIONS.map((r) => (
+            {/* Mode toggle: Ready models vs Customize */}
+            <div className="inline-flex p-1 rounded-full bg-muted/60 border border-border/40">
+              {(["ready", "custom"] as const).map((m) => (
+                <button
+                  key={m}
+                  onClick={() => setMode(m)}
+                  className={cn(
+                    "px-4 py-1.5 rounded-full text-xs font-bold transition-all",
+                    mode === m ? "bg-cta text-primary-foreground shadow" : "text-foreground/70 hover:text-foreground"
+                  )}
+                >
+                  {m === "ready" ? t.modeReady : t.modeCustom}
+                </button>
+              ))}
+            </div>
+
+            {mode === "ready" ? (
+              <div className="grid grid-cols-2 gap-2">
+                {PRESETS.map((p) => {
+                  const active = presetId === p.id;
+                  return (
                     <button
-                      key={r.key}
-                      onClick={() => setSelected(r.key)}
+                      key={p.id}
+                      onClick={() => applyPreset(p.id)}
                       className={cn(
-                        "px-3 py-1.5 rounded-full text-xs font-semibold border-2 transition-all flex items-center gap-2",
-                        selected === r.key ? "border-cta bg-cta/10 text-cta" : "border-border/40 text-foreground/70 hover:border-border"
+                        "p-3 rounded-2xl border-2 text-left transition-all",
+                        active ? "border-cta bg-cta/5" : "border-border/40 hover:border-border bg-card"
                       )}
                     >
-                      <span className="w-3 h-3 rounded-full border border-border/60" style={{ background: colors[r.key] }} />
-                      {r.label[language]}
+                      <div className="flex gap-1 mb-2">
+                        {REGIONS.slice(0, 5).map((r) => (
+                          <span key={r.key} className="w-5 h-5 rounded-md border border-border/40" style={{ background: p.colors[r.key] }} />
+                        ))}
+                      </div>
+                      <p className="text-xs font-bold text-foreground">{p.label[language]}</p>
                     </button>
-                  ))}
-                </div>
+                  );
+                })}
               </div>
-              <div>
-                <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">{t.palette}</p>
-                <div className="grid grid-cols-9 gap-2">
-                  {PALETTE.map((hex) => {
-                    const active = colors[selected]?.toLowerCase() === hex.toLowerCase();
-                    return (
+            ) : (
+              <div className="space-y-4">
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">{t.zone}</p>
+                    <button
+                      onClick={() => setColors(DEFAULTS)}
+                      className="text-[11px] font-semibold text-muted-foreground hover:text-foreground flex items-center gap-1"
+                    >
+                      <RotateCcw size={11} /> {t.reset}
+                    </button>
+                  </div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {REGIONS.map((r) => (
                       <button
-                        key={hex}
-                        onClick={() => applyColor(hex)}
+                        key={r.key}
+                        onClick={() => setSelected(r.key)}
                         className={cn(
-                          "aspect-square rounded-lg border-2 transition-all flex items-center justify-center",
-                          active ? "border-cta scale-110 shadow" : "border-border/40 hover:border-border"
+                          "px-3 py-1.5 rounded-full text-xs font-semibold border-2 transition-all flex items-center gap-2",
+                          selected === r.key ? "border-cta bg-cta/10 text-cta" : "border-border/40 text-foreground/70 hover:border-border"
                         )}
-                        style={{ background: hex }}
-                        title={hex}
                       >
-                        {active && <Check size={14} className="text-white drop-shadow" />}
+                        <span className="w-3 h-3 rounded-full border border-border/60" style={{ background: colors[r.key] }} />
+                        {r.label[language]}
                       </button>
-                    );
-                  })}
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">{t.palette}</p>
+                  <div className="grid grid-cols-9 gap-2">
+                    {PALETTE.map((hex) => {
+                      const active = colors[selected]?.toLowerCase() === hex.toLowerCase();
+                      return (
+                        <button
+                          key={hex}
+                          onClick={() => applyColor(hex)}
+                          className={cn(
+                            "aspect-square rounded-lg border-2 transition-all flex items-center justify-center",
+                            active ? "border-cta scale-110 shadow" : "border-border/40 hover:border-border"
+                          )}
+                          style={{ background: hex }}
+                          title={hex}
+                        >
+                          {active && <Check size={14} className="text-white drop-shadow" />}
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
 
             <a
               href={`https://wa.me/message/SBUBJACPVCNGM1?text=${orderText}`}
