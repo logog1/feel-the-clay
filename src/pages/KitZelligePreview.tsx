@@ -31,7 +31,16 @@ const PALETTE = [
   "#ffffff", "#0F3D2E", "#C97B3F",
 ];
 
-const DEFAULTS = Object.fromEntries(REGIONS.map((r) => [r.key, r.key])) as Record<string, string>;
+// Neutral, traditional zellige preset applied on load (overrides raw SVG fills).
+const DEFAULTS: Record<string, string> = {
+  "#b86a0a": "#B23A2E", // 8-point star → terracotta
+  "#fe8f00": "#E2C9A0", // triangles → cream
+  "#a44135": "#C97B3F", // kites → ochre
+  "#ff3131": "#2F5E8A", // octagons → deep blue
+  "#5170ff": "#1F6B3A", // chamfered squares → green
+  "#91a597": "#F4EFE6", // background → bone
+  "#ffffff": "#FFFFFF", // joints → white
+};
 
 const COPY: Record<Language, Record<string, string>> = {
   en: { banner: "Preview page, not published.", store: "Store", new: "New", title: "Kit Zellige", subtitle: "Create your own Moroccan craft masterpiece", duration: "1h30 to 2h", zone: "Pick a zone", palette: "Choose a color", reset: "Reset", whatsapp: "Order on WhatsApp", payment: "Cash on delivery or in-store payment · Delivery in Morocco", hint: "Pick a zone, then tap a color to recolor it.", descTitle: "A creative journey into zellige", desc: "Discover zellige, the ancestral art that shapes Moroccan craftsmanship. With our complete kit, you create your own unique piece using traditional methods.", contentsTitle: "Kit contents", whyTitle: "Why this kit?", greeting: "Hello, I would like to order the Zellige Kit.", customLine: "Custom design:" },
