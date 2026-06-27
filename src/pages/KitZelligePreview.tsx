@@ -296,6 +296,22 @@ const KitZelligePreview = () => {
           </div>
         </div>
 
+        {/* Gallery */}
+        <section className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-3">
+          {[gallery1, gallery2, gallery3, gallery4].map((src, i) => (
+            <div key={i} className="aspect-square rounded-2xl overflow-hidden bg-card border border-border/40">
+              <img
+                src={src}
+                alt={`${t.title} ${i + 1}`}
+                loading="lazy"
+                width={1024}
+                height={1024}
+                className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+              />
+            </div>
+          ))}
+        </section>
+
         <section className="mt-16 grid md:grid-cols-2 gap-10">
           <div className="space-y-4">
             <h2 className="text-xl font-bold text-foreground">{t.descTitle}</h2>
