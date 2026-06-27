@@ -110,8 +110,17 @@ const BENEFITS: Record<Language, { title: string; description: string; icon: typ
 const KitZelligePreview = () => {
   const { language } = useLanguage();
   const t = COPY[language];
-  const [colors, setColors] = useState<Record<string, string>>(DEFAULTS);
+  const [mode, setMode] = useState<"ready" | "custom">("ready");
+  const [presetId, setPresetId] = useState<string>(PRESETS[0].id);
+  const [colors, setColors] = useState<Record<string, string>>(PRESETS[0].colors);
   const [selected, setSelected] = useState<string>(REGIONS[0].key);
+
+  const applyPreset = (id: string) => {
+    const p = PRESETS.find((x) => x.id === id);
+    if (!p) return;
+    setPresetId(id);
+    setColors(p.colors);
+  };
 
   const svg = useMemo(() => {
     let s = zelligeSvgRaw
