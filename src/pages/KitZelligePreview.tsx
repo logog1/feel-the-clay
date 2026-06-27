@@ -169,20 +169,22 @@ const KitZelligePreview = () => {
           <div className="space-y-5">
             <div className="aspect-square rounded-3xl bg-card border-2 border-border/40 shadow-sm p-6 sm:p-10 overflow-hidden">
               <div
+                key={pulseKey}
                 role="img"
                 aria-label={t.title}
                 onClick={(e) => {
                   const el = (e.target as SVGElement).closest("[fill]") as SVGElement | null;
                   const fill = el?.getAttribute("fill")?.toLowerCase();
                   if (!fill) return;
-                  // Match against current colors to find which region was clicked.
                   const region = REGIONS.find((r) => colors[r.key].toLowerCase() === fill);
                   if (region) {
                     setMode("custom");
                     setSelected(region.key);
+                    setPulseKey((k) => k + 1);
                   }
                 }}
-                className="w-full h-full flex items-center justify-center cursor-pointer [&>svg]:w-full [&>svg]:h-full [&>svg]:max-w-full [&>svg]:max-h-full [&_*]:transition-opacity hover:[&_[fill]]:opacity-90"
+                className="w-full h-full flex items-center justify-center cursor-pointer animate-scale-in [&>svg]:w-full [&>svg]:h-full [&>svg]:max-w-full [&>svg]:max-h-full [&_[fill]]:transition-all [&_[fill]]:duration-300 hover:[&_[fill]]:opacity-90"
+                style={{ ["--sel" as string]: colors[selected]?.toLowerCase() }}
                 dangerouslySetInnerHTML={{ __html: svg }}
               />
             </div>
