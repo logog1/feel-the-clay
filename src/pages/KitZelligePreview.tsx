@@ -1,15 +1,27 @@
 import { useState, useMemo } from "react";
-import { Check, Palette, MessageCircle, Sparkles, Package, Clock, Heart, ArrowLeft, RotateCcw } from "lucide-react";
+import { Check, Palette, ShoppingBag, Sparkles, Package, Clock, Heart, ArrowLeft, RotateCcw, CheckCircle, Loader2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import SEOHead from "@/components/SEOHead";
 import { useLanguage } from "@/i18n/LanguageContext";
 import type { Language } from "@/i18n/translations";
+import { supabase } from "@/integrations/supabase/client";
+import { z } from "zod";
 import zelligeSvgRaw from "@/assets/zellige-kit-motif-final.svg?raw";
 import gallery1 from "@/assets/zellige-kit-gallery-1.jpg";
 import gallery2 from "@/assets/zellige-kit-gallery-2.jpg";
 import gallery3 from "@/assets/zellige-kit-gallery-3.jpg";
 import gallery4 from "@/assets/zellige-kit-gallery-4.jpg";
+
+const KIT_PRICE = 350;
+const orderSchema = z.object({
+  name: z.string().trim().min(2).max(100),
+  phone: z.string().trim().min(6).max(30),
+  address: z.string().trim().min(5).max(300),
+  email: z.string().trim().email().max(255).optional().or(z.literal("")),
+  notes: z.string().trim().max(500).optional().or(z.literal("")),
+});
+type OrderForm = z.infer<typeof orderSchema>;
 
 /**
  * Kit Zellige preview — customize the motif by recoloring each
