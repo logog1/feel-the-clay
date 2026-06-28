@@ -360,20 +360,61 @@ const KitZelligePreview = () => {
             </div>
 
             <div className="p-5 rounded-2xl bg-card border border-border/40">
-              <div className="flex items-baseline gap-3">
-                <span className="text-3xl font-bold text-cta">350 DH</span>
+              <div className="flex items-baseline gap-3 mb-1">
+                <span className="text-3xl font-bold text-cta">{KIT_PRICE} DH</span>
                 <span className="text-xs text-muted-foreground flex items-center gap-1"><Clock size={12} /> {t.duration}</span>
               </div>
-              <a
-                href={`https://wa.me/message/SBUBJACPVCNGM1?text=${orderText}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-4 w-full py-4 rounded-2xl bg-cta text-primary-foreground font-bold text-sm flex items-center justify-center gap-2 hover:bg-cta-hover active:scale-95 transition-all shadow-lg shadow-cta/30"
-              >
-                <MessageCircle size={16} /> {t.whatsapp}
-              </a>
+              <p className="text-[11px] text-muted-foreground mb-3 truncate" title={kitLabel}>{kitLabel}</p>
+
+              {submitted ? (
+                <div className="py-6 text-center space-y-2">
+                  <CheckCircle className="w-12 h-12 text-cta mx-auto" />
+                  <p className="font-bold text-foreground">{t.success}</p>
+                  <p className="text-xs text-muted-foreground">{t.successDesc}</p>
+                  <button
+                    onClick={() => { setSubmitted(false); setForm({ name: "", phone: "", address: "", email: "", notes: "" }); }}
+                    className="mt-2 text-xs underline text-muted-foreground hover:text-foreground"
+                  >
+                    {t.back}
+                  </button>
+                </div>
+              ) : (
+                <form onSubmit={handleSubmit} className="space-y-2.5">
+                  <input type="text" tabIndex={-1} autoComplete="off" value={honey} onChange={(e) => setHoney(e.target.value)} className="hidden" aria-hidden="true" />
+                  {(["name","phone","address","email","notes"] as const).map((field) => {
+                    const isArea = field === "address" || field === "notes";
+                    const Tag: any = isArea ? "textarea" : "input";
+                    return (
+                      <div key={field}>
+                        <Tag
+                          type={field === "email" ? "email" : "text"}
+                          placeholder={t[`form${field[0].toUpperCase()}${field.slice(1)}` as keyof typeof t]}
+                          value={form[field] || ""}
+                          onChange={(e: any) => setForm({ ...form, [field]: e.target.value })}
+                          rows={isArea ? 2 : undefined}
+                          className={cn(
+                            "w-full px-3 py-2 rounded-xl bg-background border-2 text-sm focus:outline-none focus:border-cta transition",
+                            errors[field] ? "border-destructive" : "border-border/40"
+                          )}
+                        />
+                        {errors[field] && <p className="text-[10px] text-destructive mt-0.5">{errors[field]}</p>}
+                      </div>
+                    );
+                  })}
+                  {submitError && <p className="text-xs text-destructive text-center">{submitError}</p>}
+                  <button
+                    type="submit"
+                    disabled={sending}
+                    className="w-full py-3 rounded-2xl bg-cta text-primary-foreground font-bold text-sm flex items-center justify-center gap-2 hover:bg-cta-hover active:scale-95 transition-all shadow-lg shadow-cta/30 disabled:opacity-60"
+                  >
+                    {sending ? <Loader2 size={16} className="animate-spin" /> : <ShoppingBag size={16} />}
+                    {sending ? t.sending : t.submit}
+                  </button>
+                </form>
+              )}
               <p className="mt-2 text-[11px] text-center text-muted-foreground">{t.payment}</p>
             </div>
+
           </div>
         </div>
 
