@@ -133,6 +133,7 @@ const KitZelligePreview = () => {
   const [pulseKey, setPulseKey] = useState(0);
   const [form, setForm] = useState<OrderForm>({ name: "", phone: "", address: "", email: "", notes: "" });
   const [errors, setErrors] = useState<Partial<Record<keyof OrderForm, string>>>({});
+  const [showForm, setShowForm] = useState(false);
   const [sending, setSending] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
