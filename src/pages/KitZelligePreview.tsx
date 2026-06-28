@@ -131,6 +131,12 @@ const KitZelligePreview = () => {
   const [colors, setColors] = useState<Record<string, string>>(PRESETS[0].colors);
   const [selected, setSelected] = useState<string>(REGIONS[0].key);
   const [pulseKey, setPulseKey] = useState(0);
+  const [form, setForm] = useState<OrderForm>({ name: "", phone: "", address: "", email: "", notes: "" });
+  const [errors, setErrors] = useState<Partial<Record<keyof OrderForm, string>>>({});
+  const [sending, setSending] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [honey, setHoney] = useState("");
 
   const applyPreset = (id: string) => {
     const p = PRESETS.find((x) => x.id === id);
@@ -152,18 +158,65 @@ const KitZelligePreview = () => {
     return s;
   }, [colors]);
 
-  const orderText = useMemo(() => {
+  const kitLabel = useMemo(() => {
     const preset = PRESETS.find((p) => p.id === presetId);
-    const lines = [
-      t.greeting,
-      mode === "ready" && preset
-        ? `${t.presetLine} ${preset.label[language]}`
-        : `${t.customLine} ${REGIONS.map((r) => `${r.label[language]}=${colors[r.key]}`).join(", ")}`,
-    ];
-    return encodeURIComponent(lines.join("\n"));
-  }, [colors, t, language, mode, presetId]);
+    if (mode === "ready" && preset) return `${t.title} — ${t.presetLine}: ${preset.label[language]}`;
+    const palette = REGIONS.map((r) => `${r.label[language]}=${colors[r.key]}`).join(", ");
+    return `${t.title} — ${t.customLine} (${palette})`;
+  }, [mode, presetId, colors, language, t]);
 
   const applyColor = (hex: string) => setColors((c) => ({ ...c, [selected]: hex }));
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (honey) return;
+    const parsed = orderSchema.safeParse(form);
+    if (!parsed.success) {
+      const fe: Partial<Record<keyof OrderForm, string>> = {};
+      parsed.error.errors.forEach((err) => {
+        const f = err.path[0] as keyof OrderForm;
+        if (!fe[f]) fe[f] = err.message;
+      });
+      setErrors(fe);
+      return;
+    }
+    setErrors({});
+    setSubmitError(null);
+    setSending(true);
+    try {
+      const preset = PRESETS.find((p) => p.id === presetId);
+      const { error } = await supabase.functions.invoke("send-notification", {
+        body: {
+          type: "purchase",
+          data: {
+            items: [{ name: kitLabel, quantity: 1, price: KIT_PRICE }],
+            totalPrice: KIT_PRICE,
+            totalItems: 1,
+            deliveryFee: 0,
+            grandTotal: KIT_PRICE,
+            region: "Kit Zellige",
+            customerName: parsed.data.name,
+            customerEmail: parsed.data.email || "",
+            customerPhone: parsed.data.phone,
+            customerAddress: parsed.data.address,
+            notes: [
+              parsed.data.notes || "",
+              `Kit: ${kitLabel}`,
+              mode === "custom" ? `Colors: ${JSON.stringify(colors)}` : `Preset: ${preset?.id}`,
+            ].filter(Boolean).join(" | "),
+          },
+        },
+      });
+      if (error) throw error;
+      setSubmitted(true);
+    } catch (err) {
+      console.error("Kit order failed:", err);
+      setSubmitError(t.errorMsg);
+    } finally {
+      setSending(false);
+    }
+  };
+
 
   return (
     <main className="min-h-screen bg-background">
