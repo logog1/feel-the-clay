@@ -133,6 +133,7 @@ const KitZelligePreview = () => {
   const [pulseKey, setPulseKey] = useState(0);
   const [form, setForm] = useState<OrderForm>({ name: "", phone: "", address: "", email: "", notes: "" });
   const [errors, setErrors] = useState<Partial<Record<keyof OrderForm, string>>>({});
+  const [showForm, setShowForm] = useState(false);
   const [sending, setSending] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -372,12 +373,21 @@ const KitZelligePreview = () => {
                   <p className="font-bold text-foreground">{t.success}</p>
                   <p className="text-xs text-muted-foreground">{t.successDesc}</p>
                   <button
-                    onClick={() => { setSubmitted(false); setForm({ name: "", phone: "", address: "", email: "", notes: "" }); }}
+                    onClick={() => { setSubmitted(false); setShowForm(false); setForm({ name: "", phone: "", address: "", email: "", notes: "" }); }}
                     className="mt-2 text-xs underline text-muted-foreground hover:text-foreground"
                   >
                     {t.back}
                   </button>
                 </div>
+              ) : !showForm ? (
+                <button
+                  type="button"
+                  onClick={() => setShowForm(true)}
+                  className="w-full py-3 rounded-2xl bg-cta text-primary-foreground font-bold text-sm flex items-center justify-center gap-2 hover:bg-cta-hover active:scale-95 transition-all shadow-lg shadow-cta/30"
+                >
+                  <ShoppingBag size={16} />
+                  {t.submit}
+                </button>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-2.5">
                   <input type="text" tabIndex={-1} autoComplete="off" value={honey} onChange={(e) => setHoney(e.target.value)} className="hidden" aria-hidden="true" />
