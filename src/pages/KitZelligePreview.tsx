@@ -373,6 +373,27 @@ const KitZelligePreview = () => {
                   <p className="font-bold text-foreground">{t.success}</p>
                   <p className="text-xs text-muted-foreground">{t.successDesc}</p>
                   <button
+                    onClick={() => { setSubmitted(false); setShowForm(false); setForm({ name: "", phone: "", address: "", email: "", notes: "" }); }}
+                    className="mt-2 text-xs underline text-muted-foreground hover:text-foreground"
+                  >
+                    {t.back}
+                  </button>
+                </div>
+              ) : !showForm ? (
+                <button
+                  type="button"
+                  onClick={() => setShowForm(true)}
+                  className="w-full py-3 rounded-2xl bg-cta text-primary-foreground font-bold text-sm flex items-center justify-center gap-2 hover:bg-cta-hover active:scale-95 transition-all shadow-lg shadow-cta/30"
+                >
+                  <ShoppingBag size={16} />
+                  {t.submit}
+                </button>
+              ) : (
+                <div className="py-6 text-center space-y-2">
+                  <CheckCircle className="w-12 h-12 text-cta mx-auto" />
+                  <p className="font-bold text-foreground">{t.success}</p>
+                  <p className="text-xs text-muted-foreground">{t.successDesc}</p>
+                  <button
                     onClick={() => { setSubmitted(false); setForm({ name: "", phone: "", address: "", email: "", notes: "" }); }}
                     className="mt-2 text-xs underline text-muted-foreground hover:text-foreground"
                   >
