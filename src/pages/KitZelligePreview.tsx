@@ -389,18 +389,6 @@ const KitZelligePreview = () => {
                   {t.submit}
                 </button>
               ) : (
-                <div className="py-6 text-center space-y-2">
-                  <CheckCircle className="w-12 h-12 text-cta mx-auto" />
-                  <p className="font-bold text-foreground">{t.success}</p>
-                  <p className="text-xs text-muted-foreground">{t.successDesc}</p>
-                  <button
-                    onClick={() => { setSubmitted(false); setForm({ name: "", phone: "", address: "", email: "", notes: "" }); }}
-                    className="mt-2 text-xs underline text-muted-foreground hover:text-foreground"
-                  >
-                    {t.back}
-                  </button>
-                </div>
-              ) : (
                 <form onSubmit={handleSubmit} className="space-y-2.5">
                   <input type="text" tabIndex={-1} autoComplete="off" value={honey} onChange={(e) => setHoney(e.target.value)} className="hidden" aria-hidden="true" />
                   {(["name","phone","address","email","notes"] as const).map((field) => {
