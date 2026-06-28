@@ -1,15 +1,27 @@
 import { useState, useMemo } from "react";
-import { Check, Palette, MessageCircle, Sparkles, Package, Clock, Heart, ArrowLeft, RotateCcw } from "lucide-react";
+import { Check, Palette, ShoppingBag, Sparkles, Package, Clock, Heart, ArrowLeft, RotateCcw, CheckCircle, Loader2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import SEOHead from "@/components/SEOHead";
 import { useLanguage } from "@/i18n/LanguageContext";
 import type { Language } from "@/i18n/translations";
+import { supabase } from "@/integrations/supabase/client";
+import { z } from "zod";
 import zelligeSvgRaw from "@/assets/zellige-kit-motif-final.svg?raw";
 import gallery1 from "@/assets/zellige-kit-gallery-1.jpg";
 import gallery2 from "@/assets/zellige-kit-gallery-2.jpg";
 import gallery3 from "@/assets/zellige-kit-gallery-3.jpg";
 import gallery4 from "@/assets/zellige-kit-gallery-4.jpg";
+
+const KIT_PRICE = 350;
+const orderSchema = z.object({
+  name: z.string().trim().min(2).max(100),
+  phone: z.string().trim().min(6).max(30),
+  address: z.string().trim().min(5).max(300),
+  email: z.string().trim().email().max(255).optional().or(z.literal("")),
+  notes: z.string().trim().max(500).optional().or(z.literal("")),
+});
+type OrderForm = z.infer<typeof orderSchema>;
 
 /**
  * Kit Zellige preview — customize the motif by recoloring each
@@ -71,10 +83,10 @@ const PRESETS: { id: string; label: Record<Language, string>; colors: Record<str
 ];
 
 const COPY: Record<Language, Record<string, string>> = {
-  en: { banner: "Preview page, not published.", store: "Store", new: "New", title: "Kit Zellige", subtitle: "Create your own Moroccan craft masterpiece", duration: "1h30 to 2h", zone: "Pick a zone", palette: "Choose a color", reset: "Reset", whatsapp: "Order on WhatsApp", payment: "Cash on delivery or in-store payment · Delivery in Morocco", hint: "Pick a zone, then tap a color to recolor it.", descTitle: "A creative journey into zellige", desc: "Discover zellige, the ancestral art that shapes Moroccan craftsmanship. With our complete kit, you create your own unique piece using traditional methods.", contentsTitle: "Kit contents", whyTitle: "Why this kit?", greeting: "Hello, I would like to order the Zellige Kit.", customLine: "Custom design:", modeReady: "Ready models", modeCustom: "Customize", presetLine: "Model:" },
-  fr: { banner: "Page d'aperçu, non publiée.", store: "Boutique", new: "Nouveau", title: "Kit Zellige", subtitle: "Créez votre propre chef-d'œuvre d'artisanat marocain", duration: "1h30 à 2h", zone: "Choisir une zone", palette: "Choisir une couleur", reset: "Réinitialiser", whatsapp: "Commander sur WhatsApp", payment: "Paiement à la livraison ou en boutique · Livraison Maroc", hint: "Sélectionnez une zone, puis touchez une couleur pour la recolorer.", descTitle: "Un voyage créatif au cœur du zellige", desc: "Plongez dans l'univers du zellige, cet art ancestral de l'artisanat marocain. Avec notre kit complet, vous créez votre pièce unique selon les méthodes traditionnelles.", contentsTitle: "Contenu du kit", whyTitle: "Pourquoi ce kit ?", greeting: "Bonjour, je souhaite commander le Kit Zellige.", customLine: "Modèle personnalisé :", modeReady: "Modèles prêts", modeCustom: "Personnaliser", presetLine: "Modèle :" },
-  es: { banner: "Página de vista previa, no publicada.", store: "Tienda", new: "Nuevo", title: "Kit Zellige", subtitle: "Crea tu propia obra maestra de artesanía marroquí", duration: "1h30 a 2h", zone: "Elige una zona", palette: "Elige un color", reset: "Restablecer", whatsapp: "Pedir por WhatsApp", payment: "Pago contra entrega o en tienda · Entrega en Marruecos", hint: "Selecciona una zona y luego un color para recolorearla.", descTitle: "Un viaje creativo al corazón del zellige", desc: "Descubre el zellige, el arte ancestral de la artesanía marroquí. Con nuestro kit completo, creas tu pieza única siguiendo métodos tradicionales.", contentsTitle: "Contenido del kit", whyTitle: "¿Por qué este kit?", greeting: "Hola, quiero pedir el Kit Zellige.", customLine: "Diseño personalizado:", modeReady: "Modelos listos", modeCustom: "Personalizar", presetLine: "Modelo:" },
-  ar: { banner: "صفحة معاينة غير منشورة.", store: "المتجر", new: "جديد", title: "طقم الزليج", subtitle: "اصنع تحفتك الخاصة من الحرف المغربية", duration: "ساعة ونصف إلى ساعتين", zone: "اختر منطقة", palette: "اختر لوناً", reset: "إعادة", whatsapp: "اطلب عبر واتساب", payment: "الدفع عند الاستلام أو في المتجر · التوصيل داخل المغرب", hint: "اختر منطقة ثم لوناً لإعادة تلوينها.", descTitle: "رحلة إبداعية في عالم الزليج", desc: "اكتشف الزليج، الفن العريق للصناعة التقليدية المغربية. مع طقمنا الكامل تصنع قطعة فريدة باتباع طرق تقليدية.", contentsTitle: "محتويات الطقم", whyTitle: "لماذا هذا الطقم؟", greeting: "مرحباً، أريد طلب طقم الزليج.", customLine: "تصميم مخصص:", modeReady: "نماذج جاهزة", modeCustom: "تخصيص", presetLine: "النموذج:" },
+  en: { banner: "Preview page, not published.", store: "Store", new: "New", title: "Kit Zellige", subtitle: "Create your own Moroccan craft masterpiece", duration: "1h30 to 2h", zone: "Pick a zone", palette: "Choose a color", reset: "Reset", order: "Order this kit", payment: "Cash on delivery or in-store payment · Delivery in Morocco", hint: "Pick a zone, then tap a color to recolor it.", descTitle: "A creative journey into zellige", desc: "Discover zellige, the ancestral art that shapes Moroccan craftsmanship. With our complete kit, you create your own unique piece using traditional methods.", contentsTitle: "Kit contents", whyTitle: "Why this kit?", modeReady: "Ready models", modeCustom: "Customize", presetLine: "Model", customLine: "Custom design", formName: "Full name", formPhone: "Phone", formAddress: "Delivery address", formEmail: "Email (optional)", formNotes: "Notes (optional)", submit: "Confirm order", sending: "Sending…", success: "Order received!", successDesc: "We'll contact you shortly to confirm delivery.", back: "Back", errorMsg: "Could not send. Please try again." },
+  fr: { banner: "Page d'aperçu, non publiée.", store: "Boutique", new: "Nouveau", title: "Kit Zellige", subtitle: "Créez votre propre chef-d'œuvre d'artisanat marocain", duration: "1h30 à 2h", zone: "Choisir une zone", palette: "Choisir une couleur", reset: "Réinitialiser", order: "Commander ce kit", payment: "Paiement à la livraison ou en boutique · Livraison Maroc", hint: "Sélectionnez une zone, puis touchez une couleur pour la recolorer.", descTitle: "Un voyage créatif au cœur du zellige", desc: "Plongez dans l'univers du zellige, cet art ancestral de l'artisanat marocain. Avec notre kit complet, vous créez votre pièce unique selon les méthodes traditionnelles.", contentsTitle: "Contenu du kit", whyTitle: "Pourquoi ce kit ?", modeReady: "Modèles prêts", modeCustom: "Personnaliser", presetLine: "Modèle", customLine: "Personnalisé", formName: "Nom complet", formPhone: "Téléphone", formAddress: "Adresse de livraison", formEmail: "Email (optionnel)", formNotes: "Notes (optionnel)", submit: "Confirmer la commande", sending: "Envoi…", success: "Commande reçue !", successDesc: "Nous vous contactons sous peu pour confirmer.", back: "Retour", errorMsg: "Envoi impossible. Réessayez." },
+  es: { banner: "Página de vista previa, no publicada.", store: "Tienda", new: "Nuevo", title: "Kit Zellige", subtitle: "Crea tu propia obra maestra de artesanía marroquí", duration: "1h30 a 2h", zone: "Elige una zona", palette: "Elige un color", reset: "Restablecer", order: "Pedir este kit", payment: "Pago contra entrega o en tienda · Entrega en Marruecos", hint: "Selecciona una zona y luego un color para recolorearla.", descTitle: "Un viaje creativo al corazón del zellige", desc: "Descubre el zellige, el arte ancestral de la artesanía marroquí. Con nuestro kit completo, creas tu pieza única siguiendo métodos tradicionales.", contentsTitle: "Contenido del kit", whyTitle: "¿Por qué este kit?", modeReady: "Modelos listos", modeCustom: "Personalizar", presetLine: "Modelo", customLine: "Personalizado", formName: "Nombre completo", formPhone: "Teléfono", formAddress: "Dirección de entrega", formEmail: "Email (opcional)", formNotes: "Notas (opcional)", submit: "Confirmar pedido", sending: "Enviando…", success: "¡Pedido recibido!", successDesc: "Te contactaremos pronto para confirmar.", back: "Volver", errorMsg: "No se pudo enviar. Inténtalo de nuevo." },
+  ar: { banner: "صفحة معاينة غير منشورة.", store: "المتجر", new: "جديد", title: "طقم الزليج", subtitle: "اصنع تحفتك الخاصة من الحرف المغربية", duration: "ساعة ونصف إلى ساعتين", zone: "اختر منطقة", palette: "اختر لوناً", reset: "إعادة", order: "اطلب هذا الطقم", payment: "الدفع عند الاستلام أو في المتجر · التوصيل داخل المغرب", hint: "اختر منطقة ثم لوناً لإعادة تلوينها.", descTitle: "رحلة إبداعية في عالم الزليج", desc: "اكتشف الزليج، الفن العريق للصناعة التقليدية المغربية. مع طقمنا الكامل تصنع قطعة فريدة باتباع طرق تقليدية.", contentsTitle: "محتويات الطقم", whyTitle: "لماذا هذا الطقم؟", modeReady: "نماذج جاهزة", modeCustom: "تخصيص", presetLine: "النموذج", customLine: "تصميم مخصص", formName: "الاسم الكامل", formPhone: "الهاتف", formAddress: "عنوان التوصيل", formEmail: "البريد الإلكتروني (اختياري)", formNotes: "ملاحظات (اختياري)", submit: "تأكيد الطلب", sending: "جارٍ الإرسال…", success: "تم استلام الطلب!", successDesc: "سنتصل بك قريباً للتأكيد.", back: "رجوع", errorMsg: "تعذّر الإرسال. حاول مجدداً." },
 };
 
 const CONTENTS: Record<Language, string[]> = {
@@ -119,6 +131,12 @@ const KitZelligePreview = () => {
   const [colors, setColors] = useState<Record<string, string>>(PRESETS[0].colors);
   const [selected, setSelected] = useState<string>(REGIONS[0].key);
   const [pulseKey, setPulseKey] = useState(0);
+  const [form, setForm] = useState<OrderForm>({ name: "", phone: "", address: "", email: "", notes: "" });
+  const [errors, setErrors] = useState<Partial<Record<keyof OrderForm, string>>>({});
+  const [sending, setSending] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [honey, setHoney] = useState("");
 
   const applyPreset = (id: string) => {
     const p = PRESETS.find((x) => x.id === id);
@@ -140,18 +158,65 @@ const KitZelligePreview = () => {
     return s;
   }, [colors]);
 
-  const orderText = useMemo(() => {
+  const kitLabel = useMemo(() => {
     const preset = PRESETS.find((p) => p.id === presetId);
-    const lines = [
-      t.greeting,
-      mode === "ready" && preset
-        ? `${t.presetLine} ${preset.label[language]}`
-        : `${t.customLine} ${REGIONS.map((r) => `${r.label[language]}=${colors[r.key]}`).join(", ")}`,
-    ];
-    return encodeURIComponent(lines.join("\n"));
-  }, [colors, t, language, mode, presetId]);
+    if (mode === "ready" && preset) return `${t.title} — ${t.presetLine}: ${preset.label[language]}`;
+    const palette = REGIONS.map((r) => `${r.label[language]}=${colors[r.key]}`).join(", ");
+    return `${t.title} — ${t.customLine} (${palette})`;
+  }, [mode, presetId, colors, language, t]);
 
   const applyColor = (hex: string) => setColors((c) => ({ ...c, [selected]: hex }));
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (honey) return;
+    const parsed = orderSchema.safeParse(form);
+    if (!parsed.success) {
+      const fe: Partial<Record<keyof OrderForm, string>> = {};
+      parsed.error.errors.forEach((err) => {
+        const f = err.path[0] as keyof OrderForm;
+        if (!fe[f]) fe[f] = err.message;
+      });
+      setErrors(fe);
+      return;
+    }
+    setErrors({});
+    setSubmitError(null);
+    setSending(true);
+    try {
+      const preset = PRESETS.find((p) => p.id === presetId);
+      const { error } = await supabase.functions.invoke("send-notification", {
+        body: {
+          type: "purchase",
+          data: {
+            items: [{ name: kitLabel, quantity: 1, price: KIT_PRICE }],
+            totalPrice: KIT_PRICE,
+            totalItems: 1,
+            deliveryFee: 0,
+            grandTotal: KIT_PRICE,
+            region: "Kit Zellige",
+            customerName: parsed.data.name,
+            customerEmail: parsed.data.email || "",
+            customerPhone: parsed.data.phone,
+            customerAddress: parsed.data.address,
+            notes: [
+              parsed.data.notes || "",
+              `Kit: ${kitLabel}`,
+              mode === "custom" ? `Colors: ${JSON.stringify(colors)}` : `Preset: ${preset?.id}`,
+            ].filter(Boolean).join(" | "),
+          },
+        },
+      });
+      if (error) throw error;
+      setSubmitted(true);
+    } catch (err) {
+      console.error("Kit order failed:", err);
+      setSubmitError(t.errorMsg);
+    } finally {
+      setSending(false);
+    }
+  };
+
 
   return (
     <main className="min-h-screen bg-background">
@@ -295,20 +360,61 @@ const KitZelligePreview = () => {
             </div>
 
             <div className="p-5 rounded-2xl bg-card border border-border/40">
-              <div className="flex items-baseline gap-3">
-                <span className="text-3xl font-bold text-cta">350 DH</span>
+              <div className="flex items-baseline gap-3 mb-1">
+                <span className="text-3xl font-bold text-cta">{KIT_PRICE} DH</span>
                 <span className="text-xs text-muted-foreground flex items-center gap-1"><Clock size={12} /> {t.duration}</span>
               </div>
-              <a
-                href={`https://wa.me/message/SBUBJACPVCNGM1?text=${orderText}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-4 w-full py-4 rounded-2xl bg-cta text-primary-foreground font-bold text-sm flex items-center justify-center gap-2 hover:bg-cta-hover active:scale-95 transition-all shadow-lg shadow-cta/30"
-              >
-                <MessageCircle size={16} /> {t.whatsapp}
-              </a>
+              <p className="text-[11px] text-muted-foreground mb-3 truncate" title={kitLabel}>{kitLabel}</p>
+
+              {submitted ? (
+                <div className="py-6 text-center space-y-2">
+                  <CheckCircle className="w-12 h-12 text-cta mx-auto" />
+                  <p className="font-bold text-foreground">{t.success}</p>
+                  <p className="text-xs text-muted-foreground">{t.successDesc}</p>
+                  <button
+                    onClick={() => { setSubmitted(false); setForm({ name: "", phone: "", address: "", email: "", notes: "" }); }}
+                    className="mt-2 text-xs underline text-muted-foreground hover:text-foreground"
+                  >
+                    {t.back}
+                  </button>
+                </div>
+              ) : (
+                <form onSubmit={handleSubmit} className="space-y-2.5">
+                  <input type="text" tabIndex={-1} autoComplete="off" value={honey} onChange={(e) => setHoney(e.target.value)} className="hidden" aria-hidden="true" />
+                  {(["name","phone","address","email","notes"] as const).map((field) => {
+                    const isArea = field === "address" || field === "notes";
+                    const Tag: any = isArea ? "textarea" : "input";
+                    return (
+                      <div key={field}>
+                        <Tag
+                          type={field === "email" ? "email" : "text"}
+                          placeholder={t[`form${field[0].toUpperCase()}${field.slice(1)}` as keyof typeof t]}
+                          value={form[field] || ""}
+                          onChange={(e: any) => setForm({ ...form, [field]: e.target.value })}
+                          rows={isArea ? 2 : undefined}
+                          className={cn(
+                            "w-full px-3 py-2 rounded-xl bg-background border-2 text-sm focus:outline-none focus:border-cta transition",
+                            errors[field] ? "border-destructive" : "border-border/40"
+                          )}
+                        />
+                        {errors[field] && <p className="text-[10px] text-destructive mt-0.5">{errors[field]}</p>}
+                      </div>
+                    );
+                  })}
+                  {submitError && <p className="text-xs text-destructive text-center">{submitError}</p>}
+                  <button
+                    type="submit"
+                    disabled={sending}
+                    className="w-full py-3 rounded-2xl bg-cta text-primary-foreground font-bold text-sm flex items-center justify-center gap-2 hover:bg-cta-hover active:scale-95 transition-all shadow-lg shadow-cta/30 disabled:opacity-60"
+                  >
+                    {sending ? <Loader2 size={16} className="animate-spin" /> : <ShoppingBag size={16} />}
+                    {sending ? t.sending : t.submit}
+                  </button>
+                </form>
+              )}
               <p className="mt-2 text-[11px] text-center text-muted-foreground">{t.payment}</p>
             </div>
+
           </div>
         </div>
 
