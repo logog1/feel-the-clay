@@ -105,7 +105,7 @@ const OffersSection = () => {
       subtitle: "Gardening",
       image: siteImages["image_workshop_gardening"] || fallbackImages.gardening,
       link: "/workshop/gardening",
-      unavailable: gardeningConfig ? !gardeningConfig.is_available : false,
+      unavailable: gardeningConfig ? !gardeningConfig.is_available : true,
       promoLabel: gardeningConfig?.promo_enabled ? gardeningConfig.promo_label : undefined,
       price: gardeningConfig?.promo_enabled && gardeningConfig?.promo_price ? gardeningConfig.promo_price : (gardeningConfig?.price || "150 DH"),
     },
