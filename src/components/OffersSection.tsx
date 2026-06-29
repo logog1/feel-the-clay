@@ -63,7 +63,7 @@ const OffersSection = () => {
       image: siteImages["image_workshop_handbuilding"] || fallbackImages.handbuilding,
       link: "/workshop/handbuilding",
       popular: handConfig?.is_popular ?? true,
-      unavailable: handConfig ? !handConfig.is_available : false,
+      unavailable: handConfig ? !handConfig.is_available : true,
       promoLabel: handConfig?.promo_enabled ? handConfig.promo_label : undefined,
       price: handConfig?.promo_enabled && handConfig?.promo_price ? handConfig.promo_price : (handConfig?.price || t("hand.price")),
     },
