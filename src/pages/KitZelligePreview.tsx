@@ -156,7 +156,8 @@ const KitZelligePreview = () => {
   const svg = useMemo(() => {
     let s = zelligeSvgRaw
       .replace(/\swidth="[^"]*"/i, "")
-      .replace(/\sheight="[^"]*"/i, "");
+      .replace(/\sheight="[^"]*"/i, "")
+      .replace(/\szoomAndPan="[^"]*"/i, "");
     for (const r of REGIONS) {
       const target = colors[r.key];
       if (target.toLowerCase() === r.key.toLowerCase()) continue;
@@ -251,6 +252,7 @@ const KitZelligePreview = () => {
                 role="img"
                 aria-label={t.title}
                 onClick={(e) => {
+                  e.preventDefault();
                   const el = (e.target as SVGElement).closest("[fill]") as SVGElement | null;
                   const fill = el?.getAttribute("fill")?.toLowerCase();
                   if (!fill) return;
@@ -260,8 +262,8 @@ const KitZelligePreview = () => {
                     setSelected(region.key);
                   }
                 }}
-                className="w-full h-full flex items-center justify-center cursor-pointer [&>svg]:w-full [&>svg]:h-full [&>svg]:max-w-full [&>svg]:max-h-full [&_[fill]]:transition-colors [&_[fill]]:duration-300 hover:[&_[fill]]:opacity-90"
-                style={{ ["--sel" as string]: colors[selected]?.toLowerCase() }}
+                className="w-full h-full flex items-center justify-center cursor-pointer select-none touch-manipulation [&>svg]:w-full [&>svg]:h-full [&>svg]:max-w-full [&>svg]:max-h-full [&>svg]:pointer-events-auto [&_[fill]]:transition-colors [&_[fill]]:duration-300 hover:[&_[fill]]:opacity-90"
+                style={{ ["--sel" as string]: colors[selected]?.toLowerCase(), WebkitTapHighlightColor: "transparent" }}
                 dangerouslySetInnerHTML={{ __html: svg }}
               />
             </div>
@@ -345,7 +347,7 @@ const KitZelligePreview = () => {
                           onClick={() => applyColor(hex)}
                           className={cn(
                             "aspect-square rounded-lg border-2 transition-all flex items-center justify-center",
-                            active ? "border-cta scale-110 shadow" : "border-border/40 hover:border-border"
+                            active ? "border-cta ring-2 ring-cta/30 shadow" : "border-border/40 hover:border-border"
                           )}
                           style={{ background: hex }}
                           title={hex}
