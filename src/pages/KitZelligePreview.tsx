@@ -227,22 +227,24 @@ const KitZelligePreview = () => {
 
 
   return (
-    <main className="min-h-screen bg-background">
-      <SEOHead title="Zellige Kit Preview" description="Preview of the DIY Zellige Kit with customization." path="/preview/kit-zellige" />
+    <>
+      <Header />
+      <main className="min-h-screen bg-background pt-20">
+        <SEOHead title="Kit Zellige — Moroccan craft DIY kit | Terraria" description="Create your own Moroccan zellige masterpiece at home. Hand-cut tiles, plaster, frame, and step-by-step booklet. Delivered in Morocco." path="/preview/kit-zellige" />
 
-      <div className="bg-amber-100 border-b border-amber-300 text-amber-900 text-xs font-medium px-4 py-2 flex items-center justify-between">
-        <span className="flex items-center gap-2"><Sparkles size={14} /> {t.banner}</span>
-        <Link to="/store" className="flex items-center gap-1 underline hover:no-underline">
-          <ArrowLeft size={12} /> {t.store}
-        </Link>
-      </div>
+        <div className="container-x max-w-6xl mx-auto pt-6">
+          <nav aria-label="Breadcrumb" className="text-xs text-muted-foreground flex items-center gap-1.5">
+            <Link to="/store" className="inline-flex items-center gap-1 hover:text-foreground transition-colors">
+              <ArrowLeft size={12} /> {t.store}
+            </Link>
+            <span className="opacity-50">/</span>
+            <span className="text-foreground font-medium">{t.title}</span>
+          </nav>
+        </div>
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10">
-        <div className="grid md:grid-cols-2 gap-10">
-          {/* Motif preview + builder directly underneath */}
-          <div className="space-y-5">
-            <div className="aspect-square rounded-3xl bg-card border-2 border-border/40 shadow-sm p-6 sm:p-10 overflow-hidden">
-              <div
+        <div className="max-w-6xl mx-auto container-x section-y">
+          <div className="grid md:grid-cols-2 gap-10 lg:gap-14">
+
                 key={pulseKey}
                 role="img"
                 aria-label={t.title}
