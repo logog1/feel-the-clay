@@ -488,9 +488,12 @@ const KitZelligePreview = () => {
             </div>
           </div>
         </section>
-      </div>
-    </main>
+        </div>
+      </main>
+      <Footer />
+    </>
   );
 };
+
 
 export default KitZelligePreview;
