@@ -3,6 +3,12 @@ import { Check, Palette, ShoppingBag, Sparkles, Package, Clock, Heart, ArrowLeft
 import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import SEOHead from "@/components/SEOHead";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 import { useLanguage } from "@/i18n/LanguageContext";
 import type { Language } from "@/i18n/translations";
 import { supabase } from "@/integrations/supabase/client";
@@ -12,6 +18,7 @@ import gallery1 from "@/assets/zellige-kit-gallery-1.jpg";
 import gallery2 from "@/assets/zellige-kit-gallery-2.jpg";
 import gallery3 from "@/assets/zellige-kit-gallery-3.jpg";
 import gallery4 from "@/assets/zellige-kit-gallery-4.jpg";
+
 
 const KIT_PRICE = 350;
 const orderSchema = z.object({
