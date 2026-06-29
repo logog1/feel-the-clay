@@ -137,7 +137,7 @@ const KitZelligePreview = () => {
   const [presetId, setPresetId] = useState<string>(PRESETS[0].id);
   const [colors, setColors] = useState<Record<string, string>>(PRESETS[0].colors);
   const [selected, setSelected] = useState<string>(REGIONS[0].key);
-  const [pulseKey, setPulseKey] = useState(0);
+  
   const [form, setForm] = useState<OrderForm>({ name: "", phone: "", address: "", email: "", notes: "" });
   const [errors, setErrors] = useState<Partial<Record<keyof OrderForm, string>>>({});
   const [showForm, setShowForm] = useState(false);
@@ -248,9 +248,6 @@ const KitZelligePreview = () => {
             <div className="space-y-5">
               <div className="aspect-square rounded-3xl bg-card border-2 border-border/40 shadow-sm p-6 sm:p-10 overflow-hidden">
                 <div
-
-
-                key={pulseKey}
                 role="img"
                 aria-label={t.title}
                 onClick={(e) => {
@@ -261,10 +258,9 @@ const KitZelligePreview = () => {
                   if (region) {
                     setMode("custom");
                     setSelected(region.key);
-                    setPulseKey((k) => k + 1);
                   }
                 }}
-                className="w-full h-full flex items-center justify-center cursor-pointer animate-scale-in [&>svg]:w-full [&>svg]:h-full [&>svg]:max-w-full [&>svg]:max-h-full [&_[fill]]:transition-all [&_[fill]]:duration-300 hover:[&_[fill]]:opacity-90"
+                className="w-full h-full flex items-center justify-center cursor-pointer [&>svg]:w-full [&>svg]:h-full [&>svg]:max-w-full [&>svg]:max-h-full [&_[fill]]:transition-colors [&_[fill]]:duration-300 hover:[&_[fill]]:opacity-90"
                 style={{ ["--sel" as string]: colors[selected]?.toLowerCase() }}
                 dangerouslySetInnerHTML={{ __html: svg }}
               />
