@@ -3,6 +3,12 @@ import { Check, Palette, ShoppingBag, Sparkles, Package, Clock, Heart, ArrowLeft
 import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import SEOHead from "@/components/SEOHead";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 import { useLanguage } from "@/i18n/LanguageContext";
 import type { Language } from "@/i18n/translations";
 import { supabase } from "@/integrations/supabase/client";
@@ -12,6 +18,7 @@ import gallery1 from "@/assets/zellige-kit-gallery-1.jpg";
 import gallery2 from "@/assets/zellige-kit-gallery-2.jpg";
 import gallery3 from "@/assets/zellige-kit-gallery-3.jpg";
 import gallery4 from "@/assets/zellige-kit-gallery-4.jpg";
+
 
 const KIT_PRICE = 350;
 const orderSchema = z.object({
@@ -220,22 +227,29 @@ const KitZelligePreview = () => {
 
 
   return (
-    <main className="min-h-screen bg-background">
-      <SEOHead title="Zellige Kit Preview" description="Preview of the DIY Zellige Kit with customization." path="/preview/kit-zellige" />
+    <>
+      <Header />
+      <main className="min-h-screen bg-background pt-20">
+        <SEOHead title="Kit Zellige — Moroccan craft DIY kit | Terraria" description="Create your own Moroccan zellige masterpiece at home. Hand-cut tiles, plaster, frame, and step-by-step booklet. Delivered in Morocco." path="/preview/kit-zellige" />
 
-      <div className="bg-amber-100 border-b border-amber-300 text-amber-900 text-xs font-medium px-4 py-2 flex items-center justify-between">
-        <span className="flex items-center gap-2"><Sparkles size={14} /> {t.banner}</span>
-        <Link to="/store" className="flex items-center gap-1 underline hover:no-underline">
-          <ArrowLeft size={12} /> {t.store}
-        </Link>
-      </div>
+        <div className="container-x max-w-6xl mx-auto pt-6">
+          <nav aria-label="Breadcrumb" className="text-xs text-muted-foreground flex items-center gap-1.5">
+            <Link to="/store" className="inline-flex items-center gap-1 hover:text-foreground transition-colors">
+              <ArrowLeft size={12} /> {t.store}
+            </Link>
+            <span className="opacity-50">/</span>
+            <span className="text-foreground font-medium">{t.title}</span>
+          </nav>
+        </div>
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10">
-        <div className="grid md:grid-cols-2 gap-10">
-          {/* Motif preview + builder directly underneath */}
-          <div className="space-y-5">
-            <div className="aspect-square rounded-3xl bg-card border-2 border-border/40 shadow-sm p-6 sm:p-10 overflow-hidden">
-              <div
+        <div className="max-w-6xl mx-auto container-x section-y">
+          <div className="grid md:grid-cols-2 gap-10 lg:gap-14">
+            {/* Motif preview + builder directly underneath */}
+            <div className="space-y-5">
+              <div className="aspect-square rounded-3xl bg-card border-2 border-border/40 shadow-sm p-6 sm:p-10 overflow-hidden">
+                <div
+
+
                 key={pulseKey}
                 role="img"
                 aria-label={t.title}
@@ -380,48 +394,52 @@ const KitZelligePreview = () => {
                   </button>
                 </div>
               ) : !showForm ? (
-                <button
+                <Button
                   type="button"
+                  variant="cta"
+                  size="lg"
                   onClick={() => setShowForm(true)}
-                  className="w-full py-3 rounded-2xl bg-cta text-primary-foreground font-bold text-sm flex items-center justify-center gap-2 hover:bg-cta-hover active:scale-95 transition-all shadow-lg shadow-cta/30"
+                  className="w-full"
                 >
                   <ShoppingBag size={16} />
                   {t.submit}
-                </button>
+                </Button>
               ) : (
-                <form onSubmit={handleSubmit} className="space-y-2.5">
+                <form onSubmit={handleSubmit} className="space-y-3">
                   <input type="text" tabIndex={-1} autoComplete="off" value={honey} onChange={(e) => setHoney(e.target.value)} className="hidden" aria-hidden="true" />
                   {(["name","phone","address","email","notes"] as const).map((field) => {
                     const isArea = field === "address" || field === "notes";
-                    const Tag: any = isArea ? "textarea" : "input";
+                    const labelText = t[`form${field[0].toUpperCase()}${field.slice(1)}` as keyof typeof t];
+                    const inputId = `kit-${field}`;
+                    const invalid = !!errors[field];
+                    const common = {
+                      id: inputId,
+                      value: form[field] || "",
+                      onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+                        setForm({ ...form, [field]: e.target.value }),
+                      "aria-invalid": invalid,
+                      className: cn(invalid && "border-destructive focus-visible:ring-destructive"),
+                    };
                     return (
-                      <div key={field}>
-                        <Tag
-                          type={field === "email" ? "email" : "text"}
-                          placeholder={t[`form${field[0].toUpperCase()}${field.slice(1)}` as keyof typeof t]}
-                          value={form[field] || ""}
-                          onChange={(e: any) => setForm({ ...form, [field]: e.target.value })}
-                          rows={isArea ? 2 : undefined}
-                          className={cn(
-                            "w-full px-3 py-2 rounded-xl bg-background border-2 text-sm focus:outline-none focus:border-cta transition",
-                            errors[field] ? "border-destructive" : "border-border/40"
-                          )}
-                        />
-                        {errors[field] && <p className="text-[10px] text-destructive mt-0.5">{errors[field]}</p>}
+                      <div key={field} className="space-y-1.5">
+                        <Label htmlFor={inputId} className="text-xs">{labelText}</Label>
+                        {isArea ? (
+                          <Textarea rows={2} {...common} />
+                        ) : (
+                          <Input type={field === "email" ? "email" : "text"} {...common} />
+                        )}
+                        {invalid && <p className="text-[11px] text-destructive">{errors[field]}</p>}
                       </div>
                     );
                   })}
                   {submitError && <p className="text-xs text-destructive text-center">{submitError}</p>}
-                  <button
-                    type="submit"
-                    disabled={sending}
-                    className="w-full py-3 rounded-2xl bg-cta text-primary-foreground font-bold text-sm flex items-center justify-center gap-2 hover:bg-cta-hover active:scale-95 transition-all shadow-lg shadow-cta/30 disabled:opacity-60"
-                  >
+                  <Button type="submit" variant="cta" size="lg" disabled={sending} className="w-full">
                     {sending ? <Loader2 size={16} className="animate-spin" /> : <ShoppingBag size={16} />}
                     {sending ? t.sending : t.submit}
-                  </button>
+                  </Button>
                 </form>
               )}
+
               <p className="mt-2 text-[11px] text-center text-muted-foreground">{t.payment}</p>
             </div>
 
@@ -474,9 +492,12 @@ const KitZelligePreview = () => {
             </div>
           </div>
         </section>
-      </div>
-    </main>
+        </div>
+      </main>
+      <Footer />
+    </>
   );
 };
+
 
 export default KitZelligePreview;
