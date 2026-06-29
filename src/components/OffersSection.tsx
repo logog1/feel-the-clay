@@ -80,7 +80,7 @@ const OffersSection = () => {
       image: siteImages["image_workshop_pottery"] || fallbackImages.pottery,
       link: "/workshop/pottery-experience",
       popular: potteryConfig?.is_popular || false,
-      unavailable: potteryConfig ? !potteryConfig.is_available : false,
+      unavailable: potteryConfig ? !potteryConfig.is_available : true,
       promoLabel: potteryConfig?.promo_enabled ? potteryConfig.promo_label : undefined,
       price: potteryConfig?.promo_enabled && potteryConfig?.promo_price ? potteryConfig.promo_price : (potteryConfig?.price || t("pottery.price")),
     },
