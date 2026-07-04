@@ -49,7 +49,7 @@ export default function PartnerGuide() {
 
 
       {/* Hero */}
-      <header className="border-b" style={{ background: `linear-gradient(135deg, ${brand} 0%, #92310a 100%)` }}>
+      <header data-guide-hero className="border-b" style={{ background: `linear-gradient(135deg, ${brand} 0%, #92310a 100%)` }}>
         <div className="max-w-5xl mx-auto px-4 py-10 text-white">
           <Badge className="bg-white/20 text-white border-0 hover:bg-white/25">Concierge handbook</Badge>
           <h1 className="text-3xl md:text-4xl font-semibold mt-3 tracking-tight">How the partnership works</h1>
