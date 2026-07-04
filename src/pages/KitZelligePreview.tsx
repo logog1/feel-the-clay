@@ -377,7 +377,7 @@ const KitZelligePreview = () => {
                     </button>
                   </div>
                   <div className="flex flex-wrap gap-1.5">
-                    {REGIONS.map((r) => (
+                    {visibleRegions.map((r) => (
                       <button
                         key={r.key}
                         onClick={() => setSelected(r.key)}
