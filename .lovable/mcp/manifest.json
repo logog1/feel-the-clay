@@ -1,0 +1,130 @@
+{
+  "version": 1,
+  "sdk_version": "0.20.0",
+  "path": "/mcp",
+  "auth": {
+    "type": "none"
+  },
+  "mcp": {
+    "server": {
+      "name": "terraria-workshops-mcp",
+      "version": "0.1.0",
+      "title": "Terraria Workshops MCP"
+    },
+    "tools": [
+      {
+        "name": "list_workshops",
+        "title": "List workshops",
+        "description": "List Terraria Workshops experiences (pottery, zellij, embroidery, carpets, etc.) with their base pricing per city.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "city": {
+              "type": "string",
+              "description": "Optional city slug or name to filter pricing (e.g. 'tetouan')."
+            }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "check_workshop_availability",
+        "title": "Check workshop availability",
+        "description": "Check upcoming available time slots for a Terraria workshop between two dates. Returns date, time, and remaining capacity per slot.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "workshop_slug": {
+              "type": "string",
+              "description": "Workshop slug (e.g. 'pottery-experience', 'zellij', 'handbuilding')."
+            },
+            "from_date": {
+              "type": "string",
+              "description": "Start date, ISO format YYYY-MM-DD."
+            },
+            "to_date": {
+              "type": "string",
+              "description": "End date, ISO format YYYY-MM-DD."
+            }
+          },
+          "required": [
+            "workshop_slug",
+            "from_date",
+            "to_date"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_blog_posts",
+        "title": "List blog posts",
+        "description": "List published blog posts from Terraria Workshops with title, slug, and excerpt.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50,
+              "description": "Max posts to return (default 10)."
+            },
+            "category": {
+              "type": "string",
+              "description": "Optional category filter (e.g. 'zellige')."
+            }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_store_products",
+        "title": "List store products",
+        "description": "List handmade products available in the Terraria Workshops online store.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "description": "Max products (default 20)."
+            },
+            "section": {
+              "type": "string",
+              "description": "Optional store section slug filter."
+            }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}
