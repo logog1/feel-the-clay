@@ -4,6 +4,7 @@ import path from "path";
 import { componentTagger } from "lovable-tagger";
 import { VitePWA } from "vite-plugin-pwa";
 import Prerender from "@prerenderer/rollup-plugin";
+import { mcpPlugin } from "@lovable.dev/mcp-js/stacks/supabase/vite";
 
 export default defineConfig(({ mode }) => ({
   server: {
