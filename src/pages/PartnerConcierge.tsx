@@ -249,7 +249,9 @@ export default function PartnerConcierge() {
       </header>
 
       <main className="max-w-6xl mx-auto p-4 space-y-5">
+        <TermsBanner partnerId={partner.id} userId={session.user.id} brand={brand} />
         {/* Stats */}
+
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           <Stat label="Experiences" value={experiences.length} />
           <Stat label="Total bookings" value={bookings.length} />
