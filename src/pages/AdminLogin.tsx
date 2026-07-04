@@ -236,6 +236,8 @@ const AdminLogin = () => {
             </button>
           </form>
         </div>
+        )}
+
       </div>
     </main>
   );
