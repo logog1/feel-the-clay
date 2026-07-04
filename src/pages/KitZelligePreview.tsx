@@ -343,7 +343,7 @@ const KitZelligePreview = () => {
 
             {mode === "ready" ? (
               <div className="grid grid-cols-2 gap-2">
-                {PRESETS.map((p) => {
+                {visiblePresets.map((p) => {
                   const active = presetId === p.id;
                   return (
                     <button
