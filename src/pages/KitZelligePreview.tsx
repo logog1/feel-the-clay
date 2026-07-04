@@ -146,6 +146,62 @@ const KitZelligePreview = () => {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [honey, setHoney] = useState("");
 
+  // Availability filters (admin-controlled). Empty maps => show everything.
+  const [availPieces, setAvailPieces] = useState<Set<string> | null>(null);
+  const [availColors, setAvailColors] = useState<Set<string> | null>(null);
+  const [availPresets, setAvailPresets] = useState<Set<string> | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const { data } = await (supabase as any)
+        .from("zellige_kit_items")
+        .select("kind, key, is_available")
+        .eq("is_available", true);
+      if (cancelled || !data) return;
+      const norm = (v: string) => v.toLowerCase();
+      const pieces = new Set<string>();
+      const colors = new Set<string>();
+      const presets = new Set<string>();
+      for (const row of data as { kind: string; key: string }[]) {
+        if (row.kind === "piece") pieces.add(norm(row.key));
+        else if (row.kind === "color") colors.add(norm(row.key));
+        else if (row.kind === "preset") presets.add(row.key);
+      }
+      setAvailPieces(pieces);
+      setAvailColors(colors);
+      setAvailPresets(presets);
+    })();
+    return () => { cancelled = true; };
+  }, []);
+
+  const visibleRegions = useMemo(
+    () => (availPieces && availPieces.size ? REGIONS.filter((r) => availPieces.has(r.key.toLowerCase())) : REGIONS),
+    [availPieces]
+  );
+  const visiblePalette = useMemo(
+    () => (availColors && availColors.size ? PALETTE.filter((c) => availColors.has(c.toLowerCase())) : PALETTE),
+    [availColors]
+  );
+  const visiblePresets = useMemo(
+    () => (availPresets && availPresets.size ? PRESETS.filter((p) => availPresets.has(p.id)) : PRESETS),
+    [availPresets]
+  );
+
+  // Keep selection/preset valid if admin disables current choice.
+  useEffect(() => {
+    if (visibleRegions.length && !visibleRegions.find((r) => r.key === selected)) {
+      setSelected(visibleRegions[0].key);
+    }
+  }, [visibleRegions, selected]);
+  useEffect(() => {
+    if (visiblePresets.length && !visiblePresets.find((p) => p.id === presetId)) {
+      setPresetId(visiblePresets[0].id);
+      setColors(visiblePresets[0].colors);
+    }
+  }, [visiblePresets, presetId]);
+
+
   const applyPreset = (id: string) => {
     const p = PRESETS.find((x) => x.id === id);
     if (!p) return;
