@@ -105,6 +105,7 @@ const App = () => {
                     <Route path="/partners/:slug/qr" element={<PartnerQR />} />
                     <Route path="/partners/:slug/kit" element={<PartnerKit />} />
                     <Route path="/partners/:slug/concierge" element={<PartnerConcierge />} />
+                    <Route path="/partners/:slug/guide" element={<PartnerGuide />} />
                     <Route path="/preview/kit-zellige" element={<KitZelligePreview />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
