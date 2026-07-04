@@ -357,6 +357,11 @@ export default function PartnerConcierge() {
         {/* Scan funnel + per-variant + payouts */}
         <ConciergeAnalytics partnerId={partner.id} brand={brand} partnerName={partner.name} />
 
+        {/* Welcome kit orders */}
+        <KitOrdersPanel partnerId={partner.id} userId={session.user.id} brand={brand} />
+
+
+
         {/* All recent bookings */}
         <section className="space-y-2">
           <h3 className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">All recent bookings</h3>
