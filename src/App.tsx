@@ -44,6 +44,7 @@ const PartnerQR = lazy(() => import("./pages/PartnerQR"));
 const PartnerConcierge = lazy(() => import("./pages/PartnerConcierge"));
 const PartnerKit = lazy(() => import("./pages/PartnerKit"));
 const PartnerTerms = lazy(() => import("./pages/PartnerTerms"));
+const PartnerGuide = lazy(() => import("./pages/PartnerGuide"));
 const KitZelligePreview = lazy(() => import("./pages/KitZelligePreview"));
 
 const queryClient = new QueryClient();
