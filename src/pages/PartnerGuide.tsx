@@ -23,6 +23,8 @@ export default function PartnerGuide() {
   const { partner } = useHotelPartnerBySlug(slug);
   const partnerName = partner?.name ?? "Your property";
   const partnerSlug = partner?.slug ?? slug ?? "your-hotel";
+  const handlePrint = () => window.print();
+
 
   return (
     <div className="min-h-screen" style={{ background: "#FBFAF6", fontFamily: "'Inter', system-ui, sans-serif" }}>
