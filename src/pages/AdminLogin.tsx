@@ -161,7 +161,36 @@ const AdminLogin = () => {
           <p className="text-sm text-muted-foreground">Terraria Workshops Dashboard</p>
         </div>
 
+        {partnerPicks.length > 1 ? (
+          <div className="bg-card p-6 rounded-3xl border-2 border-border/40 space-y-3">
+            <div className="text-center space-y-1">
+              <h2 className="text-lg font-semibold">Choose a property</h2>
+              <p className="text-xs text-muted-foreground">You have access to multiple properties. Pick the one you want to open.</p>
+            </div>
+            <div className="space-y-2">
+              {partnerPicks.map((p) => (
+                <Button
+                  key={p.slug}
+                  variant="outline"
+                  className="w-full justify-between rounded-xl h-11"
+                  onClick={() => navigate(`/partners/${p.slug}/concierge`)}
+                >
+                  <span className="truncate">{p.name}</span>
+                  <span className="text-xs text-muted-foreground">Open →</span>
+                </Button>
+              ))}
+            </div>
+            <Button
+              variant="ghost"
+              className="w-full text-xs text-muted-foreground"
+              onClick={async () => { await supabase.auth.signOut(); setPartnerPicks([]); }}
+            >
+              Sign out
+            </Button>
+          </div>
+        ) : (
         <div className="bg-card p-6 rounded-3xl border-2 border-border/40 space-y-4">
+
           {/* Google Sign-In */}
           <Button
             type="button"
