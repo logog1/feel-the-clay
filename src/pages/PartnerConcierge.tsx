@@ -383,6 +383,61 @@ export default function PartnerConcierge() {
   );
 }
 
+function TermsBanner({ partnerId, userId, brand }: { partnerId: string; userId: string; brand: string }) {
+  const [status, setStatus] = useState<"loading" | "needed" | "accepted" | "hidden">("loading");
+  const [saving, setSaving] = useState(false);
+  const TERMS_VERSION = "2026-01";
+
+  useEffect(() => {
+    (async () => {
+      const { data } = await (supabase as any)
+        .from("partner_staff")
+        .select("terms_accepted_at, terms_version")
+        .eq("user_id", userId)
+        .eq("partner_id", partnerId)
+        .maybeSingle();
+      if (data?.terms_accepted_at && data?.terms_version === TERMS_VERSION) {
+        setStatus("hidden");
+      } else {
+        setStatus("needed");
+      }
+    })();
+  }, [partnerId, userId]);
+
+  const accept = async () => {
+    setSaving(true);
+    const { error } = await (supabase as any)
+      .from("partner_staff")
+      .update({ terms_accepted_at: new Date().toISOString(), terms_version: TERMS_VERSION })
+      .eq("user_id", userId)
+      .eq("partner_id", partnerId);
+    setSaving(false);
+    if (error) { toast.error("Could not save. Try again."); return; }
+    toast.success("Terms accepted. Thank you!");
+    setStatus("hidden");
+  };
+
+  if (status === "hidden" || status === "loading") return null;
+
+  return (
+    <Card className="p-4 border-2" style={{ borderColor: brand, background: `${brand}0d` }}>
+      <div className="flex flex-col md:flex-row md:items-center gap-3 justify-between">
+        <div className="min-w-0">
+          <p className="text-sm font-semibold">Please review the partnership terms</p>
+          <p className="text-xs text-muted-foreground">
+            You need to accept the current terms ({TERMS_VERSION}) before continuing to use the concierge dashboard.{" "}
+            <Link to="/partners/terms" target="_blank" className="underline">Read terms →</Link>
+          </p>
+        </div>
+        <Button onClick={accept} disabled={saving} style={{ background: brand }} className="text-white shrink-0">
+          {saving ? <Loader2 className="animate-spin" size={14} /> : "I accept the terms"}
+        </Button>
+      </div>
+    </Card>
+  );
+}
+
+
 function Stat({ label, value, accent }: { label: string; value: number; accent?: string }) {
   return (
     <Card className="p-3">
