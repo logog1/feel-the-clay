@@ -1283,6 +1283,11 @@ const AdminDashboard = () => {
           <TabsContent value="workshops">
             <WorkshopManagementSection />
           </TabsContent>
+
+          {/* ── Kit Zellige ── */}
+          <TabsContent value="kit-zellige">
+            <KitZelligeSection />
+          </TabsContent>
         </Tabs>
       </div>
 
