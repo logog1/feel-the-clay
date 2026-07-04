@@ -357,6 +357,11 @@ export default function PartnerConcierge() {
         {/* Scan funnel + per-variant + payouts */}
         <ConciergeAnalytics partnerId={partner.id} brand={brand} partnerName={partner.name} />
 
+        {/* Welcome kit orders */}
+        <KitOrdersPanel partnerId={partner.id} userId={session.user.id} brand={brand} />
+
+
+
         {/* All recent bookings */}
         <section className="space-y-2">
           <h3 className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">All recent bookings</h3>
@@ -382,6 +387,135 @@ export default function PartnerConcierge() {
     </div>
   );
 }
+
+type KitOrder = {
+  id: string;
+  kit_type: string;
+  quantity: number;
+  status: string;
+  tracking_number: string | null;
+  courier: string | null;
+  shipped_at: string | null;
+  delivered_at: string | null;
+  notes: string | null;
+  created_at: string;
+};
+
+function KitOrdersPanel({ partnerId, userId, brand }: { partnerId: string; userId: string; brand: string }) {
+  const [rows, setRows] = useState<KitOrder[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [kitType, setKitType] = useState("welcome");
+  const [qty, setQty] = useState(1);
+  const [notes, setNotes] = useState("");
+
+  const load = async () => {
+    setLoading(true);
+    const { data } = await (supabase as any)
+      .from("partner_kit_orders")
+      .select("id,kit_type,quantity,status,tracking_number,courier,shipped_at,delivered_at,notes,created_at")
+      .eq("partner_id", partnerId)
+      .order("created_at", { ascending: false });
+    setRows((data || []) as KitOrder[]);
+    setLoading(false);
+  };
+
+  useEffect(() => { load(); /* eslint-disable-next-line */ }, [partnerId]);
+
+  const request = async () => {
+    if (qty < 1) return;
+    setSubmitting(true);
+    const { error } = await (supabase as any)
+      .from("partner_kit_orders")
+      .insert({
+        partner_id: partnerId,
+        kit_type: kitType,
+        quantity: qty,
+        notes: notes.trim() || null,
+        requested_by: userId,
+        status: "requested",
+      });
+    setSubmitting(false);
+    if (error) { toast.error(error.message || "Could not submit request"); return; }
+    toast.success("Kit request submitted");
+    setQty(1); setNotes("");
+    load();
+  };
+
+  const statusColor = (s: string) =>
+    s === "delivered" ? "bg-emerald-100 text-emerald-700"
+    : s === "shipped" ? "bg-blue-100 text-blue-700"
+    : s === "preparing" ? "bg-amber-100 text-amber-700"
+    : s === "cancelled" ? "bg-red-100 text-red-700"
+    : "bg-muted text-muted-foreground";
+
+  return (
+    <section className="space-y-2">
+      <h3 className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">Welcome kits</h3>
+      <Card className="p-3 space-y-2">
+        <p className="text-xs text-muted-foreground">
+          Request Terraria welcome kits (zellige samples, brochures, QR cards) for your property.
+        </p>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
+          <div>
+            <label className="text-[10px] uppercase tracking-wider text-muted-foreground">Kit type</label>
+            <select value={kitType} onChange={(e) => setKitType(e.target.value)} className="w-full mt-1 h-9 px-2 rounded-md border bg-background text-sm">
+              <option value="welcome">Welcome kit</option>
+              <option value="qr_cards">QR cards only</option>
+              <option value="brochures">Brochures</option>
+              <option value="samples">Zellige samples</option>
+            </select>
+          </div>
+          <div>
+            <label className="text-[10px] uppercase tracking-wider text-muted-foreground">Quantity</label>
+            <Input type="number" min={1} max={100} value={qty} onChange={(e) => setQty(Math.max(1, parseInt(e.target.value) || 1))} className="mt-1 h-9" />
+          </div>
+          <div className="md:col-span-2">
+            <label className="text-[10px] uppercase tracking-wider text-muted-foreground">Notes (optional)</label>
+            <Input value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Delivery instructions, special request…" className="mt-1 h-9" />
+          </div>
+        </div>
+        <Button onClick={request} disabled={submitting} style={{ background: brand }} className="text-white w-full md:w-auto">
+          {submitting ? <Loader2 className="animate-spin mr-1" size={14} /> : null} Request kit
+        </Button>
+      </Card>
+
+      {loading ? (
+        <div className="py-4 text-center"><Loader2 className="animate-spin inline text-muted-foreground" size={16} /></div>
+      ) : rows.length === 0 ? null : (
+        <Card className="overflow-hidden">
+          <table className="w-full text-xs">
+            <thead className="bg-muted/40 text-[10px] uppercase tracking-wider text-muted-foreground">
+              <tr>
+                <th className="text-left px-3 py-2">Requested</th>
+                <th className="text-left px-3 py-2">Kit</th>
+                <th className="text-right px-3 py-2">Qty</th>
+                <th className="text-left px-3 py-2">Status</th>
+                <th className="text-left px-3 py-2">Tracking</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((r) => (
+                <tr key={r.id} className="border-t">
+                  <td className="px-3 py-2">{r.created_at.slice(0, 10)}</td>
+                  <td className="px-3 py-2 capitalize">{r.kit_type.replace(/_/g, " ")}</td>
+                  <td className="px-3 py-2 text-right">{r.quantity}</td>
+                  <td className="px-3 py-2">
+                    <span className={`px-1.5 py-0.5 rounded text-[10px] capitalize ${statusColor(r.status)}`}>{r.status}</span>
+                  </td>
+                  <td className="px-3 py-2 text-muted-foreground">
+                    {r.tracking_number ? `${r.courier || ""} ${r.tracking_number}`.trim() : "—"}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </Card>
+      )}
+    </section>
+  );
+}
+
 
 function TermsBanner({ partnerId, userId, brand }: { partnerId: string; userId: string; brand: string }) {
   const [status, setStatus] = useState<"loading" | "needed" | "accepted" | "hidden">("loading");
