@@ -468,6 +468,11 @@ export default function PartnerLanding() {
         </div>
       </section>
 
+      {/* FULL BOOKING FORM (same as main site) */}
+      <section id="book" className="bg-background">
+        <BookingFormSection />
+      </section>
+
       {/* FOOTER */}
       <footer className="border-t border-border/40 py-8 text-center text-xs text-muted-foreground capitalize">
         <p className="capitalize">{partner.name} × Terraria · Curated craft experiences</p>
