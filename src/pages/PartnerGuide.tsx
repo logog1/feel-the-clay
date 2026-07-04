@@ -57,7 +57,11 @@ export default function PartnerGuide() {
             A visual walk-through of every tool you have as a Terraria partner — the QR cards, the staff kit,
             the concierge dashboard and how commissions are tracked. About 5 minutes to read.
           </p>
-          <div className="flex flex-wrap gap-2 mt-5">
+          <div className="flex flex-wrap gap-2 mt-5 no-print">
+            <Button size="sm" variant="secondary" onClick={handlePrint}>
+              <Printer size={14} className="mr-1" /> Download PDF
+            </Button>
+
             <Button size="sm" variant="secondary" asChild>
               <Link to={`/partners/${partnerSlug}/concierge`}><LogIn size={14} className="mr-1" /> Open dashboard</Link>
             </Button>
