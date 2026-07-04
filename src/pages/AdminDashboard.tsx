@@ -501,6 +501,7 @@ const AdminDashboard = () => {
             <TabsTrigger value="settings" className="rounded-xl gap-2 data-[state=active]:bg-card"><Settings size={14} /> Settings</TabsTrigger>
             <TabsTrigger value="cities" className="rounded-xl gap-2 data-[state=active]:bg-card"><MapPin size={14} /> Cities & Pricing</TabsTrigger>
             <TabsTrigger value="workshops" className="rounded-xl gap-2 data-[state=active]:bg-card"><Sparkles size={14} /> Workshops</TabsTrigger>
+            <TabsTrigger value="kit-zellige" className="rounded-xl gap-2 data-[state=active]:bg-card"><Palette size={14} /> Kit Zellige</TabsTrigger>
             <TabsTrigger value="users" className="rounded-xl gap-2 data-[state=active]:bg-card"><Users size={14} /> Users</TabsTrigger>
           </TabsList>
 
