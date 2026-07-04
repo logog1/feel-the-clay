@@ -41,8 +41,31 @@ Deno.serve(async (req) => {
 
     if (action === "remove") {
       const staffId = body.staff_id as string;
+      // Fetch the row so we know which user to potentially demote
+      const { data: staffRow } = await admin
+        .from("partner_staff")
+        .select("user_id")
+        .eq("id", staffId)
+        .maybeSingle();
+
       const { error } = await admin.from("partner_staff").delete().eq("id", staffId);
       if (error) return json({ error: error.message }, 400);
+
+      // If this user has no remaining partner assignments and isn't an admin,
+      // remove the hotel_staff role so a stale role can't be reused later.
+      if (staffRow?.user_id) {
+        const { count } = await admin
+          .from("partner_staff")
+          .select("id", { count: "exact", head: true })
+          .eq("user_id", staffRow.user_id);
+        if ((count ?? 0) === 0) {
+          await admin
+            .from("user_roles")
+            .delete()
+            .eq("user_id", staffRow.user_id)
+            .eq("role", "hotel_staff");
+        }
+      }
       return json({ ok: true });
     }
 
@@ -50,13 +73,20 @@ Deno.serve(async (req) => {
     const email = String(body.email || "").trim().toLowerCase();
     if (!email) return json({ error: "email required" }, 400);
 
-    // Find or invite user
+    // Find or invite user — paginate listUsers so we don't miss anyone past page 1
     let targetUserId: string | null = null;
-    const { data: list } = await admin.auth.admin.listUsers({ page: 1, perPage: 200 });
-    const match = list?.users?.find((u) => (u.email || "").toLowerCase() === email);
+    let match: { id: string; email?: string | null } | undefined;
+    for (let page = 1; page <= 20; page++) {
+      const { data: list } = await admin.auth.admin.listUsers({ page, perPage: 200 });
+      const users = list?.users ?? [];
+      match = users.find((u) => (u.email || "").toLowerCase() === email);
+      if (match) break;
+      if (users.length < 200) break;
+    }
     if (match) {
       targetUserId = match.id;
     } else {
+
       const redirectTo = body.redirect_to || `${new URL(req.url).origin}`;
       const { data: invited, error: invErr } = await admin.auth.admin.inviteUserByEmail(email, {
         redirectTo,
