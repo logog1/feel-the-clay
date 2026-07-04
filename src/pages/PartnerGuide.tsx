@@ -33,6 +33,21 @@ export default function PartnerGuide() {
         <meta name="description" content="Step-by-step guide for hotel concierge staff to use the Terraria partner ecosystem." />
       </Helmet>
 
+      <style>{`
+        @media print {
+          @page { size: A4; margin: 14mm; }
+          html, body { background: #fff !important; }
+          .no-print { display: none !important; }
+          header[data-guide-hero] { background: #fff !important; color: #111 !important; border-bottom: 2px solid ${brand}; }
+          header[data-guide-hero] * { color: #111 !important; }
+          main { padding: 0 !important; }
+          section { page-break-inside: avoid; break-inside: avoid; }
+          a { color: #111 !important; text-decoration: none !important; }
+          .shadow-sm, .shadow-lg { box-shadow: none !important; }
+        }
+      `}</style>
+
+
       {/* Hero */}
       <header className="border-b" style={{ background: `linear-gradient(135deg, ${brand} 0%, #92310a 100%)` }}>
         <div className="max-w-5xl mx-auto px-4 py-10 text-white">
