@@ -17,6 +17,8 @@ const AdminLogin = () => {
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
+  const [partnerPicks, setPartnerPicks] = useState<Array<{ slug: string; name: string }>>([]);
+
 
   // Guard against concurrent routeByRole runs (post-signIn call vs. onAuthStateChange('SIGNED_IN')).
   const routingRef = useRef(false);
@@ -44,16 +46,21 @@ const AdminLogin = () => {
       }
 
       if (roleRow?.role === "hotel_staff") {
-        // Look up the partner slug they are assigned to.
-        const { data: staff } = await (supabase as any)
+        // Look up all partner assignments — staff can be linked to multiple properties.
+        const { data: staffRows } = await (supabase as any)
           .from("partner_staff")
-          .select("partner_id, hotel_partners:partner_id(slug)")
-          .eq("user_id", session.user.id)
-          .limit(1)
-          .maybeSingle();
-        const slug = staff?.hotel_partners?.slug;
-        if (slug) {
-          navigate(`/partners/${slug}/concierge`);
+          .select("partner_id, hotel_partners:partner_id(slug, name)")
+          .eq("user_id", session.user.id);
+
+        const picks = (staffRows || [])
+          .map((r: any) => ({ slug: r.hotel_partners?.slug, name: r.hotel_partners?.name }))
+          .filter((r: any) => r.slug);
+
+        if (picks.length === 1) {
+          navigate(`/partners/${picks[0].slug}/concierge`);
+        } else if (picks.length > 1) {
+          setPartnerPicks(picks);
+          setLoading(false);
         } else {
           await supabase.auth.signOut();
           setError("Your staff account is not linked to a property yet. Please contact the Terraria team.");
@@ -61,6 +68,7 @@ const AdminLogin = () => {
         }
         return;
       }
+
 
       // No role at all — pending approval
       await supabase.auth.signOut();
@@ -153,7 +161,36 @@ const AdminLogin = () => {
           <p className="text-sm text-muted-foreground">Terraria Workshops Dashboard</p>
         </div>
 
+        {partnerPicks.length > 1 ? (
+          <div className="bg-card p-6 rounded-3xl border-2 border-border/40 space-y-3">
+            <div className="text-center space-y-1">
+              <h2 className="text-lg font-semibold">Choose a property</h2>
+              <p className="text-xs text-muted-foreground">You have access to multiple properties. Pick the one you want to open.</p>
+            </div>
+            <div className="space-y-2">
+              {partnerPicks.map((p) => (
+                <Button
+                  key={p.slug}
+                  variant="outline"
+                  className="w-full justify-between rounded-xl h-11"
+                  onClick={() => navigate(`/partners/${p.slug}/concierge`)}
+                >
+                  <span className="truncate">{p.name}</span>
+                  <span className="text-xs text-muted-foreground">Open →</span>
+                </Button>
+              ))}
+            </div>
+            <Button
+              variant="ghost"
+              className="w-full text-xs text-muted-foreground"
+              onClick={async () => { await supabase.auth.signOut(); setPartnerPicks([]); }}
+            >
+              Sign out
+            </Button>
+          </div>
+        ) : (
         <div className="bg-card p-6 rounded-3xl border-2 border-border/40 space-y-4">
+
           {/* Google Sign-In */}
           <Button
             type="button"
@@ -199,6 +236,8 @@ const AdminLogin = () => {
             </button>
           </form>
         </div>
+        )}
+
       </div>
     </main>
   );
