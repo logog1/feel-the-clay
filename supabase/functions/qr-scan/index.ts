@@ -64,6 +64,25 @@ Deno.serve(async (req) => {
     const ip_hash = ip ? await sha256(ip + "::" + ua) : null;
     const sid = session_id || crypto.randomUUID();
 
+    // Ad-hoc rate limit: max 10 scans per (partner, variant, ip_hash) per minute.
+    // Prevents casual scan inflation that would skew conversion analytics.
+    if (ip_hash) {
+      const sinceIso = new Date(Date.now() - 60_000).toISOString();
+      const { count } = await supa
+        .from("qr_scan_log")
+        .select("id", { count: "exact", head: true })
+        .eq("partner_id", partner.id)
+        .eq("ip_hash", ip_hash)
+        .eq("variant_code", variant_code)
+        .gte("created_at", sinceIso);
+      if ((count ?? 0) >= 10) {
+        return new Response(
+          JSON.stringify({ partner_id: partner.id, session_id: sid, variant_code, variant_scope, throttled: true }),
+          { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+        );
+      }
+    }
+
     await supa.from("qr_scan_log").insert({
       partner_id: partner.id,
       variant_code,
@@ -74,6 +93,7 @@ Deno.serve(async (req) => {
       user_agent: ua.slice(0, 300),
       referrer: req.headers.get("referer")?.slice(0, 300) || null,
     });
+
 
     return new Response(JSON.stringify({
       partner_id: partner.id,
