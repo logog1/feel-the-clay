@@ -23,6 +23,8 @@ export default function PartnerGuide() {
   const { partner } = useHotelPartnerBySlug(slug);
   const partnerName = partner?.name ?? "Your property";
   const partnerSlug = partner?.slug ?? slug ?? "your-hotel";
+  const handlePrint = () => window.print();
+
 
   return (
     <div className="min-h-screen" style={{ background: "#FBFAF6", fontFamily: "'Inter', system-ui, sans-serif" }}>
@@ -31,8 +33,23 @@ export default function PartnerGuide() {
         <meta name="description" content="Step-by-step guide for hotel concierge staff to use the Terraria partner ecosystem." />
       </Helmet>
 
+      <style>{`
+        @media print {
+          @page { size: A4; margin: 14mm; }
+          html, body { background: #fff !important; }
+          .no-print { display: none !important; }
+          header[data-guide-hero] { background: #fff !important; color: #111 !important; border-bottom: 2px solid ${brand}; }
+          header[data-guide-hero] * { color: #111 !important; }
+          main { padding: 0 !important; }
+          section { page-break-inside: avoid; break-inside: avoid; }
+          a { color: #111 !important; text-decoration: none !important; }
+          .shadow-sm, .shadow-lg { box-shadow: none !important; }
+        }
+      `}</style>
+
+
       {/* Hero */}
-      <header className="border-b" style={{ background: `linear-gradient(135deg, ${brand} 0%, #92310a 100%)` }}>
+      <header data-guide-hero className="border-b" style={{ background: `linear-gradient(135deg, ${brand} 0%, #92310a 100%)` }}>
         <div className="max-w-5xl mx-auto px-4 py-10 text-white">
           <Badge className="bg-white/20 text-white border-0 hover:bg-white/25">Concierge handbook</Badge>
           <h1 className="text-3xl md:text-4xl font-semibold mt-3 tracking-tight">How the partnership works</h1>
@@ -40,7 +57,11 @@ export default function PartnerGuide() {
             A visual walk-through of every tool you have as a Terraria partner — the QR cards, the staff kit,
             the concierge dashboard and how commissions are tracked. About 5 minutes to read.
           </p>
-          <div className="flex flex-wrap gap-2 mt-5">
+          <div className="flex flex-wrap gap-2 mt-5 no-print">
+            <Button size="sm" variant="secondary" onClick={handlePrint}>
+              <Printer size={14} className="mr-1" /> Download PDF
+            </Button>
+
             <Button size="sm" variant="secondary" asChild>
               <Link to={`/partners/${partnerSlug}/concierge`}><LogIn size={14} className="mr-1" /> Open dashboard</Link>
             </Button>
