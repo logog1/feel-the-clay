@@ -18,51 +18,63 @@ const AdminLogin = () => {
   const [loading, setLoading] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
 
+  // Guard against concurrent routeByRole runs (post-signIn call vs. onAuthStateChange('SIGNED_IN')).
+  const routingRef = useRef(false);
+
   // Route the signed-in user based on their role.
   // - admin        → /admin
   // - hotel_staff  → /partners/<slug>/concierge (their assigned property)
   // - no role      → sign out, show "pending approval"
   const routeByRole = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) return;
+    if (routingRef.current) return;
+    routingRef.current = true;
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
 
-    const { data: roleRow } = await supabase
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", session.user.id)
-      .maybeSingle();
-
-    if (roleRow?.role === "admin") {
-      navigate("/admin");
-      return;
-    }
-
-    if (roleRow?.role === "hotel_staff") {
-      // Look up the partner slug they are assigned to.
-      const { data: staff } = await (supabase as any)
-        .from("partner_staff")
-        .select("partner_id, hotel_partners:partner_id(slug)")
+      const { data: roleRow } = await supabase
+        .from("user_roles")
+        .select("role")
         .eq("user_id", session.user.id)
-        .limit(1)
         .maybeSingle();
-      const slug = staff?.hotel_partners?.slug;
-      if (slug) {
-        navigate(`/partners/${slug}/concierge`);
-      } else {
-        await supabase.auth.signOut();
-        setError("Your staff account is not linked to a property yet. Please contact the Terraria team.");
-        setLoading(false);
-      }
-      return;
-    }
 
-    // No role at all — pending approval
-    await supabase.auth.signOut();
-    setError("Your account is pending approval. Please wait for an admin to grant you access.");
-    setLoading(false);
+      if (roleRow?.role === "admin") {
+        navigate("/admin");
+        return;
+      }
+
+      if (roleRow?.role === "hotel_staff") {
+        // Look up the partner slug they are assigned to.
+        const { data: staff } = await (supabase as any)
+          .from("partner_staff")
+          .select("partner_id, hotel_partners:partner_id(slug)")
+          .eq("user_id", session.user.id)
+          .limit(1)
+          .maybeSingle();
+        const slug = staff?.hotel_partners?.slug;
+        if (slug) {
+          navigate(`/partners/${slug}/concierge`);
+        } else {
+          await supabase.auth.signOut();
+          setError("Your staff account is not linked to a property yet. Please contact the Terraria team.");
+          setLoading(false);
+        }
+        return;
+      }
+
+      // No role at all — pending approval
+      await supabase.auth.signOut();
+      setError("Your account is pending approval. Please wait for an admin to grant you access.");
+      setLoading(false);
+    } finally {
+      // Release the guard so a subsequent auth event (e.g. re-login after signOut) can route again.
+      routingRef.current = false;
+    }
   };
 
-  // Auto-redirect if already authenticated (e.g. after Google OAuth redirect)
+  // Auto-redirect if already authenticated (e.g. after Google OAuth redirect).
+  // The onAuthStateChange listener is the single source of truth for post-sign-in routing;
+  // handleLogin only kicks off the sign-in and lets the listener drive navigation.
   useEffect(() => {
     routeByRole();
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
@@ -86,8 +98,9 @@ const AdminLogin = () => {
       setLoading(false);
       return;
     }
-    await routeByRole();
+    // Routing is handled by the onAuthStateChange('SIGNED_IN') listener.
   };
+
 
 
   const handleGoogleLogin = async () => {
