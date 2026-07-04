@@ -46,16 +46,21 @@ const AdminLogin = () => {
       }
 
       if (roleRow?.role === "hotel_staff") {
-        // Look up the partner slug they are assigned to.
-        const { data: staff } = await (supabase as any)
+        // Look up all partner assignments — staff can be linked to multiple properties.
+        const { data: staffRows } = await (supabase as any)
           .from("partner_staff")
-          .select("partner_id, hotel_partners:partner_id(slug)")
-          .eq("user_id", session.user.id)
-          .limit(1)
-          .maybeSingle();
-        const slug = staff?.hotel_partners?.slug;
-        if (slug) {
-          navigate(`/partners/${slug}/concierge`);
+          .select("partner_id, hotel_partners:partner_id(slug, name)")
+          .eq("user_id", session.user.id);
+
+        const picks = (staffRows || [])
+          .map((r: any) => ({ slug: r.hotel_partners?.slug, name: r.hotel_partners?.name }))
+          .filter((r: any) => r.slug);
+
+        if (picks.length === 1) {
+          navigate(`/partners/${picks[0].slug}/concierge`);
+        } else if (picks.length > 1) {
+          setPartnerPicks(picks);
+          setLoading(false);
         } else {
           await supabase.auth.signOut();
           setError("Your staff account is not linked to a property yet. Please contact the Terraria team.");
@@ -63,6 +68,7 @@ const AdminLogin = () => {
         }
         return;
       }
+
 
       // No role at all — pending approval
       await supabase.auth.signOut();
