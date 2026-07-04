@@ -395,7 +395,7 @@ const KitZelligePreview = () => {
                 <div>
                   <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">{t.palette}</p>
                   <div className="grid grid-cols-9 gap-2">
-                    {PALETTE.map((hex) => {
+                    {visiblePalette.map((hex) => {
                       const active = colors[selected]?.toLowerCase() === hex.toLowerCase();
                       return (
                         <button
