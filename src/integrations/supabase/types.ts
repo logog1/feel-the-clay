@@ -562,6 +562,8 @@ export type Database = {
           slug: string
           sort_order: number
           stars: number | null
+          terms_accepted_at: string | null
+          terms_version: string | null
           type: string
           updated_at: string
           website_url: string | null
@@ -598,6 +600,8 @@ export type Database = {
           slug: string
           sort_order?: number
           stars?: number | null
+          terms_accepted_at?: string | null
+          terms_version?: string | null
           type?: string
           updated_at?: string
           website_url?: string | null
@@ -634,6 +638,8 @@ export type Database = {
           slug?: string
           sort_order?: number
           stars?: number | null
+          terms_accepted_at?: string | null
+          terms_version?: string | null
           type?: string
           updated_at?: string
           website_url?: string | null
@@ -799,6 +805,69 @@ export type Database = {
           subtotal?: number | null
         }
         Relationships: []
+      }
+      partner_kit_orders: {
+        Row: {
+          courier: string | null
+          created_at: string
+          delivered_at: string | null
+          id: string
+          kit_type: string
+          notes: string | null
+          partner_id: string
+          quantity: number
+          requested_by: string | null
+          shipped_at: string | null
+          status: string
+          tracking_number: string | null
+          updated_at: string
+        }
+        Insert: {
+          courier?: string | null
+          created_at?: string
+          delivered_at?: string | null
+          id?: string
+          kit_type?: string
+          notes?: string | null
+          partner_id: string
+          quantity?: number
+          requested_by?: string | null
+          shipped_at?: string | null
+          status?: string
+          tracking_number?: string | null
+          updated_at?: string
+        }
+        Update: {
+          courier?: string | null
+          created_at?: string
+          delivered_at?: string | null
+          id?: string
+          kit_type?: string
+          notes?: string | null
+          partner_id?: string
+          quantity?: number
+          requested_by?: string | null
+          shipped_at?: string | null
+          status?: string
+          tracking_number?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "partner_kit_orders_partner_id_fkey"
+            columns: ["partner_id"]
+            isOneToOne: false
+            referencedRelation: "hotel_partners"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "partner_kit_orders_partner_id_fkey"
+            columns: ["partner_id"]
+            isOneToOne: false
+            referencedRelation: "hotel_partners_public"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       partner_offer_assignments: {
         Row: {
@@ -1054,6 +1123,9 @@ export type Database = {
           email: string | null
           id: string
           partner_id: string
+          terms_accepted_at: string | null
+          terms_accepted_ip: string | null
+          terms_version: string | null
           user_id: string
         }
         Insert: {
@@ -1061,6 +1133,9 @@ export type Database = {
           email?: string | null
           id?: string
           partner_id: string
+          terms_accepted_at?: string | null
+          terms_accepted_ip?: string | null
+          terms_version?: string | null
           user_id: string
         }
         Update: {
@@ -1068,6 +1143,9 @@ export type Database = {
           email?: string | null
           id?: string
           partner_id?: string
+          terms_accepted_at?: string | null
+          terms_accepted_ip?: string | null
+          terms_version?: string | null
           user_id?: string
         }
         Relationships: []
