@@ -77,17 +77,24 @@ export function KitZelligeSection() {
                       <p className="text-sm font-semibold text-foreground truncate">{item.label || item.key}</p>
                       <p className="text-[11px] text-muted-foreground font-mono truncate">{item.key}</p>
                     </div>
-                    <label className="inline-flex items-center cursor-pointer flex-shrink-0">
-                      <input
-                        type="checkbox"
-                        className="peer sr-only"
-                        checked={item.is_available}
-                        onChange={(e) => setAvailable(item.id, e.target.checked)}
+                    <button
+                      type="button"
+                      role="switch"
+                      aria-checked={item.is_available}
+                      onClick={() => setAvailable(item.id, !item.is_available)}
+                      className={cn(
+                        "relative w-10 h-6 rounded-full transition flex-shrink-0",
+                        item.is_available ? "bg-cta" : "bg-muted"
+                      )}
+                    >
+                      <span
+                        className={cn(
+                          "absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform",
+                          item.is_available ? "translate-x-[18px]" : "translate-x-0.5"
+                        )}
                       />
-                      <span className="w-10 h-6 rounded-full bg-muted peer-checked:bg-cta transition relative">
-                        <span className="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition peer-checked:translate-x-4" />
-                      </span>
-                    </label>
+                    </button>
+
                   </div>
                 );
               })}
