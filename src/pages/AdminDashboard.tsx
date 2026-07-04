@@ -4,9 +4,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
-import { LogOut, CalendarDays, ShoppingCart, RefreshCw, Clock, CheckCircle2, XCircle, Package, Calendar, Plus, Trash2, Tag, ToggleLeft, ToggleRight, ChevronLeft, ChevronRight, Upload, ImagePlus, X, LayoutList, GripVertical, Eye, EyeOff, Save, AlertTriangle, Settings, Mail, Phone, Users, Shield, ShieldCheck, ShieldX, UserCheck, UserX, Zap, MapPin, DollarSign, Sparkles, Globe, Hotel } from "lucide-react";
+import { LogOut, CalendarDays, ShoppingCart, RefreshCw, Clock, CheckCircle2, XCircle, Package, Calendar, Plus, Trash2, Tag, ToggleLeft, ToggleRight, ChevronLeft, ChevronRight, Upload, ImagePlus, X, LayoutList, GripVertical, Eye, EyeOff, Save, AlertTriangle, Settings, Mail, Phone, Users, Shield, ShieldCheck, ShieldX, UserCheck, UserX, Zap, MapPin, DollarSign, Sparkles, Globe, Hotel, Palette } from "lucide-react";
 import { CitiesPricingSection } from "@/components/admin/CitiesPricingSection";
 import { WorkshopManagementSection } from "@/components/admin/WorkshopManagementSection";
+import { KitZelligeSection } from "@/components/admin/KitZelligeSection";
 import { BookingStatusBadge as StatusBadge } from "@/components/admin/BookingStatusBadge";
 import { WorkshopCardImageField } from "@/components/admin/WorkshopCardImageField";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -500,6 +501,7 @@ const AdminDashboard = () => {
             <TabsTrigger value="settings" className="rounded-xl gap-2 data-[state=active]:bg-card"><Settings size={14} /> Settings</TabsTrigger>
             <TabsTrigger value="cities" className="rounded-xl gap-2 data-[state=active]:bg-card"><MapPin size={14} /> Cities & Pricing</TabsTrigger>
             <TabsTrigger value="workshops" className="rounded-xl gap-2 data-[state=active]:bg-card"><Sparkles size={14} /> Workshops</TabsTrigger>
+            <TabsTrigger value="kit-zellige" className="rounded-xl gap-2 data-[state=active]:bg-card"><Palette size={14} /> Kit Zellige</TabsTrigger>
             <TabsTrigger value="users" className="rounded-xl gap-2 data-[state=active]:bg-card"><Users size={14} /> Users</TabsTrigger>
           </TabsList>
 
@@ -1280,6 +1282,11 @@ const AdminDashboard = () => {
           {/* ── Workshops ── */}
           <TabsContent value="workshops">
             <WorkshopManagementSection />
+          </TabsContent>
+
+          {/* ── Kit Zellige ── */}
+          <TabsContent value="kit-zellige">
+            <KitZelligeSection />
           </TabsContent>
         </Tabs>
       </div>
