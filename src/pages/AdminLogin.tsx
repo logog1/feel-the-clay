@@ -17,6 +17,8 @@ const AdminLogin = () => {
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
+  const [partnerPicks, setPartnerPicks] = useState<Array<{ slug: string; name: string }>>([]);
+
 
   // Guard against concurrent routeByRole runs (post-signIn call vs. onAuthStateChange('SIGNED_IN')).
   const routingRef = useRef(false);
