@@ -498,6 +498,15 @@ export default function PartnerLanding() {
           onSuccess={() => { setSelected(null); refreshAvailability(); }}
         />
       )}
+
+      {bookingOffer && (
+        <OfferBookingDialog
+          offer={bookingOffer}
+          partner={{ id: partner.id, name: partner.name }}
+          brand={brand}
+          onClose={() => setBookingOffer(null)}
+        />
+      )}
     </div>
   );
 }
