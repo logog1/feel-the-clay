@@ -77,6 +77,7 @@ export default function PartnerLanding() {
   const [selected, setSelected] = useState<Experience | null>(null);
   const [taken, setTaken] = useState<Record<string, number>>({});
   const [offers, setOffers] = useState<PartnerOfferPublic[]>([]);
+  const [bookingOffer, setBookingOffer] = useState<PartnerOfferPublic | null>(null);
 
   const refreshAvailability = async () => {
     const { data } = await supabase.rpc("get_sofitel_availability");
