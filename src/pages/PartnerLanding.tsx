@@ -77,6 +77,7 @@ export default function PartnerLanding() {
   const [selected, setSelected] = useState<Experience | null>(null);
   const [taken, setTaken] = useState<Record<string, number>>({});
   const [offers, setOffers] = useState<PartnerOfferPublic[]>([]);
+  const [bookingOffer, setBookingOffer] = useState<PartnerOfferPublic | null>(null);
 
   const refreshAvailability = async () => {
     const { data } = await supabase.rpc("get_sofitel_availability");
@@ -312,15 +313,9 @@ export default function PartnerLanding() {
                   if (o.cta_type === "link" && o.cta_value) {
                     return { href: o.cta_value, label: o.cta_label || "Learn more", external: true };
                   }
-                  // "book": events have no experience row to reserve, so route to WhatsApp
-                  // with the partner's number pre-filled; offers scroll to workshops.
+                  // "book": events open an inline reservation form; offers scroll to workshops.
                   if (o.kind === "event") {
-                    const num = (partner.whatsapp || "").replace(/\D/g, "");
-                    const when = o.event_at ? ` on ${format(parseISO(o.event_at), "MMM d, HH:mm")}` : "";
-                    const msg = encodeURIComponent(`Hello ${partner.name}, I'd like to reserve a spot for "${o.title}"${when}.`);
-                    if (num) {
-                      return { href: `https://wa.me/${num}?text=${msg}`, label: o.cta_label || "Reserve a spot", external: true };
-                    }
+                    return { onClick: () => setBookingOffer(o), label: o.cta_label || "Reserve a spot" };
                   }
                   return { href: "#experiences", label: o.cta_label || "Book a workshop", external: false };
                 })();
@@ -361,7 +356,12 @@ export default function PartnerLanding() {
                           )}
                         </div>
                         {cta && (
-                          cta.external ? (
+                          "onClick" in cta ? (
+                            <button onClick={cta.onClick}
+                              className="inline-flex items-center gap-1 text-sm font-medium hover:opacity-80" style={{ color: brand }}>
+                              {cta.label} <ArrowRight size={14} />
+                            </button>
+                          ) : cta.external ? (
                             <a href={cta.href} target="_blank" rel="noopener noreferrer"
                               className="inline-flex items-center gap-1 text-sm font-medium hover:opacity-80" style={{ color: brand }}>
                               {cta.label} <ArrowRight size={14} />
@@ -496,6 +496,15 @@ export default function PartnerLanding() {
           remaining={Math.max(0, selected.capacity - (taken[selected.id] || 0))}
           onClose={() => setSelected(null)}
           onSuccess={() => { setSelected(null); refreshAvailability(); }}
+        />
+      )}
+
+      {bookingOffer && (
+        <OfferBookingDialog
+          offer={bookingOffer}
+          partner={{ id: partner.id, name: partner.name }}
+          brand={brand}
+          onClose={() => setBookingOffer(null)}
         />
       )}
     </div>
@@ -760,6 +769,127 @@ function BookingDialog({
               <p className="text-[11px] text-muted-foreground inline-flex items-center gap-1.5">
                 <Shield size={11} /> Free cancellation up to 24h before · taxes included · pay on site
               </p>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={onClose}>Cancel</Button>
+              <Button onClick={submit} disabled={submitting} style={{ background: brand }}>
+                {submitting ? <><Loader2 size={14} className="mr-1 animate-spin" />Sending…</> : "Confirm reservation"}
+              </Button>
+            </DialogFooter>
+          </>
+        )}
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function OfferBookingDialog({
+  offer, partner, brand, onClose,
+}: {
+  offer: PartnerOfferPublic;
+  partner: { id: string; name: string };
+  brand: string;
+  onClose: () => void;
+}) {
+  const [name, setName] = useState("");
+  const [room, setRoom] = useState(() => {
+    try { return sessionStorage.getItem(`qr_room_${partner.id}`) || ""; } catch { return ""; }
+  });
+  const [phone, setPhone] = useState<string | undefined>();
+  const [email, setEmail] = useState("");
+  const [participants, setParticipants] = useState(1);
+  const [notes, setNotes] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [done, setDone] = useState(false);
+
+  const when = offer.event_at ? format(parseISO(offer.event_at), "EEE d MMM · HH:mm") : "";
+  const total = (offer.price || 0) * participants;
+
+  const submit = async () => {
+    if (!name.trim()) return toast({ title: "Full name is required", variant: "destructive" });
+    if (!phone || phone.length < 7) return toast({ title: "Valid phone number required", variant: "destructive" });
+
+    setSubmitting(true);
+    let commissionRate: number | null = null;
+    try {
+      const { data } = await (supabase as any).rpc("get_partner_commission_rate", { _partner_id: partner.id });
+      if (typeof data === "number") commissionRate = data;
+    } catch { /* noop */ }
+
+    const gross = (offer.price || 0) * participants;
+    const qr_variant_code = sessionStorage.getItem(`qr_variant_${partner.id}`) || null;
+    const { error } = await supabase.from("bookings").insert({
+      name: name.trim(),
+      email: email.trim() || null,
+      phone: phone || null,
+      workshop: offer.title,
+      booking_date: offer.event_at || "",
+      participants,
+      session_info: room.trim() ? `Room/ref: ${room.trim()}` : null,
+      notes: notes.trim() || null,
+      partner_id: partner.id,
+      gross_amount: gross || null,
+      commission_rate: commissionRate,
+      source: qr_variant_code ? `qr:${qr_variant_code}` : "partner_offer",
+    } as any);
+    setSubmitting(false);
+    if (error) return toast({ title: "Booking failed", description: error.message, variant: "destructive" });
+    setDone(true);
+  };
+
+  return (
+    <Dialog open onOpenChange={(o) => !o && onClose()}>
+      <DialogContent className="max-w-md">
+        {done ? (
+          <div className="text-center py-6 space-y-4">
+            <div className="w-16 h-16 mx-auto rounded-full flex items-center justify-center text-white" style={{ background: brand }}>
+              <Check size={32} />
+            </div>
+            <h3 className="text-2xl font-light">Reservation received</h3>
+            <p className="text-sm text-muted-foreground">
+              Thanks {name.split(" ")[0]}, we'll confirm your spot for <strong>{offer.title}</strong> shortly.
+            </p>
+            <Button onClick={onClose} className="rounded-full" style={{ background: brand }}>Done</Button>
+          </div>
+        ) : (
+          <>
+            <DialogHeader>
+              {when && (
+                <p className="text-[10px] uppercase tracking-[0.25em]" style={{ color: brand }}>{when}</p>
+              )}
+              <DialogTitle className="text-2xl font-light">{offer.title}</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-3">
+              <div className="grid grid-cols-2 gap-3">
+                <div><Label>Full name</Label><Input value={name} onChange={(e) => setName(e.target.value)} required /></div>
+                <div><Label>Room / reference</Label><Input value={room} onChange={(e) => setRoom(e.target.value)} /></div>
+                <div className="col-span-2">
+                  <Label>Phone (with country code)</Label>
+                  <PhoneInput
+                    international
+                    defaultCountry="MA"
+                    value={phone}
+                    onChange={setPhone}
+                    placeholder="Enter phone number"
+                    className="phone-input mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  />
+                </div>
+                <div className="col-span-2"><Label>Email (optional)</Label><Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} /></div>
+                <div>
+                  <Label>Participants</Label>
+                  <Input type="number" min={1} value={participants}
+                    onChange={(e) => setParticipants(Math.max(1, Number(e.target.value) || 1))} />
+                </div>
+                <div className="flex items-end text-sm">
+                  {offer.price ? (
+                    <p>Total: <span className="font-medium">{total} {offer.currency}</span></p>
+                  ) : <p className="text-muted-foreground italic">On request</p>}
+                </div>
+              </div>
+              <div>
+                <Label>Notes (optional)</Label>
+                <Textarea rows={2} value={notes} onChange={(e) => setNotes(e.target.value)} />
+              </div>
             </div>
             <DialogFooter>
               <Button variant="outline" onClick={onClose}>Cancel</Button>
