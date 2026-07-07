@@ -356,7 +356,12 @@ export default function PartnerLanding() {
                           )}
                         </div>
                         {cta && (
-                          cta.external ? (
+                          "onClick" in cta ? (
+                            <button onClick={cta.onClick}
+                              className="inline-flex items-center gap-1 text-sm font-medium hover:opacity-80" style={{ color: brand }}>
+                              {cta.label} <ArrowRight size={14} />
+                            </button>
+                          ) : cta.external ? (
                             <a href={cta.href} target="_blank" rel="noopener noreferrer"
                               className="inline-flex items-center gap-1 text-sm font-medium hover:opacity-80" style={{ color: brand }}>
                               {cta.label} <ArrowRight size={14} />
