@@ -313,15 +313,9 @@ export default function PartnerLanding() {
                   if (o.cta_type === "link" && o.cta_value) {
                     return { href: o.cta_value, label: o.cta_label || "Learn more", external: true };
                   }
-                  // "book": events have no experience row to reserve, so route to WhatsApp
-                  // with the partner's number pre-filled; offers scroll to workshops.
+                  // "book": events open an inline reservation form; offers scroll to workshops.
                   if (o.kind === "event") {
-                    const num = (partner.whatsapp || "").replace(/\D/g, "");
-                    const when = o.event_at ? ` on ${format(parseISO(o.event_at), "MMM d, HH:mm")}` : "";
-                    const msg = encodeURIComponent(`Hello ${partner.name}, I'd like to reserve a spot for "${o.title}"${when}.`);
-                    if (num) {
-                      return { href: `https://wa.me/${num}?text=${msg}`, label: o.cta_label || "Reserve a spot", external: true };
-                    }
+                    return { onClick: () => setBookingOffer(o), label: o.cta_label || "Reserve a spot" };
                   }
                   return { href: "#experiences", label: o.cta_label || "Book a workshop", external: false };
                 })();
