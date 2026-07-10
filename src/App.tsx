@@ -46,6 +46,7 @@ const PartnerKit = lazy(() => import("./pages/PartnerKit"));
 const PartnerTerms = lazy(() => import("./pages/PartnerTerms"));
 const PartnerGuide = lazy(() => import("./pages/PartnerGuide"));
 const KitZelligePreview = lazy(() => import("./pages/KitZelligePreview"));
+const FassiZelligeStory = lazy(() => import("./pages/FassiZelligeStory"));
 
 const queryClient = new QueryClient();
 
