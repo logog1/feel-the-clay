@@ -46,6 +46,7 @@ const PartnerKit = lazy(() => import("./pages/PartnerKit"));
 const PartnerTerms = lazy(() => import("./pages/PartnerTerms"));
 const PartnerGuide = lazy(() => import("./pages/PartnerGuide"));
 const KitZelligePreview = lazy(() => import("./pages/KitZelligePreview"));
+const FassiZelligeStory = lazy(() => import("./pages/FassiZelligeStory"));
 
 const queryClient = new QueryClient();
 
@@ -107,6 +108,7 @@ const App = () => {
                     <Route path="/partners/:slug/concierge" element={<PartnerConcierge />} />
                     <Route path="/partners/:slug/guide" element={<PartnerGuide />} />
                     <Route path="/preview/kit-zellige" element={<KitZelligePreview />} />
+                    <Route path="/story/fassi-zellige" element={<FassiZelligeStory />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
                 </Suspense>
