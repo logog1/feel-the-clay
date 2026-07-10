@@ -108,6 +108,7 @@ const App = () => {
                     <Route path="/partners/:slug/concierge" element={<PartnerConcierge />} />
                     <Route path="/partners/:slug/guide" element={<PartnerGuide />} />
                     <Route path="/preview/kit-zellige" element={<KitZelligePreview />} />
+                    <Route path="/story/fassi-zellige" element={<FassiZelligeStory />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
                 </Suspense>
