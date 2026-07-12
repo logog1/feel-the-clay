@@ -25,8 +25,11 @@ export function PartnerQRDialog({
   const cardRef = useRef<HTMLDivElement>(null);
 
   const brand = partner?.brand_color || "#0E1418";
+  // Always encode the canonical production URL in QR codes so printed posters
+  // keep working even when the admin generates them from preview / lovable.app.
+  const PUBLIC_ORIGIN = "https://www.terrariaworkshops.com";
   const url = partner
-    ? `${typeof window !== "undefined" ? window.location.origin : ""}/${partner.slug}`
+    ? `${PUBLIC_ORIGIN}/${partner.slug}`
     : "";
 
   useEffect(() => {
