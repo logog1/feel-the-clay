@@ -114,7 +114,7 @@ export function HotelsRiadsSection() {
       brand_color: newPartner.brand_color,
       logo_url: newPartner.logo_url || null,
       rooms_count: newPartner.rooms_count ? Number(newPartner.rooms_count) : null,
-      stars: newPartner.stars ? Number(newPartner.stars) : null,
+      
       qr_codes_installed: newPartner.qr_codes_installed ? Number(newPartner.qr_codes_installed) : 0,
       commission_rate: newPartner.commission_rate ? Number(newPartner.commission_rate) : null,
       commission_notes: newPartner.commission_notes || null,
