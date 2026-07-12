@@ -95,6 +95,7 @@ export default function PartnerLanding() {
   const [offers, setOffers] = useState<PartnerOfferPublic[]>([]);
   const [bookingOffer, setBookingOffer] = useState<PartnerOfferPublic | null>(null);
   const [detailsOffer, setDetailsOffer] = useState<PartnerOfferPublic | null>(null);
+  const [bookMode, setBookMode] = useState<"small" | "large">("small");
 
   const refreshAvailability = async () => {
     const { data } = await supabase.rpc("get_sofitel_availability");
@@ -412,9 +413,63 @@ export default function PartnerLanding() {
         </div>
       </section>
 
-      {/* FULL BOOKING FORM (same as main site) */}
-      <section id="book" className="bg-background">
-        <BookingFormSection />
+      {/* BOOKING — small groups pick a scheduled slot, big groups request a custom time */}
+      <section id="book" className="bg-background section-padding">
+        <div className="container-wide max-w-5xl">
+          <div className="text-center mb-8">
+            <p className="text-[11px] uppercase tracking-[0.3em] mb-2" style={{ color: brand }}>Book</p>
+            <h2 className="text-3xl md:text-4xl font-light">Reserve your experience</h2>
+          </div>
+
+          {/* Group-size toggle */}
+          <div className="flex justify-center mb-8">
+            <div className="inline-flex p-1 rounded-full border border-border bg-card">
+              <button
+                onClick={() => setBookMode("small")}
+                className={cn(
+                  "px-4 py-2 rounded-full text-xs md:text-sm font-medium transition",
+                  bookMode === "small" ? "text-white" : "text-muted-foreground hover:text-foreground"
+                )}
+                style={bookMode === "small" ? { background: brand } : undefined}
+              >
+                <Users size={13} className="inline me-1.5" />
+                1 to 3 guests · pick a time
+              </button>
+              <button
+                onClick={() => setBookMode("large")}
+                className={cn(
+                  "px-4 py-2 rounded-full text-xs md:text-sm font-medium transition",
+                  bookMode === "large" ? "text-white" : "text-muted-foreground hover:text-foreground"
+                )}
+                style={bookMode === "large" ? { background: brand } : undefined}
+              >
+                <Users size={13} className="inline me-1.5" />
+                4+ guests · request a time
+              </button>
+            </div>
+          </div>
+
+          {bookMode === "small" ? (
+            <SmallGroupSlots
+              experiences={experiences}
+              taken={taken}
+              offers={offers}
+              brand={brand}
+              isRTL={isRTL}
+              onPickExperience={(e) => setSelected(e)}
+              onPickOffer={(o) => setBookingOffer(o)}
+            />
+          ) : (
+            <div>
+              <div className="max-w-2xl mx-auto mb-6 p-4 rounded-2xl border border-dashed" style={{ borderColor: `${brand}55`, background: `${brand}08` }}>
+                <p className="text-sm text-foreground/80 leading-relaxed text-center">
+                  This form is for guests who can't find a suitable time in the schedule above. Request another date during the week or in the future, and our team will confirm with you.
+                </p>
+              </div>
+              <BookingFormSection />
+            </div>
+          )}
+        </div>
       </section>
 
       {/* FOOTER */}
@@ -455,6 +510,147 @@ export default function PartnerLanding() {
           }}
         />
       )}
+    </div>
+  );
+}
+
+function SmallGroupSlots({
+  experiences, taken, offers, brand, isRTL, onPickExperience, onPickOffer,
+}: {
+  experiences: Experience[];
+  taken: Record<string, number>;
+  offers: PartnerOfferPublic[];
+  brand: string;
+  isRTL: boolean;
+  onPickExperience: (e: Experience) => void;
+  onPickOffer: (o: PartnerOfferPublic) => void;
+}) {
+  const now = Date.now();
+
+  const upcomingExperiences = useMemo(
+    () =>
+      [...experiences]
+        .filter((e) => new Date(e.scheduled_at).getTime() > now)
+        .sort((a, b) => new Date(a.scheduled_at).getTime() - new Date(b.scheduled_at).getTime()),
+    [experiences, now]
+  );
+
+  const upcomingEventOffers = useMemo(
+    () =>
+      offers
+        .filter((o) => o.kind === "event" && o.event_at && new Date(o.event_at).getTime() > now)
+        .sort((a, b) => new Date(a.event_at!).getTime() - new Date(b.event_at!).getTime()),
+    [offers, now]
+  );
+
+  const isEmpty = upcomingExperiences.length === 0 && upcomingEventOffers.length === 0;
+
+  if (isEmpty) {
+    return (
+      <div className="max-w-2xl mx-auto p-6 rounded-2xl border border-dashed border-border text-center bg-card">
+        <Calendar className="w-8 h-8 mx-auto text-muted-foreground/60 mb-2" />
+        <p className="text-sm text-muted-foreground">
+          No scheduled sessions available right now. Switch to <span className="font-medium text-foreground">4+ guests</span> to request a custom date.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-3 max-w-3xl mx-auto">
+      {upcomingExperiences.map((e) => {
+        const remaining = Math.max(0, e.capacity - (taken[e.id] || 0));
+        const full = remaining <= 0;
+        const d = parseISO(e.scheduled_at);
+        return (
+          <button
+            key={e.id}
+            disabled={full}
+            onClick={() => !full && onPickExperience(e)}
+            className={cn(
+              "w-full text-start bg-card border border-border rounded-2xl p-4 flex items-center gap-4 transition",
+              full ? "opacity-60 cursor-not-allowed" : "hover:border-foreground/30 hover:-translate-y-0.5 hover:shadow-sm cursor-pointer"
+            )}
+          >
+            {e.cover_image ? (
+              <img src={e.cover_image} alt={e.title} loading="lazy"
+                className="w-16 h-16 md:w-20 md:h-20 rounded-xl object-cover shrink-0" />
+            ) : (
+              <div className="w-16 h-16 md:w-20 md:h-20 rounded-xl grid place-items-center shrink-0"
+                style={{ background: `${brand}22`, color: brand }}>
+                <Sparkles size={20} />
+              </div>
+            )}
+            <div className="flex-1 min-w-0">
+              <div className="flex flex-wrap items-center gap-2 mb-1">
+                <span className="text-[10px] uppercase tracking-[0.2em] px-2 py-0.5 rounded-full text-white" style={{ background: brand }}>
+                  {e.category || "Workshop"}
+                </span>
+                <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+                  <Calendar size={11} /> {format(d, "EEE d MMM")}
+                </span>
+                <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+                  <Clock size={11} /> {format(d, "HH:mm")}
+                </span>
+              </div>
+              <h3 className="font-medium text-base truncate">{e.title}</h3>
+              <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground">
+                <span className="inline-flex items-center gap-1"><Users size={11} /> {full ? "Fully booked" : `${remaining} left`}</span>
+                {e.price_per_person > 0 && (
+                  <span className="font-medium text-foreground">{e.price_per_person} {e.currency}</span>
+                )}
+              </div>
+            </div>
+            {!full && (
+              <ArrowRight size={16} className={cn("shrink-0 text-muted-foreground", isRTL && "rotate-180")} />
+            )}
+          </button>
+        );
+      })}
+
+      {upcomingEventOffers.map((o) => {
+        const d = parseISO(o.event_at!);
+        return (
+          <button
+            key={o.assignment_id}
+            onClick={() => onPickOffer(o)}
+            className="w-full text-start bg-card border border-border rounded-2xl p-4 flex items-center gap-4 hover:border-foreground/30 hover:-translate-y-0.5 hover:shadow-sm transition cursor-pointer"
+          >
+            {o.cover_image ? (
+              <img src={o.cover_image} alt={o.title} loading="lazy"
+                className="w-16 h-16 md:w-20 md:h-20 rounded-xl object-cover shrink-0" />
+            ) : (
+              <div className="w-16 h-16 md:w-20 md:h-20 rounded-xl grid place-items-center shrink-0"
+                style={{ background: `${brand}22`, color: brand }}>
+                <Sparkles size={20} />
+              </div>
+            )}
+            <div className="flex-1 min-w-0">
+              <div className="flex flex-wrap items-center gap-2 mb-1">
+                <span className="text-[10px] uppercase tracking-[0.2em] px-2 py-0.5 rounded-full text-white" style={{ background: brand }}>
+                  Event
+                </span>
+                <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+                  <Calendar size={11} /> {format(d, "EEE d MMM")}
+                </span>
+                <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+                  <Clock size={11} /> {format(d, "HH:mm")}
+                </span>
+              </div>
+              <h3 className="font-medium text-base truncate">{o.title}</h3>
+              <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground">
+                {o.capacity != null && (
+                  <span className="inline-flex items-center gap-1"><Users size={11} /> {o.capacity} spots</span>
+                )}
+                {o.price != null && (
+                  <span className="font-medium text-foreground">{o.price} {o.currency}</span>
+                )}
+              </div>
+            </div>
+            <ArrowRight size={16} className={cn("shrink-0 text-muted-foreground", isRTL && "rotate-180")} />
+          </button>
+        );
+      })}
     </div>
   );
 }
