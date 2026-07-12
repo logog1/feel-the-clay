@@ -309,162 +309,79 @@ export default function PartnerLanding() {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-7">
               {offers.map((o) => {
-                const cta = (() => {
-                  if (o.cta_type === "none") return null;
+                const bookHandler = () => {
+                  if (o.cta_type === "none") return;
                   if (o.cta_type === "whatsapp" && o.cta_value) {
                     const num = o.cta_value.replace(/\D/g, "");
                     const msg = encodeURIComponent(t("partner.offers.event_interest").replace("{partner}", partner.name).replace("{title}", o.title));
-                    return { href: `https://wa.me/${num}?text=${msg}`, label: o.cta_label || t("partner.offers.whatsapp_us"), external: true };
+                    window.open(`https://wa.me/${num}?text=${msg}`, "_blank");
+                    return;
                   }
                   if (o.cta_type === "link" && o.cta_value) {
-                    return { href: o.cta_value, label: o.cta_label || t("partner.offers.learn_more"), external: true };
+                    window.open(o.cta_value, "_blank");
+                    return;
                   }
                   if (o.kind === "event") {
-                    return { onClick: () => setBookingOffer(o), label: o.cta_label || t("partner.offers.reserve_spot") };
+                    setBookingOffer(o);
+                    return;
                   }
-                  return { href: "#offers", label: o.cta_label || t("partner.offers.book_workshop"), external: false };
-                })();
-                const eventDate = o.kind === "event" && o.event_at ? parseISO(o.event_at) : null;
+                  setDetailsOffer(o);
+                };
+                const waHref = waLink || (partner.contact_phone ? `https://wa.me/${partner.contact_phone.replace(/\D/g, "")}?text=${encodeURIComponent(t("partner.offers.event_interest").replace("{partner}", partner.name).replace("{title}", o.title))}` : null);
                 return (
                   <article
                     key={o.assignment_id}
                     onClick={() => setDetailsOffer(o)}
-                    className="group relative bg-card rounded-[28px] overflow-hidden cursor-pointer text-start focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all duration-500 hover:-translate-y-1"
-                    style={{
-                      boxShadow: "0 1px 2px hsl(var(--foreground)/0.04), 0 12px 32px -18px hsl(var(--foreground)/0.18)",
-                    }}
+                    className="group relative bg-card rounded-2xl overflow-hidden cursor-pointer text-start focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all duration-300 hover:-translate-y-0.5"
+                    style={{ boxShadow: "0 1px 2px hsl(var(--foreground)/0.04), 0 10px 24px -16px hsl(var(--foreground)/0.15)" }}
                     role="button"
                     tabIndex={0}
                     onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setDetailsOffer(o); } }}
                   >
-                    {/* Hairline frame that warms up on hover */}
-                    <div className="pointer-events-none absolute inset-0 rounded-[28px] border border-border/70 group-hover:border-[color:var(--brand)] transition-colors" style={{ ["--brand" as any]: brand }} />
-
                     {/* IMAGE */}
-                    <div className="relative aspect-[5/4] overflow-hidden">
+                    <div className="relative aspect-[4/3] overflow-hidden">
                       {o.cover_image ? (
                         <img src={o.cover_image} alt={o.title} loading="lazy"
-                          className="w-full h-full object-cover group-hover:scale-[1.06] transition-transform duration-[900ms] ease-out" />
+                          className="w-full h-full object-cover group-hover:scale-[1.04] transition-transform duration-700 ease-out" />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center"
                           style={{ background: `linear-gradient(135deg, ${brand}, ${brand}aa)` }}>
                           <Sparkles className="text-white/40" size={36} />
                         </div>
                       )}
-                      {/* Soft bottom scrim so chips stay legible */}
-                      <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/45 via-black/10 to-transparent" />
-
-                      {/* Kind chip top-start */}
-                      <span
-                        className="absolute top-3.5 start-3.5 inline-flex items-center gap-1.5 text-[10px] uppercase tracking-[0.22em] font-medium px-2.5 py-1 rounded-full backdrop-blur-md bg-white/85 shadow-sm"
-                        style={{ color: brand }}
-                      >
-                        <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: brand }} />
-                        {o.kind === "event" ? t("partner.offers.event") : t("partner.offers.offer")}
-                      </span>
-
-                      {/* Date stamp — overhangs onto content (events) */}
-                      {eventDate && (
-                        <div
-                          className="absolute -bottom-6 end-4 flex flex-col items-center justify-center w-16 h-16 rounded-2xl bg-white shadow-lg ring-1 ring-black/5 rotate-[-4deg] group-hover:rotate-0 transition-transform duration-500"
-                        >
-                          <span className="text-[9px] uppercase tracking-[0.2em] font-semibold" style={{ color: brand }}>
-                            {format(eventDate, "MMM")}
-                          </span>
-                          <span className="text-2xl font-semibold leading-none text-foreground -mt-0.5">
-                            {format(eventDate, "d")}
-                          </span>
-                          <span className="text-[9px] text-muted-foreground mt-0.5 font-medium">
-                            {format(eventDate, "HH:mm")}
-                          </span>
-                        </div>
-                      )}
-
-                      {/* View details pill bottom-start */}
-                      <span className="absolute bottom-3.5 start-3.5 inline-flex items-center gap-1 text-[10px] uppercase tracking-[0.2em] font-medium px-2.5 py-1.5 rounded-full bg-white/95 text-foreground shadow-sm group-hover:bg-white transition">
-                        {t("partner.offers.view_details")}
-                        <ArrowRight size={11} className={cn("transition-transform group-hover:translate-x-0.5", isRTL && "rotate-180 group-hover:-translate-x-0.5")} />
-                      </span>
                     </div>
 
-                    {/* Zellige-style decorative corner motif */}
-                    <svg
-                      className="pointer-events-none absolute top-[calc(80%-2px)] end-5 w-10 h-10 opacity-[0.12] group-hover:opacity-30 transition-opacity"
-                      viewBox="0 0 40 40"
-                      fill="none"
-                      aria-hidden
-                      style={{ color: brand }}
-                    >
-                      <path d="M20 2 L26 14 L38 14 L28 22 L32 34 L20 27 L8 34 L12 22 L2 14 L14 14 Z" stroke="currentColor" strokeWidth="1.2" />
-                    </svg>
-
                     {/* CONTENT */}
-                    <div className="px-5 pt-6 pb-5 md:px-6 md:pt-7 md:pb-6 relative">
-                      <h3 className="font-serif text-[1.35rem] md:text-[1.45rem] leading-[1.15] tracking-tight text-foreground mb-1.5">
+                    <div className="px-5 pt-5 pb-5 text-center">
+                      <h3 className="font-serif text-xl md:text-2xl leading-tight tracking-tight text-foreground mb-2">
                         {o.title}
                       </h3>
-                      {o.subtitle && (
-                        <p className="text-[13px] italic text-muted-foreground mb-3" style={{ color: brand }}>
-                          {o.subtitle}
-                        </p>
-                      )}
-                      {o.description && (
-                        <p className="text-[13.5px] leading-relaxed text-foreground/75 line-clamp-3 mb-5">
-                          {o.description}
+                      {o.price != null && (
+                        <p className="text-sm text-muted-foreground mb-4">
+                          {o.price} {o.currency}
                         </p>
                       )}
 
-                      {/* Divider with brand dot */}
-                      <div className="flex items-center gap-2 mb-4">
-                        <span className="h-px flex-1 bg-border" />
-                        <span className="w-1 h-1 rounded-full" style={{ backgroundColor: brand }} />
-                        <span className="h-px flex-1 bg-border" />
-                      </div>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); bookHandler(); }}
+                        className="w-full rounded-full py-3 text-sm font-semibold text-white shadow-sm hover:brightness-110 transition"
+                        style={{ background: brand }}
+                      >
+                        {t("partner.offers.book_workshop") || "Book Now"}
+                      </button>
 
-                      {/* Footer row */}
-                      <div className="flex items-end justify-between gap-3">
-                        <div className="min-w-0">
-                          {o.price != null ? (
-                            <div className="flex items-baseline gap-1.5">
-                              <span className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">from</span>
-                              <span className="text-lg font-semibold text-foreground">{o.price}</span>
-                              <span className="text-xs text-muted-foreground">{o.currency}</span>
-                            </div>
-                          ) : (
-                            <span className="text-xs text-muted-foreground">·</span>
-                          )}
-                          {o.capacity != null && (
-                            <div className="flex items-center gap-1 text-[11px] text-muted-foreground mt-0.5">
-                              <Users size={11} /> {o.capacity} {t("partner.offers.spots")}
-                            </div>
-                          )}
-                        </div>
-                        {cta && (() => {
-                          const cls = "group/cta inline-flex items-center gap-1.5 text-[13px] font-medium whitespace-nowrap";
-                          const inner = (
-                            <>
-                              <span className="relative">
-                                {cta.label}
-                                <span className="absolute -bottom-0.5 start-0 h-px w-full origin-start scale-x-0 group-hover/cta:scale-x-100 transition-transform duration-300" style={{ backgroundColor: brand }} />
-                              </span>
-                              <ArrowRight size={14} className={cn("transition-transform group-hover/cta:translate-x-0.5", isRTL && "rotate-180 group-hover/cta:-translate-x-0.5")} />
-                            </>
-                          );
-                          if ("onClick" in cta) {
-                            return (
-                              <button onClick={(e) => { e.stopPropagation(); cta.onClick!(); }} className={cls} style={{ color: brand }}>
-                                {inner}
-                              </button>
-                            );
-                          }
-                          return (
-                            <a href={cta.href} target={cta.external ? "_blank" : undefined} rel={cta.external ? "noopener noreferrer" : undefined}
-                              onClick={(e) => e.stopPropagation()} className={cls} style={{ color: brand }}>
-                              {inner}
-                            </a>
-                          );
-                        })()}
-                      </div>
+                      {waHref && (
+                        <a
+                          href={waHref}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          className="mt-3 inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition"
+                        >
+                          <MessageCircle size={12} className="text-emerald-600" />
+                          {t("partner.hero.book_whatsapp") || "Or book on WhatsApp"}
+                        </a>
+                      )}
                     </div>
                   </article>
                 );
