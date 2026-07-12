@@ -616,7 +616,7 @@ function BookingDialog({
       experience_id: experience.id,
       partner_id: partnerId,
       guest_name: name.trim(),
-      room_number: room.trim(),
+      room_number: room.trim() || null,
       guest_email: email.trim() || null,
       guest_phone: phone || null,
       participants,
