@@ -527,9 +527,32 @@ export default function PartnerLanding() {
       </section>
 
       {/* FOOTER */}
-      <footer className="border-t border-border/40 py-8 text-center text-xs text-muted-foreground capitalize">
+      <footer className="border-t border-border/40 py-8 pb-24 md:pb-8 text-center text-xs text-muted-foreground capitalize">
         <p className="capitalize">{partner.name} × Terraria · {t("partner.footer")}</p>
       </footer>
+
+      {/* Mobile sticky Book CTA — hidden when #book is in view */}
+      <div
+        className={cn(
+          "md:hidden fixed inset-x-0 bottom-0 z-40 px-3 pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] transition-transform duration-300",
+          bookInView ? "translate-y-full pointer-events-none" : "translate-y-0"
+        )}
+        style={{ background: "linear-gradient(to top, hsl(var(--background)) 70%, hsl(var(--background)/0))" }}
+      >
+        <a
+          href="#book"
+          onClick={(e) => {
+            e.preventDefault();
+            document.getElementById("book")?.scrollIntoView({ behavior: "smooth" });
+          }}
+          className="flex items-center justify-center gap-2 w-full min-h-[52px] rounded-2xl font-medium text-[15px] shadow-lg active:scale-[0.98] transition"
+          style={{ background: brand, color: "white" }}
+        >
+          <Calendar size={18} />
+          {t("partner.offers.book_workshop")}
+        </a>
+      </div>
+
 
       {selected && (
         <BookingDialog
