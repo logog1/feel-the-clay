@@ -237,7 +237,7 @@ export default function PartnerLanding() {
           {intro && <p className="max-w-2xl text-base md:text-lg text-white/90 leading-relaxed">{intro}</p>}
 
           <div className="flex flex-wrap gap-3 mt-8">
-            <a href="#experiences"
+            <a href="#offers"
               className="inline-flex items-center gap-2 px-6 py-3 rounded-full font-medium hover:opacity-90 transition text-white"
               style={{ background: brand }}>
               Explore experiences <ArrowRight size={16} />
@@ -293,7 +293,7 @@ export default function PartnerLanding() {
                   if (o.kind === "event") {
                     return { onClick: () => setBookingOffer(o), label: o.cta_label || "Reserve a spot" };
                   }
-                  return { href: "#experiences", label: o.cta_label || "Book a workshop", external: false };
+                  return { href: "#offers", label: o.cta_label || "Book a workshop", external: false };
                 })();
                 return (
                   <article key={o.assignment_id} className="group bg-card border border-border rounded-2xl overflow-hidden hover:shadow-xl transition">
