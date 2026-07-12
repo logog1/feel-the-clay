@@ -40,7 +40,7 @@ const Exodaya = lazy(() => import("./pages/Exodaya"));
 const Feedback = lazy(() => import("./pages/Feedback"));
 const TetouanThingsToDo = lazy(() => import("./pages/TetouanThingsToDo"));
 const PartnerLanding = lazy(() => import("./pages/PartnerLanding"));
-const PartnerQR = lazy(() => import("./pages/PartnerQR"));
+
 const PartnerConcierge = lazy(() => import("./pages/PartnerConcierge"));
 const PartnerKit = lazy(() => import("./pages/PartnerKit"));
 const PartnerTerms = lazy(() => import("./pages/PartnerTerms"));
