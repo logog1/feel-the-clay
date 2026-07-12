@@ -69,7 +69,7 @@ export default function PartnerGuide() {
               <Link to={`/partners/${partnerSlug}/kit`} target="_blank"><BookOpen size={14} className="mr-1" /> Staff kit</Link>
             </Button>
             <Button size="sm" variant="outline" className="bg-transparent text-white border-white/40 hover:bg-white/10 hover:text-white" asChild>
-              <Link to={`/partners/${partnerSlug}/qr`} target="_blank"><QrCode size={14} className="mr-1" /> QR kit</Link>
+              <Link to={`/${partnerSlug}`} target="_blank"><ExternalLink size={14} className="mr-1" /> Public landing</Link>
             </Button>
           </div>
         </div>
