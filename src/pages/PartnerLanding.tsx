@@ -413,9 +413,65 @@ export default function PartnerLanding() {
         </div>
       </section>
 
-      {/* FULL BOOKING FORM (same as main site) */}
-      <section id="book" className="bg-background">
-        <BookingFormSection />
+      {/* BOOKING — small groups pick a scheduled slot, big groups request a custom time */}
+      <section id="book" className="bg-background section-padding">
+        <div className="container-wide max-w-5xl">
+          <div className="text-center mb-8">
+            <p className="text-[11px] uppercase tracking-[0.3em] mb-2" style={{ color: brand }}>{t("partner.book_section.eyebrow") || "Book"}</p>
+            <h2 className="text-3xl md:text-4xl font-light">{t("partner.book_section.title") || "Reserve your experience"}</h2>
+          </div>
+
+          {/* Group-size toggle */}
+          <div className="flex justify-center mb-8">
+            <div className="inline-flex p-1 rounded-full border border-border bg-card">
+              <button
+                onClick={() => setBookMode("small")}
+                className={cn(
+                  "px-4 py-2 rounded-full text-xs md:text-sm font-medium transition",
+                  bookMode === "small" ? "text-white" : "text-muted-foreground hover:text-foreground"
+                )}
+                style={bookMode === "small" ? { background: brand } : undefined}
+              >
+                <Users size={13} className="inline me-1.5" />
+                {t("partner.book_section.small") || "1–3 guests · pick a time"}
+              </button>
+              <button
+                onClick={() => setBookMode("large")}
+                className={cn(
+                  "px-4 py-2 rounded-full text-xs md:text-sm font-medium transition",
+                  bookMode === "large" ? "text-white" : "text-muted-foreground hover:text-foreground"
+                )}
+                style={bookMode === "large" ? { background: brand } : undefined}
+              >
+                <Users size={13} className="inline me-1.5" />
+                {t("partner.book_section.large") || "4+ guests · request a time"}
+              </button>
+            </div>
+          </div>
+
+          {bookMode === "small" ? (
+            <SmallGroupSlots
+              experiences={experiences}
+              taken={taken}
+              offers={offers}
+              brand={brand}
+              isRTL={isRTL}
+              onPickExperience={(e) => setSelected(e)}
+              onPickOffer={(o) => setBookingOffer(o)}
+              t={t}
+            />
+          ) : (
+            <div>
+              <div className="max-w-2xl mx-auto mb-6 p-4 rounded-2xl border border-dashed" style={{ borderColor: `${brand}55`, background: `${brand}08` }}>
+                <p className="text-sm text-foreground/80 leading-relaxed text-center">
+                  {t("partner.book_section.large_note") ||
+                    "This form is for guests who can't find a time that suits them in the schedule above — request another date during the week or a future one, and our team will confirm."}
+                </p>
+              </div>
+              <BookingFormSection />
+            </div>
+          )}
+        </div>
       </section>
 
       {/* FOOTER */}
