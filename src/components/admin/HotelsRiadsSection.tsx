@@ -310,10 +310,6 @@ export function HotelsRiadsSection() {
                   <Label>City</Label>
                   <Input value={newPartner.city} onChange={(e) => setNewPartner({ ...newPartner, city: e.target.value })} placeholder="Tetouan" />
                 </div>
-                <div>
-                  <Label>Full address</Label>
-                  <Input value={newPartner.address} onChange={(e) => setNewPartner({ ...newPartner, address: e.target.value })} placeholder="Av. des FAR, Tetouan" />
-                </div>
                 <div className="col-span-2">
                   <Label>Full address</Label>
                   <Input value={newPartner.address} onChange={(e) => setNewPartner({ ...newPartner, address: e.target.value })} placeholder="Av. des FAR, Tetouan" />
