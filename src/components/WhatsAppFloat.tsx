@@ -35,6 +35,7 @@ const WhatsAppFloat = () => {
   }, []);
 
   if (HIDDEN_PATHS.includes(pathname)) return null;
+  if (HIDDEN_PREFIXES.some((p) => pathname.startsWith(p))) return null;
   if (!visible) return null;
 
   return (
