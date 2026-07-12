@@ -102,13 +102,15 @@ const App = () => {
                     <Route path="/tetouan/things-to-do" element={<TetouanThingsToDo />} />
                     <Route path="/things-to-do-in-tetouan" element={<TetouanThingsToDo />} />
                     <Route path="/partners/terms" element={<PartnerTerms />} />
-                    <Route path="/partners/:slug" element={<PartnerLanding />} />
-                    
+                    {/* Legacy long partner URLs — redirect to short canonical */}
+                    <Route path="/partners/:slug" element={<Navigate to="/:slug" replace />} />
                     <Route path="/partners/:slug/kit" element={<PartnerKit />} />
                     <Route path="/partners/:slug/concierge" element={<PartnerConcierge />} />
                     <Route path="/partners/:slug/guide" element={<PartnerGuide />} />
                     <Route path="/preview/kit-zellige" element={<KitZelligePreview />} />
                     <Route path="/story/fassi-zellige" element={<FassiZelligeStory />} />
+                    {/* Short indexable partner URL — keep last before catch-all */}
+                    <Route path="/:slug" element={<PartnerLanding />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
                 </Suspense>
