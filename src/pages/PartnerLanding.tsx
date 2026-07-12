@@ -16,8 +16,22 @@ import {
   ArrowRight, Hotel, Sparkles, Phone, Mail, Globe, MapPin, Clock, Users, Loader2, Calendar, X, Check, Shield, MessageCircle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useSiteGallery, type GalleryKey } from "@/hooks/use-site-galleries";
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
+
+// Match an offer to the closest workshop gallery so the details modal can pull
+// in-house craft photos instead of showing just the single cover image.
+function galleryKeyForOffer(o: { title: string; subtitle?: string | null; tags?: string[] }): GalleryKey | null {
+  const hay = [o.title, o.subtitle || "", ...(o.tags || [])].join(" ").toLowerCase();
+  if (/zellij|zellige/.test(hay)) return "gallery_workshop_zellij";
+  if (/pottery|throw/.test(hay)) return "gallery_workshop_pottery";
+  if (/handbuild|hand-build|clay/.test(hay)) return "gallery_workshop_handbuilding";
+  if (/embroid|stitch|thread/.test(hay)) return "gallery_workshop_embroidery";
+  if (/carpet|rug|weav/.test(hay)) return "gallery_workshop_carpets";
+  if (/garden|plant|pot/.test(hay)) return "gallery_workshop_gardening";
+  return null;
+}
 
 type Experience = {
   id: string;
@@ -78,6 +92,7 @@ export default function PartnerLanding() {
   const [taken, setTaken] = useState<Record<string, number>>({});
   const [offers, setOffers] = useState<PartnerOfferPublic[]>([]);
   const [bookingOffer, setBookingOffer] = useState<PartnerOfferPublic | null>(null);
+  const [detailsOffer, setDetailsOffer] = useState<PartnerOfferPublic | null>(null);
 
   const refreshAvailability = async () => {
     const { data } = await supabase.rpc("get_sofitel_availability");
@@ -296,7 +311,14 @@ export default function PartnerLanding() {
                   return { href: "#offers", label: o.cta_label || "Book a workshop", external: false };
                 })();
                 return (
-                  <article key={o.assignment_id} className="group bg-card border border-border rounded-2xl overflow-hidden hover:shadow-xl transition">
+                  <article
+                    key={o.assignment_id}
+                    onClick={() => setDetailsOffer(o)}
+                    className="group bg-card border border-border rounded-2xl overflow-hidden hover:shadow-xl hover:-translate-y-0.5 transition cursor-pointer text-left focus:outline-none focus:ring-2 focus:ring-offset-2"
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setDetailsOffer(o); } }}
+                  >
                     <div className="aspect-[16/10] overflow-hidden relative">
                       {o.cover_image ? (
                         <img src={o.cover_image} alt={o.title} loading="lazy"
@@ -307,6 +329,9 @@ export default function PartnerLanding() {
                           <Sparkles className="text-white/40" size={36} />
                         </div>
                       )}
+                      <span className="absolute bottom-3 right-3 inline-flex items-center gap-1 text-[10px] uppercase tracking-[0.2em] px-2.5 py-1 rounded-full bg-white/90 text-foreground shadow-sm">
+                        View details <ArrowRight size={11} />
+                      </span>
                     </div>
                     <div className="p-5">
                       <div className="flex items-center gap-2 mb-2 text-[10px] uppercase tracking-[0.2em]" style={{ color: brand }}>
@@ -333,17 +358,17 @@ export default function PartnerLanding() {
                         </div>
                         {cta && (
                           "onClick" in cta ? (
-                            <button onClick={cta.onClick}
+                            <button onClick={(e) => { e.stopPropagation(); cta.onClick!(); }}
                               className="inline-flex items-center gap-1 text-sm font-medium hover:opacity-80" style={{ color: brand }}>
                               {cta.label} <ArrowRight size={14} />
                             </button>
                           ) : cta.external ? (
-                            <a href={cta.href} target="_blank" rel="noopener noreferrer"
+                            <a href={cta.href} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}
                               className="inline-flex items-center gap-1 text-sm font-medium hover:opacity-80" style={{ color: brand }}>
                               {cta.label} <ArrowRight size={14} />
                             </a>
                           ) : (
-                            <a href={cta.href}
+                            <a href={cta.href} onClick={(e) => e.stopPropagation()}
                               className="inline-flex items-center gap-1 text-sm font-medium hover:opacity-80" style={{ color: brand }}>
                               {cta.label} <ArrowRight size={14} />
                             </a>
@@ -413,6 +438,20 @@ export default function PartnerLanding() {
           partner={{ id: partner.id, name: partner.name }}
           brand={brand}
           onClose={() => setBookingOffer(null)}
+        />
+      )}
+
+      {detailsOffer && (
+        <OfferDetailsDialog
+          offer={detailsOffer}
+          brand={brand}
+          onClose={() => setDetailsOffer(null)}
+          onReserve={() => {
+            const o = detailsOffer;
+            setDetailsOffer(null);
+            if (o.kind === "event") setBookingOffer(o);
+            else document.getElementById("book")?.scrollIntoView({ behavior: "smooth" });
+          }}
         />
       )}
     </div>
@@ -807,6 +846,108 @@ function OfferBookingDialog({
             </DialogFooter>
           </>
         )}
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function OfferDetailsDialog({
+  offer,
+  brand,
+  onClose,
+  onReserve,
+}: {
+  offer: PartnerOfferPublic;
+  brand: string;
+  onClose: () => void;
+  onReserve: () => void;
+}) {
+  const galleryKey = galleryKeyForOffer(offer);
+  const gallery = useSiteGallery(galleryKey || "gallery_workshop_zellij");
+  const galleryUrls = galleryKey && gallery ? gallery.map((g) => g.url) : [];
+  const allImages = [offer.cover_image, ...galleryUrls].filter(Boolean) as string[];
+  const [active, setActive] = useState(0);
+  const hero = allImages[active] || offer.cover_image;
+  const reserveLabel = offer.kind === "event" ? "Reserve a spot" : "Book a workshop";
+
+  return (
+    <Dialog open onOpenChange={(v) => !v && onClose()}>
+      <DialogContent className="max-w-2xl p-0 overflow-hidden gap-0 max-h-[92vh] overflow-y-auto">
+        <div className="relative">
+          {hero ? (
+            <img src={hero} alt={offer.title} className="w-full aspect-[16/10] object-cover" />
+          ) : (
+            <div className="w-full aspect-[16/10]" style={{ background: `linear-gradient(135deg, ${brand}, ${brand}aa)` }} />
+          )}
+          <button
+            onClick={onClose}
+            className="absolute top-3 right-3 w-9 h-9 rounded-full bg-white/90 backdrop-blur flex items-center justify-center shadow-md hover:bg-white"
+            aria-label="Close"
+          >
+            <X size={16} />
+          </button>
+          <span className="absolute top-3 left-3 text-[10px] uppercase tracking-[0.2em] px-2.5 py-1 rounded-full text-white" style={{ backgroundColor: brand }}>
+            {offer.kind === "event" ? "Event" : "Offer"}
+          </span>
+        </div>
+
+        {allImages.length > 1 && (
+          <div className="flex gap-2 overflow-x-auto px-5 pt-4 pb-1">
+            {allImages.map((src, i) => (
+              <button
+                key={src + i}
+                onClick={() => setActive(i)}
+                className={cn(
+                  "shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition",
+                  active === i ? "border-foreground" : "border-transparent opacity-70 hover:opacity-100"
+                )}
+              >
+                <img src={src} alt="" className="w-full h-full object-cover" />
+              </button>
+            ))}
+          </div>
+        )}
+
+        <div className="p-5 space-y-4">
+          <div>
+            <h2 className="text-2xl font-semibold mb-1">{offer.title}</h2>
+            {offer.subtitle && <p className="text-muted-foreground">{offer.subtitle}</p>}
+          </div>
+
+          <div className="flex flex-wrap gap-2 text-xs">
+            {offer.kind === "event" && offer.event_at && (
+              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-muted">
+                <Calendar size={12} /> {format(parseISO(offer.event_at), "EEE, MMM d · HH:mm")}
+              </span>
+            )}
+            {offer.capacity != null && (
+              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-muted">
+                <Users size={12} /> {offer.capacity} spots
+              </span>
+            )}
+            {offer.price != null && (
+              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-white font-medium" style={{ background: brand }}>
+                {offer.price} {offer.currency}
+              </span>
+            )}
+          </div>
+
+          {offer.description && (
+            <p className="text-sm text-foreground/80 leading-relaxed whitespace-pre-line">{offer.description}</p>
+          )}
+
+          {offer.tags && offer.tags.length > 0 && (
+            <div className="flex flex-wrap gap-1.5">
+              {offer.tags.map((t) => (
+                <span key={t} className="text-[10px] uppercase tracking-wider px-2 py-1 rounded bg-muted text-muted-foreground">{t}</span>
+              ))}
+            </div>
+          )}
+
+          <Button onClick={onReserve} className="w-full text-white" style={{ background: brand }}>
+            {reserveLabel} <ArrowRight size={16} className="ml-1" />
+          </Button>
+        </div>
       </DialogContent>
     </Dialog>
   );
