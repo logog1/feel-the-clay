@@ -449,7 +449,7 @@ export default function PartnerLanding() {
                     key={opt.id}
                     onClick={() => setBookMode(opt.id)}
                     className={cn(
-                      "relative text-start p-4 md:p-5 rounded-2xl border-2 transition bg-card",
+                      "relative text-start p-3.5 md:p-5 rounded-2xl border-2 transition bg-card min-h-[92px] active:scale-[0.99]",
                       active ? "shadow-sm" : "border-border hover:border-foreground/20"
                     )}
                     style={active ? { borderColor: brand, background: `${brand}0a` } : undefined}
