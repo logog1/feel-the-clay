@@ -16,8 +16,22 @@ import {
   ArrowRight, Hotel, Sparkles, Phone, Mail, Globe, MapPin, Clock, Users, Loader2, Calendar, X, Check, Shield, MessageCircle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useSiteGallery, type GalleryKey } from "@/hooks/use-site-galleries";
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
+
+// Match an offer to the closest workshop gallery so the details modal can pull
+// in-house craft photos instead of showing just the single cover image.
+function galleryKeyForOffer(o: { title: string; subtitle?: string | null; tags?: string[] }): GalleryKey | null {
+  const hay = [o.title, o.subtitle || "", ...(o.tags || [])].join(" ").toLowerCase();
+  if (/zellij|zellige/.test(hay)) return "gallery_workshop_zellij";
+  if (/pottery|throw/.test(hay)) return "gallery_workshop_pottery";
+  if (/handbuild|hand-build|clay/.test(hay)) return "gallery_workshop_handbuilding";
+  if (/embroid|stitch|thread/.test(hay)) return "gallery_workshop_embroidery";
+  if (/carpet|rug|weav/.test(hay)) return "gallery_workshop_carpets";
+  if (/garden|plant|pot/.test(hay)) return "gallery_workshop_gardening";
+  return null;
+}
 
 type Experience = {
   id: string;
