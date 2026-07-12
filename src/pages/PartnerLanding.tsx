@@ -268,30 +268,6 @@ export default function PartnerLanding() {
         </div>
       </div>
 
-      {/* PERKS */}
-      {(partner.perks || []).some((p) => p.enabled) && (
-        <section className="section-padding">
-          <div className="container-wide max-w-5xl">
-            <p className="text-[11px] uppercase tracking-[0.3em] text-muted-foreground mb-2" style={{ color: brand }}>
-              What we offer
-            </p>
-            <h2 className="text-3xl md:text-4xl font-light mb-8 capitalize">Curated for {partner.name} guests</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {(partner.perks || []).filter((p) => p.enabled).map((perk) => (
-                <div key={perk.key} className="p-5 rounded-2xl border border-border/40 bg-card flex gap-4">
-                  <div className="w-10 h-10 rounded-xl shrink-0 flex items-center justify-center text-white" style={{ background: brand }}>
-                    <Sparkles size={18} />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-foreground mb-1">{perk.label}</h3>
-                    {perk.desc && <p className="text-sm text-muted-foreground leading-relaxed">{perk.desc}</p>}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
 
       {/* OFFERS & EVENTS */}
       {offers.length > 0 && (
