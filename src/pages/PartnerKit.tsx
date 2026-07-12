@@ -76,6 +76,7 @@ export default function PartnerKit() {
   const [authChecking, setAuthChecking] = useState(true);
   const [canManage, setCanManage] = useState(false);
   const [lang, setLang] = useState<Lang>("en");
+  const [qrOpen, setQrOpen] = useState(false);
 
   useEffect(() => {
     supabase.auth.onAuthStateChange((_e, s) => setSession(s));
