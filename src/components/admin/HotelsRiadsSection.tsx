@@ -171,7 +171,7 @@ export function HotelsRiadsSection() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {partners.map((p) => {
-            const publicUrl = `${window.location.origin}/partners/${p.slug}`;
+            const publicUrl = `${window.location.origin}/${p.slug}`;
             return (
               <Card key={p.id} className="p-5 space-y-3 relative overflow-hidden">
                 <div className="absolute top-0 left-0 right-0 h-1" style={{ background: p.brand_color }} />
