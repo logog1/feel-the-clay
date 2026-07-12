@@ -67,7 +67,7 @@ type NewPartnerForm = {
 const EMPTY_NEW: NewPartnerForm = {
   name: "", slug: "", type: "riad", city: "", address: "",
   brand_color: "#c4654a", logo_url: "",
-  rooms_count: "", stars: "", qr_codes_installed: "0",
+  rooms_count: "", qr_codes_installed: "0",
   commission_rate: "", commission_notes: "",
   partnership_status: "prospect", booking_channel: "concierge",
 };
