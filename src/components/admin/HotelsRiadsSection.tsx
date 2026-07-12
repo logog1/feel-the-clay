@@ -598,12 +598,8 @@ function PartnerEditor({ partner, onClose }: { partner: HotelPartner; onClose: (
                   <Input type="number" min={0} value={form.rooms_count ?? ""} onChange={(e) => setForm({ ...form, rooms_count: e.target.value ? Number(e.target.value) : null })} />
                 </div>
                 <div>
-                  <Label>Star rating</Label>
-                  <select className="w-full h-10 rounded-md border border-input bg-background px-3 text-sm"
-                    value={form.stars ?? ""} onChange={(e) => setForm({ ...form, stars: e.target.value ? Number(e.target.value) : null })}>
-                    <option value="">—</option>
-                    {[1,2,3,4,5].map(n => <option key={n} value={n}>{n} ★</option>)}
-                  </select>
+                  <Label>Address</Label>
+                  <Input value={form.address || ""} onChange={(e) => setForm({ ...form, address: e.target.value })} />
                 </div>
                 <div className="col-span-2">
                   <Label>Address</Label>
