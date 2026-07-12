@@ -96,6 +96,18 @@ export default function PartnerLanding() {
   const [bookingOffer, setBookingOffer] = useState<PartnerOfferPublic | null>(null);
   const [detailsOffer, setDetailsOffer] = useState<PartnerOfferPublic | null>(null);
   const [bookMode, setBookMode] = useState<"small" | "large">("small");
+  const [bookInView, setBookInView] = useState(false);
+
+  useEffect(() => {
+    const el = document.getElementById("book");
+    if (!el) return;
+    const io = new IntersectionObserver(
+      ([entry]) => setBookInView(entry.isIntersecting),
+      { rootMargin: "-20% 0px -20% 0px", threshold: 0 }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [partner?.id, expLoading]);
 
   const refreshAvailability = async () => {
     const { data } = await supabase.rpc("get_sofitel_availability");
