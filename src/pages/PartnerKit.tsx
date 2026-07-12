@@ -162,8 +162,8 @@ export default function PartnerKit() {
             <Button size="sm" variant="outline" onClick={() => window.print()}>
               <Printer size={13} className="mr-1" /> Print / Save PDF
             </Button>
-            <Button size="sm" variant="ghost" asChild>
-              <Link to={`/partners/${partner.slug}/qr`}><QrCode size={13} className="mr-1" /> QR Kit</Link>
+            <Button size="sm" variant="ghost" onClick={() => setQrOpen(true)}>
+              <QrCode size={13} className="mr-1" /> QR code
             </Button>
           </div>
         </div>
