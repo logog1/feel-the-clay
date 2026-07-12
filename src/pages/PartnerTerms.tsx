@@ -57,9 +57,9 @@ export default function PartnerTerms() {
 
         <Section n="2" title="Booking channels">
           <ul className="list-disc pl-5 space-y-1">
+            <li>Public partner landing page at <code className="text-xs">/your-slug</code> — short, indexable, property-branded booking flow.</li>
             <li>Concierge dashboard ( <code className="text-xs">/partners/your-slug/concierge</code> ) — staff create bookings on behalf of guests.</li>
-            <li>QR variants printed per room or per staff member, linking to your property's landing page.</li>
-            <li>Unique partner landing page with a property-branded booking flow.</li>
+            <li>QR variants printed per room or per staff member, linking to the public landing page.</li>
           </ul>
           <p className="mt-2">All bookings made through these channels are automatically attributed to the partner for commission.</p>
         </Section>
