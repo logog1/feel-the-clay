@@ -417,19 +417,19 @@ export default function PartnerLanding() {
       <section id="book" className="bg-background section-padding">
         <div className="container-wide max-w-5xl">
           <div className="text-center mb-8">
-            <p className="text-[11px] uppercase tracking-[0.3em] mb-2" style={{ color: brand }}>Book</p>
-            <h2 className="text-3xl md:text-4xl font-light">Reserve your experience</h2>
+            <p className="text-[11px] uppercase tracking-[0.3em] mb-2" style={{ color: brand }}>{t("partner.book.section_eyebrow")}</p>
+            <h2 className="text-3xl md:text-4xl font-light">{t("partner.book.section_title")}</h2>
           </div>
 
           {/* Group-size selector */}
           <div className="max-w-3xl mx-auto mb-6">
             <p className="text-center text-xs uppercase tracking-[0.2em] text-muted-foreground mb-3">
-              How many guests?
+              {t("partner.book.gs_prompt")}
             </p>
             <div className="grid grid-cols-2 gap-3">
               {([
-                { id: "small" as const, count: "1–3", title: "Small group", sub: "Pick an existing time" },
-                { id: "large" as const, count: "4+", title: "Larger group", sub: "Request a custom time" },
+                { id: "small" as const, count: "1–3", title: t("partner.book.gs_small_title"), sub: t("partner.book.gs_small_sub") },
+                { id: "large" as const, count: "4+", title: t("partner.book.gs_large_title"), sub: t("partner.book.gs_large_sub") },
               ]).map((opt) => {
                 const active = bookMode === opt.id;
                 return (
@@ -452,7 +452,7 @@ export default function PartnerLanding() {
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2 flex-wrap">
                           <span className="text-lg font-semibold leading-none">{opt.count}</span>
-                          <span className="text-xs text-muted-foreground">guests</span>
+                          <span className="text-xs text-muted-foreground">{t("partner.book.gs_guests")}</span>
                         </div>
                         <p className="font-medium text-sm mt-1.5">{opt.title}</p>
                         <p className="text-xs text-muted-foreground">{opt.sub}</p>
@@ -486,11 +486,11 @@ export default function PartnerLanding() {
               <p className="text-sm text-foreground/80 leading-relaxed">
                 {bookMode === "small" ? (
                   <>
-                    <span className="font-medium">Browse the upcoming sessions below</span> and pick a time that suits you. Tap a card to reserve your spot.
+                    <span className="font-medium">{t("partner.book.help_small_strong")}</span>{t("partner.book.help_small_rest")}
                   </>
                 ) : (
                   <>
-                    <span className="font-medium">Can't find a suitable time?</span> Use this form to request another date during the week or in the future, and our team will confirm with you.
+                    <span className="font-medium">{t("partner.book.help_large_strong")}</span>{t("partner.book.help_large_rest")}
                   </>
                 )}
               </p>
@@ -506,6 +506,7 @@ export default function PartnerLanding() {
               isRTL={isRTL}
               onPickExperience={(e) => setSelected(e)}
               onPickOffer={(o) => setBookingOffer(o)}
+              t={t}
             />
           ) : (
             <BookingFormSection />
@@ -556,7 +557,7 @@ export default function PartnerLanding() {
 }
 
 function SmallGroupSlots({
-  experiences, taken, offers, brand, isRTL, onPickExperience, onPickOffer,
+  experiences, taken, offers, brand, isRTL, onPickExperience, onPickOffer, t,
 }: {
   experiences: Experience[];
   taken: Record<string, number>;
@@ -565,6 +566,7 @@ function SmallGroupSlots({
   isRTL: boolean;
   onPickExperience: (e: Experience) => void;
   onPickOffer: (o: PartnerOfferPublic) => void;
+  t: ReturnType<typeof useLanguage>["t"];
 }) {
   const now = Date.now();
 
@@ -591,7 +593,9 @@ function SmallGroupSlots({
       <div className="max-w-2xl mx-auto p-6 rounded-2xl border border-dashed border-border text-center bg-card">
         <Calendar className="w-8 h-8 mx-auto text-muted-foreground/60 mb-2" />
         <p className="text-sm text-muted-foreground">
-          No scheduled sessions available right now. Switch to <span className="font-medium text-foreground">4+ guests</span> to request a custom date.
+          {t("partner.slots.empty_prefix")}{" "}
+          <span className="font-medium text-foreground">{t("partner.slots.large_switch")}</span>{" "}
+          {t("partner.slots.empty_suffix")}
         </p>
       </div>
     );
@@ -625,7 +629,7 @@ function SmallGroupSlots({
             <div className="flex-1 min-w-0">
               <div className="flex flex-wrap items-center gap-2 mb-1">
                 <span className="text-[10px] uppercase tracking-[0.2em] px-2 py-0.5 rounded-full text-white" style={{ background: brand }}>
-                  {e.category || "Workshop"}
+                  {e.category || t("partner.slots.workshop")}
                 </span>
                 <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
                   <Calendar size={11} /> {format(d, "EEE d MMM")}
@@ -636,7 +640,9 @@ function SmallGroupSlots({
               </div>
               <h3 className="font-medium text-base truncate">{e.title}</h3>
               <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground">
-                <span className="inline-flex items-center gap-1"><Users size={11} /> {full ? "Fully booked" : `${remaining} left`}</span>
+                <span className="inline-flex items-center gap-1">
+                  <Users size={11} /> {full ? t("partner.slots.fully_booked") : t("partner.slots.left").replace("{n}", String(remaining))}
+                </span>
                 {e.price_per_person > 0 && (
                   <span className="font-medium text-foreground">{e.price_per_person} {e.currency}</span>
                 )}
@@ -669,7 +675,7 @@ function SmallGroupSlots({
             <div className="flex-1 min-w-0">
               <div className="flex flex-wrap items-center gap-2 mb-1">
                 <span className="text-[10px] uppercase tracking-[0.2em] px-2 py-0.5 rounded-full text-white" style={{ background: brand }}>
-                  Event
+                  {t("partner.slots.event")}
                 </span>
                 <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
                   <Calendar size={11} /> {format(d, "EEE d MMM")}
@@ -681,7 +687,7 @@ function SmallGroupSlots({
               <h3 className="font-medium text-base truncate">{o.title}</h3>
               <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground">
                 {o.capacity != null && (
-                  <span className="inline-flex items-center gap-1"><Users size={11} /> {o.capacity} spots</span>
+                  <span className="inline-flex items-center gap-1"><Users size={11} /> {o.capacity} {t("partner.slots.spots")}</span>
                 )}
                 {o.price != null && (
                   <span className="font-medium text-foreground">{o.price} {o.currency}</span>

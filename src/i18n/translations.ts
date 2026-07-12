@@ -421,6 +421,30 @@ export const translations = {
   "partner.book.confirm": { en: "Confirm reservation", ar: "تأكيد الحجز", es: "Confirmar reserva", fr: "Confirmer la réservation" },
   "partner.book.sending": { en: "Sending…", ar: "جارٍ الإرسال…", es: "Enviando…", fr: "Envoi…" },
 
+  // Partner Landing — group-size selector (small group vs. larger group)
+  "partner.book.section_eyebrow": { en: "Book", ar: "احجز", es: "Reservar", fr: "Réserver" },
+  "partner.book.section_title": { en: "Reserve your experience", ar: "احجز تجربتك", es: "Reserva tu experiencia", fr: "Réservez votre expérience" },
+  "partner.book.gs_prompt": { en: "How many guests?", ar: "كم عدد الضيوف؟", es: "¿Cuántos invitados?", fr: "Combien d'invités ?" },
+  "partner.book.gs_guests": { en: "guests", ar: "ضيوف", es: "invitados", fr: "invités" },
+  "partner.book.gs_small_title": { en: "Small group", ar: "مجموعة صغيرة", es: "Grupo pequeño", fr: "Petit groupe" },
+  "partner.book.gs_small_sub": { en: "Pick an existing time", ar: "اختر موعدًا متاحًا", es: "Elige un horario disponible", fr: "Choisissez un horaire proposé" },
+  "partner.book.gs_large_title": { en: "Larger group", ar: "مجموعة أكبر", es: "Grupo más grande", fr: "Groupe plus grand" },
+  "partner.book.gs_large_sub": { en: "Request a custom time", ar: "اطلب موعدًا مخصصًا", es: "Solicita un horario personalizado", fr: "Demandez un horaire sur mesure" },
+  "partner.book.help_small_strong": { en: "Browse the upcoming sessions below", ar: "تصفح الجلسات القادمة أدناه", es: "Explora las sesiones próximas a continuación", fr: "Parcourez les sessions à venir ci-dessous" },
+  "partner.book.help_small_rest": { en: " and pick a time that suits you. Tap a card to reserve your spot.", ar: " واختر الموعد الذي يناسبك. اضغط على البطاقة لحجز مكانك.", es: " y elige la hora que te convenga. Toca una tarjeta para reservar tu plaza.", fr: " et choisissez l'horaire qui vous convient. Appuyez sur une carte pour réserver votre place." },
+  "partner.book.help_large_strong": { en: "Can't find a suitable time?", ar: "لم تجد موعدًا مناسبًا؟", es: "¿No encuentras un horario adecuado?", fr: "Vous ne trouvez pas d'horaire qui vous convient ?" },
+  "partner.book.help_large_rest": { en: " Use this form to request another date during the week or in the future, and our team will confirm with you.", ar: " استخدم هذا النموذج لطلب موعد آخر خلال الأسبوع أو في المستقبل، وسيؤكد فريقنا معك.", es: " Usa este formulario para pedir otra fecha durante la semana o en el futuro, y nuestro equipo te confirmará.", fr: " Utilisez ce formulaire pour demander une autre date dans la semaine ou plus tard, et notre équipe vous confirmera." },
+
+  // Partner Landing — small-group slot list
+  "partner.slots.empty_prefix": { en: "No scheduled sessions available right now. Switch to", ar: "لا توجد جلسات مجدولة متاحة حاليًا. انتقل إلى", es: "No hay sesiones programadas disponibles ahora. Cambia a", fr: "Aucune session programmée disponible pour le moment. Passez à" },
+  "partner.slots.empty_suffix": { en: "to request a custom date.", ar: "لطلب موعد مخصص.", es: "para solicitar una fecha personalizada.", fr: "pour demander une date sur mesure." },
+  "partner.slots.large_switch": { en: "4+ guests", ar: "4 ضيوف أو أكثر", es: "4+ invitados", fr: "4+ invités" },
+  "partner.slots.workshop": { en: "Workshop", ar: "ورشة", es: "Taller", fr: "Atelier" },
+  "partner.slots.event": { en: "Event", ar: "فعالية", es: "Evento", fr: "Événement" },
+  "partner.slots.fully_booked": { en: "Fully booked", ar: "محجوز بالكامل", es: "Completo", fr: "Complet" },
+  "partner.slots.left": { en: "{n} left", ar: "{n} متبقٍ", es: "Quedan {n}", fr: "{n} restantes" },
+  "partner.slots.spots": { en: "spots", ar: "أماكن", es: "plazas", fr: "places" },
+
   // Partner Concierge — staff dashboard
   "partner.con.title": { en: "Concierge", ar: "الكونسيرج", es: "Conserjería", fr: "Conciergerie" },
   "partner.con.console": { en: "Concierge console", ar: "لوحة الكونسيرج", es: "Consola de conserjería", fr: "Console concierge" },
