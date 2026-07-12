@@ -714,7 +714,7 @@ function BookingDialog({
             <div className="space-y-3">
               <div className="grid grid-cols-2 gap-3">
                 <div><Label>Full name</Label><Input value={name} onChange={(e) => setName(e.target.value)} required /></div>
-                <div><Label>Room / reference</Label><Input value={room} onChange={(e) => setRoom(e.target.value)} required /></div>
+                <div><Label>Room / reference <span className="text-muted-foreground font-normal">(optional)</span></Label><Input value={room} onChange={(e) => setRoom(e.target.value)} /></div>
                 <div className="col-span-2">
                   <Label>Phone (with country code)</Label>
                   <PhoneInput
