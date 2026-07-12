@@ -193,7 +193,7 @@ export function HotelsRiadsSection() {
                       )}
                     </div>
                     <p className="text-xs text-muted-foreground capitalize">
-                      {p.type}{p.city ? ` · ${p.city}` : ""}{p.stars ? ` · ${"★".repeat(p.stars)}` : ""}
+                      {p.type}{p.city ? ` · ${p.city}` : ""}
                     </p>
                   </div>
                   <div className="w-10 h-10 rounded-lg shrink-0 overflow-hidden grid place-items-center text-white font-bold text-xs"
@@ -204,28 +204,41 @@ export function HotelsRiadsSection() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-3 gap-2 text-center">
-                  <div className="rounded-lg bg-muted/60 px-2 py-1.5">
-                    <div className="text-[10px] uppercase tracking-wide text-muted-foreground flex items-center justify-center gap-1"><BedDouble size={10}/> Rooms</div>
-                    <div className="text-sm font-semibold">{p.rooms_count ?? "—"}</div>
-                  </div>
-                  <div className="rounded-lg bg-muted/60 px-2 py-1.5">
-                    <div className="text-[10px] uppercase tracking-wide text-muted-foreground flex items-center justify-center gap-1"><QrCode size={10}/> QRs</div>
-                    <div className="text-sm font-semibold">{p.qr_codes_installed ?? 0}</div>
-                  </div>
-                  <div className="rounded-lg bg-muted/60 px-2 py-1.5">
-                    <div className="text-[10px] uppercase tracking-wide text-muted-foreground flex items-center justify-center gap-1"><Percent size={10}/> Commission</div>
-                    <div className="text-sm font-semibold">{p.commission_rate != null ? `${p.commission_rate}%` : "—"}</div>
-                  </div>
-                </div>
+                {expandedIds.has(p.id) && (
+                  <>
+                    <div className="grid grid-cols-3 gap-2 text-center">
+                      <div className="rounded-lg bg-muted/60 px-2 py-1.5">
+                        <div className="text-[10px] uppercase tracking-wide text-muted-foreground flex items-center justify-center gap-1"><BedDouble size={10}/> Rooms</div>
+                        <div className="text-sm font-semibold">{p.rooms_count ?? "—"}</div>
+                      </div>
+                      <div className="rounded-lg bg-muted/60 px-2 py-1.5">
+                        <div className="text-[10px] uppercase tracking-wide text-muted-foreground flex items-center justify-center gap-1"><QrCode size={10}/> QRs</div>
+                        <div className="text-sm font-semibold">{p.qr_codes_installed ?? 0}</div>
+                      </div>
+                      <div className="rounded-lg bg-muted/60 px-2 py-1.5">
+                        <div className="text-[10px] uppercase tracking-wide text-muted-foreground flex items-center justify-center gap-1"><Percent size={10}/> Commission</div>
+                        <div className="text-sm font-semibold">{p.commission_rate != null ? `${p.commission_rate}%` : "—"}</div>
+                      </div>
+                    </div>
 
-                <div className="flex flex-wrap gap-1">
-                  {(p.perks || []).filter((x) => x.enabled).slice(0, 3).map((perk) => (
-                    <span key={perk.key} className="text-[10px] px-2 py-0.5 rounded-full bg-muted text-muted-foreground">
-                      {perk.label}
-                    </span>
-                  ))}
-                </div>
+                    <div className="flex flex-wrap gap-1">
+                      {(p.perks || []).filter((x) => x.enabled).slice(0, 3).map((perk) => (
+                        <span key={perk.key} className="text-[10px] px-2 py-0.5 rounded-full bg-muted text-muted-foreground">
+                          {perk.label}
+                        </span>
+                      ))}
+                    </div>
+                  </>
+                )}
+
+                <button
+                  type="button"
+                  onClick={() => toggleExpanded(p.id)}
+                  className="w-full flex items-center justify-center gap-1 text-[11px] text-muted-foreground hover:text-foreground transition py-1"
+                >
+                  {expandedIds.has(p.id) ? "Less info" : "More info"}
+                  <ChevronDown size={12} className={`transition-transform ${expandedIds.has(p.id) ? "rotate-180" : ""}`} />
+                </button>
 
                 <div className="grid grid-cols-2 gap-2 pt-2">
                   <Button size="sm" variant="outline" className="rounded-lg justify-start text-xs" onClick={() => window.open(publicUrl, "_blank")}>
