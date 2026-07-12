@@ -509,79 +509,62 @@ export default function PartnerLanding() {
             <h2 className="text-3xl md:text-4xl font-light">{t("partner.book.section_title")}</h2>
           </div>
 
-          {/* Group-size selector */}
+          {/* Unified participants selector — same design for all group sizes */}
           <div className="max-w-3xl mx-auto mb-6">
-            <p className="text-center text-xs uppercase tracking-[0.2em] text-muted-foreground mb-3">
+            <p className="text-[11px] uppercase tracking-[0.28em] font-semibold mb-3" style={{ color: brand }}>
               {t("partner.book.gs_prompt")}
             </p>
-            <div className="grid grid-cols-2 gap-3">
-              {([
-                { id: "small" as const, count: "1–3", title: t("partner.book.gs_small_title"), sub: t("partner.book.gs_small_sub") },
-                { id: "large" as const, count: "4+", title: t("partner.book.gs_large_title"), sub: t("partner.book.gs_large_sub") },
-              ]).map((opt) => {
-                const active = bookMode === opt.id;
+            <div className="grid grid-cols-6 sm:grid-cols-10 gap-2">
+              {Array.from({ length: 20 }, (_, i) => i + 1).map((n) => {
+                const mode: "small" | "large" = n >= 4 ? "large" : "small";
+                const active = bookMode === mode && ((mode === "small" && n <= 3) || (mode === "large" && n >= 4));
+                // Highlight the "representative" number: 3 for small, 4 for large
+                const isRep = (bookMode === "small" && n === 3) || (bookMode === "large" && n === 4);
                 return (
                   <button
-                    key={opt.id}
-                    onClick={() => setBookMode(opt.id)}
+                    key={n}
+                    type="button"
+                    onClick={() => setBookMode(mode)}
                     className={cn(
-                      "relative text-start p-3.5 md:p-5 rounded-2xl border-2 transition bg-card min-h-[92px] active:scale-[0.99]",
-                      active ? "shadow-sm" : "border-border hover:border-foreground/20"
+                      "h-11 rounded-xl border-2 text-sm font-medium transition bg-card active:scale-[0.96]",
+                      isRep ? "text-white shadow-sm" : "border-border hover:border-foreground/30 text-foreground"
                     )}
-                    style={active ? { borderColor: brand, background: `${brand}0a` } : undefined}
+                    style={isRep ? { background: brand, borderColor: brand } : undefined}
+                    aria-pressed={active}
                   >
-                    <div className="flex items-start gap-3">
-                      <div
-                        className="w-10 h-10 rounded-xl grid place-items-center shrink-0"
-                        style={{ background: active ? brand : `${brand}18`, color: active ? "white" : brand }}
-                      >
-                        <Users size={opt.id === "small" ? 16 : 20} />
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <span className="text-lg font-semibold leading-none">{opt.count}</span>
-                          <span className="text-xs text-muted-foreground">{t("partner.book.gs_guests")}</span>
-                        </div>
-                        <p className="font-medium text-sm mt-1.5">{opt.title}</p>
-                        <p className="text-xs text-muted-foreground">{opt.sub}</p>
-                      </div>
-                      <span
-                        className={cn(
-                          "w-5 h-5 rounded-full border-2 grid place-items-center shrink-0 transition",
-                          active ? "" : "border-border"
-                        )}
-                        style={active ? { borderColor: brand, background: brand } : undefined}
-                      >
-                        {active && <Check size={12} className="text-white" strokeWidth={3} />}
-                      </span>
-                    </div>
+                    {n}
                   </button>
                 );
               })}
             </div>
 
-            {/* Contextual helper message */}
+            {/* Contextual helper message — same card design regardless of size */}
             <div
-              className="mt-4 p-3.5 rounded-xl border border-dashed flex items-start gap-2.5"
-              style={{ borderColor: `${brand}55`, background: `${brand}08` }}
+              className="mt-5 p-4 md:p-5 rounded-2xl border-2 flex items-start gap-3"
+              style={{ borderColor: `${brand}40`, background: `${brand}0a` }}
             >
               <div
-                className="w-6 h-6 rounded-full grid place-items-center shrink-0 mt-0.5"
+                className="w-9 h-9 rounded-xl grid place-items-center shrink-0"
                 style={{ background: brand, color: "white" }}
               >
-                {bookMode === "small" ? <Clock size={13} /> : <Calendar size={13} />}
+                {bookMode === "small" ? <Clock size={16} /> : <Calendar size={16} />}
               </div>
-              <p className="text-sm text-foreground/80 leading-relaxed">
-                {bookMode === "small" ? (
-                  <>
-                    <span className="font-medium">{t("partner.book.help_small_strong")}</span>{t("partner.book.help_small_rest")}
-                  </>
-                ) : (
-                  <>
-                    <span className="font-medium">{t("partner.book.help_large_strong")}</span>{t("partner.book.help_large_rest")}
-                  </>
-                )}
-              </p>
+              <div className="min-w-0 flex-1">
+                <p className="text-[11px] uppercase tracking-[0.22em] font-semibold mb-1" style={{ color: brand }}>
+                  {bookMode === "small" ? t("partner.book.gs_small_title") : t("partner.book.gs_large_title")}
+                </p>
+                <p className="text-sm text-foreground/80 leading-relaxed">
+                  {bookMode === "small" ? (
+                    <>
+                      <span className="font-medium">{t("partner.book.help_small_strong")}</span>{t("partner.book.help_small_rest")}
+                    </>
+                  ) : (
+                    <>
+                      <span className="font-medium">{t("partner.book.help_large_strong")}</span>{t("partner.book.help_large_rest")}
+                    </>
+                  )}
+                </p>
+              </div>
             </div>
           </div>
 
