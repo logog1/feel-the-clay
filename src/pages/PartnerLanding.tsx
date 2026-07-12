@@ -5,7 +5,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
 import { format, parseISO } from "date-fns";
 import SEOHead from "@/components/SEOHead";
-import BookingFormSection from "@/components/BookingFormSection";
+import PartnerBookingForm from "@/components/partner/PartnerBookingForm";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
