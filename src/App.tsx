@@ -60,6 +60,12 @@ const RouteFallback = () => (
   />
 );
 
+const PartnerSlugRedirect = () => {
+  const { slug } = useParams();
+  return <Navigate to={`/${slug ?? ""}`} replace />;
+};
+
+
 const App = () => {
   return (
     <HelmetProvider>
