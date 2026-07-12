@@ -557,7 +557,7 @@ export default function PartnerLanding() {
 }
 
 function SmallGroupSlots({
-  experiences, taken, offers, brand, isRTL, onPickExperience, onPickOffer,
+  experiences, taken, offers, brand, isRTL, onPickExperience, onPickOffer, t,
 }: {
   experiences: Experience[];
   taken: Record<string, number>;
@@ -566,6 +566,7 @@ function SmallGroupSlots({
   isRTL: boolean;
   onPickExperience: (e: Experience) => void;
   onPickOffer: (o: PartnerOfferPublic) => void;
+  t: ReturnType<typeof useLanguage>["t"];
 }) {
   const now = Date.now();
 
@@ -592,7 +593,9 @@ function SmallGroupSlots({
       <div className="max-w-2xl mx-auto p-6 rounded-2xl border border-dashed border-border text-center bg-card">
         <Calendar className="w-8 h-8 mx-auto text-muted-foreground/60 mb-2" />
         <p className="text-sm text-muted-foreground">
-          No scheduled sessions available right now. Switch to <span className="font-medium text-foreground">4+ guests</span> to request a custom date.
+          {t("partner.slots.empty_prefix")}{" "}
+          <span className="font-medium text-foreground">{t("partner.slots.large_switch")}</span>{" "}
+          {t("partner.slots.empty_suffix")}
         </p>
       </div>
     );
@@ -626,7 +629,7 @@ function SmallGroupSlots({
             <div className="flex-1 min-w-0">
               <div className="flex flex-wrap items-center gap-2 mb-1">
                 <span className="text-[10px] uppercase tracking-[0.2em] px-2 py-0.5 rounded-full text-white" style={{ background: brand }}>
-                  {e.category || "Workshop"}
+                  {e.category || t("partner.slots.workshop")}
                 </span>
                 <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
                   <Calendar size={11} /> {format(d, "EEE d MMM")}
@@ -637,7 +640,9 @@ function SmallGroupSlots({
               </div>
               <h3 className="font-medium text-base truncate">{e.title}</h3>
               <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground">
-                <span className="inline-flex items-center gap-1"><Users size={11} /> {full ? "Fully booked" : `${remaining} left`}</span>
+                <span className="inline-flex items-center gap-1">
+                  <Users size={11} /> {full ? t("partner.slots.fully_booked") : t("partner.slots.left").replace("{n}", String(remaining))}
+                </span>
                 {e.price_per_person > 0 && (
                   <span className="font-medium text-foreground">{e.price_per_person} {e.currency}</span>
                 )}
@@ -670,7 +675,7 @@ function SmallGroupSlots({
             <div className="flex-1 min-w-0">
               <div className="flex flex-wrap items-center gap-2 mb-1">
                 <span className="text-[10px] uppercase tracking-[0.2em] px-2 py-0.5 rounded-full text-white" style={{ background: brand }}>
-                  Event
+                  {t("partner.slots.event")}
                 </span>
                 <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
                   <Calendar size={11} /> {format(d, "EEE d MMM")}
@@ -682,7 +687,7 @@ function SmallGroupSlots({
               <h3 className="font-medium text-base truncate">{o.title}</h3>
               <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground">
                 {o.capacity != null && (
-                  <span className="inline-flex items-center gap-1"><Users size={11} /> {o.capacity} spots</span>
+                  <span className="inline-flex items-center gap-1"><Users size={11} /> {o.capacity} {t("partner.slots.spots")}</span>
                 )}
                 {o.price != null && (
                   <span className="font-medium text-foreground">{o.price} {o.currency}</span>
