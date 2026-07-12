@@ -83,7 +83,9 @@ const CATEGORIES: { id: string; label: string }[] = [
 export default function PartnerLanding() {
   const { slug } = useParams<{ slug: string }>();
   const { partner, loading } = useHotelPartnerBySlug(slug);
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
+  const isRTL = language === "ar";
+  const dir = isRTL ? "rtl" : "ltr";
   const [experiences, setExperiences] = useState<Experience[]>([]);
   const [expLoading, setExpLoading] = useState(true);
   const [filter, setFilter] = useState("all");
@@ -171,14 +173,14 @@ export default function PartnerLanding() {
   }, [experiences, filter, activeDay]);
 
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center text-muted-foreground">Loading…</div>;
+    return <div className="min-h-screen flex items-center justify-center text-muted-foreground">{t("partner.loading")}</div>;
   }
   if (!partner) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-3 text-center px-6">
         <Hotel className="w-12 h-12 text-muted-foreground/50" />
-        <h1 className="text-2xl font-semibold">Property not found</h1>
-        <Link to="/" className="text-primary underline">Back to home</Link>
+        <h1 className="text-2xl font-semibold">{t("partner.not_found")}</h1>
+        <Link to="/" className="text-primary underline">{t("partner.back_home")}</Link>
       </div>
     );
   }
@@ -191,11 +193,11 @@ export default function PartnerLanding() {
     "";
   const brand = partner.brand_color;
   const waLink = partner.whatsapp
-    ? `https://wa.me/${partner.whatsapp.replace(/\D/g, "")}?text=${encodeURIComponent(`Hello, I'd like to book a craft experience at ${partner.name}.`)}`
+    ? `https://wa.me/${partner.whatsapp.replace(/\D/g, "")}?text=${encodeURIComponent(t("partner.hero.wa_hello").replace("{name}", partner.name))}`
     : null;
 
   return (
-    <div className="min-h-screen bg-background" style={{ ["--brand" as string]: brand }}>
+    <div className="min-h-screen bg-background" style={{ ["--brand" as string]: brand }} dir={dir}>
       <SEOHead
         title={`${partner.name} × Terraria craft experiences`}
         description={intro || `Craft workshops and cultural experiences for ${partner.name} guests.`}
@@ -242,7 +244,7 @@ export default function PartnerLanding() {
           </div>
 
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-light leading-[1.02] mb-4 max-w-3xl">
-            Craft &amp; culture <span className="italic opacity-90">curated for you</span>
+            {t("partner.hero.title1")} <span className="italic opacity-90">{t("partner.hero.title2")}</span>
           </h1>
           {partner.city && (
             <p className="flex items-center gap-1.5 text-white/80 mb-4 text-sm uppercase tracking-[0.2em]">
@@ -255,12 +257,12 @@ export default function PartnerLanding() {
             <a href="#offers"
               className="inline-flex items-center gap-2 px-6 py-3 rounded-full font-medium hover:opacity-90 transition text-white"
               style={{ background: brand }}>
-              Explore experiences <ArrowRight size={16} />
+              {t("partner.hero.explore")} <ArrowRight size={16} className={cn(isRTL && "rotate-180")} />
             </a>
             {waLink && (
               <a href={waLink} target="_blank" rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white/15 backdrop-blur text-white font-medium hover:bg-white/25 transition">
-                Book on WhatsApp
+                {t("partner.hero.book_whatsapp")}
               </a>
             )}
           </div>
@@ -272,9 +274,9 @@ export default function PartnerLanding() {
         <div className="flex gap-10 py-3 whitespace-nowrap animate-[marquee_40s_linear_infinite] will-change-transform">
           {Array.from({ length: 2 }).map((_, copy) => (
             <div key={copy} className="flex items-center gap-10 shrink-0">
-              {["Pottery", "Zellige", "Weaving", "Painting", "Gardens", "Cooking", "Cooperatives", "Signature"].map((w, i) => (
+              {(["partner.marquee.pottery","partner.marquee.zellige","partner.marquee.weaving","partner.marquee.painting","partner.marquee.gardens","partner.marquee.cooking","partner.marquee.cooperatives","partner.marquee.signature"] as const).map((k, i) => (
                 <span key={`${copy}-${i}`} className="text-[11px] uppercase tracking-[0.3em] inline-flex items-center gap-3" style={{ color: brand }}>
-                  {w}
+                  {t(k)}
                   <span className="w-1 h-1 rounded-full" style={{ background: brand }} />
                 </span>
               ))}
@@ -289,8 +291,8 @@ export default function PartnerLanding() {
         <section id="offers" className="section-padding">
           <div className="container-wide max-w-6xl">
             <div className="mb-8">
-              <p className="text-[11px] uppercase tracking-[0.3em] mb-2" style={{ color: brand }}>Curated for our guests</p>
-              <h2 className="text-3xl md:text-4xl font-light">Offers &amp; events</h2>
+              <p className="text-[11px] uppercase tracking-[0.3em] mb-2" style={{ color: brand }}>{t("partner.offers.eyebrow")}</p>
+              <h2 className="text-3xl md:text-4xl font-light">{t("partner.offers.title")}</h2>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
               {offers.map((o) => {
@@ -298,23 +300,22 @@ export default function PartnerLanding() {
                   if (o.cta_type === "none") return null;
                   if (o.cta_type === "whatsapp" && o.cta_value) {
                     const num = o.cta_value.replace(/\D/g, "");
-                    const msg = encodeURIComponent(`Hello ${partner.name}, I'm interested in "${o.title}".`);
-                    return { href: `https://wa.me/${num}?text=${msg}`, label: o.cta_label || "WhatsApp us", external: true };
+                    const msg = encodeURIComponent(t("partner.offers.event_interest").replace("{partner}", partner.name).replace("{title}", o.title));
+                    return { href: `https://wa.me/${num}?text=${msg}`, label: o.cta_label || t("partner.offers.whatsapp_us"), external: true };
                   }
                   if (o.cta_type === "link" && o.cta_value) {
-                    return { href: o.cta_value, label: o.cta_label || "Learn more", external: true };
+                    return { href: o.cta_value, label: o.cta_label || t("partner.offers.learn_more"), external: true };
                   }
-                  // "book": events open an inline reservation form; offers scroll to workshops.
                   if (o.kind === "event") {
-                    return { onClick: () => setBookingOffer(o), label: o.cta_label || "Reserve a spot" };
+                    return { onClick: () => setBookingOffer(o), label: o.cta_label || t("partner.offers.reserve_spot") };
                   }
-                  return { href: "#offers", label: o.cta_label || "Book a workshop", external: false };
+                  return { href: "#offers", label: o.cta_label || t("partner.offers.book_workshop"), external: false };
                 })();
                 return (
                   <article
                     key={o.assignment_id}
                     onClick={() => setDetailsOffer(o)}
-                    className="group bg-card border border-border rounded-2xl overflow-hidden hover:shadow-xl hover:-translate-y-0.5 transition cursor-pointer text-left focus:outline-none focus:ring-2 focus:ring-offset-2"
+                    className="group bg-card border border-border rounded-2xl overflow-hidden hover:shadow-xl hover:-translate-y-0.5 transition cursor-pointer text-start focus:outline-none focus:ring-2 focus:ring-offset-2"
                     role="button"
                     tabIndex={0}
                     onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setDetailsOffer(o); } }}
@@ -329,14 +330,14 @@ export default function PartnerLanding() {
                           <Sparkles className="text-white/40" size={36} />
                         </div>
                       )}
-                      <span className="absolute bottom-3 right-3 inline-flex items-center gap-1 text-[10px] uppercase tracking-[0.2em] px-2.5 py-1 rounded-full bg-white/90 text-foreground shadow-sm">
-                        View details <ArrowRight size={11} />
+                      <span className="absolute bottom-3 end-3 inline-flex items-center gap-1 text-[10px] uppercase tracking-[0.2em] px-2.5 py-1 rounded-full bg-white/90 text-foreground shadow-sm">
+                        {t("partner.offers.view_details")} <ArrowRight size={11} className={cn(isRTL && "rotate-180")} />
                       </span>
                     </div>
                     <div className="p-5">
                       <div className="flex items-center gap-2 mb-2 text-[10px] uppercase tracking-[0.2em]" style={{ color: brand }}>
                         <span className="px-2 py-0.5 rounded-full text-white" style={{ backgroundColor: brand }}>
-                          {o.kind === "event" ? "Event" : "Offer"}
+                          {o.kind === "event" ? t("partner.offers.event") : t("partner.offers.offer")}
                         </span>
                         {o.kind === "event" && o.event_at && (
                           <span className="flex items-center gap-1 text-muted-foreground">
@@ -353,24 +354,24 @@ export default function PartnerLanding() {
                             <span className="font-semibold">{o.price} {o.currency}</span>
                           )}
                           {o.capacity != null && (
-                            <span className="text-xs text-muted-foreground ml-2">· {o.capacity} spots</span>
+                            <span className="text-xs text-muted-foreground ms-2">· {o.capacity} {t("partner.offers.spots")}</span>
                           )}
                         </div>
                         {cta && (
                           "onClick" in cta ? (
                             <button onClick={(e) => { e.stopPropagation(); cta.onClick!(); }}
                               className="inline-flex items-center gap-1 text-sm font-medium hover:opacity-80" style={{ color: brand }}>
-                              {cta.label} <ArrowRight size={14} />
+                              {cta.label} <ArrowRight size={14} className={cn(isRTL && "rotate-180")} />
                             </button>
                           ) : cta.external ? (
                             <a href={cta.href} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}
                               className="inline-flex items-center gap-1 text-sm font-medium hover:opacity-80" style={{ color: brand }}>
-                              {cta.label} <ArrowRight size={14} />
+                              {cta.label} <ArrowRight size={14} className={cn(isRTL && "rotate-180")} />
                             </a>
                           ) : (
                             <a href={cta.href} onClick={(e) => e.stopPropagation()}
                               className="inline-flex items-center gap-1 text-sm font-medium hover:opacity-80" style={{ color: brand }}>
-                              {cta.label} <ArrowRight size={14} />
+                              {cta.label} <ArrowRight size={14} className={cn(isRTL && "rotate-180")} />
                             </a>
                           )
                         )}
@@ -388,23 +389,23 @@ export default function PartnerLanding() {
       {/* Concierge contact — branded */}
       <section className="section-padding">
         <div className="container-wide max-w-3xl text-center">
-          <p className="text-[11px] uppercase tracking-[0.3em] mb-2" style={{ color: brand }}>Need a hand?</p>
-          <h2 className="text-2xl md:text-3xl font-light mb-3">Talk to our concierge</h2>
+          <p className="text-[11px] uppercase tracking-[0.3em] mb-2" style={{ color: brand }}>{t("partner.concierge.eyebrow")}</p>
+          <h2 className="text-2xl md:text-3xl font-light mb-3">{t("partner.concierge.title")}</h2>
           <p className="text-muted-foreground mb-6">
-            Our Terraria concierge team replies within the hour, 7 days a week.
+            {t("partner.concierge.subtitle")}
           </p>
           <div className="flex flex-wrap justify-center gap-3">
             {waLink && (
               <a href={waLink} target="_blank" rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-white text-sm font-medium hover:opacity-90 transition"
                 style={{ background: brand }}>
-                <MessageCircle size={14} /> WhatsApp the concierge
+                <MessageCircle size={14} /> {t("partner.concierge.whatsapp")}
               </a>
             )}
             {partner.website_url && (
               <a href={partner.website_url} target="_blank" rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-border bg-background hover:border-foreground/30 transition text-sm">
-                <Globe size={14} /> {partner.name} website
+                <Globe size={14} /> {partner.name} {t("partner.concierge.website")}
               </a>
             )}
           </div>
@@ -418,7 +419,7 @@ export default function PartnerLanding() {
 
       {/* FOOTER */}
       <footer className="border-t border-border/40 py-8 text-center text-xs text-muted-foreground capitalize">
-        <p className="capitalize">{partner.name} × Terraria · Curated craft experiences</p>
+        <p className="capitalize">{partner.name} × Terraria · {t("partner.footer")}</p>
       </footer>
 
       {selected && (
@@ -486,7 +487,7 @@ function ExperienceCard({ exp, brand, remaining, onBook }: { exp: Experience; br
           <div className="absolute inset-0" style={{ background: `linear-gradient(135deg, ${brand}, ${brand}aa)` }} />
         )}
         <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, transparent 40%, rgba(0,0,0,0.7) 100%)" }} />
-        <div className="absolute top-3 left-3 right-3 flex justify-between gap-2">
+        <div className="absolute top-3 start-3 end-3 flex justify-between gap-2">
           <span className="text-[10px] uppercase tracking-[0.2em] px-2.5 py-1 rounded-full bg-white/90 text-foreground">
             {exp.category}
           </span>
@@ -500,7 +501,7 @@ function ExperienceCard({ exp, brand, remaining, onBook }: { exp: Experience; br
             </span>
           )}
         </div>
-        <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
+        <div className="absolute bottom-0 start-0 end-0 p-4 text-white">
           {exp.subtitle && (
             <p className="text-[10px] uppercase tracking-[0.3em] opacity-90 mb-1.5" style={{ color: brand }}>
               {exp.subtitle}
@@ -530,7 +531,7 @@ function ExperienceCard({ exp, brand, remaining, onBook }: { exp: Experience; br
           </div>
           <Button size="sm" disabled={full} onClick={onBook} className="rounded-full text-xs"
             style={{ background: brand }}>
-            {full ? "Booked" : "Reserve"} {!full && <ArrowRight size={12} className="ml-1" />}
+            {full ? "Booked" : "Reserve"} {!full && <ArrowRight size={12} className="ms-1" />}
           </Button>
         </div>
       </div>
@@ -544,6 +545,8 @@ function BookingDialog({
   experience: Experience; partnerId: string; brand: string; remaining: number;
   onClose: () => void; onSuccess: () => void;
 }) {
+  const { language, t } = useLanguage();
+  const isRTL = language === "ar";
   const [name, setName] = useState("");
   const [room, setRoom] = useState(() => {
     try { return sessionStorage.getItem(`qr_room_${partnerId}`) || ""; } catch { return ""; }
@@ -561,15 +564,15 @@ function BookingDialog({
 
   const submit = async () => {
     if (!name.trim()) {
-      toast({ title: "Name is required", variant: "destructive" });
+      toast({ title: t("partner.book.name_required"), variant: "destructive" });
       return;
     }
     if (!phone || phone.length < 7) {
-      toast({ title: "Please enter a valid phone number with country code", variant: "destructive" });
+      toast({ title: t("partner.book.phone_invalid"), variant: "destructive" });
       return;
     }
     if (participants > remaining) {
-      toast({ title: `Only ${remaining} spots remaining`, variant: "destructive" });
+      toast({ title: t("partner.book.only_left").replace("{n}", String(remaining)), variant: "destructive" });
       return;
     }
     setSubmitting(true);
@@ -605,7 +608,7 @@ function BookingDialog({
       const msg = /Capacity exceeded/i.test(error.message)
         ? error.message.replace(/^.*Capacity exceeded: /i, "")
         : error.message;
-      return toast({ title: "Booking failed", description: msg, variant: "destructive" });
+      return toast({ title: t("partner.book.failed"), description: msg, variant: "destructive" });
     }
     setBookingRef(inserted?.id ? inserted.id.slice(0, 8).toUpperCase() : null);
     setDone(true);
@@ -629,48 +632,48 @@ function BookingDialog({
 
   return (
     <Dialog open onOpenChange={(o) => !o && (done ? onSuccess() : onClose())}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-md" dir={isRTL ? "rtl" : "ltr"}>
         {done ? (
           <div className="text-center py-6 space-y-4">
             <div className="w-16 h-16 mx-auto rounded-full flex items-center justify-center text-white" style={{ background: brand }}>
               <Check size={32} />
             </div>
             <div>
-              <h3 className="text-2xl font-light mb-1">Reservation confirmed</h3>
-              <p className="text-sm text-muted-foreground">Thank you, {name.split(" ")[0]}.</p>
+              <h3 className="text-2xl font-light mb-1">{t("partner.book.confirmed")}</h3>
+              <p className="text-sm text-muted-foreground">{t("partner.book.thank_you").replace("{name}", name.split(" ")[0])}</p>
             </div>
 
             {bookingRef && (
               <div className="inline-block px-4 py-2 rounded-xl bg-muted text-xs">
-                <span className="text-muted-foreground">Booking reference</span>
+                <span className="text-muted-foreground">{t("partner.book.reference")}</span>
                 <p className="font-mono font-semibold text-sm mt-0.5">#{bookingRef}</p>
               </div>
             )}
 
-            <div className="text-left bg-muted/40 rounded-xl p-4 space-y-2 text-sm">
+            <div className="text-start bg-muted/40 rounded-xl p-4 space-y-2 text-sm">
               <p className="flex items-start gap-2">
                 <MessageCircle size={14} className="mt-0.5 shrink-0" style={{ color: brand }} />
-                <span>We'll send a WhatsApp confirmation to <strong>{phone}</strong> within minutes.</span>
+                <span>{t("partner.book.wa_note").split("{phone}").map((chunk, i, arr) => i < arr.length - 1 ? <>{chunk}<strong>{phone}</strong></> : <>{chunk}</>)}</span>
               </p>
               {email && (
                 <p className="flex items-start gap-2">
                   <Mail size={14} className="mt-0.5 shrink-0" style={{ color: brand }} />
-                  <span>A receipt is on its way to <strong>{email}</strong>.</span>
+                  <span>{t("partner.book.email_note").split("{email}").map((chunk, i, arr) => i < arr.length - 1 ? <>{chunk}<strong>{email}</strong></> : <>{chunk}</>)}</span>
                 </p>
               )}
               <p className="flex items-start gap-2">
                 <Calendar size={14} className="mt-0.5 shrink-0" style={{ color: brand }} />
-                <span>{format(date, "EEEE d MMMM · HH:mm")} — meet at the lobby 10 min before.</span>
+                <span>{format(date, "EEEE d MMMM · HH:mm")} — {t("partner.book.meet_lobby")}</span>
               </p>
             </div>
 
             <div className="flex flex-col sm:flex-row gap-2 pt-2">
               <a href={calendarHref} download={`terraria-${bookingRef || "booking"}.ics`}
                 className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-full border border-border text-sm hover:bg-muted transition">
-                <Calendar size={14} /> Add to calendar
+                <Calendar size={14} /> {t("partner.book.add_calendar")}
               </a>
               <Button onClick={onSuccess} className="flex-1 rounded-full" style={{ background: brand }}>
-                Done
+                {t("partner.book.done")}
               </Button>
             </div>
           </div>
@@ -684,43 +687,43 @@ function BookingDialog({
             </DialogHeader>
             <div className="space-y-3">
               <div className="grid grid-cols-2 gap-3">
-                <div><Label>Full name</Label><Input value={name} onChange={(e) => setName(e.target.value)} required /></div>
-                <div><Label>Room / reference <span className="text-muted-foreground font-normal">(optional)</span></Label><Input value={room} onChange={(e) => setRoom(e.target.value)} /></div>
+                <div><Label>{t("partner.book.full_name")}</Label><Input value={name} onChange={(e) => setName(e.target.value)} required /></div>
+                <div><Label>{t("partner.book.room")} <span className="text-muted-foreground font-normal">{t("partner.book.optional")}</span></Label><Input value={room} onChange={(e) => setRoom(e.target.value)} /></div>
                 <div className="col-span-2">
-                  <Label>Phone (with country code)</Label>
+                  <Label>{t("partner.book.phone_label")}</Label>
                   <PhoneInput
                     international
                     defaultCountry="MA"
                     value={phone}
                     onChange={setPhone}
-                    placeholder="Enter phone number"
+                    placeholder={t("partner.book.phone_placeholder")}
                     className="phone-input mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                   />
                 </div>
-                <div className="col-span-2"><Label>Email (optional)</Label><Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} /></div>
+                <div className="col-span-2"><Label>{t("partner.book.email_label")}</Label><Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} /></div>
                 <div>
-                  <Label>Participants</Label>
+                  <Label>{t("partner.book.participants")}</Label>
                   <Input type="number" min={1} max={remaining} value={participants}
                     onChange={(e) => setParticipants(Math.max(1, Math.min(remaining, Number(e.target.value))))} />
                 </div>
                 <div className="flex items-end text-sm">
                   {experience.price_per_person > 0 ? (
-                    <p>Total: <span className="font-medium">{total} {experience.currency}</span></p>
-                  ) : <p className="text-muted-foreground italic">On request</p>}
+                    <p>{t("partner.book.total")} <span className="font-medium">{total} {experience.currency}</span></p>
+                  ) : <p className="text-muted-foreground italic">{t("partner.book.on_request")}</p>}
                 </div>
               </div>
               <div>
-                <Label>Notes (optional)</Label>
+                <Label>{t("partner.book.notes")}</Label>
                 <Textarea rows={2} value={notes} onChange={(e) => setNotes(e.target.value)} />
               </div>
               <p className="text-[11px] text-muted-foreground inline-flex items-center gap-1.5">
-                <Shield size={11} /> Free cancellation up to 24h before · taxes included · pay on site
+                <Shield size={11} /> {t("partner.book.terms")}
               </p>
             </div>
             <DialogFooter>
-              <Button variant="outline" onClick={onClose}>Cancel</Button>
+              <Button variant="outline" onClick={onClose}>{t("partner.book.cancel")}</Button>
               <Button onClick={submit} disabled={submitting} style={{ background: brand }}>
-                {submitting ? <><Loader2 size={14} className="mr-1 animate-spin" />Sending…</> : "Confirm reservation"}
+                {submitting ? <><Loader2 size={14} className="me-1 animate-spin" />{t("partner.book.sending")}</> : t("partner.book.confirm")}
               </Button>
             </DialogFooter>
           </>
@@ -738,6 +741,8 @@ function OfferBookingDialog({
   brand: string;
   onClose: () => void;
 }) {
+  const { language, t } = useLanguage();
+  const isRTL = language === "ar";
   const [name, setName] = useState("");
   const [room, setRoom] = useState(() => {
     try { return sessionStorage.getItem(`qr_room_${partner.id}`) || ""; } catch { return ""; }
@@ -753,8 +758,8 @@ function OfferBookingDialog({
   const total = (offer.price || 0) * participants;
 
   const submit = async () => {
-    if (!name.trim()) return toast({ title: "Full name is required", variant: "destructive" });
-    if (!phone || phone.length < 7) return toast({ title: "Valid phone number required", variant: "destructive" });
+    if (!name.trim()) return toast({ title: t("partner.book.name_required"), variant: "destructive" });
+    if (!phone || phone.length < 7) return toast({ title: t("partner.book.phone_invalid"), variant: "destructive" });
 
     setSubmitting(true);
     let commissionRate: number | null = null;
@@ -780,23 +785,23 @@ function OfferBookingDialog({
       source: qr_variant_code ? `qr:${qr_variant_code}` : "partner_offer",
     } as any);
     setSubmitting(false);
-    if (error) return toast({ title: "Booking failed", description: error.message, variant: "destructive" });
+    if (error) return toast({ title: t("partner.book.failed"), description: error.message, variant: "destructive" });
     setDone(true);
   };
 
   return (
     <Dialog open onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-md" dir={isRTL ? "rtl" : "ltr"}>
         {done ? (
           <div className="text-center py-6 space-y-4">
             <div className="w-16 h-16 mx-auto rounded-full flex items-center justify-center text-white" style={{ background: brand }}>
               <Check size={32} />
             </div>
-            <h3 className="text-2xl font-light">Reservation received</h3>
+            <h3 className="text-2xl font-light">{t("partner.book.received")}</h3>
             <p className="text-sm text-muted-foreground">
-              Thanks {name.split(" ")[0]}, we'll confirm your spot for <strong>{offer.title}</strong> shortly.
+              {t("partner.book.thanks_shortly").replace("{name}", name.split(" ")[0]).split("{title}").map((chunk, i, arr) => i < arr.length - 1 ? <>{chunk}<strong>{offer.title}</strong></> : <>{chunk}</>)}
             </p>
-            <Button onClick={onClose} className="rounded-full" style={{ background: brand }}>Done</Button>
+            <Button onClick={onClose} className="rounded-full" style={{ background: brand }}>{t("partner.book.done")}</Button>
           </div>
         ) : (
           <>
@@ -808,40 +813,40 @@ function OfferBookingDialog({
             </DialogHeader>
             <div className="space-y-3">
               <div className="grid grid-cols-2 gap-3">
-                <div><Label>Full name</Label><Input value={name} onChange={(e) => setName(e.target.value)} required /></div>
-                <div><Label>Room / reference</Label><Input value={room} onChange={(e) => setRoom(e.target.value)} /></div>
+                <div><Label>{t("partner.book.full_name")}</Label><Input value={name} onChange={(e) => setName(e.target.value)} required /></div>
+                <div><Label>{t("partner.book.room")} <span className="text-muted-foreground font-normal">{t("partner.book.optional")}</span></Label><Input value={room} onChange={(e) => setRoom(e.target.value)} /></div>
                 <div className="col-span-2">
-                  <Label>Phone (with country code)</Label>
+                  <Label>{t("partner.book.phone_label")}</Label>
                   <PhoneInput
                     international
                     defaultCountry="MA"
                     value={phone}
                     onChange={setPhone}
-                    placeholder="Enter phone number"
+                    placeholder={t("partner.book.phone_placeholder")}
                     className="phone-input mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                   />
                 </div>
-                <div className="col-span-2"><Label>Email (optional)</Label><Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} /></div>
+                <div className="col-span-2"><Label>{t("partner.book.email_label")}</Label><Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} /></div>
                 <div>
-                  <Label>Participants</Label>
+                  <Label>{t("partner.book.participants")}</Label>
                   <Input type="number" min={1} value={participants}
                     onChange={(e) => setParticipants(Math.max(1, Number(e.target.value) || 1))} />
                 </div>
                 <div className="flex items-end text-sm">
                   {offer.price ? (
-                    <p>Total: <span className="font-medium">{total} {offer.currency}</span></p>
-                  ) : <p className="text-muted-foreground italic">On request</p>}
+                    <p>{t("partner.book.total")} <span className="font-medium">{total} {offer.currency}</span></p>
+                  ) : <p className="text-muted-foreground italic">{t("partner.book.on_request")}</p>}
                 </div>
               </div>
               <div>
-                <Label>Notes (optional)</Label>
+                <Label>{t("partner.book.notes")}</Label>
                 <Textarea rows={2} value={notes} onChange={(e) => setNotes(e.target.value)} />
               </div>
             </div>
             <DialogFooter>
-              <Button variant="outline" onClick={onClose}>Cancel</Button>
+              <Button variant="outline" onClick={onClose}>{t("partner.book.cancel")}</Button>
               <Button onClick={submit} disabled={submitting} style={{ background: brand }}>
-                {submitting ? <><Loader2 size={14} className="mr-1 animate-spin" />Sending…</> : "Confirm reservation"}
+                {submitting ? <><Loader2 size={14} className="me-1 animate-spin" />{t("partner.book.sending")}</> : t("partner.book.confirm")}
               </Button>
             </DialogFooter>
           </>
@@ -862,17 +867,19 @@ function OfferDetailsDialog({
   onClose: () => void;
   onReserve: () => void;
 }) {
+  const { language, t } = useLanguage();
+  const isRTL = language === "ar";
   const galleryKey = galleryKeyForOffer(offer);
   const gallery = useSiteGallery(galleryKey || "gallery_workshop_zellij");
   const galleryUrls = galleryKey && gallery ? gallery.map((g) => g.url) : [];
   const allImages = [offer.cover_image, ...galleryUrls].filter(Boolean) as string[];
   const [active, setActive] = useState(0);
   const hero = allImages[active] || offer.cover_image;
-  const reserveLabel = offer.kind === "event" ? "Reserve a spot" : "Book a workshop";
+  const reserveLabel = offer.kind === "event" ? t("partner.offers.reserve_spot") : t("partner.offers.book_workshop");
 
   return (
     <Dialog open onOpenChange={(v) => !v && onClose()}>
-      <DialogContent className="max-w-2xl p-0 overflow-hidden gap-0 max-h-[92vh] overflow-y-auto">
+      <DialogContent className="max-w-2xl p-0 overflow-hidden gap-0 max-h-[92vh] overflow-y-auto" dir={isRTL ? "rtl" : "ltr"}>
         <div className="relative">
           {hero ? (
             <img src={hero} alt={offer.title} className="w-full aspect-[16/10] object-cover" />
@@ -881,13 +888,13 @@ function OfferDetailsDialog({
           )}
           <button
             onClick={onClose}
-            className="absolute top-3 right-3 w-9 h-9 rounded-full bg-white/90 backdrop-blur flex items-center justify-center shadow-md hover:bg-white"
+            className="absolute top-3 end-3 w-9 h-9 rounded-full bg-white/90 backdrop-blur flex items-center justify-center shadow-md hover:bg-white"
             aria-label="Close"
           >
             <X size={16} />
           </button>
-          <span className="absolute top-3 left-3 text-[10px] uppercase tracking-[0.2em] px-2.5 py-1 rounded-full text-white" style={{ backgroundColor: brand }}>
-            {offer.kind === "event" ? "Event" : "Offer"}
+          <span className="absolute top-3 start-3 text-[10px] uppercase tracking-[0.2em] px-2.5 py-1 rounded-full text-white" style={{ backgroundColor: brand }}>
+            {offer.kind === "event" ? t("partner.offers.event") : t("partner.offers.offer")}
           </span>
         </div>
 
@@ -922,7 +929,7 @@ function OfferDetailsDialog({
             )}
             {offer.capacity != null && (
               <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-muted">
-                <Users size={12} /> {offer.capacity} spots
+                <Users size={12} /> {offer.capacity} {t("partner.offers.spots")}
               </span>
             )}
             {offer.price != null && (
@@ -945,7 +952,7 @@ function OfferDetailsDialog({
           )}
 
           <Button onClick={onReserve} className="w-full text-white" style={{ background: brand }}>
-            {reserveLabel} <ArrowRight size={16} className="ml-1" />
+            {reserveLabel} <ArrowRight size={16} className={cn("ms-1", isRTL && "rotate-180")} />
           </Button>
         </div>
       </DialogContent>

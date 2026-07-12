@@ -11,6 +11,8 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { Calendar, Users, Clock, LogOut, Loader2, Lock, ChevronLeft, ChevronRight, Mail, Phone, ExternalLink, QrCode, BookOpen } from "lucide-react";
 import ConciergeAnalytics from "@/components/partner/ConciergeAnalytics";
+import { useLanguage } from "@/i18n/LanguageContext";
+import { cn } from "@/lib/utils";
 
 type Experience = {
   id: string;
@@ -47,6 +49,9 @@ export default function PartnerConcierge() {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
   const { partner, loading: pLoading } = useHotelPartnerBySlug(slug);
+  const { language, t } = useLanguage();
+  const isRTL = language === "ar";
+  const dir = isRTL ? "rtl" : "ltr";
 
   const [session, setSession] = useState<any>(null);
   const [authChecking, setAuthChecking] = useState(true);
@@ -126,7 +131,7 @@ export default function PartnerConcierge() {
   const updateStatus = async (id: string, status: string) => {
     const { error } = await (supabase as any).from("sofitel_bookings").update({ status }).eq("id", id);
     if (error) return toast.error(error.message);
-    toast.success(`Marked as ${status}`);
+    toast.success(t("partner.con.marked_as").replace("{status}", status));
     loadData();
   };
 
@@ -148,10 +153,10 @@ export default function PartnerConcierge() {
   }
   if (!partner) {
     return (
-      <div className="min-h-screen grid place-items-center p-6 text-center">
+      <div className="min-h-screen grid place-items-center p-6 text-center" dir={dir}>
         <div>
-          <h1 className="text-xl font-semibold mb-2">Property not found</h1>
-          <Link to="/" className="text-sm underline">Back home</Link>
+          <h1 className="text-xl font-semibold mb-2">{t("partner.not_found")}</h1>
+          <Link to="/" className="text-sm underline">{t("partner.back_home")}</Link>
         </div>
       </div>
     );
@@ -162,33 +167,33 @@ export default function PartnerConcierge() {
   // Not signed in
   if (!session) {
     return (
-      <div className="min-h-screen grid place-items-center p-6" style={{ background: "#FBFAF6" }}>
-        <Helmet><title>{partner.name} · Concierge</title></Helmet>
+      <div className="min-h-screen grid place-items-center p-6" style={{ background: "#FBFAF6" }} dir={dir}>
+        <Helmet><title>{partner.name} · {t("partner.con.title")}</title></Helmet>
         <Card className="w-full max-w-sm p-6">
           <div className="flex items-center gap-3 mb-4">
             {partner.logo_url
               ? <img src={partner.logo_url} alt="" className="w-10 h-10 rounded-lg object-cover" />
               : <div className="w-10 h-10 rounded-lg grid place-items-center text-white font-bold" style={{ background: brand }}>{partner.name.slice(0,2).toUpperCase()}</div>}
             <div>
-              <p className="text-xs text-muted-foreground">Concierge</p>
+              <p className="text-xs text-muted-foreground">{t("partner.con.title")}</p>
               <h1 className="font-semibold">{partner.name}</h1>
             </div>
           </div>
           <form onSubmit={signIn} className="space-y-3">
             <div>
-              <label className="text-xs text-muted-foreground">Email</label>
+              <label className="text-xs text-muted-foreground">{t("partner.con.email")}</label>
               <Input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
             </div>
             <div>
-              <label className="text-xs text-muted-foreground">Password</label>
+              <label className="text-xs text-muted-foreground">{t("partner.con.password")}</label>
               <Input type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
             </div>
             <Button type="submit" className="w-full" disabled={signingIn} style={{ background: brand }}>
-              {signingIn && <Loader2 size={14} className="animate-spin mr-2" />}
-              Sign in
+              {signingIn && <Loader2 size={14} className="animate-spin me-2" />}
+              {t("partner.con.signin")}
             </Button>
           </form>
-          <p className="text-[11px] text-muted-foreground mt-3 text-center">Access is granted by the Terraria team.</p>
+          <p className="text-[11px] text-muted-foreground mt-3 text-center">{t("partner.con.access_note")}</p>
         </Card>
       </div>
     );
@@ -197,14 +202,14 @@ export default function PartnerConcierge() {
   // Signed in but not authorized
   if (authorized === false) {
     return (
-      <div className="min-h-screen grid place-items-center p-6 text-center" style={{ background: "#FBFAF6" }}>
+      <div className="min-h-screen grid place-items-center p-6 text-center" style={{ background: "#FBFAF6" }} dir={dir}>
         <Card className="p-6 max-w-sm">
           <Lock className="w-8 h-8 mx-auto text-muted-foreground mb-2" />
-          <h1 className="font-semibold mb-1">No access to {partner.name}</h1>
+          <h1 className="font-semibold mb-1">{t("partner.con.no_access").replace("{name}", partner.name)}</h1>
           <p className="text-sm text-muted-foreground mb-4">
-            Your account isn't assigned as staff for this property.
+            {t("partner.con.no_access_desc")}
           </p>
-          <Button variant="outline" size="sm" onClick={signOut}><LogOut size={12} className="mr-1" /> Sign out</Button>
+          <Button variant="outline" size="sm" onClick={signOut}><LogOut size={12} className="me-1" /> {t("partner.con.signout")}</Button>
         </Card>
       </div>
     );
@@ -218,8 +223,8 @@ export default function PartnerConcierge() {
   const pending = bookings.filter((b) => b.status === "pending").length;
 
   return (
-    <div className="min-h-screen" style={{ background: "#FBFAF6", fontFamily: "'Inter', system-ui, sans-serif" }}>
-      <Helmet><title>{partner.name} · Concierge</title></Helmet>
+    <div className="min-h-screen" style={{ background: "#FBFAF6", fontFamily: "'Inter', system-ui, sans-serif" }} dir={dir}>
+      <Helmet><title>{partner.name} · {t("partner.con.title")}</title></Helmet>
 
       {/* Header */}
       <header className="border-b bg-white">
@@ -229,24 +234,24 @@ export default function PartnerConcierge() {
               ? <img src={partner.logo_url} alt="" className="w-9 h-9 rounded-lg object-cover" />
               : <div className="w-9 h-9 rounded-lg grid place-items-center text-white font-bold text-xs" style={{ background: brand }}>{partner.name.slice(0,2).toUpperCase()}</div>}
             <div className="min-w-0">
-              <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Concierge console</p>
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground">{t("partner.con.console")}</p>
               <h1 className="font-semibold truncate">{partner.name}</h1>
             </div>
           </div>
           <div className="flex items-center gap-2">
             <Button size="sm" variant="outline" onClick={() => window.open(`/partners/${partner.slug}/guide`, "_blank")}>
-              <BookOpen size={12} className="mr-1" /> Guide
+              <BookOpen size={12} className="me-1" /> {t("partner.con.guide")}
             </Button>
             <Button size="sm" variant="outline" onClick={() => window.open(`/partners/${partner.slug}/kit`, "_blank")}>
-              <BookOpen size={12} className="mr-1" /> Staff Kit
+              <BookOpen size={12} className="me-1" /> {t("partner.con.staff_kit")}
             </Button>
             <Button size="sm" variant="outline" onClick={() => window.open(`/partners/${partner.slug}/qr`, "_blank")}>
-              <QrCode size={12} className="mr-1" /> QR Kit
+              <QrCode size={12} className="me-1" /> {t("partner.con.qr_kit")}
             </Button>
             <Button size="sm" variant="outline" onClick={() => window.open(`/partners/${partner.slug}`, "_blank")}>
-              <ExternalLink size={12} className="mr-1" /> Landing
+              <ExternalLink size={12} className="me-1" /> {t("partner.con.landing")}
             </Button>
-            <Button size="sm" variant="ghost" onClick={signOut}><LogOut size={12} className="mr-1" /> Sign out</Button>
+            <Button size="sm" variant="ghost" onClick={signOut}><LogOut size={12} className="me-1" /> {t("partner.con.signout")}</Button>
           </div>
         </div>
       </header>
@@ -256,18 +261,18 @@ export default function PartnerConcierge() {
         {/* Stats */}
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <Stat label="Experiences" value={experiences.length} />
-          <Stat label="Total bookings" value={bookings.length} />
-          <Stat label="Active" value={upcoming} accent={brand} />
-          <Stat label="Pending review" value={pending} accent="#d97706" />
+          <Stat label={t("partner.con.stat.experiences")} value={experiences.length} />
+          <Stat label={t("partner.con.stat.total")} value={bookings.length} />
+          <Stat label={t("partner.con.stat.active")} value={upcoming} accent={brand} />
+          <Stat label={t("partner.con.stat.pending")} value={pending} accent="#d97706" />
         </div>
 
         {/* Day rail */}
         <div className="flex items-center justify-between gap-3">
-          <h2 className="font-semibold">Schedule</h2>
+          <h2 className="font-semibold">{t("partner.con.schedule")}</h2>
           <div className="flex items-center gap-1">
-            <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setWeekStart(addDays(weekStart, -7))} aria-label="Previous week"><ChevronLeft size={14} /></Button>
-            <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setWeekStart(addDays(weekStart, 7))} aria-label="Next week"><ChevronRight size={14} /></Button>
+            <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setWeekStart(addDays(weekStart, -7))} aria-label={t("partner.con.prev_week")}><ChevronLeft size={14} className={cn(isRTL && "rotate-180")} /></Button>
+            <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setWeekStart(addDays(weekStart, 7))} aria-label={t("partner.con.next_week")}><ChevronRight size={14} className={cn(isRTL && "rotate-180")} /></Button>
           </div>
         </div>
         <div className="grid grid-cols-7 gap-1.5">
@@ -281,7 +286,7 @@ export default function PartnerConcierge() {
                 style={active ? { background: brand, borderColor: brand } : {}}>
                 <div className="text-[10px] uppercase tracking-wider opacity-70">{format(day, "EEE")}</div>
                 <div className="text-lg font-semibold">{format(day, "d")}</div>
-                <div className="text-[10px] opacity-70">{count} exp</div>
+                <div className="text-[10px] opacity-70">{count} {t("partner.con.exp_short")}</div>
               </button>
             );
           })}
@@ -289,9 +294,9 @@ export default function PartnerConcierge() {
 
         {/* Experiences of the day */}
         <section className="space-y-2">
-          <h3 className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">Experiences · {format(activeDay, "EEE MMM d")}</h3>
+          <h3 className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">{t("partner.con.exp_day").replace("{date}", format(activeDay, "EEE MMM d"))}</h3>
           {expByDay.length === 0 ? (
-            <Card className="p-5 text-sm text-muted-foreground text-center border-dashed">Nothing scheduled this day.</Card>
+            <Card className="p-5 text-sm text-muted-foreground text-center border-dashed">{t("partner.con.nothing_scheduled")}</Card>
           ) : expByDay.map((e) => {
             const taken = bookings.filter((b) => b.experience_id === e.id && b.status !== "cancelled").reduce((s, b) => s + b.participants, 0);
             return (
@@ -316,10 +321,10 @@ export default function PartnerConcierge() {
         {/* Bookings of the day */}
         <section className="space-y-2">
           <h3 className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">
-            Bookings · {format(activeDay, "EEE MMM d")} ({dayBookings.length})
+            {t("partner.con.bookings_day").replace("{date}", format(activeDay, "EEE MMM d")).replace("{n}", String(dayBookings.length))}
           </h3>
           {dayBookings.length === 0 ? (
-            <Card className="p-5 text-sm text-muted-foreground text-center border-dashed">No bookings for this day yet.</Card>
+            <Card className="p-5 text-sm text-muted-foreground text-center border-dashed">{t("partner.con.no_bookings")}</Card>
           ) : (
             <div className="space-y-1.5">
               {dayBookings.map((b) => {
@@ -329,22 +334,22 @@ export default function PartnerConcierge() {
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
                         <p className="font-medium text-sm">{b.guest_name}</p>
-                        <Badge variant="outline" className="text-[10px]">Room {b.room_number}</Badge>
+                        {b.room_number && <Badge variant="outline" className="text-[10px]">{t("partner.con.room_n").replace("{n}", b.room_number)}</Badge>}
                         <Badge className={`text-[10px] ${b.status === "confirmed" ? "bg-emerald-500" : b.status === "cancelled" ? "bg-zinc-400" : "bg-amber-500"}`}>{b.status}</Badge>
                       </div>
                       <p className="text-[11px] text-muted-foreground truncate">
-                        {exp?.title} · {b.participants} pax{b.guest_email ? ` · ${b.guest_email}` : ""}{b.guest_phone ? ` · ${b.guest_phone}` : ""}
+                        {exp?.title} · {b.participants} {t("partner.con.pax")}{b.guest_email ? ` · ${b.guest_email}` : ""}{b.guest_phone ? ` · ${b.guest_phone}` : ""}
                       </p>
                     </div>
                     <div className="flex items-center gap-1">
                       {b.status !== "confirmed" && b.status !== "completed" && b.status !== "cancelled" && (
-                        <Button size="sm" variant="outline" onClick={() => updateStatus(b.id, "confirmed")}>Confirm</Button>
+                        <Button size="sm" variant="outline" onClick={() => updateStatus(b.id, "confirmed")}>{t("partner.con.confirm")}</Button>
                       )}
                       {b.status !== "completed" && b.status !== "cancelled" && (
-                        <Button size="sm" variant="outline" className="border-emerald-500 text-emerald-700 hover:bg-emerald-50" onClick={() => updateStatus(b.id, "completed")}>Done</Button>
+                        <Button size="sm" variant="outline" className="border-emerald-500 text-emerald-700 hover:bg-emerald-50" onClick={() => updateStatus(b.id, "completed")}>{t("partner.con.done")}</Button>
                       )}
                       {b.status !== "cancelled" && b.status !== "completed" && (
-                        <Button size="sm" variant="ghost" className="text-destructive" onClick={() => updateStatus(b.id, "cancelled")}>Cancel</Button>
+                        <Button size="sm" variant="ghost" className="text-destructive" onClick={() => updateStatus(b.id, "cancelled")}>{t("partner.con.cancel")}</Button>
                       )}
                     </div>
                   </Card>
@@ -367,7 +372,7 @@ export default function PartnerConcierge() {
 
         {/* All recent bookings */}
         <section className="space-y-2">
-          <h3 className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">All recent bookings</h3>
+          <h3 className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">{t("partner.con.all_recent")}</h3>
           {loading && <Loader2 className="animate-spin text-muted-foreground" />}
           <div className="space-y-1.5">
             {bookings.slice(0, 20).map((b) => {
@@ -377,7 +382,7 @@ export default function PartnerConcierge() {
                   <div className="min-w-0">
                     <p className="font-medium truncate">{b.guest_name} <span className="text-muted-foreground font-normal">· {exp?.title}</span></p>
                     <p className="text-[11px] text-muted-foreground">
-                      {exp ? format(parseISO(exp.scheduled_at), "MMM d, HH:mm") : "—"} · Room {b.room_number} · {b.participants} pax
+                      {exp ? format(parseISO(exp.scheduled_at), "MMM d, HH:mm") : "—"}{b.room_number ? ` · ${t("partner.con.room_n").replace("{n}", b.room_number)}` : ""} · {b.participants} {t("partner.con.pax")}
                     </p>
                   </div>
                   <Badge variant="outline" className="text-[10px] capitalize">{b.status}</Badge>
@@ -405,6 +410,7 @@ type KitOrder = {
 };
 
 function KitOrdersPanel({ partnerId, userId, brand }: { partnerId: string; userId: string; brand: string }) {
+  const { t } = useLanguage();
   const [rows, setRows] = useState<KitOrder[]>([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -439,8 +445,8 @@ function KitOrdersPanel({ partnerId, userId, brand }: { partnerId: string; userI
         status: "requested",
       });
     setSubmitting(false);
-    if (error) { toast.error(error.message || "Could not submit request"); return; }
-    toast.success("Kit request submitted");
+    if (error) { toast.error(error.message || t("partner.con.kits.could_not")); return; }
+    toast.success(t("partner.con.kits.submitted"));
     setQty(1); setNotes("");
     load();
   };
@@ -454,32 +460,32 @@ function KitOrdersPanel({ partnerId, userId, brand }: { partnerId: string; userI
 
   return (
     <section className="space-y-2">
-      <h3 className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">Welcome kits</h3>
+      <h3 className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">{t("partner.con.kits.title")}</h3>
       <Card className="p-3 space-y-2">
         <p className="text-xs text-muted-foreground">
-          Request Terraria welcome kits (zellige samples, brochures, QR cards) for your property.
+          {t("partner.con.kits.desc")}
         </p>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
           <div>
-            <label className="text-[10px] uppercase tracking-wider text-muted-foreground">Kit type</label>
+            <label className="text-[10px] uppercase tracking-wider text-muted-foreground">{t("partner.con.kits.type_label")}</label>
             <select value={kitType} onChange={(e) => setKitType(e.target.value)} className="w-full mt-1 h-9 px-2 rounded-md border bg-background text-sm">
-              <option value="welcome">Welcome kit</option>
-              <option value="qr_cards">QR cards only</option>
-              <option value="brochures">Brochures</option>
-              <option value="samples">Zellige samples</option>
+              <option value="welcome">{t("partner.con.kits.type_welcome")}</option>
+              <option value="qr_cards">{t("partner.con.kits.type_qr")}</option>
+              <option value="brochures">{t("partner.con.kits.type_brochures")}</option>
+              <option value="samples">{t("partner.con.kits.type_samples")}</option>
             </select>
           </div>
           <div>
-            <label className="text-[10px] uppercase tracking-wider text-muted-foreground">Quantity</label>
+            <label className="text-[10px] uppercase tracking-wider text-muted-foreground">{t("partner.con.kits.qty")}</label>
             <Input type="number" min={1} max={100} value={qty} onChange={(e) => setQty(Math.max(1, parseInt(e.target.value) || 1))} className="mt-1 h-9" />
           </div>
           <div className="md:col-span-2">
-            <label className="text-[10px] uppercase tracking-wider text-muted-foreground">Notes (optional)</label>
-            <Input value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Delivery instructions, special request…" className="mt-1 h-9" />
+            <label className="text-[10px] uppercase tracking-wider text-muted-foreground">{t("partner.con.kits.notes")}</label>
+            <Input value={notes} onChange={(e) => setNotes(e.target.value)} placeholder={t("partner.con.kits.notes_ph")} className="mt-1 h-9" />
           </div>
         </div>
         <Button onClick={request} disabled={submitting} style={{ background: brand }} className="text-white w-full md:w-auto">
-          {submitting ? <Loader2 className="animate-spin mr-1" size={14} /> : null} Request kit
+          {submitting ? <Loader2 className="animate-spin me-1" size={14} /> : null} {t("partner.con.kits.request")}
         </Button>
       </Card>
 
@@ -490,11 +496,11 @@ function KitOrdersPanel({ partnerId, userId, brand }: { partnerId: string; userI
           <table className="w-full text-xs">
             <thead className="bg-muted/40 text-[10px] uppercase tracking-wider text-muted-foreground">
               <tr>
-                <th className="text-left px-3 py-2">Requested</th>
-                <th className="text-left px-3 py-2">Kit</th>
-                <th className="text-right px-3 py-2">Qty</th>
-                <th className="text-left px-3 py-2">Status</th>
-                <th className="text-left px-3 py-2">Tracking</th>
+                <th className="text-start px-3 py-2">{t("partner.con.kits.col_requested")}</th>
+                <th className="text-start px-3 py-2">{t("partner.con.kits.col_kit")}</th>
+                <th className="text-end px-3 py-2">{t("partner.con.kits.col_qty")}</th>
+                <th className="text-start px-3 py-2">{t("partner.con.kits.col_status")}</th>
+                <th className="text-start px-3 py-2">{t("partner.con.kits.col_tracking")}</th>
               </tr>
             </thead>
             <tbody>
@@ -521,6 +527,7 @@ function KitOrdersPanel({ partnerId, userId, brand }: { partnerId: string; userI
 
 
 function TermsBanner({ partnerId, userId, brand }: { partnerId: string; userId: string; brand: string }) {
+  const { t } = useLanguage();
   const [status, setStatus] = useState<"loading" | "needed" | "accepted" | "hidden">("loading");
   const [saving, setSaving] = useState(false);
   const TERMS_VERSION = "2026-01";
@@ -549,8 +556,8 @@ function TermsBanner({ partnerId, userId, brand }: { partnerId: string; userId: 
       .eq("user_id", userId)
       .eq("partner_id", partnerId);
     setSaving(false);
-    if (error) { toast.error("Could not save. Try again."); return; }
-    toast.success("Terms accepted. Thank you!");
+    if (error) { toast.error(t("partner.con.terms.save_err")); return; }
+    toast.success(t("partner.con.terms.saved"));
     setStatus("hidden");
   };
 
@@ -560,14 +567,14 @@ function TermsBanner({ partnerId, userId, brand }: { partnerId: string; userId: 
     <Card className="p-4 border-2" style={{ borderColor: brand, background: `${brand}0d` }}>
       <div className="flex flex-col md:flex-row md:items-center gap-3 justify-between">
         <div className="min-w-0">
-          <p className="text-sm font-semibold">Please review the partnership terms</p>
+          <p className="text-sm font-semibold">{t("partner.con.terms.title")}</p>
           <p className="text-xs text-muted-foreground">
-            You need to accept the current terms ({TERMS_VERSION}) before continuing to use the concierge dashboard.{" "}
-            <Link to="/partners/terms" target="_blank" className="underline">Read terms →</Link>
+            {t("partner.con.terms.desc").replace("{v}", TERMS_VERSION)}{" "}
+            <Link to="/partners/terms" target="_blank" className="underline">{t("partner.con.terms.read")}</Link>
           </p>
         </div>
         <Button onClick={accept} disabled={saving} style={{ background: brand }} className="text-white shrink-0">
-          {saving ? <Loader2 className="animate-spin" size={14} /> : "I accept the terms"}
+          {saving ? <Loader2 className="animate-spin" size={14} /> : t("partner.con.terms.accept")}
         </Button>
       </div>
     </Card>
@@ -585,6 +592,7 @@ function Stat({ label, value, accent }: { label: string; value: number; accent?:
 }
 
 function StatementPanel({ bookings, brand, partnerName }: { bookings: any[]; brand: string; partnerName: string }) {
+  const { t } = useLanguage();
   const [range, setRange] = useState<"this_month" | "last_month" | "all">("this_month");
 
   const inRange = (iso?: string | null) => {
@@ -627,9 +635,9 @@ function StatementPanel({ bookings, brand, partnerName }: { bookings: any[]; bra
     a.click(); URL.revokeObjectURL(url);
   };
 
-  const rangeLabel = range === "this_month" ? "This month" : range === "last_month" ? "Last month" : "All time";
+  const rangeLabel = range === "this_month" ? t("partner.con.stmt.this_month") : range === "last_month" ? t("partner.con.stmt.last_month") : t("partner.con.stmt.all_time");
   const periodLabel = (() => {
-    if (range === "all") return "All time";
+    if (range === "all") return t("partner.con.stmt.all_time");
     const now = new Date();
     const offset = range === "last_month" ? -1 : 0;
     const d = new Date(now.getFullYear(), now.getMonth() + offset, 1);
@@ -687,29 +695,29 @@ function StatementPanel({ bookings, brand, partnerName }: { bookings: any[]; bra
   return (
     <section className="space-y-2">
       <div className="flex items-center justify-between gap-3 flex-wrap">
-        <h3 className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">Statement & commission · {rangeLabel}</h3>
+        <h3 className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">{t("partner.con.stmt.title").replace("{range}", rangeLabel)}</h3>
         <div className="flex items-center gap-1 flex-wrap">
           {(["this_month", "last_month", "all"] as const).map((r) => (
             <button key={r} onClick={() => setRange(r)}
               className={`text-[11px] px-2.5 py-1 rounded-full border ${range === r ? "text-white" : "bg-white"}`}
               style={range === r ? { background: brand, borderColor: brand } : {}}>
-              {r === "this_month" ? "This month" : r === "last_month" ? "Last month" : "All time"}
+              {r === "this_month" ? t("partner.con.stmt.this_month") : r === "last_month" ? t("partner.con.stmt.last_month") : t("partner.con.stmt.all_time")}
             </button>
           ))}
-          <Button size="sm" variant="outline" className="ml-1 h-7 text-[11px]" onClick={exportCSV}>Export CSV</Button>
-          <Button size="sm" className="h-7 text-[11px] text-white" style={{ background: brand }} onClick={downloadPDF}>Download PDF</Button>
+          <Button size="sm" variant="outline" className="ms-1 h-7 text-[11px]" onClick={exportCSV}>{t("partner.con.stmt.export_csv")}</Button>
+          <Button size="sm" className="h-7 text-[11px] text-white" style={{ background: brand }} onClick={downloadPDF}>{t("partner.con.stmt.download_pdf")}</Button>
         </div>
       </div>
       <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
-        <Stat label="Completed" value={completed.length} accent="#059669" />
-        <Stat label="Cancelled" value={cancelled.length} />
-        <KStat label="Gross" value={`${gross.toLocaleString()} ${currency}`} />
-        <KStat label="Commission due" value={`${commissionDue.toLocaleString()} ${currency}`} accent={brand} />
-        <KStat label="Commission paid" value={`${commissionPaid.toLocaleString()} ${currency}`} accent="#059669" />
+        <Stat label={t("partner.con.stmt.completed")} value={completed.length} accent="#059669" />
+        <Stat label={t("partner.con.stmt.cancelled")} value={cancelled.length} />
+        <KStat label={t("partner.con.stmt.gross")} value={`${gross.toLocaleString()} ${currency}`} />
+        <KStat label={t("partner.con.stmt.commission_due")} value={`${commissionDue.toLocaleString()} ${currency}`} accent={brand} />
+        <KStat label={t("partner.con.stmt.commission_paid")} value={`${commissionPaid.toLocaleString()} ${currency}`} accent="#059669" />
       </div>
       {completed.length === 0 ? (
         <Card className="p-4 text-xs text-muted-foreground text-center border-dashed">
-          No completed bookings in this period yet. Mark a booking as Done after the guest attends to record commission.
+          {t("partner.con.stmt.empty")}
         </Card>
       ) : (
         <Card className="overflow-hidden">
@@ -717,14 +725,14 @@ function StatementPanel({ bookings, brand, partnerName }: { bookings: any[]; bra
             <table className="w-full text-xs">
               <thead className="bg-muted/40 text-[10px] uppercase tracking-wider text-muted-foreground">
                 <tr>
-                  <th className="text-left px-3 py-2">Date</th>
-                  <th className="text-left px-3 py-2">Guest</th>
-                  <th className="text-left px-3 py-2">Room</th>
-                  <th className="text-right px-3 py-2">Pax</th>
-                  <th className="text-right px-3 py-2">Gross</th>
-                  <th className="text-right px-3 py-2">Rate</th>
-                  <th className="text-right px-3 py-2">Commission</th>
-                  <th className="text-left px-3 py-2">Status</th>
+                  <th className="text-start px-3 py-2">{t("partner.con.stmt.col_date")}</th>
+                  <th className="text-start px-3 py-2">{t("partner.con.stmt.col_guest")}</th>
+                  <th className="text-start px-3 py-2">{t("partner.con.stmt.col_room")}</th>
+                  <th className="text-end px-3 py-2">{t("partner.con.stmt.col_pax")}</th>
+                  <th className="text-end px-3 py-2">{t("partner.con.stmt.col_gross")}</th>
+                  <th className="text-end px-3 py-2">{t("partner.con.stmt.col_rate")}</th>
+                  <th className="text-end px-3 py-2">{t("partner.con.stmt.col_commission")}</th>
+                  <th className="text-start px-3 py-2">{t("partner.con.stmt.col_status")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -733,13 +741,13 @@ function StatementPanel({ bookings, brand, partnerName }: { bookings: any[]; bra
                     <td className="px-3 py-2">{(b.completed_at || b.created_at || "").slice(0, 10)}</td>
                     <td className="px-3 py-2 font-medium">{b.guest_name}</td>
                     <td className="px-3 py-2">{b.room_number}</td>
-                    <td className="px-3 py-2 text-right">{b.participants}</td>
-                    <td className="px-3 py-2 text-right">{Number(b.gross_amount || 0).toLocaleString()} {b.currency || currency}</td>
-                    <td className="px-3 py-2 text-right">{b.commission_rate ?? "—"}%</td>
-                    <td className="px-3 py-2 text-right font-semibold" style={{ color: brand }}>{Number(b.commission_amount || 0).toLocaleString()} {b.currency || currency}</td>
+                    <td className="px-3 py-2 text-end">{b.participants}</td>
+                    <td className="px-3 py-2 text-end">{Number(b.gross_amount || 0).toLocaleString()} {b.currency || currency}</td>
+                    <td className="px-3 py-2 text-end">{b.commission_rate ?? "—"}%</td>
+                    <td className="px-3 py-2 text-end font-semibold" style={{ color: brand }}>{Number(b.commission_amount || 0).toLocaleString()} {b.currency || currency}</td>
                     <td className="px-3 py-2 capitalize">
                       <span className={`px-1.5 py-0.5 rounded text-[10px] ${b.commission_status === "paid" ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700"}`}>
-                        {b.commission_status || "due"}
+                        {b.commission_status || t("partner.con.stmt.status_due")}
                       </span>
                     </td>
                   </tr>
@@ -747,11 +755,11 @@ function StatementPanel({ bookings, brand, partnerName }: { bookings: any[]; bra
               </tbody>
               <tfoot className="bg-muted/20 font-semibold">
                 <tr>
-                  <td className="px-3 py-2" colSpan={4}>Total · {periodLabel}</td>
-                  <td className="px-3 py-2 text-right">{gross.toLocaleString()} {currency}</td>
+                  <td className="px-3 py-2" colSpan={4}>{t("partner.con.stmt.total_period").replace("{period}", periodLabel)}</td>
+                  <td className="px-3 py-2 text-end">{gross.toLocaleString()} {currency}</td>
                   <td></td>
-                  <td className="px-3 py-2 text-right" style={{ color: brand }}>{commissionDue.toLocaleString()} {currency}</td>
-                  <td className="px-3 py-2 text-[10px] text-muted-foreground">due</td>
+                  <td className="px-3 py-2 text-end" style={{ color: brand }}>{commissionDue.toLocaleString()} {currency}</td>
+                  <td className="px-3 py-2 text-[10px] text-muted-foreground">{t("partner.con.stmt.status_due")}</td>
                 </tr>
               </tfoot>
             </table>
