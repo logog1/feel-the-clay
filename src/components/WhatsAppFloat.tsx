@@ -5,6 +5,7 @@ import { useWhatsAppLink } from "@/components/BookOnWhatsApp";
 import { WhatsAppIcon } from "@/components/icons/social";
 
 const HIDDEN_PATHS = ["/feedback"];
+const HIDDEN_PREFIXES = ["/partners/", "/partner/"];
 
 const WhatsAppFloat = () => {
   // useLocation reacts to React Router navigation — we previously polled
@@ -34,6 +35,7 @@ const WhatsAppFloat = () => {
   }, []);
 
   if (HIDDEN_PATHS.includes(pathname)) return null;
+  if (HIDDEN_PREFIXES.some((p) => pathname.startsWith(p))) return null;
   if (!visible) return null;
 
   return (
