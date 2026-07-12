@@ -311,13 +311,8 @@ export function HotelsRiadsSection() {
                   <Input value={newPartner.city} onChange={(e) => setNewPartner({ ...newPartner, city: e.target.value })} placeholder="Tetouan" />
                 </div>
                 <div>
-                  <Label>Star rating</Label>
-                  <select className="w-full h-10 rounded-md border border-input bg-background px-3 text-sm"
-                    value={newPartner.stars}
-                    onChange={(e) => setNewPartner({ ...newPartner, stars: e.target.value })}>
-                    <option value="">—</option>
-                    {[1,2,3,4,5].map(n => <option key={n} value={n}>{n} ★</option>)}
-                  </select>
+                  <Label>Full address</Label>
+                  <Input value={newPartner.address} onChange={(e) => setNewPartner({ ...newPartner, address: e.target.value })} placeholder="Av. des FAR, Tetouan" />
                 </div>
                 <div className="col-span-2">
                   <Label>Full address</Label>
