@@ -850,3 +850,105 @@ function OfferBookingDialog({
     </Dialog>
   );
 }
+
+function OfferDetailsDialog({
+  offer,
+  brand,
+  onClose,
+  onReserve,
+}: {
+  offer: PartnerOfferPublic;
+  brand: string;
+  onClose: () => void;
+  onReserve: () => void;
+}) {
+  const galleryKey = galleryKeyForOffer(offer);
+  const gallery = useSiteGallery(galleryKey || "gallery_workshop_zellij");
+  const galleryUrls = galleryKey && gallery ? gallery.map((g) => g.url) : [];
+  const allImages = [offer.cover_image, ...galleryUrls].filter(Boolean) as string[];
+  const [active, setActive] = useState(0);
+  const hero = allImages[active] || offer.cover_image;
+  const reserveLabel = offer.kind === "event" ? "Reserve a spot" : "Book a workshop";
+
+  return (
+    <Dialog open onOpenChange={(v) => !v && onClose()}>
+      <DialogContent className="max-w-2xl p-0 overflow-hidden gap-0 max-h-[92vh] overflow-y-auto">
+        <div className="relative">
+          {hero ? (
+            <img src={hero} alt={offer.title} className="w-full aspect-[16/10] object-cover" />
+          ) : (
+            <div className="w-full aspect-[16/10]" style={{ background: `linear-gradient(135deg, ${brand}, ${brand}aa)` }} />
+          )}
+          <button
+            onClick={onClose}
+            className="absolute top-3 right-3 w-9 h-9 rounded-full bg-white/90 backdrop-blur flex items-center justify-center shadow-md hover:bg-white"
+            aria-label="Close"
+          >
+            <X size={16} />
+          </button>
+          <span className="absolute top-3 left-3 text-[10px] uppercase tracking-[0.2em] px-2.5 py-1 rounded-full text-white" style={{ backgroundColor: brand }}>
+            {offer.kind === "event" ? "Event" : "Offer"}
+          </span>
+        </div>
+
+        {allImages.length > 1 && (
+          <div className="flex gap-2 overflow-x-auto px-5 pt-4 pb-1">
+            {allImages.map((src, i) => (
+              <button
+                key={src + i}
+                onClick={() => setActive(i)}
+                className={cn(
+                  "shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition",
+                  active === i ? "border-foreground" : "border-transparent opacity-70 hover:opacity-100"
+                )}
+              >
+                <img src={src} alt="" className="w-full h-full object-cover" />
+              </button>
+            ))}
+          </div>
+        )}
+
+        <div className="p-5 space-y-4">
+          <div>
+            <h2 className="text-2xl font-semibold mb-1">{offer.title}</h2>
+            {offer.subtitle && <p className="text-muted-foreground">{offer.subtitle}</p>}
+          </div>
+
+          <div className="flex flex-wrap gap-2 text-xs">
+            {offer.kind === "event" && offer.event_at && (
+              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-muted">
+                <Calendar size={12} /> {format(parseISO(offer.event_at), "EEE, MMM d · HH:mm")}
+              </span>
+            )}
+            {offer.capacity != null && (
+              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-muted">
+                <Users size={12} /> {offer.capacity} spots
+              </span>
+            )}
+            {offer.price != null && (
+              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-white font-medium" style={{ background: brand }}>
+                {offer.price} {offer.currency}
+              </span>
+            )}
+          </div>
+
+          {offer.description && (
+            <p className="text-sm text-foreground/80 leading-relaxed whitespace-pre-line">{offer.description}</p>
+          )}
+
+          {offer.tags && offer.tags.length > 0 && (
+            <div className="flex flex-wrap gap-1.5">
+              {offer.tags.map((t) => (
+                <span key={t} className="text-[10px] uppercase tracking-wider px-2 py-1 rounded bg-muted text-muted-foreground">{t}</span>
+              ))}
+            </div>
+          )}
+
+          <Button onClick={onReserve} className="w-full text-white" style={{ background: brand }}>
+            {reserveLabel} <ArrowRight size={16} className="ml-1" />
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
