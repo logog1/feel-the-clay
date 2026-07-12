@@ -426,7 +426,7 @@ export default function PartnerLanding() {
       </section>
 
       {/* BOOKING — small groups pick a scheduled slot, big groups request a custom time */}
-      <section id="book" className="bg-background section-padding">
+      <section id="book" className="bg-background section-padding scroll-mt-16">
         <div className="container-wide max-w-5xl">
           <div className="text-center mb-8">
             <p className="text-[11px] uppercase tracking-[0.3em] mb-2" style={{ color: brand }}>{t("partner.book.section_eyebrow")}</p>
