@@ -55,6 +55,7 @@ export default function PartnerConcierge() {
   const dir = isRTL ? "rtl" : "ltr";
 
   const [session, setSession] = useState<any>(null);
+  const [qrOpen, setQrOpen] = useState(false);
   const [authChecking, setAuthChecking] = useState(true);
   const [authorized, setAuthorized] = useState<boolean | null>(null);
 
@@ -246,7 +247,7 @@ export default function PartnerConcierge() {
             <Button size="sm" variant="outline" onClick={() => window.open(`/partners/${partner.slug}/kit`, "_blank")}>
               <BookOpen size={12} className="me-1" /> {t("partner.con.staff_kit")}
             </Button>
-            <Button size="sm" variant="outline" onClick={() => window.open(`/partners/${partner.slug}/qr`, "_blank")}>
+            <Button size="sm" variant="outline" onClick={() => setQrOpen(true)}>
               <QrCode size={12} className="me-1" /> {t("partner.con.qr_kit")}
             </Button>
             <Button size="sm" variant="outline" onClick={() => window.open(`/partners/${partner.slug}`, "_blank")}>
