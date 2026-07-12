@@ -426,7 +426,7 @@ export default function PartnerLanding() {
                         <div className="min-w-0">
                           {o.price != null ? (
                             <div className="flex items-baseline gap-1.5">
-                              <span className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">{t("partner.offers.from") || "from"}</span>
+                              <span className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">from</span>
                               <span className="text-lg font-semibold text-foreground">{o.price}</span>
                               <span className="text-xs text-muted-foreground">{o.currency}</span>
                             </div>
