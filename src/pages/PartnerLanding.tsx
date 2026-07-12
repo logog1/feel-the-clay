@@ -574,8 +574,9 @@ function SmallGroupSlots({
     () =>
       [...experiences]
         .filter((e) => new Date(e.scheduled_at).getTime() > now)
+        .filter((e) => Math.max(0, e.capacity - (taken[e.id] || 0)) > 0)
         .sort((a, b) => new Date(a.scheduled_at).getTime() - new Date(b.scheduled_at).getTime()),
-    [experiences, now]
+    [experiences, taken, now]
   );
 
   const upcomingEventOffers = useMemo(
@@ -590,9 +591,10 @@ function SmallGroupSlots({
 
   if (isEmpty) {
     return (
-      <div className="max-w-2xl mx-auto p-6 rounded-2xl border border-dashed border-border text-center bg-card">
-        <Calendar className="w-8 h-8 mx-auto text-muted-foreground/60 mb-2" />
-        <p className="text-sm text-muted-foreground">
+      <div className="max-w-2xl mx-auto p-8 rounded-2xl border border-dashed border-border text-center bg-card">
+        <Calendar className="w-10 h-10 mx-auto text-muted-foreground/50 mb-3" />
+        <h3 className="font-medium text-base mb-1.5">{t("partner.slots.empty_title")}</h3>
+        <p className="text-sm text-muted-foreground leading-relaxed">
           {t("partner.slots.empty_prefix")}{" "}
           <span className="font-medium text-foreground">{t("partner.slots.large_switch")}</span>{" "}
           {t("partner.slots.empty_suffix")}
