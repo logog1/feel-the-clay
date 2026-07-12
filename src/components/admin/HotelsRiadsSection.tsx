@@ -392,6 +392,8 @@ export function HotelsRiadsSection() {
       {editing && (
         <PartnerEditor partner={editing} onClose={() => { setEditing(null); refresh(); }} />
       )}
+
+      <PartnerQRDialog open={!!qrPartner} onOpenChange={(v) => !v && setQrPartner(null)} partner={qrPartner} />
     </div>
   );
 }
