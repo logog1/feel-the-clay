@@ -26,7 +26,7 @@ export function PartnerQRDialog({
 
   const brand = partner?.brand_color || "#0E1418";
   const url = partner
-    ? `${typeof window !== "undefined" ? window.location.origin : ""}/partners/${partner.slug}`
+    ? `${typeof window !== "undefined" ? window.location.origin : ""}/${partner.slug}`
     : "";
 
   useEffect(() => {
