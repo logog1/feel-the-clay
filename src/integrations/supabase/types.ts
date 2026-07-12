@@ -1295,7 +1295,7 @@ export type Database = {
           price_per_person: number | null
           qr_variant_code: string | null
           qr_variant_scope: string | null
-          room_number: string
+          room_number: string | null
           source: string
           status: string
         }
@@ -1320,7 +1320,7 @@ export type Database = {
           price_per_person?: number | null
           qr_variant_code?: string | null
           qr_variant_scope?: string | null
-          room_number: string
+          room_number?: string | null
           source?: string
           status?: string
         }
@@ -1345,7 +1345,7 @@ export type Database = {
           price_per_person?: number | null
           qr_variant_code?: string | null
           qr_variant_scope?: string | null
-          room_number?: string
+          room_number?: string | null
           source?: string
           status?: string
         }

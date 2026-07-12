@@ -1,0 +1,1 @@
+ALTER TABLE public.sofitel_bookings ALTER COLUMN room_number DROP NOT NULL;
