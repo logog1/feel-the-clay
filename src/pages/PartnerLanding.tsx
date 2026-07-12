@@ -589,8 +589,8 @@ function BookingDialog({
   const total = experience.price_per_person * participants;
 
   const submit = async () => {
-    if (!name.trim() || !room.trim()) {
-      toast({ title: "Name and room/reference required", variant: "destructive" });
+    if (!name.trim()) {
+      toast({ title: "Name is required", variant: "destructive" });
       return;
     }
     if (!phone || phone.length < 7) {
