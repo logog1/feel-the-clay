@@ -482,61 +482,130 @@ export default function PartnerBookingForm({
           </div>
         )}
 
-        {!isSmall && mode === "custom" && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <div>
-              <Label>{t("partner.pform.pick_date")}</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className={cn(
-                      "w-full mt-1 justify-start text-start font-normal",
-                      !customDate && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon className="me-2 h-4 w-4" />
-                    {customDate ? format(customDate, "PPP") : t("partner.pform.pick_date_placeholder")}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={customDate}
-                    onSelect={setCustomDate}
-                    disabled={(d) => d < new Date(new Date().setHours(0, 0, 0, 0))}
-                    initialFocus
-                    className={cn("p-3 pointer-events-auto")}
-                  />
-                </PopoverContent>
-              </Popover>
-            </div>
-            <div>
-              <Label>{t("partner.pform.pick_workshop")}</Label>
-              <div className="mt-1 grid grid-cols-2 gap-2">
-                {WORKSHOPS.map((w) => {
-                  const active = customWorkshop === w.id;
-                  const label = (w as any)[language] || w.en;
-                  return (
-                    <button
-                      key={w.id}
-                      type="button"
-                      onClick={() => setCustomWorkshop(w.id)}
-                      className={cn(
-                        "text-xs md:text-sm px-3 py-2 rounded-xl border text-start transition",
-                        active ? "border-2 font-medium" : "border-border hover:border-foreground/30"
-                      )}
-                      style={active ? { borderColor: brand, background: `${brand}12`, color: brand } : undefined}
-                    >
-                      {label}
-                    </button>
-                  );
-                })}
+        {!isSmall && mode === "custom" && (() => {
+          const schedule = customWorkshop ? workshopSchedules[customWorkshop] || [] : [];
+          const scheduleDates = new Set(schedule.map((s) => s.date));
+          const hasSchedule = scheduleDates.size > 0;
+          const todayStart = new Date(new Date().setHours(0, 0, 0, 0));
+          const dateStr = customDate ? format(customDate, "yyyy-MM-dd") : "";
+          const slotsForDate = hasSchedule
+            ? (schedule.find((s) => s.date === dateStr)?.time_slots || [])
+            : [];
+
+          return (
+            <div className="space-y-3">
+              <div>
+                <Label>{t("partner.pform.pick_workshop")}</Label>
+                <div className="mt-1 grid grid-cols-2 gap-2">
+                  {WORKSHOPS.map((w) => {
+                    const active = customWorkshop === w.id;
+                    const label = (w as any)[language] || w.en;
+                    const wsSchedule = workshopSchedules[w.id] || [];
+                    const upcomingCount = wsSchedule.filter((s) => s.date >= format(todayStart, "yyyy-MM-dd")).length;
+                    return (
+                      <button
+                        key={w.id}
+                        type="button"
+                        onClick={() => {
+                          setCustomWorkshop(w.id);
+                          setCustomDate(undefined);
+                          setCustomTimeSlot("");
+                        }}
+                        className={cn(
+                          "text-xs md:text-sm px-3 py-2 rounded-xl border text-start transition",
+                          active ? "border-2 font-medium" : "border-border hover:border-foreground/30"
+                        )}
+                        style={active ? { borderColor: brand, background: `${brand}12`, color: brand } : undefined}
+                      >
+                        <div>{label}</div>
+                        {upcomingCount > 0 && (
+                          <div className="text-[10px] font-normal text-muted-foreground mt-0.5">
+                            {t("partner.pform.dates_available").replace("{n}", String(upcomingCount))}
+                          </div>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div>
+                  <Label>{t("partner.pform.pick_date")}</Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        disabled={!customWorkshop}
+                        className={cn(
+                          "w-full mt-1 justify-start text-start font-normal",
+                          !customDate && "text-muted-foreground"
+                        )}
+                      >
+                        <CalendarIcon className="me-2 h-4 w-4" />
+                        {customDate ? format(customDate, "PPP") : t("partner.pform.pick_date_placeholder")}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={customDate}
+                        onSelect={(d) => { setCustomDate(d); setCustomTimeSlot(""); }}
+                        disabled={(d) => {
+                          if (d < todayStart) return true;
+                          const k = format(d, "yyyy-MM-dd");
+                          if (blockedDates.has(k)) return true;
+                          if (hasSchedule && !scheduleDates.has(k)) return true;
+                          return false;
+                        }}
+                        initialFocus
+                        className={cn("p-3 pointer-events-auto")}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  {!customWorkshop && (
+                    <p className="text-[11px] text-muted-foreground mt-1">
+                      {t("partner.pform.pick_workshop_first")}
+                    </p>
+                  )}
+                  {customWorkshop && !hasSchedule && (
+                    <p className="text-[11px] text-muted-foreground mt-1">
+                      {t("partner.pform.any_date_hint")}
+                    </p>
+                  )}
+                </div>
+
+                {slotsForDate.length > 0 && (
+                  <div>
+                    <Label>{t("partner.pform.pick_time")}</Label>
+                    <div className="mt-1 flex flex-wrap gap-2">
+                      {slotsForDate.map((slot) => {
+                        const active = customTimeSlot === slot;
+                        return (
+                          <button
+                            key={slot}
+                            type="button"
+                            onClick={() => setCustomTimeSlot(slot)}
+                            className={cn(
+                              "text-xs px-3 py-1.5 rounded-full border transition",
+                              active ? "border-2 font-medium" : "border-border hover:border-foreground/30"
+                            )}
+                            style={active ? { borderColor: brand, background: `${brand}12`, color: brand } : undefined}
+                          >
+                            <Clock size={11} className="inline me-1 -mt-0.5" />
+                            {slot}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
-          </div>
-        )}
+          );
+        })()}
+
       </div>
 
       {/* Step 3 — Notes */}
