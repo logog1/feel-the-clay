@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { format, parseISO } from "date-fns";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
@@ -97,6 +97,59 @@ export default function PartnerBookingForm({
   const [selectedSlotKey, setSelectedSlotKey] = useState<string | null>(null);
   const [customDate, setCustomDate] = useState<Date | undefined>();
   const [customWorkshop, setCustomWorkshop] = useState<string>("");
+  const [customTimeSlot, setCustomTimeSlot] = useState<string>("");
+
+  // Availability wired to the main admin dashboard (workshop_availability +
+  // per-workshop schedules stored in site_settings as workshop_schedule_<id>).
+  const [blockedDates, setBlockedDates] = useState<Set<string>>(new Set());
+  const [workshopSchedules, setWorkshopSchedules] = useState<
+    Record<string, { date: string; time_slots: string[] }[]>
+  >({});
+
+  useEffect(() => {
+    const fetchAvailability = async () => {
+      const { data } = await supabase.from("workshop_availability").select("date, is_available");
+      if (data) {
+        setBlockedDates(new Set(data.filter((d: any) => !d.is_available).map((d: any) => d.date)));
+      }
+    };
+    const fetchSchedules = async () => {
+      const { data } = await supabase
+        .from("site_settings")
+        .select("key, value")
+        .like("key", "workshop_schedule_%");
+      if (data) {
+        const map: Record<string, { date: string; time_slots: string[] }[]> = {};
+        for (const row of data as any[]) {
+          const id = row.key.replace("workshop_schedule_", "");
+          try {
+            const parsed = JSON.parse(row.value);
+            if (Array.isArray(parsed)) map[id] = parsed;
+          } catch { /* noop */ }
+        }
+        setWorkshopSchedules(map);
+      }
+    };
+    fetchAvailability();
+    fetchSchedules();
+
+    const channel = supabase
+      .channel("partner-booking-availability")
+      .on("postgres_changes", { event: "*", schema: "public", table: "workshop_availability" }, fetchAvailability)
+      .on("postgres_changes", { event: "*", schema: "public", table: "site_settings" }, (payload: any) => {
+        const key = (payload?.new?.key || payload?.old?.key || "") as string;
+        if (key.startsWith("workshop_schedule_")) fetchSchedules();
+      })
+      .subscribe();
+
+    const onFocus = () => { fetchAvailability(); fetchSchedules(); };
+    window.addEventListener("focus", onFocus);
+    return () => {
+      supabase.removeChannel(channel);
+      window.removeEventListener("focus", onFocus);
+    };
+  }, []);
+
 
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
@@ -195,7 +248,7 @@ export default function PartnerBookingForm({
       }
       workshopLabel = resolveWorkshopLabel(customWorkshop);
       bookingDate = format(customDate, "yyyy-MM-dd");
-      sessionInfo = "custom-request";
+      sessionInfo = customTimeSlot ? customTimeSlot : "custom-request";
     }
 
     setSubmitting(true);
@@ -429,61 +482,130 @@ export default function PartnerBookingForm({
           </div>
         )}
 
-        {!isSmall && mode === "custom" && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <div>
-              <Label>{t("partner.pform.pick_date")}</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className={cn(
-                      "w-full mt-1 justify-start text-start font-normal",
-                      !customDate && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon className="me-2 h-4 w-4" />
-                    {customDate ? format(customDate, "PPP") : t("partner.pform.pick_date_placeholder")}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={customDate}
-                    onSelect={setCustomDate}
-                    disabled={(d) => d < new Date(new Date().setHours(0, 0, 0, 0))}
-                    initialFocus
-                    className={cn("p-3 pointer-events-auto")}
-                  />
-                </PopoverContent>
-              </Popover>
-            </div>
-            <div>
-              <Label>{t("partner.pform.pick_workshop")}</Label>
-              <div className="mt-1 grid grid-cols-2 gap-2">
-                {WORKSHOPS.map((w) => {
-                  const active = customWorkshop === w.id;
-                  const label = (w as any)[language] || w.en;
-                  return (
-                    <button
-                      key={w.id}
-                      type="button"
-                      onClick={() => setCustomWorkshop(w.id)}
-                      className={cn(
-                        "text-xs md:text-sm px-3 py-2 rounded-xl border text-start transition",
-                        active ? "border-2 font-medium" : "border-border hover:border-foreground/30"
-                      )}
-                      style={active ? { borderColor: brand, background: `${brand}12`, color: brand } : undefined}
-                    >
-                      {label}
-                    </button>
-                  );
-                })}
+        {!isSmall && mode === "custom" && (() => {
+          const schedule = customWorkshop ? workshopSchedules[customWorkshop] || [] : [];
+          const scheduleDates = new Set(schedule.map((s) => s.date));
+          const hasSchedule = scheduleDates.size > 0;
+          const todayStart = new Date(new Date().setHours(0, 0, 0, 0));
+          const dateStr = customDate ? format(customDate, "yyyy-MM-dd") : "";
+          const slotsForDate = hasSchedule
+            ? (schedule.find((s) => s.date === dateStr)?.time_slots || [])
+            : [];
+
+          return (
+            <div className="space-y-3">
+              <div>
+                <Label>{t("partner.pform.pick_workshop")}</Label>
+                <div className="mt-1 grid grid-cols-2 gap-2">
+                  {WORKSHOPS.map((w) => {
+                    const active = customWorkshop === w.id;
+                    const label = (w as any)[language] || w.en;
+                    const wsSchedule = workshopSchedules[w.id] || [];
+                    const upcomingCount = wsSchedule.filter((s) => s.date >= format(todayStart, "yyyy-MM-dd")).length;
+                    return (
+                      <button
+                        key={w.id}
+                        type="button"
+                        onClick={() => {
+                          setCustomWorkshop(w.id);
+                          setCustomDate(undefined);
+                          setCustomTimeSlot("");
+                        }}
+                        className={cn(
+                          "text-xs md:text-sm px-3 py-2 rounded-xl border text-start transition",
+                          active ? "border-2 font-medium" : "border-border hover:border-foreground/30"
+                        )}
+                        style={active ? { borderColor: brand, background: `${brand}12`, color: brand } : undefined}
+                      >
+                        <div>{label}</div>
+                        {upcomingCount > 0 && (
+                          <div className="text-[10px] font-normal text-muted-foreground mt-0.5">
+                            {t("partner.pform.dates_available").replace("{n}", String(upcomingCount))}
+                          </div>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div>
+                  <Label>{t("partner.pform.pick_date")}</Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        disabled={!customWorkshop}
+                        className={cn(
+                          "w-full mt-1 justify-start text-start font-normal",
+                          !customDate && "text-muted-foreground"
+                        )}
+                      >
+                        <CalendarIcon className="me-2 h-4 w-4" />
+                        {customDate ? format(customDate, "PPP") : t("partner.pform.pick_date_placeholder")}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={customDate}
+                        onSelect={(d) => { setCustomDate(d); setCustomTimeSlot(""); }}
+                        disabled={(d) => {
+                          if (d < todayStart) return true;
+                          const k = format(d, "yyyy-MM-dd");
+                          if (blockedDates.has(k)) return true;
+                          if (hasSchedule && !scheduleDates.has(k)) return true;
+                          return false;
+                        }}
+                        initialFocus
+                        className={cn("p-3 pointer-events-auto")}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  {!customWorkshop && (
+                    <p className="text-[11px] text-muted-foreground mt-1">
+                      {t("partner.pform.pick_workshop_first")}
+                    </p>
+                  )}
+                  {customWorkshop && !hasSchedule && (
+                    <p className="text-[11px] text-muted-foreground mt-1">
+                      {t("partner.pform.any_date_hint")}
+                    </p>
+                  )}
+                </div>
+
+                {slotsForDate.length > 0 && (
+                  <div>
+                    <Label>{t("partner.pform.pick_time")}</Label>
+                    <div className="mt-1 flex flex-wrap gap-2">
+                      {slotsForDate.map((slot) => {
+                        const active = customTimeSlot === slot;
+                        return (
+                          <button
+                            key={slot}
+                            type="button"
+                            onClick={() => setCustomTimeSlot(slot)}
+                            className={cn(
+                              "text-xs px-3 py-1.5 rounded-full border transition",
+                              active ? "border-2 font-medium" : "border-border hover:border-foreground/30"
+                            )}
+                            style={active ? { borderColor: brand, background: `${brand}12`, color: brand } : undefined}
+                          >
+                            <Clock size={11} className="inline me-1 -mt-0.5" />
+                            {slot}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
-          </div>
-        )}
+          );
+        })()}
+
       </div>
 
       {/* Step 3 — Notes */}
