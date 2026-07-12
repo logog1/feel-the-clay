@@ -421,31 +421,79 @@ export default function PartnerLanding() {
             <h2 className="text-3xl md:text-4xl font-light">Reserve your experience</h2>
           </div>
 
-          {/* Group-size toggle */}
-          <div className="flex justify-center mb-8">
-            <div className="inline-flex p-1 rounded-full border border-border bg-card">
-              <button
-                onClick={() => setBookMode("small")}
-                className={cn(
-                  "px-4 py-2 rounded-full text-xs md:text-sm font-medium transition",
-                  bookMode === "small" ? "text-white" : "text-muted-foreground hover:text-foreground"
-                )}
-                style={bookMode === "small" ? { background: brand } : undefined}
+          {/* Group-size selector */}
+          <div className="max-w-3xl mx-auto mb-6">
+            <p className="text-center text-xs uppercase tracking-[0.2em] text-muted-foreground mb-3">
+              How many guests?
+            </p>
+            <div className="grid grid-cols-2 gap-3">
+              {([
+                { id: "small" as const, count: "1–3", title: "Small group", sub: "Pick an existing time" },
+                { id: "large" as const, count: "4+", title: "Larger group", sub: "Request a custom time" },
+              ]).map((opt) => {
+                const active = bookMode === opt.id;
+                return (
+                  <button
+                    key={opt.id}
+                    onClick={() => setBookMode(opt.id)}
+                    className={cn(
+                      "relative text-start p-4 md:p-5 rounded-2xl border-2 transition bg-card",
+                      active ? "shadow-sm" : "border-border hover:border-foreground/20"
+                    )}
+                    style={active ? { borderColor: brand, background: `${brand}0a` } : undefined}
+                  >
+                    <div className="flex items-start gap-3">
+                      <div
+                        className="w-10 h-10 rounded-xl grid place-items-center shrink-0"
+                        style={{ background: active ? brand : `${brand}18`, color: active ? "white" : brand }}
+                      >
+                        <Users size={opt.id === "small" ? 16 : 20} />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="text-lg font-semibold leading-none">{opt.count}</span>
+                          <span className="text-xs text-muted-foreground">guests</span>
+                        </div>
+                        <p className="font-medium text-sm mt-1.5">{opt.title}</p>
+                        <p className="text-xs text-muted-foreground">{opt.sub}</p>
+                      </div>
+                      <span
+                        className={cn(
+                          "w-5 h-5 rounded-full border-2 grid place-items-center shrink-0 transition",
+                          active ? "" : "border-border"
+                        )}
+                        style={active ? { borderColor: brand, background: brand } : undefined}
+                      >
+                        {active && <Check size={12} className="text-white" strokeWidth={3} />}
+                      </span>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Contextual helper message */}
+            <div
+              className="mt-4 p-3.5 rounded-xl border border-dashed flex items-start gap-2.5"
+              style={{ borderColor: `${brand}55`, background: `${brand}08` }}
+            >
+              <div
+                className="w-6 h-6 rounded-full grid place-items-center shrink-0 mt-0.5"
+                style={{ background: brand, color: "white" }}
               >
-                <Users size={13} className="inline me-1.5" />
-                1 to 3 guests · pick a time
-              </button>
-              <button
-                onClick={() => setBookMode("large")}
-                className={cn(
-                  "px-4 py-2 rounded-full text-xs md:text-sm font-medium transition",
-                  bookMode === "large" ? "text-white" : "text-muted-foreground hover:text-foreground"
+                {bookMode === "small" ? <Clock size={13} /> : <Calendar size={13} />}
+              </div>
+              <p className="text-sm text-foreground/80 leading-relaxed">
+                {bookMode === "small" ? (
+                  <>
+                    <span className="font-medium">Browse the upcoming sessions below</span> and pick a time that suits you. Tap a card to reserve your spot.
+                  </>
+                ) : (
+                  <>
+                    <span className="font-medium">Can't find a suitable time?</span> Use this form to request another date during the week or in the future, and our team will confirm with you.
+                  </>
                 )}
-                style={bookMode === "large" ? { background: brand } : undefined}
-              >
-                <Users size={13} className="inline me-1.5" />
-                4+ guests · request a time
-              </button>
+              </p>
             </div>
           </div>
 
@@ -460,14 +508,7 @@ export default function PartnerLanding() {
               onPickOffer={(o) => setBookingOffer(o)}
             />
           ) : (
-            <div>
-              <div className="max-w-2xl mx-auto mb-6 p-4 rounded-2xl border border-dashed" style={{ borderColor: `${brand}55`, background: `${brand}08` }}>
-                <p className="text-sm text-foreground/80 leading-relaxed text-center">
-                  This form is for guests who can't find a suitable time in the schedule above. Request another date during the week or in the future, and our team will confirm with you.
-                </p>
-              </div>
-              <BookingFormSection />
-            </div>
+            <BookingFormSection />
           )}
         </div>
       </section>
