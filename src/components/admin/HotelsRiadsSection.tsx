@@ -81,6 +81,14 @@ export function HotelsRiadsSection() {
   const [editing, setEditing] = useState<HotelPartner | null>(null);
   const [newPartner, setNewPartner] = useState<NewPartnerForm>(EMPTY_NEW);
   const [uploadingNewLogo, setUploadingNewLogo] = useState(false);
+  const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
+  const toggleExpanded = (id: string) => {
+    setExpandedIds((prev) => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  };
 
   const uploadNewLogo = async (file: File) => {
     setUploadingNewLogo(true);
