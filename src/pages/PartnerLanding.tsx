@@ -509,7 +509,14 @@ export default function PartnerLanding() {
             <h2 className="text-3xl md:text-4xl font-light">{t("partner.book.section_title")}</h2>
           </div>
 
-          <BookingFormSection />
+          <PartnerBookingForm
+            partnerId={partner.id}
+            partnerName={partner.name}
+            brand={brand}
+            offers={offers}
+            experiences={experiences}
+            taken={taken}
+          />
         </div>
       </section>
 
