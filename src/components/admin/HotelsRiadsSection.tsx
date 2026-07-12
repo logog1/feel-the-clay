@@ -15,6 +15,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 import { PartnerStaffTab } from "@/components/admin/PartnerStaffTab";
+import { PartnerQRDialog } from "@/components/partner/PartnerQRDialog";
 import { toast } from "@/hooks/use-toast";
 import { Plus, ExternalLink, QrCode, LayoutDashboard, Pencil, Hotel, Trash2, Copy, Globe, Image as ImageIcon, Loader2, Upload, BedDouble, Percent, Star } from "lucide-react";
 
