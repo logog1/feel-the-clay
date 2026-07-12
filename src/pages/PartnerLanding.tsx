@@ -440,6 +440,20 @@ export default function PartnerLanding() {
           onClose={() => setBookingOffer(null)}
         />
       )}
+
+      {detailsOffer && (
+        <OfferDetailsDialog
+          offer={detailsOffer}
+          brand={brand}
+          onClose={() => setDetailsOffer(null)}
+          onReserve={() => {
+            const o = detailsOffer;
+            setDetailsOffer(null);
+            if (o.kind === "event") setBookingOffer(o);
+            else document.getElementById("book")?.scrollIntoView({ behavior: "smooth" });
+          }}
+        />
+      )}
     </div>
   );
 }
