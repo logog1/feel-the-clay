@@ -312,6 +312,7 @@ export default function PartnerKit() {
           .print\\:border-0 { border: 0 !important; }
         }
       `}</style>
+      <PartnerQRDialog open={qrOpen} onOpenChange={setQrOpen} partner={partner} />
     </div>
   );
 }
