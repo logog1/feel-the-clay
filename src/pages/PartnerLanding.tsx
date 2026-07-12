@@ -417,8 +417,8 @@ export default function PartnerLanding() {
       <section id="book" className="bg-background section-padding">
         <div className="container-wide max-w-5xl">
           <div className="text-center mb-8">
-            <p className="text-[11px] uppercase tracking-[0.3em] mb-2" style={{ color: brand }}>{t("partner.book_section.eyebrow") || "Book"}</p>
-            <h2 className="text-3xl md:text-4xl font-light">{t("partner.book_section.title") || "Reserve your experience"}</h2>
+            <p className="text-[11px] uppercase tracking-[0.3em] mb-2" style={{ color: brand }}>Book</p>
+            <h2 className="text-3xl md:text-4xl font-light">Reserve your experience</h2>
           </div>
 
           {/* Group-size toggle */}
@@ -433,7 +433,7 @@ export default function PartnerLanding() {
                 style={bookMode === "small" ? { background: brand } : undefined}
               >
                 <Users size={13} className="inline me-1.5" />
-                {t("partner.book_section.small") || "1–3 guests · pick a time"}
+                1 to 3 guests · pick a time
               </button>
               <button
                 onClick={() => setBookMode("large")}
@@ -444,7 +444,7 @@ export default function PartnerLanding() {
                 style={bookMode === "large" ? { background: brand } : undefined}
               >
                 <Users size={13} className="inline me-1.5" />
-                {t("partner.book_section.large") || "4+ guests · request a time"}
+                4+ guests · request a time
               </button>
             </div>
           </div>
@@ -458,14 +458,12 @@ export default function PartnerLanding() {
               isRTL={isRTL}
               onPickExperience={(e) => setSelected(e)}
               onPickOffer={(o) => setBookingOffer(o)}
-              t={t}
             />
           ) : (
             <div>
               <div className="max-w-2xl mx-auto mb-6 p-4 rounded-2xl border border-dashed" style={{ borderColor: `${brand}55`, background: `${brand}08` }}>
                 <p className="text-sm text-foreground/80 leading-relaxed text-center">
-                  {t("partner.book_section.large_note") ||
-                    "This form is for guests who can't find a time that suits them in the schedule above — request another date during the week or a future one, and our team will confirm."}
+                  This form is for guests who can't find a suitable time in the schedule above. Request another date during the week or in the future, and our team will confirm with you.
                 </p>
               </div>
               <BookingFormSection />
