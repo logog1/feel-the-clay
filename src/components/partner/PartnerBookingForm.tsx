@@ -97,6 +97,59 @@ export default function PartnerBookingForm({
   const [selectedSlotKey, setSelectedSlotKey] = useState<string | null>(null);
   const [customDate, setCustomDate] = useState<Date | undefined>();
   const [customWorkshop, setCustomWorkshop] = useState<string>("");
+  const [customTimeSlot, setCustomTimeSlot] = useState<string>("");
+
+  // Availability wired to the main admin dashboard (workshop_availability +
+  // per-workshop schedules stored in site_settings as workshop_schedule_<id>).
+  const [blockedDates, setBlockedDates] = useState<Set<string>>(new Set());
+  const [workshopSchedules, setWorkshopSchedules] = useState<
+    Record<string, { date: string; time_slots: string[] }[]>
+  >({});
+
+  useEffect(() => {
+    const fetchAvailability = async () => {
+      const { data } = await supabase.from("workshop_availability").select("date, is_available");
+      if (data) {
+        setBlockedDates(new Set(data.filter((d: any) => !d.is_available).map((d: any) => d.date)));
+      }
+    };
+    const fetchSchedules = async () => {
+      const { data } = await supabase
+        .from("site_settings")
+        .select("key, value")
+        .like("key", "workshop_schedule_%");
+      if (data) {
+        const map: Record<string, { date: string; time_slots: string[] }[]> = {};
+        for (const row of data as any[]) {
+          const id = row.key.replace("workshop_schedule_", "");
+          try {
+            const parsed = JSON.parse(row.value);
+            if (Array.isArray(parsed)) map[id] = parsed;
+          } catch { /* noop */ }
+        }
+        setWorkshopSchedules(map);
+      }
+    };
+    fetchAvailability();
+    fetchSchedules();
+
+    const channel = supabase
+      .channel("partner-booking-availability")
+      .on("postgres_changes", { event: "*", schema: "public", table: "workshop_availability" }, fetchAvailability)
+      .on("postgres_changes", { event: "*", schema: "public", table: "site_settings" }, (payload: any) => {
+        const key = (payload?.new?.key || payload?.old?.key || "") as string;
+        if (key.startsWith("workshop_schedule_")) fetchSchedules();
+      })
+      .subscribe();
+
+    const onFocus = () => { fetchAvailability(); fetchSchedules(); };
+    window.addEventListener("focus", onFocus);
+    return () => {
+      supabase.removeChannel(channel);
+      window.removeEventListener("focus", onFocus);
+    };
+  }, []);
+
 
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
