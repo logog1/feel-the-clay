@@ -394,6 +394,7 @@ export default function PartnerConcierge() {
           </div>
         </section>
       </main>
+      <PartnerQRDialog open={qrOpen} onOpenChange={setQrOpen} partner={partner} />
     </div>
   );
 }
