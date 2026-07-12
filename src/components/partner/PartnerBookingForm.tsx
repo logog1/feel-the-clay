@@ -248,7 +248,7 @@ export default function PartnerBookingForm({
       }
       workshopLabel = resolveWorkshopLabel(customWorkshop);
       bookingDate = format(customDate, "yyyy-MM-dd");
-      sessionInfo = "custom-request";
+      sessionInfo = customTimeSlot ? customTimeSlot : "custom-request";
     }
 
     setSubmitting(true);
