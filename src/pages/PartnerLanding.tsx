@@ -650,8 +650,8 @@ function SmallGroupSlots({
             disabled={full}
             onClick={() => !full && onPickExperience(e)}
             className={cn(
-              "w-full text-start bg-card border border-border rounded-2xl p-4 flex items-center gap-4 transition",
-              full ? "opacity-60 cursor-not-allowed" : "hover:border-foreground/30 hover:-translate-y-0.5 hover:shadow-sm cursor-pointer"
+              "w-full text-start bg-card border border-border rounded-2xl p-3 md:p-4 flex items-center gap-3 md:gap-4 min-h-[88px] transition",
+              full ? "opacity-60 cursor-not-allowed" : "hover:border-foreground/30 hover:-translate-y-0.5 hover:shadow-sm active:scale-[0.99] cursor-pointer"
             )}
           >
             {e.cover_image ? (
@@ -698,7 +698,7 @@ function SmallGroupSlots({
           <button
             key={o.assignment_id}
             onClick={() => onPickOffer(o)}
-            className="w-full text-start bg-card border border-border rounded-2xl p-4 flex items-center gap-4 hover:border-foreground/30 hover:-translate-y-0.5 hover:shadow-sm transition cursor-pointer"
+            className="w-full text-start bg-card border border-border rounded-2xl p-3 md:p-4 flex items-center gap-3 md:gap-4 min-h-[88px] hover:border-foreground/30 hover:-translate-y-0.5 hover:shadow-sm active:scale-[0.99] transition cursor-pointer"
           >
             {o.cover_image ? (
               <img src={o.cover_image} alt={o.title} loading="lazy"
