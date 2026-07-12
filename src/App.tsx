@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useParams } from "react-router-dom";
 import { LanguageProvider } from "@/i18n/LanguageContext";
 import { CartProvider } from "@/contexts/CartContext";
 import { HelmetProvider } from "react-helmet-async";
@@ -60,6 +60,12 @@ const RouteFallback = () => (
   />
 );
 
+const PartnerSlugRedirect = () => {
+  const { slug } = useParams();
+  return <Navigate to={`/${slug ?? ""}`} replace />;
+};
+
+
 const App = () => {
   return (
     <HelmetProvider>
@@ -102,13 +108,15 @@ const App = () => {
                     <Route path="/tetouan/things-to-do" element={<TetouanThingsToDo />} />
                     <Route path="/things-to-do-in-tetouan" element={<TetouanThingsToDo />} />
                     <Route path="/partners/terms" element={<PartnerTerms />} />
-                    <Route path="/partners/:slug" element={<PartnerLanding />} />
-                    
+                    {/* Legacy long partner URLs — redirect to short canonical */}
+                    <Route path="/partners/:slug" element={<PartnerSlugRedirect />} />
                     <Route path="/partners/:slug/kit" element={<PartnerKit />} />
                     <Route path="/partners/:slug/concierge" element={<PartnerConcierge />} />
                     <Route path="/partners/:slug/guide" element={<PartnerGuide />} />
                     <Route path="/preview/kit-zellige" element={<KitZelligePreview />} />
                     <Route path="/story/fassi-zellige" element={<FassiZelligeStory />} />
+                    {/* Short indexable partner URL — keep last before catch-all */}
+                    <Route path="/:slug" element={<PartnerLanding />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
                 </Suspense>
