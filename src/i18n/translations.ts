@@ -436,7 +436,8 @@ export const translations = {
   "partner.book.help_large_rest": { en: " Use this form to request another date during the week or in the future, and our team will confirm with you.", ar: " استخدم هذا النموذج لطلب موعد آخر خلال الأسبوع أو في المستقبل، وسيؤكد فريقنا معك.", es: " Usa este formulario para pedir otra fecha durante la semana o en el futuro, y nuestro equipo te confirmará.", fr: " Utilisez ce formulaire pour demander une autre date dans la semaine ou plus tard, et notre équipe vous confirmera." },
 
   // Partner Landing — small-group slot list
-  "partner.slots.empty_prefix": { en: "No scheduled sessions available right now. Switch to", ar: "لا توجد جلسات مجدولة متاحة حاليًا. انتقل إلى", es: "No hay sesiones programadas disponibles ahora. Cambia a", fr: "Aucune session programmée disponible pour le moment. Passez à" },
+  "partner.slots.empty_title": { en: "All spots are taken for now", ar: "جميع الأماكن محجوزة حاليًا", es: "Todas las plazas están ocupadas por ahora", fr: "Toutes les places sont prises pour le moment" },
+  "partner.slots.empty_prefix": { en: "There are no open sessions with availability. Switch to", ar: "لا توجد جلسات مفتوحة متاحة. انتقل إلى", es: "No hay sesiones abiertas con disponibilidad. Cambia a", fr: "Aucune session ouverte n'est disponible. Passez à" },
   "partner.slots.empty_suffix": { en: "to request a custom date.", ar: "لطلب موعد مخصص.", es: "para solicitar una fecha personalizada.", fr: "pour demander une date sur mesure." },
   "partner.slots.large_switch": { en: "4+ guests", ar: "4 ضيوف أو أكثر", es: "4+ invitados", fr: "4+ invités" },
   "partner.slots.workshop": { en: "Workshop", ar: "ورشة", es: "Taller", fr: "Atelier" },
