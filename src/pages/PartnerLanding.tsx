@@ -5,7 +5,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
 import { format, parseISO } from "date-fns";
 import SEOHead from "@/components/SEOHead";
-import BookingFormSection from "@/components/BookingFormSection";
+import PartnerBookingForm from "@/components/partner/PartnerBookingForm";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -509,7 +509,14 @@ export default function PartnerLanding() {
             <h2 className="text-3xl md:text-4xl font-light">{t("partner.book.section_title")}</h2>
           </div>
 
-          <BookingFormSection />
+          <PartnerBookingForm
+            partnerId={partner.id}
+            partnerName={partner.name}
+            brand={brand}
+            offers={offers}
+            experiences={experiences}
+            taken={taken}
+          />
         </div>
       </section>
 

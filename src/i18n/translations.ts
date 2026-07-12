@@ -446,6 +446,33 @@ export const translations = {
   "partner.slots.left": { en: "{n} left", ar: "{n} متبقٍ", es: "Quedan {n}", fr: "{n} restantes" },
   "partner.slots.spots": { en: "spots", ar: "أماكن", es: "plazas", fr: "places" },
 
+  // Partner landing custom booking form
+  "partner.pform.step_details": { en: "Your details", ar: "بياناتك", es: "Tus datos", fr: "Vos coordonnées" },
+  "partner.pform.step_choose": { en: "Choose your experience", ar: "اختر تجربتك", es: "Elige tu experiencia", fr: "Choisissez votre expérience" },
+  "partner.pform.step_notes": { en: "Anything we should know", ar: "أي معلومات إضافية", es: "Algo que debamos saber", fr: "Quelque chose à savoir" },
+  "partner.pform.whatsapp_label": { en: "WhatsApp number", ar: "رقم واتساب", es: "Número de WhatsApp", fr: "Numéro WhatsApp" },
+  "partner.pform.participants_label": { en: "Number of participants", ar: "عدد المشاركين", es: "Número de participantes", fr: "Nombre de participants" },
+  "partner.pform.small_hint": { en: "Small groups join one of our scheduled workshops or events below.", ar: "المجموعات الصغيرة تنضم إلى إحدى ورشاتنا أو فعالياتنا أدناه.", es: "Los grupos pequeños se unen a uno de nuestros talleres o eventos programados.", fr: "Les petits groupes rejoignent l'un de nos ateliers ou événements programmés." },
+  "partner.pform.large_hint": { en: "Larger groups can join an existing event or reserve a private date.", ar: "يمكن للمجموعات الكبيرة الانضمام إلى فعالية موجودة أو حجز موعد خاص.", es: "Los grupos más grandes pueden unirse a un evento existente o reservar una fecha privada.", fr: "Les grands groupes peuvent rejoindre un événement existant ou réserver une date privée." },
+  "partner.pform.mode_existing": { en: "Join an existing event", ar: "الانضمام لفعالية قائمة", es: "Unirse a un evento existente", fr: "Rejoindre un événement" },
+  "partner.pform.mode_custom": { en: "Reserve a new date", ar: "احجز موعدًا جديدًا", es: "Reservar una nueva fecha", fr: "Réserver une nouvelle date" },
+  "partner.pform.no_slots_small": { en: "No open sessions right now. Add a note below and we'll suggest options.", ar: "لا توجد جلسات مفتوحة الآن. أضف ملاحظة أدناه وسنقترح خيارات.", es: "No hay sesiones abiertas ahora. Deja una nota y te propondremos opciones.", fr: "Aucune session ouverte pour le moment. Laissez une note, nous vous proposerons des options." },
+  "partner.pform.no_slots_large": { en: "No upcoming events. Switch to Reserve a new date to pick your own day.", ar: "لا توجد فعاليات قادمة. انتقل إلى حجز موعد جديد لاختيار يومك.", es: "No hay eventos próximos. Cambia a Reservar una nueva fecha para elegir tu día.", fr: "Aucun événement à venir. Passez à Réserver une nouvelle date pour choisir votre jour." },
+  "partner.pform.pick_date": { en: "Preferred date", ar: "التاريخ المفضل", es: "Fecha preferida", fr: "Date souhaitée" },
+  "partner.pform.pick_date_placeholder": { en: "Pick a date", ar: "اختر تاريخًا", es: "Elige una fecha", fr: "Choisir une date" },
+  "partner.pform.pick_workshop": { en: "Preferred workshop", ar: "الورشة المفضلة", es: "Taller preferido", fr: "Atelier souhaité" },
+  "partner.pform.pick_slot": { en: "Please select a workshop or event", ar: "الرجاء اختيار ورشة أو فعالية", es: "Selecciona un taller o evento", fr: "Veuillez choisir un atelier ou un événement" },
+  "partner.pform.pick_date_workshop": { en: "Please pick a date and a workshop", ar: "الرجاء اختيار التاريخ والورشة", es: "Elige una fecha y un taller", fr: "Choisissez une date et un atelier" },
+  "partner.pform.notes_placeholder": { en: "Dietary needs, mobility, languages, celebrations…", ar: "احتياجات غذائية، تنقل، لغات، مناسبات…", es: "Necesidades alimentarias, movilidad, idiomas, celebraciones…", fr: "Régimes, mobilité, langues, occasions…" },
+  "partner.pform.submit": { en: "Send request", ar: "إرسال الطلب", es: "Enviar solicitud", fr: "Envoyer la demande" },
+  "partner.pform.reply_note": { en: "We'll confirm on WhatsApp within a few hours.", ar: "سنؤكد عبر واتساب خلال ساعات قليلة.", es: "Confirmaremos por WhatsApp en pocas horas.", fr: "Nous confirmons sur WhatsApp sous quelques heures." },
+  "partner.pform.received_title": { en: "Request received", ar: "تم استلام الطلب", es: "Solicitud recibida", fr: "Demande reçue" },
+  "partner.pform.received_body": { en: "Thanks {name} — the {partner} concierge team will confirm your booking shortly.", ar: "شكرًا {name} — سيؤكد فريق كونسيرج {partner} حجزك قريبًا.", es: "Gracias {name} — el equipo de conserjería de {partner} confirmará tu reserva en breve.", fr: "Merci {name} — l'équipe conciergerie de {partner} confirmera votre réservation sous peu." },
+  "partner.pform.wa_note": { en: "We'll message you on WhatsApp at", ar: "سنراسلك على واتساب على", es: "Te escribiremos por WhatsApp al", fr: "Nous vous écrirons sur WhatsApp au" },
+  "partner.pform.email_note": { en: "A confirmation will be sent to", ar: "سيتم إرسال التأكيد إلى", es: "Se enviará una confirmación a", fr: "Une confirmation sera envoyée à" },
+
+
+
   // Partner Concierge — staff dashboard
   "partner.con.title": { en: "Concierge", ar: "الكونسيرج", es: "Conserjería", fr: "Conciergerie" },
   "partner.con.console": { en: "Concierge console", ar: "لوحة الكونسيرج", es: "Consola de conserjería", fr: "Console concierge" },
