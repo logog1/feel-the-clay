@@ -514,6 +514,147 @@ export default function PartnerLanding() {
   );
 }
 
+function SmallGroupSlots({
+  experiences, taken, offers, brand, isRTL, onPickExperience, onPickOffer,
+}: {
+  experiences: Experience[];
+  taken: Record<string, number>;
+  offers: PartnerOfferPublic[];
+  brand: string;
+  isRTL: boolean;
+  onPickExperience: (e: Experience) => void;
+  onPickOffer: (o: PartnerOfferPublic) => void;
+}) {
+  const now = Date.now();
+
+  const upcomingExperiences = useMemo(
+    () =>
+      [...experiences]
+        .filter((e) => new Date(e.scheduled_at).getTime() > now)
+        .sort((a, b) => new Date(a.scheduled_at).getTime() - new Date(b.scheduled_at).getTime()),
+    [experiences, now]
+  );
+
+  const upcomingEventOffers = useMemo(
+    () =>
+      offers
+        .filter((o) => o.kind === "event" && o.event_at && new Date(o.event_at).getTime() > now)
+        .sort((a, b) => new Date(a.event_at!).getTime() - new Date(b.event_at!).getTime()),
+    [offers, now]
+  );
+
+  const isEmpty = upcomingExperiences.length === 0 && upcomingEventOffers.length === 0;
+
+  if (isEmpty) {
+    return (
+      <div className="max-w-2xl mx-auto p-6 rounded-2xl border border-dashed border-border text-center bg-card">
+        <Calendar className="w-8 h-8 mx-auto text-muted-foreground/60 mb-2" />
+        <p className="text-sm text-muted-foreground">
+          No scheduled sessions available right now. Switch to <span className="font-medium text-foreground">4+ guests</span> to request a custom date.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-3 max-w-3xl mx-auto">
+      {upcomingExperiences.map((e) => {
+        const remaining = Math.max(0, e.capacity - (taken[e.id] || 0));
+        const full = remaining <= 0;
+        const d = parseISO(e.scheduled_at);
+        return (
+          <button
+            key={e.id}
+            disabled={full}
+            onClick={() => !full && onPickExperience(e)}
+            className={cn(
+              "w-full text-start bg-card border border-border rounded-2xl p-4 flex items-center gap-4 transition",
+              full ? "opacity-60 cursor-not-allowed" : "hover:border-foreground/30 hover:-translate-y-0.5 hover:shadow-sm cursor-pointer"
+            )}
+          >
+            {e.cover_image ? (
+              <img src={e.cover_image} alt={e.title} loading="lazy"
+                className="w-16 h-16 md:w-20 md:h-20 rounded-xl object-cover shrink-0" />
+            ) : (
+              <div className="w-16 h-16 md:w-20 md:h-20 rounded-xl grid place-items-center shrink-0"
+                style={{ background: `${brand}22`, color: brand }}>
+                <Sparkles size={20} />
+              </div>
+            )}
+            <div className="flex-1 min-w-0">
+              <div className="flex flex-wrap items-center gap-2 mb-1">
+                <span className="text-[10px] uppercase tracking-[0.2em] px-2 py-0.5 rounded-full text-white" style={{ background: brand }}>
+                  {e.category || "Workshop"}
+                </span>
+                <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+                  <Calendar size={11} /> {format(d, "EEE d MMM")}
+                </span>
+                <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+                  <Clock size={11} /> {format(d, "HH:mm")}
+                </span>
+              </div>
+              <h3 className="font-medium text-base truncate">{e.title}</h3>
+              <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground">
+                <span className="inline-flex items-center gap-1"><Users size={11} /> {full ? "Fully booked" : `${remaining} left`}</span>
+                {e.price_per_person > 0 && (
+                  <span className="font-medium text-foreground">{e.price_per_person} {e.currency}</span>
+                )}
+              </div>
+            </div>
+            {!full && (
+              <ArrowRight size={16} className={cn("shrink-0 text-muted-foreground", isRTL && "rotate-180")} />
+            )}
+          </button>
+        );
+      })}
+
+      {upcomingEventOffers.map((o) => {
+        const d = parseISO(o.event_at!);
+        return (
+          <button
+            key={o.assignment_id}
+            onClick={() => onPickOffer(o)}
+            className="w-full text-start bg-card border border-border rounded-2xl p-4 flex items-center gap-4 hover:border-foreground/30 hover:-translate-y-0.5 hover:shadow-sm transition cursor-pointer"
+          >
+            {o.cover_image ? (
+              <img src={o.cover_image} alt={o.title} loading="lazy"
+                className="w-16 h-16 md:w-20 md:h-20 rounded-xl object-cover shrink-0" />
+            ) : (
+              <div className="w-16 h-16 md:w-20 md:h-20 rounded-xl grid place-items-center shrink-0"
+                style={{ background: `${brand}22`, color: brand }}>
+                <Sparkles size={20} />
+              </div>
+            )}
+            <div className="flex-1 min-w-0">
+              <div className="flex flex-wrap items-center gap-2 mb-1">
+                <span className="text-[10px] uppercase tracking-[0.2em] px-2 py-0.5 rounded-full text-white" style={{ background: brand }}>
+                  Event
+                </span>
+                <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+                  <Calendar size={11} /> {format(d, "EEE d MMM")}
+                </span>
+                <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+                  <Clock size={11} /> {format(d, "HH:mm")}
+                </span>
+              </div>
+              <h3 className="font-medium text-base truncate">{o.title}</h3>
+              <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground">
+                {o.capacity != null && (
+                  <span className="inline-flex items-center gap-1"><Users size={11} /> {o.capacity} spots</span>
+                )}
+                {o.price != null && (
+                  <span className="font-medium text-foreground">{o.price} {o.currency}</span>
+                )}
+              </div>
+            </div>
+            <ArrowRight size={16} className={cn("shrink-0 text-muted-foreground", isRTL && "rotate-180")} />
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 function DayChip({ label, active, onClick, brand }: { label: string; active: boolean; onClick: () => void; brand: string }) {
   return (
     <button onClick={onClick}
