@@ -126,7 +126,7 @@ export default function PartnerKit() {
   }
 
   const brand = partner.brand_color || "#0E1418";
-  const baseUrl = typeof window !== "undefined" ? `${window.location.origin}/partners/${partner.slug}` : "";
+  const baseUrl = typeof window !== "undefined" ? `${window.location.origin}/${partner.slug}` : "";
 
   const copy = (text: string) => {
     navigator.clipboard.writeText(text).then(() => toast.success("Copied"));

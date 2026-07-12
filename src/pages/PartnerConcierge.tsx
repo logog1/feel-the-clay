@@ -250,7 +250,7 @@ export default function PartnerConcierge() {
             <Button size="sm" variant="outline" onClick={() => setQrOpen(true)}>
               <QrCode size={12} className="me-1" /> {t("partner.con.qr_kit")}
             </Button>
-            <Button size="sm" variant="outline" onClick={() => window.open(`/partners/${partner.slug}`, "_blank")}>
+            <Button size="sm" variant="outline" onClick={() => window.open(`/${partner.slug}`, "_blank")}>
               <ExternalLink size={12} className="me-1" /> {t("partner.con.landing")}
             </Button>
             <Button size="sm" variant="ghost" onClick={signOut}><LogOut size={12} className="me-1" /> {t("partner.con.signout")}</Button>

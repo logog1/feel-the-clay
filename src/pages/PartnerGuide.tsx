@@ -129,7 +129,7 @@ export default function PartnerGuide() {
                   <div className="w-24 h-24 bg-white/95 rounded-md" />
                 </div>
                 <p className="text-xs text-muted-foreground mt-3">Scan to reserve a pottery or zellige workshop</p>
-                <p className="text-[10px] mt-2 text-orange-700 font-medium">terraria.ma/partners/{partnerSlug}</p>
+                <p className="text-[10px] mt-2 text-orange-700 font-medium">terraria.ma/{partnerSlug}</p>
               </div>
             </MockFrame>
 
@@ -139,7 +139,7 @@ export default function PartnerGuide() {
                 <span className="w-2 h-2 rounded-full bg-red-400 mr-1" />
                 <span className="w-2 h-2 rounded-full bg-yellow-400 mr-1" />
                 <span className="w-2 h-2 rounded-full bg-green-400 mr-1" />
-                <span className="ml-2 truncate">terraria.ma/partners/{partnerSlug}</span>
+                <span className="ml-2 truncate">terraria.ma/{partnerSlug}</span>
               </div>
               <div className="p-3">
                 <p className="text-[9px] uppercase tracking-widest text-orange-700">Guests of {partnerName}</p>
