@@ -10,6 +10,7 @@ import {
   Hotel, Printer, Loader2, Lock, Copy, MessageCircle, BookOpen,
   CheckCircle2, Sparkles, QrCode, Phone,
 } from "lucide-react";
+import { PartnerQRDialog } from "@/components/partner/PartnerQRDialog";
 
 type Lang = "en" | "fr" | "es" | "ar";
 
