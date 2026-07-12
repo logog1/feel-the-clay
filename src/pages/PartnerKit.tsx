@@ -10,6 +10,7 @@ import {
   Hotel, Printer, Loader2, Lock, Copy, MessageCircle, BookOpen,
   CheckCircle2, Sparkles, QrCode, Phone,
 } from "lucide-react";
+import { PartnerQRDialog } from "@/components/partner/PartnerQRDialog";
 
 type Lang = "en" | "fr" | "es" | "ar";
 
@@ -75,6 +76,7 @@ export default function PartnerKit() {
   const [authChecking, setAuthChecking] = useState(true);
   const [canManage, setCanManage] = useState(false);
   const [lang, setLang] = useState<Lang>("en");
+  const [qrOpen, setQrOpen] = useState(false);
 
   useEffect(() => {
     supabase.auth.onAuthStateChange((_e, s) => setSession(s));
@@ -160,8 +162,8 @@ export default function PartnerKit() {
             <Button size="sm" variant="outline" onClick={() => window.print()}>
               <Printer size={13} className="mr-1" /> Print / Save PDF
             </Button>
-            <Button size="sm" variant="ghost" asChild>
-              <Link to={`/partners/${partner.slug}/qr`}><QrCode size={13} className="mr-1" /> QR Kit</Link>
+            <Button size="sm" variant="ghost" onClick={() => setQrOpen(true)}>
+              <QrCode size={13} className="mr-1" /> QR code
             </Button>
           </div>
         </div>
@@ -310,6 +312,7 @@ export default function PartnerKit() {
           .print\\:border-0 { border: 0 !important; }
         }
       `}</style>
+      <PartnerQRDialog open={qrOpen} onOpenChange={setQrOpen} partner={partner} />
     </div>
   );
 }

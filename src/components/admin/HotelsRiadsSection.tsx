@@ -15,6 +15,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 import { PartnerStaffTab } from "@/components/admin/PartnerStaffTab";
+import { PartnerQRDialog } from "@/components/partner/PartnerQRDialog";
 import { toast } from "@/hooks/use-toast";
 import { Plus, ExternalLink, QrCode, LayoutDashboard, Pencil, Hotel, Trash2, Copy, Globe, Image as ImageIcon, Loader2, Upload, BedDouble, Percent, Star } from "lucide-react";
 
@@ -76,6 +77,7 @@ export function HotelsRiadsSection() {
   const navigate = useNavigate();
   const { partners, loading, refresh } = useHotelPartners();
   const [createOpen, setCreateOpen] = useState(false);
+  const [qrPartner, setQrPartner] = useState<HotelPartner | null>(null);
   const [editing, setEditing] = useState<HotelPartner | null>(null);
   const [newPartner, setNewPartner] = useState<NewPartnerForm>(EMPTY_NEW);
   const [uploadingNewLogo, setUploadingNewLogo] = useState(false);
@@ -170,7 +172,6 @@ export function HotelsRiadsSection() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {partners.map((p) => {
             const publicUrl = `${window.location.origin}/partners/${p.slug}`;
-            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=600x600&margin=16&data=${encodeURIComponent(publicUrl)}`;
             return (
               <Card key={p.id} className="p-5 space-y-3 relative overflow-hidden">
                 <div className="absolute top-0 left-0 right-0 h-1" style={{ background: p.brand_color }} />
@@ -222,8 +223,8 @@ export function HotelsRiadsSection() {
                   <Button size="sm" variant="outline" className="rounded-lg justify-start text-xs" onClick={() => window.open(publicUrl, "_blank")}>
                     <Globe size={12} className="mr-1.5" /> Landing
                   </Button>
-                  <Button size="sm" variant="outline" className="rounded-lg justify-start text-xs" onClick={() => window.open(qrUrl, "_blank")}>
-                    <QrCode size={12} className="mr-1.5" /> QR page
+                  <Button size="sm" variant="outline" className="rounded-lg justify-start text-xs" onClick={() => setQrPartner(p)}>
+                    <QrCode size={12} className="mr-1.5" /> QR code
                   </Button>
                   <Button size="sm" variant="outline" className="rounded-lg justify-start text-xs" onClick={() => window.open(`/partners/${p.slug}/concierge`, "_blank")}>
                     <LayoutDashboard size={12} className="mr-1.5" /> Concierge
@@ -391,6 +392,8 @@ export function HotelsRiadsSection() {
       {editing && (
         <PartnerEditor partner={editing} onClose={() => { setEditing(null); refresh(); }} />
       )}
+
+      <PartnerQRDialog open={!!qrPartner} onOpenChange={(v) => !v && setQrPartner(null)} partner={qrPartner} />
     </div>
   );
 }
