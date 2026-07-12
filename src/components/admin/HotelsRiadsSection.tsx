@@ -57,7 +57,6 @@ type NewPartnerForm = {
   brand_color: string;
   logo_url: string;
   rooms_count: string;
-  stars: string;
   qr_codes_installed: string;
   commission_rate: string;
   commission_notes: string;
