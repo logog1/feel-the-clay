@@ -77,6 +77,7 @@ export function HotelsRiadsSection() {
   const navigate = useNavigate();
   const { partners, loading, refresh } = useHotelPartners();
   const [createOpen, setCreateOpen] = useState(false);
+  const [qrPartner, setQrPartner] = useState<HotelPartner | null>(null);
   const [editing, setEditing] = useState<HotelPartner | null>(null);
   const [newPartner, setNewPartner] = useState<NewPartnerForm>(EMPTY_NEW);
   const [uploadingNewLogo, setUploadingNewLogo] = useState(false);
