@@ -311,7 +311,14 @@ export default function PartnerLanding() {
                   return { href: "#offers", label: o.cta_label || "Book a workshop", external: false };
                 })();
                 return (
-                  <article key={o.assignment_id} className="group bg-card border border-border rounded-2xl overflow-hidden hover:shadow-xl transition">
+                  <article
+                    key={o.assignment_id}
+                    onClick={() => setDetailsOffer(o)}
+                    className="group bg-card border border-border rounded-2xl overflow-hidden hover:shadow-xl hover:-translate-y-0.5 transition cursor-pointer text-left focus:outline-none focus:ring-2 focus:ring-offset-2"
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setDetailsOffer(o); } }}
+                  >
                     <div className="aspect-[16/10] overflow-hidden relative">
                       {o.cover_image ? (
                         <img src={o.cover_image} alt={o.title} loading="lazy"
@@ -322,6 +329,9 @@ export default function PartnerLanding() {
                           <Sparkles className="text-white/40" size={36} />
                         </div>
                       )}
+                      <span className="absolute bottom-3 right-3 inline-flex items-center gap-1 text-[10px] uppercase tracking-[0.2em] px-2.5 py-1 rounded-full bg-white/90 text-foreground shadow-sm">
+                        View details <ArrowRight size={11} />
+                      </span>
                     </div>
                     <div className="p-5">
                       <div className="flex items-center gap-2 mb-2 text-[10px] uppercase tracking-[0.2em]" style={{ color: brand }}>
@@ -348,17 +358,17 @@ export default function PartnerLanding() {
                         </div>
                         {cta && (
                           "onClick" in cta ? (
-                            <button onClick={cta.onClick}
+                            <button onClick={(e) => { e.stopPropagation(); cta.onClick!(); }}
                               className="inline-flex items-center gap-1 text-sm font-medium hover:opacity-80" style={{ color: brand }}>
                               {cta.label} <ArrowRight size={14} />
                             </button>
                           ) : cta.external ? (
-                            <a href={cta.href} target="_blank" rel="noopener noreferrer"
+                            <a href={cta.href} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}
                               className="inline-flex items-center gap-1 text-sm font-medium hover:opacity-80" style={{ color: brand }}>
                               {cta.label} <ArrowRight size={14} />
                             </a>
                           ) : (
-                            <a href={cta.href}
+                            <a href={cta.href} onClick={(e) => e.stopPropagation()}
                               className="inline-flex items-center gap-1 text-sm font-medium hover:opacity-80" style={{ color: brand }}>
                               {cta.label} <ArrowRight size={14} />
                             </a>
