@@ -307,7 +307,7 @@ export default function PartnerLanding() {
               <p className="text-[11px] uppercase tracking-[0.3em] mb-2" style={{ color: brand }}>{t("partner.offers.eyebrow")}</p>
               <h2 className="text-3xl md:text-4xl font-light">{t("partner.offers.title")}</h2>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-7">
               {offers.map((o) => {
                 const cta = (() => {
                   if (o.cta_type === "none") return null;
@@ -324,70 +324,146 @@ export default function PartnerLanding() {
                   }
                   return { href: "#offers", label: o.cta_label || t("partner.offers.book_workshop"), external: false };
                 })();
+                const eventDate = o.kind === "event" && o.event_at ? parseISO(o.event_at) : null;
                 return (
                   <article
                     key={o.assignment_id}
                     onClick={() => setDetailsOffer(o)}
-                    className="group bg-card border border-border rounded-2xl overflow-hidden hover:shadow-xl hover:-translate-y-0.5 transition cursor-pointer text-start focus:outline-none focus:ring-2 focus:ring-offset-2"
+                    className="group relative bg-card rounded-[28px] overflow-hidden cursor-pointer text-start focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all duration-500 hover:-translate-y-1"
+                    style={{
+                      boxShadow: "0 1px 2px hsl(var(--foreground)/0.04), 0 12px 32px -18px hsl(var(--foreground)/0.18)",
+                    }}
                     role="button"
                     tabIndex={0}
                     onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setDetailsOffer(o); } }}
                   >
-                    <div className="aspect-[16/10] overflow-hidden relative">
+                    {/* Hairline frame that warms up on hover */}
+                    <div className="pointer-events-none absolute inset-0 rounded-[28px] border border-border/70 group-hover:border-[color:var(--brand)] transition-colors" style={{ ["--brand" as any]: brand }} />
+
+                    {/* IMAGE */}
+                    <div className="relative aspect-[5/4] overflow-hidden">
                       {o.cover_image ? (
                         <img src={o.cover_image} alt={o.title} loading="lazy"
-                          className="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
+                          className="w-full h-full object-cover group-hover:scale-[1.06] transition-transform duration-[900ms] ease-out" />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center"
                           style={{ background: `linear-gradient(135deg, ${brand}, ${brand}aa)` }}>
                           <Sparkles className="text-white/40" size={36} />
                         </div>
                       )}
-                      <span className="absolute bottom-3 end-3 inline-flex items-center gap-1 text-[10px] uppercase tracking-[0.2em] px-2.5 py-1 rounded-full bg-white/90 text-foreground shadow-sm">
-                        {t("partner.offers.view_details")} <ArrowRight size={11} className={cn(isRTL && "rotate-180")} />
+                      {/* Soft bottom scrim so chips stay legible */}
+                      <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/45 via-black/10 to-transparent" />
+
+                      {/* Kind chip top-start */}
+                      <span
+                        className="absolute top-3.5 start-3.5 inline-flex items-center gap-1.5 text-[10px] uppercase tracking-[0.22em] font-medium px-2.5 py-1 rounded-full backdrop-blur-md bg-white/85 shadow-sm"
+                        style={{ color: brand }}
+                      >
+                        <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: brand }} />
+                        {o.kind === "event" ? t("partner.offers.event") : t("partner.offers.offer")}
+                      </span>
+
+                      {/* Date stamp — overhangs onto content (events) */}
+                      {eventDate && (
+                        <div
+                          className="absolute -bottom-6 end-4 flex flex-col items-center justify-center w-16 h-16 rounded-2xl bg-white shadow-lg ring-1 ring-black/5 rotate-[-4deg] group-hover:rotate-0 transition-transform duration-500"
+                        >
+                          <span className="text-[9px] uppercase tracking-[0.2em] font-semibold" style={{ color: brand }}>
+                            {format(eventDate, "MMM")}
+                          </span>
+                          <span className="text-2xl font-semibold leading-none text-foreground -mt-0.5">
+                            {format(eventDate, "d")}
+                          </span>
+                          <span className="text-[9px] text-muted-foreground mt-0.5 font-medium">
+                            {format(eventDate, "HH:mm")}
+                          </span>
+                        </div>
+                      )}
+
+                      {/* View details pill bottom-start */}
+                      <span className="absolute bottom-3.5 start-3.5 inline-flex items-center gap-1 text-[10px] uppercase tracking-[0.2em] font-medium px-2.5 py-1.5 rounded-full bg-white/95 text-foreground shadow-sm group-hover:bg-white transition">
+                        {t("partner.offers.view_details")}
+                        <ArrowRight size={11} className={cn("transition-transform group-hover:translate-x-0.5", isRTL && "rotate-180 group-hover:-translate-x-0.5")} />
                       </span>
                     </div>
-                    <div className="p-5">
-                      <div className="flex items-center gap-2 mb-2 text-[10px] uppercase tracking-[0.2em]" style={{ color: brand }}>
-                        <span className="px-2 py-0.5 rounded-full text-white" style={{ backgroundColor: brand }}>
-                          {o.kind === "event" ? t("partner.offers.event") : t("partner.offers.offer")}
-                        </span>
-                        {o.kind === "event" && o.event_at && (
-                          <span className="flex items-center gap-1 text-muted-foreground">
-                            <Calendar size={11} /> {format(parseISO(o.event_at), "MMM d, HH:mm")}
-                          </span>
-                        )}
+
+                    {/* Zellige-style decorative corner motif */}
+                    <svg
+                      className="pointer-events-none absolute top-[calc(80%-2px)] end-5 w-10 h-10 opacity-[0.12] group-hover:opacity-30 transition-opacity"
+                      viewBox="0 0 40 40"
+                      fill="none"
+                      aria-hidden
+                      style={{ color: brand }}
+                    >
+                      <path d="M20 2 L26 14 L38 14 L28 22 L32 34 L20 27 L8 34 L12 22 L2 14 L14 14 Z" stroke="currentColor" strokeWidth="1.2" />
+                    </svg>
+
+                    {/* CONTENT */}
+                    <div className="px-5 pt-6 pb-5 md:px-6 md:pt-7 md:pb-6 relative">
+                      <h3 className="font-serif text-[1.35rem] md:text-[1.45rem] leading-[1.15] tracking-tight text-foreground mb-1.5">
+                        {o.title}
+                      </h3>
+                      {o.subtitle && (
+                        <p className="text-[13px] italic text-muted-foreground mb-3" style={{ color: brand }}>
+                          {o.subtitle}
+                        </p>
+                      )}
+                      {o.description && (
+                        <p className="text-[13.5px] leading-relaxed text-foreground/75 line-clamp-3 mb-5">
+                          {o.description}
+                        </p>
+                      )}
+
+                      {/* Divider with brand dot */}
+                      <div className="flex items-center gap-2 mb-4">
+                        <span className="h-px flex-1 bg-border" />
+                        <span className="w-1 h-1 rounded-full" style={{ backgroundColor: brand }} />
+                        <span className="h-px flex-1 bg-border" />
                       </div>
-                      <h3 className="text-lg font-semibold mb-1">{o.title}</h3>
-                      {o.subtitle && <p className="text-sm text-muted-foreground mb-2">{o.subtitle}</p>}
-                      {o.description && <p className="text-sm text-foreground/80 line-clamp-3 mb-3">{o.description}</p>}
-                      <div className="flex items-center justify-between gap-3 mt-3">
-                        <div className="text-sm">
-                          {o.price != null && (
-                            <span className="font-semibold">{o.price} {o.currency}</span>
+
+                      {/* Footer row */}
+                      <div className="flex items-end justify-between gap-3">
+                        <div className="min-w-0">
+                          {o.price != null ? (
+                            <div className="flex items-baseline gap-1.5">
+                              <span className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">{t("partner.offers.from") || "from"}</span>
+                              <span className="text-lg font-semibold text-foreground">{o.price}</span>
+                              <span className="text-xs text-muted-foreground">{o.currency}</span>
+                            </div>
+                          ) : (
+                            <span className="text-xs text-muted-foreground">·</span>
                           )}
                           {o.capacity != null && (
-                            <span className="text-xs text-muted-foreground ms-2">· {o.capacity} {t("partner.offers.spots")}</span>
+                            <div className="flex items-center gap-1 text-[11px] text-muted-foreground mt-0.5">
+                              <Users size={11} /> {o.capacity} {t("partner.offers.spots")}
+                            </div>
                           )}
                         </div>
-                        {cta && (
-                          "onClick" in cta ? (
-                            <button onClick={(e) => { e.stopPropagation(); cta.onClick!(); }}
-                              className="inline-flex items-center gap-1 text-sm font-medium hover:opacity-80" style={{ color: brand }}>
-                              {cta.label} <ArrowRight size={14} className={cn(isRTL && "rotate-180")} />
-                            </button>
-                          ) : cta.external ? (
-                            <a href={cta.href} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}
-                              className="inline-flex items-center gap-1 text-sm font-medium hover:opacity-80" style={{ color: brand }}>
-                              {cta.label} <ArrowRight size={14} className={cn(isRTL && "rotate-180")} />
+                        {cta && (() => {
+                          const cls = "group/cta inline-flex items-center gap-1.5 text-[13px] font-medium whitespace-nowrap";
+                          const inner = (
+                            <>
+                              <span className="relative">
+                                {cta.label}
+                                <span className="absolute -bottom-0.5 start-0 h-px w-full origin-start scale-x-0 group-hover/cta:scale-x-100 transition-transform duration-300" style={{ backgroundColor: brand }} />
+                              </span>
+                              <ArrowRight size={14} className={cn("transition-transform group-hover/cta:translate-x-0.5", isRTL && "rotate-180 group-hover/cta:-translate-x-0.5")} />
+                            </>
+                          );
+                          if ("onClick" in cta) {
+                            return (
+                              <button onClick={(e) => { e.stopPropagation(); cta.onClick!(); }} className={cls} style={{ color: brand }}>
+                                {inner}
+                              </button>
+                            );
+                          }
+                          return (
+                            <a href={cta.href} target={cta.external ? "_blank" : undefined} rel={cta.external ? "noopener noreferrer" : undefined}
+                              onClick={(e) => e.stopPropagation()} className={cls} style={{ color: brand }}>
+                              {inner}
                             </a>
-                          ) : (
-                            <a href={cta.href} onClick={(e) => e.stopPropagation()}
-                              className="inline-flex items-center gap-1 text-sm font-medium hover:opacity-80" style={{ color: brand }}>
-                              {cta.label} <ArrowRight size={14} className={cn(isRTL && "rotate-180")} />
-                            </a>
-                          )
-                        )}
+                          );
+                        })()}
                       </div>
                     </div>
                   </article>
