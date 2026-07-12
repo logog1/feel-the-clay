@@ -96,6 +96,18 @@ export default function PartnerLanding() {
   const [bookingOffer, setBookingOffer] = useState<PartnerOfferPublic | null>(null);
   const [detailsOffer, setDetailsOffer] = useState<PartnerOfferPublic | null>(null);
   const [bookMode, setBookMode] = useState<"small" | "large">("small");
+  const [bookInView, setBookInView] = useState(false);
+
+  useEffect(() => {
+    const el = document.getElementById("book");
+    if (!el) return;
+    const io = new IntersectionObserver(
+      ([entry]) => setBookInView(entry.isIntersecting),
+      { rootMargin: "-20% 0px -20% 0px", threshold: 0 }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [partner?.id, expLoading]);
 
   const refreshAvailability = async () => {
     const { data } = await supabase.rpc("get_sofitel_availability");
@@ -414,7 +426,7 @@ export default function PartnerLanding() {
       </section>
 
       {/* BOOKING — small groups pick a scheduled slot, big groups request a custom time */}
-      <section id="book" className="bg-background section-padding">
+      <section id="book" className="bg-background section-padding scroll-mt-16">
         <div className="container-wide max-w-5xl">
           <div className="text-center mb-8">
             <p className="text-[11px] uppercase tracking-[0.3em] mb-2" style={{ color: brand }}>{t("partner.book.section_eyebrow")}</p>
@@ -437,7 +449,7 @@ export default function PartnerLanding() {
                     key={opt.id}
                     onClick={() => setBookMode(opt.id)}
                     className={cn(
-                      "relative text-start p-4 md:p-5 rounded-2xl border-2 transition bg-card",
+                      "relative text-start p-3.5 md:p-5 rounded-2xl border-2 transition bg-card min-h-[92px] active:scale-[0.99]",
                       active ? "shadow-sm" : "border-border hover:border-foreground/20"
                     )}
                     style={active ? { borderColor: brand, background: `${brand}0a` } : undefined}
@@ -515,9 +527,32 @@ export default function PartnerLanding() {
       </section>
 
       {/* FOOTER */}
-      <footer className="border-t border-border/40 py-8 text-center text-xs text-muted-foreground capitalize">
+      <footer className="border-t border-border/40 py-8 pb-24 md:pb-8 text-center text-xs text-muted-foreground capitalize">
         <p className="capitalize">{partner.name} × Terraria · {t("partner.footer")}</p>
       </footer>
+
+      {/* Mobile sticky Book CTA — hidden when #book is in view */}
+      <div
+        className={cn(
+          "md:hidden fixed inset-x-0 bottom-0 z-40 px-3 pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] transition-transform duration-300",
+          bookInView ? "translate-y-full pointer-events-none" : "translate-y-0"
+        )}
+        style={{ background: "linear-gradient(to top, hsl(var(--background)) 70%, hsl(var(--background)/0))" }}
+      >
+        <a
+          href="#book"
+          onClick={(e) => {
+            e.preventDefault();
+            document.getElementById("book")?.scrollIntoView({ behavior: "smooth" });
+          }}
+          className="flex items-center justify-center gap-2 w-full min-h-[52px] rounded-2xl font-medium text-[15px] shadow-lg active:scale-[0.98] transition"
+          style={{ background: brand, color: "white" }}
+        >
+          <Calendar size={18} />
+          {t("partner.offers.book_workshop")}
+        </a>
+      </div>
+
 
       {selected && (
         <BookingDialog
@@ -615,8 +650,8 @@ function SmallGroupSlots({
             disabled={full}
             onClick={() => !full && onPickExperience(e)}
             className={cn(
-              "w-full text-start bg-card border border-border rounded-2xl p-4 flex items-center gap-4 transition",
-              full ? "opacity-60 cursor-not-allowed" : "hover:border-foreground/30 hover:-translate-y-0.5 hover:shadow-sm cursor-pointer"
+              "w-full text-start bg-card border border-border rounded-2xl p-3 md:p-4 flex items-center gap-3 md:gap-4 min-h-[88px] transition",
+              full ? "opacity-60 cursor-not-allowed" : "hover:border-foreground/30 hover:-translate-y-0.5 hover:shadow-sm active:scale-[0.99] cursor-pointer"
             )}
           >
             {e.cover_image ? (
@@ -663,7 +698,7 @@ function SmallGroupSlots({
           <button
             key={o.assignment_id}
             onClick={() => onPickOffer(o)}
-            className="w-full text-start bg-card border border-border rounded-2xl p-4 flex items-center gap-4 hover:border-foreground/30 hover:-translate-y-0.5 hover:shadow-sm transition cursor-pointer"
+            className="w-full text-start bg-card border border-border rounded-2xl p-3 md:p-4 flex items-center gap-3 md:gap-4 min-h-[88px] hover:border-foreground/30 hover:-translate-y-0.5 hover:shadow-sm active:scale-[0.99] transition cursor-pointer"
           >
             {o.cover_image ? (
               <img src={o.cover_image} alt={o.title} loading="lazy"
