@@ -214,7 +214,7 @@ export default function PartnerLanding() {
       <SEOHead
         title={`${partner.name} × Terraria craft experiences`}
         description={intro || `Craft workshops and cultural experiences for ${partner.name} guests.`}
-        path={`/partners/${partner.slug}`}
+        path={`/${partner.slug}`}
         image={partner.cover_image || undefined}
       />
 
