@@ -417,19 +417,19 @@ export default function PartnerLanding() {
       <section id="book" className="bg-background section-padding">
         <div className="container-wide max-w-5xl">
           <div className="text-center mb-8">
-            <p className="text-[11px] uppercase tracking-[0.3em] mb-2" style={{ color: brand }}>Book</p>
-            <h2 className="text-3xl md:text-4xl font-light">Reserve your experience</h2>
+            <p className="text-[11px] uppercase tracking-[0.3em] mb-2" style={{ color: brand }}>{t("partner.book.section_eyebrow")}</p>
+            <h2 className="text-3xl md:text-4xl font-light">{t("partner.book.section_title")}</h2>
           </div>
 
           {/* Group-size selector */}
           <div className="max-w-3xl mx-auto mb-6">
             <p className="text-center text-xs uppercase tracking-[0.2em] text-muted-foreground mb-3">
-              How many guests?
+              {t("partner.book.gs_prompt")}
             </p>
             <div className="grid grid-cols-2 gap-3">
               {([
-                { id: "small" as const, count: "1–3", title: "Small group", sub: "Pick an existing time" },
-                { id: "large" as const, count: "4+", title: "Larger group", sub: "Request a custom time" },
+                { id: "small" as const, count: "1–3", title: t("partner.book.gs_small_title"), sub: t("partner.book.gs_small_sub") },
+                { id: "large" as const, count: "4+", title: t("partner.book.gs_large_title"), sub: t("partner.book.gs_large_sub") },
               ]).map((opt) => {
                 const active = bookMode === opt.id;
                 return (
@@ -452,7 +452,7 @@ export default function PartnerLanding() {
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2 flex-wrap">
                           <span className="text-lg font-semibold leading-none">{opt.count}</span>
-                          <span className="text-xs text-muted-foreground">guests</span>
+                          <span className="text-xs text-muted-foreground">{t("partner.book.gs_guests")}</span>
                         </div>
                         <p className="font-medium text-sm mt-1.5">{opt.title}</p>
                         <p className="text-xs text-muted-foreground">{opt.sub}</p>
@@ -486,11 +486,11 @@ export default function PartnerLanding() {
               <p className="text-sm text-foreground/80 leading-relaxed">
                 {bookMode === "small" ? (
                   <>
-                    <span className="font-medium">Browse the upcoming sessions below</span> and pick a time that suits you. Tap a card to reserve your spot.
+                    <span className="font-medium">{t("partner.book.help_small_strong")}</span>{t("partner.book.help_small_rest")}
                   </>
                 ) : (
                   <>
-                    <span className="font-medium">Can't find a suitable time?</span> Use this form to request another date during the week or in the future, and our team will confirm with you.
+                    <span className="font-medium">{t("partner.book.help_large_strong")}</span>{t("partner.book.help_large_rest")}
                   </>
                 )}
               </p>
@@ -506,6 +506,7 @@ export default function PartnerLanding() {
               isRTL={isRTL}
               onPickExperience={(e) => setSelected(e)}
               onPickOffer={(o) => setBookingOffer(o)}
+              t={t}
             />
           ) : (
             <BookingFormSection />
