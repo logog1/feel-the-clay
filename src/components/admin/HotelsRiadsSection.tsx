@@ -57,7 +57,6 @@ type NewPartnerForm = {
   brand_color: string;
   logo_url: string;
   rooms_count: string;
-  stars: string;
   qr_codes_installed: string;
   commission_rate: string;
   commission_notes: string;
@@ -68,7 +67,7 @@ type NewPartnerForm = {
 const EMPTY_NEW: NewPartnerForm = {
   name: "", slug: "", type: "riad", city: "", address: "",
   brand_color: "#c4654a", logo_url: "",
-  rooms_count: "", stars: "", qr_codes_installed: "0",
+  rooms_count: "", qr_codes_installed: "0",
   commission_rate: "", commission_notes: "",
   partnership_status: "prospect", booking_channel: "concierge",
 };
@@ -115,7 +114,7 @@ export function HotelsRiadsSection() {
       brand_color: newPartner.brand_color,
       logo_url: newPartner.logo_url || null,
       rooms_count: newPartner.rooms_count ? Number(newPartner.rooms_count) : null,
-      stars: newPartner.stars ? Number(newPartner.stars) : null,
+      
       qr_codes_installed: newPartner.qr_codes_installed ? Number(newPartner.qr_codes_installed) : 0,
       commission_rate: newPartner.commission_rate ? Number(newPartner.commission_rate) : null,
       commission_notes: newPartner.commission_notes || null,
@@ -310,15 +309,6 @@ export function HotelsRiadsSection() {
                   <Label>City</Label>
                   <Input value={newPartner.city} onChange={(e) => setNewPartner({ ...newPartner, city: e.target.value })} placeholder="Tetouan" />
                 </div>
-                <div>
-                  <Label>Star rating</Label>
-                  <select className="w-full h-10 rounded-md border border-input bg-background px-3 text-sm"
-                    value={newPartner.stars}
-                    onChange={(e) => setNewPartner({ ...newPartner, stars: e.target.value })}>
-                    <option value="">—</option>
-                    {[1,2,3,4,5].map(n => <option key={n} value={n}>{n} ★</option>)}
-                  </select>
-                </div>
                 <div className="col-span-2">
                   <Label>Full address</Label>
                   <Input value={newPartner.address} onChange={(e) => setNewPartner({ ...newPartner, address: e.target.value })} placeholder="Av. des FAR, Tetouan" />
@@ -451,7 +441,7 @@ function PartnerEditor({ partner, onClose }: { partner: HotelPartner; onClose: (
       type: form.type,
       city: form.city,
       address: form.address,
-      stars: form.stars,
+      
       brand_color: form.brand_color,
       logo_url: form.logo_url,
       cover_image: form.cover_image,
@@ -605,14 +595,6 @@ function PartnerEditor({ partner, onClose }: { partner: HotelPartner; onClose: (
                 <div>
                   <Label>Rooms</Label>
                   <Input type="number" min={0} value={form.rooms_count ?? ""} onChange={(e) => setForm({ ...form, rooms_count: e.target.value ? Number(e.target.value) : null })} />
-                </div>
-                <div>
-                  <Label>Star rating</Label>
-                  <select className="w-full h-10 rounded-md border border-input bg-background px-3 text-sm"
-                    value={form.stars ?? ""} onChange={(e) => setForm({ ...form, stars: e.target.value ? Number(e.target.value) : null })}>
-                    <option value="">—</option>
-                    {[1,2,3,4,5].map(n => <option key={n} value={n}>{n} ★</option>)}
-                  </select>
                 </div>
                 <div className="col-span-2">
                   <Label>Address</Label>
