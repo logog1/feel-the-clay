@@ -441,7 +441,7 @@ function PartnerEditor({ partner, onClose }: { partner: HotelPartner; onClose: (
       type: form.type,
       city: form.city,
       address: form.address,
-      stars: form.stars,
+      
       brand_color: form.brand_color,
       logo_url: form.logo_url,
       cover_image: form.cover_image,
