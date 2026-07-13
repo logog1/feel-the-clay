@@ -252,11 +252,10 @@ const KitZelligePreview = () => {
   }, [colors]);
 
   const kitLabel = useMemo(() => {
-    const preset = PRESETS.find((p) => p.id === presetId);
-    if (mode === "ready" && preset) return `${t.title} — ${t.presetLine}: ${preset.label[language]}`;
+    if (mode === "ready" && activePreset) return `${t.title} — ${t.presetLine}: ${activePreset.label[language]}`;
     const palette = REGIONS.map((r) => `${r.label[language]}=${colors[r.key]}`).join(", ");
     return `${t.title} — ${t.customLine} (${palette})`;
-  }, [mode, presetId, colors, language, t]);
+  }, [mode, activePreset, colors, language, t]);
 
   const applyColor = (hex: string) => setColors((c) => ({ ...c, [selected]: hex }));
 
