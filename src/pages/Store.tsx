@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { ShoppingCart, ShoppingBag, Plus, Check, Sparkles, Heart, GraduationCap, Crown, ChevronLeft, ChevronRight, Scissors, X, PackageOpen, type LucideIcon } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { ShoppingCart, ShoppingBag, Plus, Check, Sparkles, Heart, GraduationCap, Crown, ChevronLeft, ChevronRight, Scissors, X, PackageOpen, Package, type LucideIcon } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useCart } from "@/contexts/CartContext";
 import { cn } from "@/lib/utils";
@@ -32,6 +32,7 @@ import productCatMug2 from "@/assets/product-cat-mug-2.png";
 import productRugGeometric from "@/assets/product-rug-geometric.png";
 import productRugBlueWhite from "@/assets/product-rug-blue-white.png";
 import productRugDiamond from "@/assets/product-rug-diamond.png";
+import productKitZellige from "@/assets/zellige-kit-gallery-1.jpg";
 
 const imageMap: Record<string, string> = {
   "product-heart-mug.png": productHeartMug,
@@ -54,7 +55,8 @@ const imageMap: Record<string, string> = {
   "product-cat-mug-2.png": productCatMug2,
   "product-rug-geometric.png": productRugGeometric,
   "product-rug-blue-white.png": productRugBlueWhite,
-  "product-rug-diamond.png": productRugDiamond
+  "product-rug-diamond.png": productRugDiamond,
+  "product-kit-zellige.jpg": productKitZellige
 };
 
 interface Product {
@@ -76,7 +78,8 @@ const categoryIcons: Record<string, LucideIcon> = {
   artisan: Sparkles,
   traveler: Heart,
   student: GraduationCap,
-  amazigh: Scissors
+  amazigh: Scissors,
+  kits: Package,
 };
 
 const ImageCarousel = ({ images, alt }: { images: string[]; alt: string }) => {
@@ -225,6 +228,11 @@ const ProductCard = ({ product, onSelect }: { product: Product; onSelect: () => 
   const handleAdd = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (product.is_sold_out) return;
+    // Kit Zellige requires a collection choice — route to its page instead of adding directly.
+    if (product.id === "kit-zellige") {
+      onSelect();
+      return;
+    }
     addItem({ id: product.id, name: product.name, price: product.price, image: resolvedImages[0], category: product.category });
     setAdded(true);
     setTimeout(() => setAdded(false), 1500);
@@ -306,6 +314,7 @@ interface StoreSection {
 const Store = () => {
   const { t, language } = useLanguage();
   const { totalItems } = useCart();
+  const navigate = useNavigate();
   const [products, setProducts] = useState<Product[]>([]);
   const [sections, setSections] = useState<StoreSection[]>([]);
   const [loading, setLoading] = useState(true);
@@ -398,7 +407,17 @@ const Store = () => {
 
                 <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 md:gap-4">
                   {catProducts.map((product) =>
-                    <ProductCard key={product.id} product={product} onSelect={() => setSelectedProduct(product)} />
+                    <ProductCard
+                      key={product.id}
+                      product={product}
+                      onSelect={() => {
+                        if (product.id === "kit-zellige") {
+                          navigate("/store/kit-zellige");
+                        } else {
+                          setSelectedProduct(product);
+                        }
+                      }}
+                    />
                   )}
                 </div>
               </section>

@@ -18,9 +18,11 @@ import gallery1 from "@/assets/zellige-kit-gallery-1.jpg";
 import gallery2 from "@/assets/zellige-kit-gallery-2.jpg";
 import gallery3 from "@/assets/zellige-kit-gallery-3.jpg";
 import gallery4 from "@/assets/zellige-kit-gallery-4.jpg";
+import { useZelligeCollections } from "@/hooks/use-zellige-collections";
+import { useKitZelligeSettings } from "@/hooks/use-kit-zellige-settings";
 
 
-const KIT_PRICE = 350;
+const KIT_PRICE_FALLBACK = 390;
 const orderSchema = z.object({
   name: z.string().trim().min(2).max(100),
   phone: z.string().trim().min(6).max(30),
@@ -130,14 +132,53 @@ const BENEFITS: Record<Language, { title: string; description: string; icon: typ
   ],
 };
 
+type PresetLike = { id: string; label: Record<Language, string>; colors: Record<string, string>; price?: number; description?: string };
+
 const KitZelligePreview = () => {
   const { language } = useLanguage();
   const t = COPY[language];
+  const { items: dbCollections } = useZelligeCollections({ publishedOnly: true });
+  const { customizeEnabled } = useKitZelligeSettings();
+
+  // Presets shown to the visitor: DB collections when available, else hardcoded.
+  const runtimePresets: PresetLike[] = useMemo(() => {
+    if (dbCollections && dbCollections.length > 0) {
+      return dbCollections.map((c) => ({
+        id: c.slug,
+        label: { en: c.name, fr: c.name, es: c.name, ar: c.name },
+        colors: c.colors,
+        price: Number(c.price) || KIT_PRICE_FALLBACK,
+        description: c.description,
+      }));
+    }
+    return PRESETS;
+  }, [dbCollections]);
+
   const [mode, setMode] = useState<"ready" | "custom">("ready");
-  const [presetId, setPresetId] = useState<string>(PRESETS[0].id);
-  const [colors, setColors] = useState<Record<string, string>>(PRESETS[0].colors);
+  const [presetId, setPresetId] = useState<string>(runtimePresets[0]?.id || PRESETS[0].id);
+  const [colors, setColors] = useState<Record<string, string>>(runtimePresets[0]?.colors || PRESETS[0].colors);
   const [selected, setSelected] = useState<string>(REGIONS[0].key);
-  
+
+  // Sync state to first preset when DB collections load.
+  useEffect(() => {
+    if (!runtimePresets.length) return;
+    if (!runtimePresets.find((p) => p.id === presetId)) {
+      setPresetId(runtimePresets[0].id);
+      setColors(runtimePresets[0].colors);
+    }
+  }, [runtimePresets, presetId]);
+
+  // If customize is disabled and mode was custom, snap back to ready.
+  useEffect(() => {
+    if (!customizeEnabled && mode === "custom") setMode("ready");
+  }, [customizeEnabled, mode]);
+
+  const activePreset = useMemo(
+    () => runtimePresets.find((p) => p.id === presetId) || runtimePresets[0],
+    [runtimePresets, presetId]
+  );
+  const KIT_PRICE = activePreset?.price ?? KIT_PRICE_FALLBACK;
+
   const [form, setForm] = useState<OrderForm>({ name: "", phone: "", address: "", email: "", notes: "" });
   const [errors, setErrors] = useState<Partial<Record<keyof OrderForm, string>>>({});
   const [showForm, setShowForm] = useState(false);
@@ -148,8 +189,7 @@ const KitZelligePreview = () => {
 
   // Availability filters (admin-controlled). Empty maps => show everything.
   const [availPieces, setAvailPieces] = useState<Set<string> | null>(null);
-  const [availColors, setAvailColors] = useState<Set<string> | null>(null);
-  const [availPresets, setAvailPresets] = useState<Set<string> | null>(null);
+  const [availColorsSet, setAvailColorsSet] = useState<Set<string> | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -161,16 +201,13 @@ const KitZelligePreview = () => {
       if (cancelled || !data) return;
       const norm = (v: string) => v.toLowerCase();
       const pieces = new Set<string>();
-      const colors = new Set<string>();
-      const presets = new Set<string>();
+      const cols = new Set<string>();
       for (const row of data as { kind: string; key: string }[]) {
         if (row.kind === "piece") pieces.add(norm(row.key));
-        else if (row.kind === "color") colors.add(norm(row.key));
-        else if (row.kind === "preset") presets.add(row.key);
+        else if (row.kind === "color") cols.add(norm(row.key));
       }
       setAvailPieces(pieces);
-      setAvailColors(colors);
-      setAvailPresets(presets);
+      setAvailColorsSet(cols);
     })();
     return () => { cancelled = true; };
   }, []);
@@ -180,30 +217,21 @@ const KitZelligePreview = () => {
     [availPieces]
   );
   const visiblePalette = useMemo(
-    () => (availColors && availColors.size ? PALETTE.filter((c) => availColors.has(c.toLowerCase())) : PALETTE),
-    [availColors]
+    () => (availColorsSet && availColorsSet.size ? PALETTE.filter((c) => availColorsSet.has(c.toLowerCase())) : PALETTE),
+    [availColorsSet]
   );
-  const visiblePresets = useMemo(
-    () => (availPresets && availPresets.size ? PRESETS.filter((p) => availPresets.has(p.id)) : PRESETS),
-    [availPresets]
-  );
+  const visiblePresets = runtimePresets;
 
-  // Keep selection/preset valid if admin disables current choice.
+  // Keep selection valid if admin disables current piece.
   useEffect(() => {
     if (visibleRegions.length && !visibleRegions.find((r) => r.key === selected)) {
       setSelected(visibleRegions[0].key);
     }
   }, [visibleRegions, selected]);
-  useEffect(() => {
-    if (visiblePresets.length && !visiblePresets.find((p) => p.id === presetId)) {
-      setPresetId(visiblePresets[0].id);
-      setColors(visiblePresets[0].colors);
-    }
-  }, [visiblePresets, presetId]);
 
 
   const applyPreset = (id: string) => {
-    const p = PRESETS.find((x) => x.id === id);
+    const p = runtimePresets.find((x) => x.id === id);
     if (!p) return;
     setPresetId(id);
     setColors(p.colors);
@@ -224,11 +252,10 @@ const KitZelligePreview = () => {
   }, [colors]);
 
   const kitLabel = useMemo(() => {
-    const preset = PRESETS.find((p) => p.id === presetId);
-    if (mode === "ready" && preset) return `${t.title} — ${t.presetLine}: ${preset.label[language]}`;
+    if (mode === "ready" && activePreset) return `${t.title} — ${t.presetLine}: ${activePreset.label[language]}`;
     const palette = REGIONS.map((r) => `${r.label[language]}=${colors[r.key]}`).join(", ");
     return `${t.title} — ${t.customLine} (${palette})`;
-  }, [mode, presetId, colors, language, t]);
+  }, [mode, activePreset, colors, language, t]);
 
   const applyColor = (hex: string) => setColors((c) => ({ ...c, [selected]: hex }));
 
@@ -249,7 +276,7 @@ const KitZelligePreview = () => {
     setSubmitError(null);
     setSending(true);
     try {
-      const preset = PRESETS.find((p) => p.id === presetId);
+      const preset = activePreset;
       const { error } = await supabase.functions.invoke("send-notification", {
         body: {
           type: "purchase",
@@ -325,21 +352,35 @@ const KitZelligePreview = () => {
             </div>
             <p className="text-xs text-muted-foreground text-center">{t.hint}</p>
 
-            {/* Mode toggle: Ready models vs Customize */}
-            <div className="inline-flex p-1 rounded-full bg-muted/60 border border-border/40">
-              {(["ready", "custom"] as const).map((m) => (
-                <button
-                  key={m}
-                  onClick={() => setMode(m)}
-                  className={cn(
-                    "px-4 py-1.5 rounded-full text-xs font-bold transition-all",
-                    mode === m ? "bg-cta text-primary-foreground shadow" : "text-foreground/70 hover:text-foreground"
-                  )}
-                >
-                  {m === "ready" ? t.modeReady : t.modeCustom}
-                </button>
-              ))}
-            </div>
+            {/* Mode toggle: Ready models vs Customize (Customize hidden until admin enables it) */}
+            {customizeEnabled ? (
+              <div className="inline-flex p-1 rounded-full bg-muted/60 border border-border/40">
+                {(["ready", "custom"] as const).map((m) => (
+                  <button
+                    key={m}
+                    onClick={() => setMode(m)}
+                    className={cn(
+                      "px-4 py-1.5 rounded-full text-xs font-bold transition-all",
+                      mode === m ? "bg-cta text-primary-foreground shadow" : "text-foreground/70 hover:text-foreground"
+                    )}
+                  >
+                    {m === "ready" ? t.modeReady : t.modeCustom}
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-muted/60 border border-border/40 text-[11px] text-muted-foreground">
+                <Sparkles size={12} className="text-cta" />
+                <span className="font-semibold text-foreground">{t.modeReady}</span>
+                <span className="opacity-70">·</span>
+                <span>
+                  {language === "fr" ? "Personnalisation bientôt disponible"
+                    : language === "es" ? "Personalización próximamente"
+                    : language === "ar" ? "التخصيص قريباً"
+                    : "Custom colorways coming soon"}
+                </span>
+              </div>
+            )}
 
             {mode === "ready" ? (
               <div className="space-y-2">
