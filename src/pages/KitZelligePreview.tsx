@@ -18,9 +18,11 @@ import gallery1 from "@/assets/zellige-kit-gallery-1.jpg";
 import gallery2 from "@/assets/zellige-kit-gallery-2.jpg";
 import gallery3 from "@/assets/zellige-kit-gallery-3.jpg";
 import gallery4 from "@/assets/zellige-kit-gallery-4.jpg";
+import { useZelligeCollections } from "@/hooks/use-zellige-collections";
+import { useKitZelligeSettings } from "@/hooks/use-kit-zellige-settings";
 
 
-const KIT_PRICE = 350;
+const KIT_PRICE_FALLBACK = 390;
 const orderSchema = z.object({
   name: z.string().trim().min(2).max(100),
   phone: z.string().trim().min(6).max(30),
