@@ -76,7 +76,8 @@ const categoryIcons: Record<string, LucideIcon> = {
   artisan: Sparkles,
   traveler: Heart,
   student: GraduationCap,
-  amazigh: Scissors
+  amazigh: Scissors,
+  kits: Package,
 };
 
 const ImageCarousel = ({ images, alt }: { images: string[]; alt: string }) => {
@@ -306,6 +307,7 @@ interface StoreSection {
 const Store = () => {
   const { t, language } = useLanguage();
   const { totalItems } = useCart();
+  const navigate = useNavigate();
   const [products, setProducts] = useState<Product[]>([]);
   const [sections, setSections] = useState<StoreSection[]>([]);
   const [loading, setLoading] = useState(true);
@@ -398,7 +400,17 @@ const Store = () => {
 
                 <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 md:gap-4">
                   {catProducts.map((product) =>
-                    <ProductCard key={product.id} product={product} onSelect={() => setSelectedProduct(product)} />
+                    <ProductCard
+                      key={product.id}
+                      product={product}
+                      onSelect={() => {
+                        if (product.id === "kit-zellige") {
+                          navigate("/store/kit-zellige");
+                        } else {
+                          setSelectedProduct(product);
+                        }
+                      }}
+                    />
                   )}
                 </div>
               </section>
