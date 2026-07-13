@@ -452,11 +452,20 @@ const KitZelligePreview = () => {
                   type="button"
                   variant="cta"
                   size="lg"
-                  onClick={() => setShowForm(true)}
+                  onClick={() => {
+                    setShowForm(true);
+                    requestAnimationFrame(() => {
+                      const el = document.getElementById("kit-name");
+                      if (el) {
+                        el.scrollIntoView({ behavior: "smooth", block: "center" });
+                        setTimeout(() => el.focus({ preventScroll: true }), 350);
+                      }
+                    });
+                  }}
                   className="w-full"
                 >
                   <ShoppingBag size={16} />
-                  {t.submit}
+                  {t.order}
                 </Button>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-3">
