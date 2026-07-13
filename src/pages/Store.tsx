@@ -32,6 +32,7 @@ import productCatMug2 from "@/assets/product-cat-mug-2.png";
 import productRugGeometric from "@/assets/product-rug-geometric.png";
 import productRugBlueWhite from "@/assets/product-rug-blue-white.png";
 import productRugDiamond from "@/assets/product-rug-diamond.png";
+import productKitZellige from "@/assets/zellige-kit-gallery-1.jpg";
 
 const imageMap: Record<string, string> = {
   "product-heart-mug.png": productHeartMug,
@@ -54,7 +55,8 @@ const imageMap: Record<string, string> = {
   "product-cat-mug-2.png": productCatMug2,
   "product-rug-geometric.png": productRugGeometric,
   "product-rug-blue-white.png": productRugBlueWhite,
-  "product-rug-diamond.png": productRugDiamond
+  "product-rug-diamond.png": productRugDiamond,
+  "product-kit-zellige.jpg": productKitZellige
 };
 
 interface Product {
