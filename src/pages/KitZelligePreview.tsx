@@ -352,21 +352,35 @@ const KitZelligePreview = () => {
             </div>
             <p className="text-xs text-muted-foreground text-center">{t.hint}</p>
 
-            {/* Mode toggle: Ready models vs Customize */}
-            <div className="inline-flex p-1 rounded-full bg-muted/60 border border-border/40">
-              {(["ready", "custom"] as const).map((m) => (
-                <button
-                  key={m}
-                  onClick={() => setMode(m)}
-                  className={cn(
-                    "px-4 py-1.5 rounded-full text-xs font-bold transition-all",
-                    mode === m ? "bg-cta text-primary-foreground shadow" : "text-foreground/70 hover:text-foreground"
-                  )}
-                >
-                  {m === "ready" ? t.modeReady : t.modeCustom}
-                </button>
-              ))}
-            </div>
+            {/* Mode toggle: Ready models vs Customize (Customize hidden until admin enables it) */}
+            {customizeEnabled ? (
+              <div className="inline-flex p-1 rounded-full bg-muted/60 border border-border/40">
+                {(["ready", "custom"] as const).map((m) => (
+                  <button
+                    key={m}
+                    onClick={() => setMode(m)}
+                    className={cn(
+                      "px-4 py-1.5 rounded-full text-xs font-bold transition-all",
+                      mode === m ? "bg-cta text-primary-foreground shadow" : "text-foreground/70 hover:text-foreground"
+                    )}
+                  >
+                    {m === "ready" ? t.modeReady : t.modeCustom}
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-muted/60 border border-border/40 text-[11px] text-muted-foreground">
+                <Sparkles size={12} className="text-cta" />
+                <span className="font-semibold text-foreground">{t.modeReady}</span>
+                <span className="opacity-70">·</span>
+                <span>
+                  {language === "fr" ? "Personnalisation bientôt disponible"
+                    : language === "es" ? "Personalización próximamente"
+                    : language === "ar" ? "التخصيص قريباً"
+                    : "Custom colorways coming soon"}
+                </span>
+              </div>
+            )}
 
             {mode === "ready" ? (
               <div className="space-y-2">
