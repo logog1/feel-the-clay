@@ -302,7 +302,7 @@ const KitZelligePreview = () => {
         <div className="max-w-6xl mx-auto container-x section-y">
           <div className="grid md:grid-cols-2 gap-10 lg:gap-14">
             {/* Motif preview + builder directly underneath */}
-            <div className="space-y-5">
+            <div className="space-y-5 order-2 md:order-1">
               <div className="aspect-square rounded-3xl bg-card border-2 border-border/40 shadow-sm p-6 sm:p-10 overflow-hidden">
                 <div
                 role="img"
@@ -419,7 +419,7 @@ const KitZelligePreview = () => {
           </div>
 
           {/* Details + price + CTA */}
-          <div className="space-y-6">
+          <div className="space-y-6 order-1 md:order-2">
             <div>
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-cta/10 text-cta text-[11px] font-bold uppercase tracking-widest">
                 <Package size={12} /> {t.new}
