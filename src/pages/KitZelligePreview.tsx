@@ -276,7 +276,7 @@ const KitZelligePreview = () => {
     setSubmitError(null);
     setSending(true);
     try {
-      const preset = PRESETS.find((p) => p.id === presetId);
+      const preset = activePreset;
       const { error } = await supabase.functions.invoke("send-notification", {
         body: {
           type: "purchase",
