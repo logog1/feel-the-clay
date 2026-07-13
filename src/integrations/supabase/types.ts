@@ -1714,6 +1714,51 @@ export type Database = {
           },
         ]
       }
+      zellige_kit_collections: {
+        Row: {
+          colors: Json
+          created_at: string
+          description: string
+          id: string
+          image_url: string | null
+          is_published: boolean
+          name: string
+          price: number
+          slug: string
+          sort_order: number
+          stock: number
+          updated_at: string
+        }
+        Insert: {
+          colors?: Json
+          created_at?: string
+          description?: string
+          id?: string
+          image_url?: string | null
+          is_published?: boolean
+          name: string
+          price?: number
+          slug: string
+          sort_order?: number
+          stock?: number
+          updated_at?: string
+        }
+        Update: {
+          colors?: Json
+          created_at?: string
+          description?: string
+          id?: string
+          image_url?: string | null
+          is_published?: boolean
+          name?: string
+          price?: number
+          slug?: string
+          sort_order?: number
+          stock?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       zellige_kit_items: {
         Row: {
           created_at: string
