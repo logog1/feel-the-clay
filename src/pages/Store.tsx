@@ -226,6 +226,11 @@ const ProductCard = ({ product, onSelect }: { product: Product; onSelect: () => 
   const handleAdd = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (product.is_sold_out) return;
+    // Kit Zellige requires a collection choice — route to its page instead of adding directly.
+    if (product.id === "kit-zellige") {
+      onSelect();
+      return;
+    }
     addItem({ id: product.id, name: product.name, price: product.price, image: resolvedImages[0], category: product.category });
     setAdded(true);
     setTimeout(() => setAdded(false), 1500);
