@@ -132,14 +132,53 @@ const BENEFITS: Record<Language, { title: string; description: string; icon: typ
   ],
 };
 
+type PresetLike = { id: string; label: Record<Language, string>; colors: Record<string, string>; price?: number; description?: string };
+
 const KitZelligePreview = () => {
   const { language } = useLanguage();
   const t = COPY[language];
+  const { items: dbCollections } = useZelligeCollections({ publishedOnly: true });
+  const { customizeEnabled } = useKitZelligeSettings();
+
+  // Presets shown to the visitor: DB collections when available, else hardcoded.
+  const runtimePresets: PresetLike[] = useMemo(() => {
+    if (dbCollections && dbCollections.length > 0) {
+      return dbCollections.map((c) => ({
+        id: c.slug,
+        label: { en: c.name, fr: c.name, es: c.name, ar: c.name },
+        colors: c.colors,
+        price: Number(c.price) || KIT_PRICE_FALLBACK,
+        description: c.description,
+      }));
+    }
+    return PRESETS;
+  }, [dbCollections]);
+
   const [mode, setMode] = useState<"ready" | "custom">("ready");
-  const [presetId, setPresetId] = useState<string>(PRESETS[0].id);
-  const [colors, setColors] = useState<Record<string, string>>(PRESETS[0].colors);
+  const [presetId, setPresetId] = useState<string>(runtimePresets[0]?.id || PRESETS[0].id);
+  const [colors, setColors] = useState<Record<string, string>>(runtimePresets[0]?.colors || PRESETS[0].colors);
   const [selected, setSelected] = useState<string>(REGIONS[0].key);
-  
+
+  // Sync state to first preset when DB collections load.
+  useEffect(() => {
+    if (!runtimePresets.length) return;
+    if (!runtimePresets.find((p) => p.id === presetId)) {
+      setPresetId(runtimePresets[0].id);
+      setColors(runtimePresets[0].colors);
+    }
+  }, [runtimePresets, presetId]);
+
+  // If customize is disabled and mode was custom, snap back to ready.
+  useEffect(() => {
+    if (!customizeEnabled && mode === "custom") setMode("ready");
+  }, [customizeEnabled, mode]);
+
+  const activePreset = useMemo(
+    () => runtimePresets.find((p) => p.id === presetId) || runtimePresets[0],
+    [runtimePresets, presetId]
+  );
+  const KIT_PRICE = activePreset?.price ?? KIT_PRICE_FALLBACK;
+
   const [form, setForm] = useState<OrderForm>({ name: "", phone: "", address: "", email: "", notes: "" });
   const [errors, setErrors] = useState<Partial<Record<keyof OrderForm, string>>>({});
   const [showForm, setShowForm] = useState(false);
@@ -150,8 +189,7 @@ const KitZelligePreview = () => {
 
   // Availability filters (admin-controlled). Empty maps => show everything.
   const [availPieces, setAvailPieces] = useState<Set<string> | null>(null);
-  const [availColors, setAvailColors] = useState<Set<string> | null>(null);
-  const [availPresets, setAvailPresets] = useState<Set<string> | null>(null);
+  const [availColorsSet, setAvailColorsSet] = useState<Set<string> | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -163,16 +201,13 @@ const KitZelligePreview = () => {
       if (cancelled || !data) return;
       const norm = (v: string) => v.toLowerCase();
       const pieces = new Set<string>();
-      const colors = new Set<string>();
-      const presets = new Set<string>();
+      const cols = new Set<string>();
       for (const row of data as { kind: string; key: string }[]) {
         if (row.kind === "piece") pieces.add(norm(row.key));
-        else if (row.kind === "color") colors.add(norm(row.key));
-        else if (row.kind === "preset") presets.add(row.key);
+        else if (row.kind === "color") cols.add(norm(row.key));
       }
       setAvailPieces(pieces);
-      setAvailColors(colors);
-      setAvailPresets(presets);
+      setAvailColorsSet(cols);
     })();
     return () => { cancelled = true; };
   }, []);
@@ -182,30 +217,21 @@ const KitZelligePreview = () => {
     [availPieces]
   );
   const visiblePalette = useMemo(
-    () => (availColors && availColors.size ? PALETTE.filter((c) => availColors.has(c.toLowerCase())) : PALETTE),
-    [availColors]
+    () => (availColorsSet && availColorsSet.size ? PALETTE.filter((c) => availColorsSet.has(c.toLowerCase())) : PALETTE),
+    [availColorsSet]
   );
-  const visiblePresets = useMemo(
-    () => (availPresets && availPresets.size ? PRESETS.filter((p) => availPresets.has(p.id)) : PRESETS),
-    [availPresets]
-  );
+  const visiblePresets = runtimePresets;
 
-  // Keep selection/preset valid if admin disables current choice.
+  // Keep selection valid if admin disables current piece.
   useEffect(() => {
     if (visibleRegions.length && !visibleRegions.find((r) => r.key === selected)) {
       setSelected(visibleRegions[0].key);
     }
   }, [visibleRegions, selected]);
-  useEffect(() => {
-    if (visiblePresets.length && !visiblePresets.find((p) => p.id === presetId)) {
-      setPresetId(visiblePresets[0].id);
-      setColors(visiblePresets[0].colors);
-    }
-  }, [visiblePresets, presetId]);
 
 
   const applyPreset = (id: string) => {
-    const p = PRESETS.find((x) => x.id === id);
+    const p = runtimePresets.find((x) => x.id === id);
     if (!p) return;
     setPresetId(id);
     setColors(p.colors);
