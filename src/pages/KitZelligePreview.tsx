@@ -419,7 +419,7 @@ const KitZelligePreview = () => {
           </div>
 
           {/* Details + price + CTA */}
-          <div className="space-y-6">
+          <div className="space-y-6 order-1 md:order-2">
             <div>
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-cta/10 text-cta text-[11px] font-bold uppercase tracking-widest">
                 <Package size={12} /> {t.new}
