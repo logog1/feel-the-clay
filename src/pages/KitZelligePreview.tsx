@@ -342,18 +342,35 @@ const KitZelligePreview = () => {
             </div>
 
             {mode === "ready" ? (
-              <div className="grid grid-cols-2 gap-2">
+              <div className="space-y-2">
+                <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
+                  {language === "fr" ? "Touchez un modèle pour l'aperçu"
+                    : language === "es" ? "Toca un modelo para previsualizar"
+                    : language === "ar" ? "اضغط على نموذج للمعاينة"
+                    : "Tap a preset to preview"}
+                </p>
+                <div className="grid grid-cols-2 gap-2">
                 {visiblePresets.map((p) => {
                   const active = presetId === p.id;
+                  const selectedLabel = language === "fr" ? "Sélectionné"
+                    : language === "es" ? "Seleccionado"
+                    : language === "ar" ? "محدد"
+                    : "Selected";
                   return (
                     <button
                       key={p.id}
                       onClick={() => applyPreset(p.id)}
+                      aria-pressed={active}
                       className={cn(
-                        "p-3 rounded-2xl border-2 text-left transition-all",
-                        active ? "border-cta bg-cta/5" : "border-border/40 hover:border-border bg-card"
+                        "relative p-3 rounded-2xl border-2 text-left transition-all",
+                        active ? "border-cta bg-cta/5 ring-2 ring-cta/25 shadow-sm" : "border-border/40 hover:border-border bg-card"
                       )}
                     >
+                      {active && (
+                        <span className="absolute top-2 right-2 inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-cta text-primary-foreground text-[10px] font-bold">
+                          <Check size={10} strokeWidth={3} /> {selectedLabel}
+                        </span>
+                      )}
                       <div className="flex gap-1 mb-2">
                         {REGIONS.slice(0, 5).map((r) => (
                           <span key={r.key} className="w-5 h-5 rounded-md border border-border/40" style={{ background: p.colors[r.key] }} />
@@ -363,7 +380,9 @@ const KitZelligePreview = () => {
                     </button>
                   );
                 })}
+                </div>
               </div>
+
             ) : (
               <div className="space-y-4">
                 <div>
