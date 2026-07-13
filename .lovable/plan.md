@@ -1,59 +1,52 @@
-## Scope
+# Launch Kit Zellige as a real store product
 
-Polish only — no brand identity changes. All work uses existing design tokens in `src/index.css`. Rubik font, terracotta/orange palette, light-orange background stay locked.
+## What you'll get
 
-## 1. Shared foundations (touch once, benefits everywhere)
+- Kit Zellige listed publicly in the store, under a new "Craft Kits" section.
+- Customers buy a **ready collection** (named colorway). Customization is hidden for now; you can flip it on from the dashboard when you're ready.
+- 1 collection at launch — you'll name and configure it in the dashboard right after this ships.
+- Full admin controls: toggle any piece or color on/off, and full create/edit/delete for collections (name, price, stock, image, per-piece colors, published on/off).
 
-- **Section rhythm tokens**: add `--section-y` (mobile 3rem, desktop 5rem) and `--container-x` utilities so every section breathes the same. Replace ad-hoc `py-12/py-16/py-20` in landing sections.
-- **Focus-visible ring**: unify `:focus-visible` on buttons, links, inputs using `--ring` token for accessibility.
-- **Card surface**: one `.surface-card` utility (bg, border, radius, shadow, hover lift) reused across Store cards, Offers cards, dashboard panels.
-- **Empty / loading / error primitives**: small components in `src/components/ui/` — `EmptyState`, `LoadingState`, `ErrorState` — used in Store, Cart, dashboards.
+## Public store behavior
 
-## 2. Public landing (Index.tsx and its sections)
+- New store section "Craft Kits" appears in `/store`.
+- One card: **Kit Zellige — DIY Moroccan tile kit**. Tapping it opens the Kit Zellige page (moved from `/preview/kit-zellige` to `/store/kit-zellige`, old URL kept as a redirect).
+- On the page:
+  - Title, price (from the selected collection), and mobile-friendly layout stay as they are.
+  - **Ready Collections** tab shows the published collections. Selecting one previews it on the motif and sets the price.
+  - **Customize** tab is hidden by default; a "Custom colorways coming soon" note appears in its place. You can flip it on any time.
+  - CTA "Order this kit" opens the order form pre-filled with the collection name, and the cart line reads e.g. `Kit Zellige — Ocean`.
 
-- Normalize vertical rhythm between Hero → Offers → Gallery → SocialImpact → Contact (consistent `--section-y`, consistent max-width container).
-- HeroSection: tighten mobile padding, ensure CTA hit-area ≥44px, add subtle hover state on primary CTA matching brand.
-- OffersSection cards: equal-height grid, hover lift + ring, image aspect-ratio lock to avoid CLS, skeleton while loading.
-- GallerySection: improve touch scroll affordance on mobile (edge gradient mask), pause-on-hover already exists — add focus pause for a11y.
-- ContactSection: 4-col desktop already there; tighten mobile to 2-col where it currently stacks, equalize icon sizing.
+## Dashboard controls (in Pro dashboard → Kit Zellige)
 
-## 3. Store page
-
-- Filter chips: active state uses solid terracotta, inactive ghost; sticky on scroll for mobile.
-- Product grid: enforce square aspect, consistent gap, hover scale on image only (not card jump), price + title baseline aligned.
-- Product modal: better spacing rhythm, sticky CTA on mobile, qty stepper aligned, close button reachable.
-- Empty state (no products in category) and loading skeleton grid.
-
-## 4. Booking form + Cart checkout
-
-- Booking form: group fields into clear sections with labels, consistent field height (h-11), inline validation messages with icon + color, disabled submit state with explanation, success screen with confirmation summary.
-- Cart: clearer line items (image + title + price + qty stepper + remove), sticky order summary on desktop, mobile bottom bar with total + CTA, loading state during checkout submit, error toast with retry.
-
-## 5. Internal dashboards (Admin / Pro / Partner)
-
-Polish only — no logic change:
-- Consistent page header pattern (title, subtitle, primary action right).
-- Table density: row height `h-12`, zebra optional, sticky header, horizontal scroll wrapper on mobile.
-- Status badges: reuse existing `BookingStatusBadge`; align across all booking tables.
-- Empty states + skeleton loaders in lists.
-- Dialog/Sheet spacing consistency (p-6, gap-4).
+- **Pieces** — toggle each motif region on/off (already exists, kept).
+- **Colors** — toggle each palette swatch on/off (already exists, kept).
+- **Collections** — new CRUD panel:
+  - Name, short description, price (MAD), stock, cover image.
+  - Per-piece color picker (choose one available color per piece).
+  - Published toggle, sort order.
+  - Live thumbnail preview of the motif with those colors.
+- **Customize tab** — new toggle "Show Customize tab to visitors" (default off).
 
 ## Technical details
 
-- New file: `src/components/ui/empty-state.tsx`, `loading-state.tsx`, `error-state.tsx`.
-- New utilities in `src/index.css`: `.section-y`, `.container-x`, `.surface-card`, focus-visible base.
-- Edits limited to: landing section components, `Store.tsx`, `Cart.tsx`, `BookingFormSection.tsx`, dashboard layout/table wrappers. No changes to data fetching, RLS, edge functions, or business logic.
-- TypeScript check after each surface area.
+**Database (migration)**
+- New table `public.zellige_kit_collections` (name, slug unique, description, price numeric, stock int, image_url, `colors jsonb` mapping piece key → color hex, is_published bool, sort_order int, timestamps). RLS: public reads published rows, admins manage all. Grants for anon/authenticated/service_role.
+- New allowed key `kit_zellige_customize_enabled` in the public `site_settings` read policy (value `'true'`/`'false'`, default `'false'`).
+- Seed: 1 store section `kits` ("Craft Kits"), 1 product row `kit-zellige` pointing to the kit page, 1 draft collection "Signature" (you'll rename/configure).
 
-## Out of scope
+**Frontend**
+- `src/pages/KitZelligePreview.tsx` renamed logically to the store kit page. Route `/store/kit-zellige` added; `/preview/kit-zellige` redirects.
+- New hook `useZelligeCollections` (list/create/update/delete/reorder).
+- `KitZelligePreview.tsx`:
+  - Loads collections from DB (replaces hardcoded presets).
+  - Reads `kit_zellige_customize_enabled` and conditionally hides the Customize tab.
+  - Order CTA passes the selected collection name into the cart line.
+- `Store.tsx` renders the new `kits` section; the Kit Zellige card links to `/store/kit-zellige` instead of opening the product modal.
+- Admin: `src/components/admin/KitZelligeSection.tsx` gains a Collections manager and the Customize toggle.
 
-- No new brand colors, no font changes, no copy rewrites, no route changes, no schema changes, no new features.
+**Out of scope for this pass**
+- Full custom-colorway checkout (staying hidden; will come later as you said).
+- Variant selection UI in the cart page itself — the collection name is captured on the kit page and included in the cart line.
 
-## Order of execution
-
-1. Foundations (tokens + primitives)
-2. Landing
-3. Store
-4. Booking + Cart
-5. Dashboards
-6. Final typecheck + visual spot-check via preview
+Reply "go" and I'll ship it.
