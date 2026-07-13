@@ -523,6 +523,37 @@ const KitZelligePreview = () => {
               )}
 
               <p className="mt-2 text-[11px] text-center text-muted-foreground">{t.payment}</p>
+
+              <ul className="mt-4 pt-4 border-t border-border/40 space-y-2 text-[11px] text-foreground/75">
+                <li className="flex items-center gap-2">
+                  <Truck size={13} className="text-cta flex-shrink-0" />
+                  <span>
+                    {language === "fr" ? "Livraison au Maroc en 2 à 5 jours ouvrés"
+                      : language === "es" ? "Entrega en Marruecos en 2 a 5 días laborables"
+                      : language === "ar" ? "التوصيل داخل المغرب خلال 2 إلى 5 أيام عمل"
+                      : "Delivered across Morocco in 2 to 5 working days"}
+                  </span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <RefreshCw size={13} className="text-cta flex-shrink-0" />
+                  <span>
+                    {language === "fr" ? "Retour gratuit sous 7 jours si le kit arrive endommagé"
+                      : language === "es" ? "Devolución gratuita en 7 días si el kit llega dañado"
+                      : language === "ar" ? "إرجاع مجاني خلال 7 أيام إذا وصل الطقم متضرراً"
+                      : "Free 7-day return if the kit arrives damaged"}
+                  </span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <MapPin size={13} className="text-cta flex-shrink-0" />
+                  <span>
+                    {language === "fr" ? "Fabriqué à la main à Tétouan, Maroc"
+                      : language === "es" ? "Hecho a mano en Tetuán, Marruecos"
+                      : language === "ar" ? "مصنوع يدوياً في تطوان، المغرب"
+                      : "Handmade in Tétouan, Morocco"}
+                  </span>
+                </li>
+              </ul>
+
             </div>
 
           </div>
