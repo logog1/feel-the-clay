@@ -287,7 +287,7 @@ const KitZelligePreview = () => {
     <>
       <Header />
       <main className="min-h-screen bg-background pt-20">
-        <SEOHead title="Kit Zellige — Moroccan craft DIY kit | Terraria" description="Create your own Moroccan zellige masterpiece at home. Hand-cut tiles, plaster, frame, and step-by-step booklet. Delivered in Morocco." path="/preview/kit-zellige" />
+        <SEOHead title="Kit Zellige · Moroccan DIY craft kit | Terraria" description="Create your own Moroccan zellige masterpiece at home. Hand-cut tiles, plaster, frame, and step-by-step booklet. Delivered in Morocco." path="/preview/kit-zellige" />
 
         <div className="container-x max-w-6xl mx-auto pt-6">
           <nav aria-label="Breadcrumb" className="text-xs text-muted-foreground flex items-center gap-1.5">
